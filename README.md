@@ -10,11 +10,15 @@ The InSitu library software is a heterogeneous framework for the modeling and re
 
 ## Quick start
 
-## Contributions
+## Program usage wiki
+
+## Development and contribution 
 
 ## License
 
-## Contact and author info
+The InSitu is an open source software and is under GNU GPL-v3 license. See the corresponding [LICENSE](https://github.com/vicrucann/InSitu/blob/master/LICENSE) file for details.
+
+## Contact and authors info
 
 ## References
 
