@@ -2,6 +2,22 @@
 
 The InSitu library software is a heterogeneous framework for the modeling and representation of historical structures and archaeological sites in 3D. It is designed so that to unify the currently disparate data types available (e.g. 2D images, 3D strokes entered by user, text annotations attached to 3D locations, mesh representations of buildings) and to use the strength of each to support the others. For the data processing, rather than relying on either purely automatic approaches or human input, the framework supports speculation and reasoning in the form of both. As a result, the software is capable to take as input various raw heterogeneous data source and produce a labeled, corresponded and augmented data source that can be used in variety of applications.
 
+###### Development status
+Currently converting the prototype version into alpha version, very active development. Planned steps: 
+* (done) Version control on github
+* Reduce the library dependencies by using only Qt
+* Improve GUI
+* cmake (or qmake) files, installation procedure steps (what technical expertise is required, tutorial-style examples)
+* Better object orientation design
+* Unit testing, GUI testing
+* Documentation (monolithic) and wiki (software set up, overview of how it works, guides to doing common tasks)
+* Bug database, feature requests 
+* History of past releases document
+* Potential developer guidelines (where documentation is incomplete, desired features, known deficiencies, etc.)
+* FAQ section or file
+* Demos, screen shots, videos, example outputs
+
+
 ## Content
 [Motivation](https://github.com/vicrucann/InSitu#motivation)  
 [Features](https://github.com/vicrucann/InSitu#features)  
