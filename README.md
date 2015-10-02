@@ -47,5 +47,4 @@ The InSitu is an open source software and is under GNU GPL-v3 license. See the c
 
 Here represented the publications that led to the InSitu software:  
 1. An integrated image and sketching environment for archaeological sites - Xuejin Chen, Yann Morvan, Yu He, Julie Dorsey, Holly Rushmeier
-
 2. The Mental Canvas: a tool for conceptual architectural design and analysis - Julie Dorsey, Songhua Xu, Gabe Smedresman, Holly Rushmeier, Leonard McMillan
