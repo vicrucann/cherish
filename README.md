@@ -3,20 +3,20 @@
 The InSitu library software is a heterogeneous framework for the modeling and representation of historical structures and archaeological sites in 3D. It is designed so that to unify the currently disparate data types available (e.g. 2D images, 3D strokes entered by user, text annotations attached to 3D locations, mesh representations of buildings) and to use the strength of each to support the others. For the data processing, rather than relying on either purely automatic approaches or human input, the framework supports speculation and reasoning in the form of both. As a result, the software is capable to take as input various raw heterogeneous data source and produce a labeled, corresponded and augmented data source that can be used in variety of applications.
 
 ###### Development status
-Currently converting the prototype version into alpha version, very active development. Planned steps: 
-* (done) Version control on github
-* Reduce the library dependencies by using only Qt
+Currently converting the prototype version into alpha version, very active development. The current state of the project is not usable yet. Planned steps: 
+* Version control on github
+* Functional / technical specification
+Reduce the library dependencies by using only Qt, OpenGL and cmake
 * Improve GUI
 * cmake (or qmake) files, installation procedure steps (what technical expertise is required, tutorial-style examples)
-* Better object orientation design
+* Better object orientation design, refactoring and introducing new features
 * Unit testing, GUI testing
-* Documentation (monolithic) and wiki (software set up, overview of how it works, guides to doing common tasks)
+* Documentation for user (monolithic) and wiki (software set up, overview of how it works, guides to doing common tasks)
 * Bug database, feature requests 
-* History of past releases document
+* History of past releases 
 * Potential developer guidelines (where documentation is incomplete, desired features, known deficiencies, etc.)
 * FAQ section or file
 * Demos, screen shots, videos, example outputs
-
 
 ## Content
 [Motivation](https://github.com/vicrucann/InSitu#motivation)  
@@ -62,5 +62,6 @@ The InSitu is an open source software and is under GNU GPL-v3 license. See the c
 ## References
 
 Here represented the publications that led to the InSitu software:  
-1. An integrated image and sketching environment for archaeological sites - Xuejin Chen, Yann Morvan, Yu He, Julie Dorsey, Holly Rushmeier
+
+1. An integrated image and sketching environment for archaeological sites - Xuejin Chen, Yann Morvan, Yu He, Julie Dorsey, Holly Rushmeier  
 2. The Mental Canvas: a tool for conceptual architectural design and analysis - Julie Dorsey, Songhua Xu, Gabe Smedresman, Holly Rushmeier, Leonard McMillan
