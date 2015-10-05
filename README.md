@@ -64,7 +64,7 @@ The following sections will be added (each section will be a link inside a separ
 * example on how to import and work with diagrams
 * other examples that show how to use other features, e.g., importing meshed 3D data, incorporation of geo data, navigation and data manipulation, SfM 3D reconstruction, text and annotations, etc. 
 
-For more details check [User Manual]().
+For many more details on how to all of the software features, check [User Manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/manual.md).
 
 ## Development and contribution 
 
