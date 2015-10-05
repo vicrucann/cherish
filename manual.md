@@ -60,4 +60,6 @@
 12. Using command line
     * General command line options
     * Export command line options: format options, property options
-
+* Appendix A: Wacom Pen gestures
+* Appendix B: Glossary
+* Appendix C: input and output file formats
