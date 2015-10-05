@@ -6,10 +6,15 @@
     * Opening and saving files
     * Import and export (data sources, file formats)
     * Printing?
+2. Window multiplication (wmux like tmux)
+    * Create new window
+    * Switch between windows
+    * Remove the view window
+    * Create sub-window of specific type (raw data: photographs, raw data: 3D meshes, raw data: diagrams, etc.)
 2. Changing the view
     * Pan
     * Zoom
-    * Camera: bookmarks, current-previous canvas, etc.
+    * Camera: bookmarks, current-previous canvas, settings such as focal length, predefined camera settings (orthogonal, front, side view, fit all, etc.), virtual walk, etc.
     * Miscellaneous: hide/show, hide/show dialogue, bookmarks window, outline mode, full screen mode, preview mode, switch window and duplicate window (when using 2 screens or more)
 3. Editing basics
     * Undo and redo
@@ -18,11 +23,12 @@
     * Cloning
     * Ordering objects
     * Groups
-    * Canvases
+    * Canvases: opacity, color
     * Layers (dialogue, menu, bar)
+    * Display properties: perspective grid, intersections, occlusions
 4. Positioning and transforming
     * Software coordinates
-    * Transformations using: mouse, keyboard, tool controls bar, object drop-down menu, transform dialogue
+    * 2D and 3D Transformations using: mouse, keyboard, tool controls bar, object drop-down menu, transform dialogue (e.g. to push strokes)
 5. Geometric shapes
     * Rectangles and squares
     * 3D Objects: boxes, cylinders, etc.
@@ -49,14 +55,14 @@
 9. Diagram export tool
     * Bitmap tracing using potrace algorithm 
     * Options: thresholds, algorithm settings, etc.
-10. Other data tool
+10. Other data 
     * SfM export and manipulation
     * Photographic images export and manipulation
     * Geo location tool? 
     * 3D mesh tool
 11. Customization
     * Preference dialogue
-    * Configuration files: preferences, custom shortcuts?
+    * Configuration files
 12. Using command line
     * General command line options
     * Export command line options: format options, property options
