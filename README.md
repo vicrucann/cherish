@@ -1,7 +1,7 @@
 # Dura-EUropos In Situ - (DÉdUIS)\* 
 The InSitu library software is a heterogeneous framework for the modeling and representation of historical structures and archaeological sites in 3D. It is designed so that to unify the currently disparate data types available (e.g. 2D images, 3D strokes entered by user, text annotations attached to 3D locations, mesh representations of buildings) and to use the strength of each to support the others. For the data processing, rather than relying on either purely automatic approaches or human input, the framework supports speculation and reasoning in the form of both. As a result, the software is capable to take as input various raw heterogeneous data source and produce a labeled, corresponded and augmented data source that can be used in variety of applications.
 
-\* *déduis* - (I) deduce, from French
+\* *déduis* - (I, you) deduce, from French
 
 ###### Development status
 Currently converting the prototype version into alpha version, very active development. The current state of the project is not usable yet. Planned steps: 
@@ -28,7 +28,6 @@ The initial prototype screen shot.
 [Requirements](https://github.com/vicrucann/dura-europos-insitu/#requirements)  
 [Installation](https://github.com/vicrucann/dura-europos-insitu/#installation)  
 [Quick start](https://github.com/vicrucann/dura-europos-insitu/#quick-start)  
-[Program usage wiki](https://github.com/vicrucann/dura-europos-insitu/#program-usage-wiki)  
 [Development and contribution](https://github.com/vicrucann/dura-europos-insitu/#development-and-contribution)  
 [License](https://github.com/vicrucann/dura-europos-insitu/#license)  
 [Contact and authors info](https://github.com/vicrucann/dura-europos-insitu/#contact-and-authors-info)  
@@ -49,19 +48,35 @@ The presented InSitu software creates a heterogeneous 3D representation of archa
 
 ## Requirements
 
+The software is written on Windows 7, using QT and OpenGL libraries. It is planned to be compatible with Linux platform (e.g., Ubuntu 14.04). More precise requirements will be described later.
+
 ## Installation
+
+Can be installed using commands `qmake` and `make` (possibly `cmake` and `make`). Also project files for QT Creator and Microsoft Visual Studio will be provided. 
 
 ## Quick start
 
-## Program usage wiki
+The following sections will be added (each section will be a link inside a separate file): 
+* the anatomy of the software window
+* a short example of the sketching
+* more elaborate sketching example (e.g., using layers, bookmarks, different canvases located differently, 3D sketching)
+* example on how to import and work with photographs (including)
+* example on how to import and work with diagrams
+* other examples that show how to use other features, e.g., importing meshed 3D data, incorporation of geo data, navigation and data manipulation, SfM 3D reconstruction, text and annotations, etc. 
+
+For more details check [User Manual]().
 
 ## Development and contribution 
+
+This is far-future section. It will be filled as a need arises.
 
 ## License
 
 The InSitu is an open source software and is under GNU GPL-v3 license. See the corresponding [LICENSE](https://github.com/vicrucann/dura-europos-insitu//blob/master/LICENSE) file for details.
 
 ## Contact and authors info
+
+The author and lab information will be added here. For the current version, feel free to contact Victoria Rudakova - victoria.rudakova(at)yale.edu ; or use "Issues" (in the menu on right) for feature requests or bug submission.
 
 ## References
 
