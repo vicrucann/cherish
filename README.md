@@ -4,8 +4,8 @@ The **dureu3d** software is a heterogeneous framework for the modeling and repre
 ###### Development status
 Currently converting the prototype version into alpha version, very active development. The current state of the project is not usable yet. Planned steps: 
 * Version control on github
-* Functional / technical specification
-Reduce the library dependencies by using only Qt, OpenGL and cmake
+* Functional / technical specification - [manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/manual.md) file
+* Reduce the library dependencies by using only Qt, OpenGL and cmake
 * Improve GUI
 * cmake (or qmake) files, installation procedure steps (what technical expertise is required, tutorial-style examples)
 * Better object orientation design, refactoring and introducing new features
