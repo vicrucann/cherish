@@ -1,6 +1,7 @@
-# InSitu (name is subject to change)
-
+# Dura-EUropos In Situ - (DÉdUIS)\* 
 The InSitu library software is a heterogeneous framework for the modeling and representation of historical structures and archaeological sites in 3D. It is designed so that to unify the currently disparate data types available (e.g. 2D images, 3D strokes entered by user, text annotations attached to 3D locations, mesh representations of buildings) and to use the strength of each to support the others. For the data processing, rather than relying on either purely automatic approaches or human input, the framework supports speculation and reasoning in the form of both. As a result, the software is capable to take as input various raw heterogeneous data source and produce a labeled, corresponded and augmented data source that can be used in variety of applications.
+
+\* *déduis* - (I) deduce, from French
 
 ###### Development status
 Currently converting the prototype version into alpha version, very active development. The current state of the project is not usable yet. Planned steps: 
@@ -18,20 +19,20 @@ Reduce the library dependencies by using only Qt, OpenGL and cmake
 * FAQ section or file
 * Demos, screen shots, videos, example outputs
 
-![Alt text](https://github.com/vicrucann/InSitu/blob/master/image-docs/gui-orig.png "Prototype GUI screenshot")  
+![Alt text](https://github.com/vicrucann/dura-europos-insitu/blob/master/image-docs/gui-orig.png "Prototype GUI screenshot")  
 The initial prototype screen shot.
 
 ## Content
-[Motivation](https://github.com/vicrucann/InSitu#motivation)  
-[Features](https://github.com/vicrucann/InSitu#features)  
-[Requirements](https://github.com/vicrucann/InSitu#requirements)  
-[Installation](https://github.com/vicrucann/InSitu#installation)  
-[Quick start](https://github.com/vicrucann/InSitu#quick-start)  
-[Program usage wiki](https://github.com/vicrucann/InSitu#program-usage-wiki)  
-[Development and contribution](https://github.com/vicrucann/InSitu#development-and-contribution)  
-[License](https://github.com/vicrucann/InSitu#license)  
-[Contact and authors info](https://github.com/vicrucann/InSitu#contact-and-authors-info)  
-[References](https://github.com/vicrucann/InSitu#references)  
+[Motivation](https://github.com/vicrucann/dura-europos-insitu/#motivation)  
+[Features](https://github.com/vicrucann/dura-europos-insitu/#features)  
+[Requirements](https://github.com/vicrucann/dura-europos-insitu/#requirements)  
+[Installation](https://github.com/vicrucann/dura-europos-insitu/#installation)  
+[Quick start](https://github.com/vicrucann/dura-europos-insitu/#quick-start)  
+[Program usage wiki](https://github.com/vicrucann/dura-europos-insitu/#program-usage-wiki)  
+[Development and contribution](https://github.com/vicrucann/dura-europos-insitu/#development-and-contribution)  
+[License](https://github.com/vicrucann/dura-europos-insitu/#license)  
+[Contact and authors info](https://github.com/vicrucann/dura-europos-insitu/#contact-and-authors-info)  
+[References](https://github.com/vicrucann/dura-europos-insitu/#references)  
 
 ## Motivation
 
@@ -58,7 +59,7 @@ The presented InSitu software creates a heterogeneous 3D representation of archa
 
 ## License
 
-The InSitu is an open source software and is under GNU GPL-v3 license. See the corresponding [LICENSE](https://github.com/vicrucann/InSitu/blob/master/LICENSE) file for details.
+The InSitu is an open source software and is under GNU GPL-v3 license. See the corresponding [LICENSE](https://github.com/vicrucann/dura-europos-insitu//blob/master/LICENSE) file for details.
 
 ## Contact and authors info
 
