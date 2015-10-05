@@ -14,8 +14,13 @@
 2. Changing the view
     * Pan
     * Zoom
-    * Camera: bookmarks, current-previous canvas, settings such as focal length, predefined camera settings (orthogonal, front, side view, fit all, etc.), virtual walk, etc.
+    * Camera (Camera tools): bookmarks, current-previous canvas, settings such as focal length, predefined camera settings (orthogonal, front, side view, fit all, etc.), virtual walk, etc.
     * Miscellaneous: hide/show, hide/show dialogue, bookmarks window, outline mode, full screen mode, preview mode, switch window and duplicate window (when using 2 screens or more)
+2. Walkthrough tools
+2. Principal tools
+    * Select tool: add and substract from a selection set, expanding the selection set using mouse, selecting multiple entities, selecting or deselecting all geometry, selecting a single entity
+    * Eraser tool: for pen and for mouse
+    * Paint bucket tool: colors, textures?
 3. Editing basics
     * Undo and redo
     * Selecting objects (mouse, keyboard, find dialogue)
@@ -26,17 +31,18 @@
     * Canvases: opacity, color
     * Layers (dialogue, menu, bar)
     * Display properties: perspective grid, intersections, occlusions
-4. Positioning and transforming
+4. Positioning and transforming (Modification tools)
     * Software coordinates
-    * 2D and 3D Transformations using: mouse, keyboard, tool controls bar, object drop-down menu, transform dialogue (e.g. to push strokes)
-5. Geometric shapes
+    * 2D and 3D Transformations (translation, rotation, scale, push and pull, offset) using: mouse, keyboard, tool controls bar, object drop-down menu, transform dialogue (e.g. to push strokes)
+5. Geometric shapes (Drawing tools)
     * Rectangles and squares
     * 3D Objects: boxes, cylinders, etc.
     * Ellipses, circles and arcs
     * Polygons
-6. Paths
+6. Paths (Drawing tools)
     * Bezier curves
     * Creating paths: strokes (pencil tool), Bezier pen tool
+    * 3D polyline entities
     * Path operations?
 6. Text and annotations
     * Creating text
@@ -47,6 +53,10 @@
 7. Stroke attributes (properties)?
     * Width, color
 7. Eraser tool
+8. Contruction tools
+    * Axes tool
+    * Dimension tool
+    * Text tool
 8. Paint (color) tool
     * Color brush mode
     * Operation Fill
@@ -58,14 +68,28 @@
 10. Other data 
     * SfM export and manipulation
     * Photographic images export and manipulation
-    * Geo location tool? 
+    * Geo location tool?: adding location, toggling terrain, setting location for the model
     * 3D mesh tool
+11. Model settings and managers
+    * Material (texture) browser
+    * Scenes manager: creating and running animation, adding a scene, updating scene
 11. Customization
     * Preference dialogue
     * Configuration files
 12. Using command line
     * General command line options
     * Export command line options: format options, property options
+13. Entities
+    * Photographs: importing
+    * Diagrams: importing as raster, importing as vector
+    * 3d models: importing
+    * Annotations: creating, tying to locations
+    * Strokes by user
+14. Input and output
+    * Import
+    * Export    
+    * Printing
+15. Common tasks
 * Appendix A: Wacom Pen gestures
 * Appendix B: Glossary
 * Appendix C: input and output file formats
