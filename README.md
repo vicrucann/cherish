@@ -4,7 +4,7 @@ The **dureu3d** software is a heterogeneous framework for the modeling and repre
 ###### Development status
 Currently converting the prototype version into alpha version, very active development. The current state of the project is not usable yet. Planned steps: 
 * Version control on github
-* Functional / technical specification - [manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/manual.md) file
+* Functional / technical specification - [manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/docs/manual.md) file
 * Reduce the library dependencies by using only Qt, OpenGL and cmake
 * Improve GUI
 * cmake (or qmake) files, installation procedure steps (what technical expertise is required, tutorial-style examples)
@@ -66,7 +66,7 @@ The following sections will be added (each section will be a link inside a separ
 * Import and trace the diagrams
 * Other features: importing meshed 3D data, incorporation of geo data, navigation and data manipulation, annotations. 
 
-For many more details on the software features, check [User Manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/manual.md).
+For many more details on the software features, check [User Manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/docs/manual.md).
 
 ## Development and contribution 
 
