@@ -17,7 +17,7 @@ Currently converting the prototype version into alpha version, very active devel
 * FAQ section or file
 * Demos, screen shots, videos, example outputs
 
-![Alt text](https://github.com/vicrucann/dura-europos-insitu/blob/master/image-docs/gui-orig.png "Prototype GUI screenshot")  
+![Alt text](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/gui-orig.png "Prototype GUI screenshot")  
 The initial prototype screen shot.
 
 ## Content
