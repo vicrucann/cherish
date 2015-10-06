@@ -40,6 +40,7 @@
     * Zoom tool: change focal length with zoom tool, centering the point of view, zooming with mouse or pen, zooming in on portion of the model
     * Bookmark tool: taking the bookmark of the current scene, navigating through the taken bookmarks, opening the saved bookmark
 2. **Walkthrough tools**
+    * Draw the walking trajectory on the map
 3. **Editing tools**
     * Undo and redo
     * Selecting objects (mouse, keyboard, find dialogue)
@@ -66,6 +67,10 @@
     * Text annotations: creating and editing, tying to locations and other entities
     * Canvases with strokes by user: opacity, color
     * 2D and 3D geometrical shapes by user: opacity, color, texture?
+12. **Image organization tool**
+    * Map (drag) an image from image viewer to location
+    * Select a representative image for an image cluster
+    * Tag an image (or cluster) to a specific 3D space
 11. **Model settings and managers**
     * Material (texture) browser
     * Scenes manager: creating and running animation, adding a scene, updating scene
