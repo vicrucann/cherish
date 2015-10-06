@@ -55,14 +55,18 @@ Can be installed using commands `qmake` and `make` (possibly `cmake` and `make`)
 ## Quick start
 
 The following sections will be added (each section will be a link inside a separate file): 
-* the anatomy of the software window
-* a short example of the sketching
-* more elaborate sketching example (e.g., using layers, bookmarks, different canvases located differently, 3D sketching)
-* example on how to import and work with photographs (including)
-* example on how to import and work with diagrams
-* other examples that show how to use other features, e.g., importing meshed 3D data, incorporation of geo data, navigation and data manipulation, SfM 3D reconstruction, text and annotations, etc. 
+* User interface: window anatomy, toolbars, viewing axes, dialogue boxes
+* Using the Wacom pen
+* Using the mouse 
+* Sketching in 3D
+* View a model in 3D space
+* Creating geometry with push strokes tool
+* Draw 2D and 3D shapes
+* Import and work with photographs
+* Import and trace the diagrams
+* Other features: importing meshed 3D data, incorporation of geo data, navigation and data manipulation, annotations. 
 
-For many more details on how to all of the software features, check [User Manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/manual.md).
+For many more details on the software features, check [User Manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/manual.md).
 
 ## Development and contribution 
 
