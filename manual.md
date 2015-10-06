@@ -75,6 +75,8 @@
 12. **Using command line**
     * General command line options
     * Export command line options: format options, property options
+13. **Version control tool**
+    * Return to previously saved version by undoing certain number of changes
 15. **Common tasks**
 * Appendix A: **Wacom Pen gestures list**
 * Appendix B: **Glossary**
