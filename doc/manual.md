@@ -97,6 +97,7 @@
     * Configuration files
 15. **Common tasks**
 * Appendix A: **Wacom Pen gestures list**
+* Appendix AA: **Keyboard hotkeys list**
 * Appendix B: **Glossary**
 * Appendix C: **Input and output file formats**
 * Appendix D: **SfM from a set of images**, etc.
