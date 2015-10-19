@@ -1,5 +1,7 @@
 # Listing of the main components and frameworks
 
+This file is intended for internal usage and is a temporary file. It contains a rough todo list with some useful links and other projected-related info for early development stage.
+
 ## MVC 
 
 **Model-View-Controller** - is used to separate the data from how the data is displayed and how it is manipulated.
