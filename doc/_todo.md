@@ -1,8 +1,4 @@
-## Entity-Component tree:
-`Qt3D` uses this technology:
-* app -> insitu
-    * viewport -> view window
-    * controllers -> menu bar, tool bar
+# Listing of the main components and frameworks
 
 ## MVC 
 
@@ -28,30 +24,30 @@ OpenSceneGraph library to represent entities and their relationships on the scen
 * scene graph classes
 * graph traversal
 * visualizer of the graphic scene
-* nodekit for easy intergration with Qt
+* nodekit for intergration with Qt
 
 [Manipulators in CAD-style application](http://forum.openscenegraph.org/viewtopic.php?t=3709&highlight=cad)
 
-If going from scratch, consider using `QGraphicsScene` and `QGraphicsView`, or BSP tree (although it's probably only relevant for 2D graphics since drawing is done by means of Qt, not OpenGL).
+If going from scratch, consider using `QGraphicsScene` (no, it is for 2D) and `QGraphicsView` (no, it is for 2D), or BSP tree. 
 
 ## Misc
 Ideas on how the project will be divided, the main parts:
-1. 3D graphics: rendering (use OpenGL or even new technology Vulkan)
+1. 3D graphics: rendering (OpenG)
 2. GUI: Qt widgets code
 3. MVC - model view controller framework and its elements (classes)
 4. 3rd parties: any additional libraries needed for a built, e.g., for rendering
 
 ## Qt useful classes
 * `QPainterPath` - geometrical shapes, includung strokes
-* 
+* `QMainWindow` - general layout of the whole application 
 
-## Developer plan
+## Development plan
 * Build Qt from source so that to run *boxes* examples (OpenGL and 3D manipulations)
-    * What window to use for inheritance?
+    * What window to use for inheritance - `QWindow` (see [Reasons for using QWindow over QWidget](http://www.ogre3d.org/tikiwiki/tiki-index.php?page=Integrating+Ogre+into+QT5#Reasons_for_using_QWindow_over_QWidget))
     * How to perform the rendering, and how often
     * Put some mock models, e.g., rectangles to represent canvases and Bezier paths to represent strokes
     * Introduce Wacom tablet and pen event processing
-    * Camera rotation and zoom using mouse
+    * Camera rotation and zoom using mouse (or Wacom)
 * Put an initial project on github which is a custom window that allows to work with OpenGL 3D graphics and reacts on Wacom tablet pen movements
 * Scene graph organization and library
     * Build a simple demo scene using scene graph paradigm
@@ -59,6 +55,3 @@ Ideas on how the project will be divided, the main parts:
     * Put some basic controller buttons
     * Start main project from scratch using developed techniques and wrap them into MVC framework 
 
-## Main Window framework and components
-* see reference of `QMainWindow` - it is shown there how the widgets can be located inside the Main Window
-* 
