@@ -26,3 +26,15 @@
 *.exe
 *.out
 *.app
+
+# Other Qt files
+*.user
+Makefile
+*.Debug
+*.Release
+*.manifest
+*.rc
+*.res
+*.ilk
+*.pdb
+moc_*
