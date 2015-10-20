@@ -27,8 +27,6 @@ class ExampleWindow : public GraphicsWindow{
 public:
     ExampleWindow(): m_pProg(0), m_frame(0){}
     ~ExampleWindow(){
-        if (m_pProg)
-            delete m_pProg;
     }
     void initialize() Q_DECL_OVERRIDE {
         m_pProg = new QOpenGLShaderProgram(this);

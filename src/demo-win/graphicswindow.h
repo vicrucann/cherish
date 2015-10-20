@@ -10,7 +10,7 @@ class GraphicsWindow : public QWindow, protected QOpenGLFunctions
     Q_OBJECT
 
 public:
-    explicit GraphicsWindow(QWindow *parent = 0); // or QScreen
+    explicit GraphicsWindow(QScreen *parent = 0); // or QScreen
     ~GraphicsWindow();
 
     virtual void render(QPainter* painter);

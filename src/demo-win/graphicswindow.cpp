@@ -6,7 +6,7 @@
 #include <QtGui/QOpenGLPaintDevice>
 #include <QtGui/QPainter>
 
-GraphicsWindow::GraphicsWindow(QWindow *parent)
+GraphicsWindow::GraphicsWindow(QScreen *parent)
     : QWindow(parent),
       m_pContext(0),
       m_pDevice(0),
@@ -19,8 +19,6 @@ GraphicsWindow::GraphicsWindow(QWindow *parent)
 GraphicsWindow::~GraphicsWindow() {
     if (m_pDevice)
         delete m_pDevice;
-    if (m_pContext)
-        delete m_pContext;
 }
 
 void GraphicsWindow::initialize(){}
