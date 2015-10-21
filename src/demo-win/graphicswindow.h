@@ -3,6 +3,7 @@
 
 #include <QtGui/QWindow>
 #include <QtGui/QOpenGLFunctions>
+#include <QtGui/QOpenGLPaintDevice>
 
 // base class for graphics window, e.g. viewport
 class GraphicsWindow : public QWindow, protected QOpenGLFunctions
