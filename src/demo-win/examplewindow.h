@@ -50,10 +50,12 @@ public:
         m_pProg->setUniformValue(m_matUni, matrix);
 
         GLfloat vertices[] = {
-            0.0f, 0.707f,
             -0.5f, -0.5f,
+            -0.5f, 0.5f,
+            0.5f, 0.5f,
             0.5f, -0.5f };
         GLfloat colors[] = {
+            1.0f, 1.0f, 1.0f,
             1.0f, 0.0f, 0.0f,
             0.0f, 1.0f, 0.0f,
             0.0f, 0.0f, 1.0f };
@@ -61,7 +63,7 @@ public:
         glVertexAttribPointer(m_colAttr, 3, GL_FLOAT, GL_FALSE, 0, colors);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_POLYGON, 0, 4);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(0);
         m_pProg->release();

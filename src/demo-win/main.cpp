@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
     ExampleWindow egl;
     egl.resize(640,480);
     egl.show();
-    egl.setAnimating(true);
+    //egl.setAnimating(true);
 
     return qapp.exec();
 }
