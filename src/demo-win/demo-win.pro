@@ -15,4 +15,5 @@ TEMPLATE = app
 SOURCES += main.cpp\
         graphicswindow.cpp
 
-HEADERS  += graphicswindow.h
+HEADERS  += graphicswindow.h \
+    examplewindow.h
