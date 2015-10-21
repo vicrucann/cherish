@@ -3,19 +3,21 @@ The **dureu3d** software is a heterogeneous framework for the modeling and repre
 
 ###### Development status
 Currently converting the prototype version into alpha version, very active development. The current state of the project is not usable yet. Planned steps: 
-* Version control on github
-* Functional / technical specification - [manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/manual.md) file
-* Reduce the library dependencies by using only Qt, OpenGL and cmake
-* Improve GUI
-* cmake (or qmake) files, installation procedure steps (what technical expertise is required, tutorial-style examples)
-* Better object orientation design, refactoring and introducing new features
-* Unit testing, GUI testing
-* Documentation for user (monolithic) and wiki (software set up, overview of how it works, guides to doing common tasks)
-* Bug database, feature requests 
-* History of past releases 
-* Potential developer guidelines (where documentation is incomplete, desired features, known deficiencies, etc.)
-* FAQ section or file
-* Demos, screen shots, videos, example outputs
+* Near-future steps
+    * Version control on github
+    * Functional / technical specification - [manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/manual.md) file
+    * Reduce the library dependencies by using only Qt, OpenSceneGraph, OpenGL and cmake
+    * Improve GUI (replace it by using Qt only)
+    * cmake (or qmake) files, installation procedure steps (what technical expertise is required, tutorial-style examples)
+    * Better object orientation design, refactoring, graph scene, and introducing new features
+    * Unit testing, GUI testing
+    * Documentation for user (monolithic) and wiki (software set up, overview of how it works, guides to doing common tasks)
+* Far-future steps
+    * Bug database, feature requests 
+    * History of past releases 
+    * Potential developer guidelines (where documentation is incomplete, desired features, known deficiencies, etc.)
+    * FAQ section or file
+    * Demos, screen shots, videos, example outputs
 
 ![Alt text](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/gui-orig.png "Prototype GUI screenshot")  
 The initial prototype screen shot.
@@ -46,7 +48,8 @@ The presented **dureu3d** software creates a heterogeneous 3D representation of 
 
 ## Requirements
 
-The software is written on Windows 7, using QT and OpenGL libraries. It is planned to be compatible with Linux platform (e.g., Ubuntu 14.04). More precise requirements will be described later.
+The software is written on Windows 7, with QT and OpenSceneGraph libraries using OpenGL. It is planned to be compatible with Linux platform (e.g., Ubuntu 14.04). More precise requirements will be described later.
+
 
 ## Installation
 

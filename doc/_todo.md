@@ -34,14 +34,15 @@ If going from scratch, consider using `QGraphicsScene` (no, it is for 2D) and `Q
 
 ## Misc
 Ideas on how the project will be divided, the main parts:
-1. 3D graphics: rendering (OpenG)
+1. 3D graphics: rendering (OpenGL)
 2. GUI: Qt widgets code
-3. MVC - model view controller framework and its elements (classes)
+3. MVC - model view controller framework and its elements (classes) - OpenSceneGraph to help the design pattern
 4. 3rd parties: any additional libraries needed for a built, e.g., for rendering
 
 ## Qt useful classes
 * `QPainterPath` - geometrical shapes, includung strokes
 * `QMainWindow` - general layout of the whole application 
+* `QTabletEvent` - generates events from a Wacom tablet
 
 ## Development plan
 * Build Qt from source so that to run *boxes* examples (OpenGL and 3D manipulations)
