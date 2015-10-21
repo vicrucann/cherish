@@ -38,3 +38,4 @@ Makefile
 *.ilk
 *.pdb
 moc_*
+demo-win
