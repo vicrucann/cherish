@@ -17,3 +17,6 @@ SOURCES += main.cpp\
 
 HEADERS  += graphicswindow.h \
     examplewindow.h
+
+INCLUDEPATH += $(OSG_INCLUDE_PATH)
+LIBS += $(OSG_LIB_PATH)
