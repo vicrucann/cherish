@@ -32,30 +32,7 @@ find_package(Qt5OpenGL)
 find_package(OpenThreads)
 find_package(OpenSceneGraph REQUIRED COMPONENTS osgDB osgGA osgUtil osgViewer)
 
-## OpenSceneGraph paths - external dependencies
-# LINUX header files
-find_path(OSG_INCLUDE_DIR
-    PATHS
-    #$ENV{OSG_INCLUDE_PATH} # windows does not work this way
-    /usr/local/include  # linux or cygwin
-    /usr/local/OpenSceneGraph/INCLUDE_DIRECTORIES
-)
-
-# LINUX library files
-find_path(OSG_LIB_DIR
-    PATHS
-    #$ENV{OSG_LIB_PATH} # windows does not work this way
-    /usr/local/lib # linux or cygwin
-    /usr/local/lib64
-    /usr/local/OpenSceneGraph/lib
-)
-
-## apply the paths to projects and include windows path
-include_directories($ENV{OSG_INCLUDE_PATH} ${OSG_INCLUCE_DIR})
-link_directories($ENV{OSG_LIB_PATH} ${OSG_LIB_DIR})
-
-## sample datafiles
-#configure_file(DATA_FILE ${PROJECT_SOURCE_DIR}/DATA_FILE COPYONLY)
+INCLUDE_DIRECTORIES( ${OPENSCENEGRAPH_INCLUDE_DIRS} )
 
 # project's own files
 set(PROJECT_NAME demo-osg)
@@ -65,18 +42,9 @@ aux_source_directory(. SRC_LIST)
 add_executable(${PROJECT_NAME} WIN32 ${SRC_LIST})
 set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "${CMAKE_DEBUG_POSTFIX}")
 
-# link the osg libs to the project
-target_link_libraries(${PROJECT_NAME}
-    debug osg${CMAKE_DEBUG_POSTFIX} optimized osg
-    debug osgUtil${CMAKE_DEBUG_POSTFIX} optimized osgUtil
-    debug osgViewer${CMAKE_DEBUG_POSTFIX} optimized osgViewer
-    debug osgDB${CMAKE_DEBUG_POSTFIX} optimized osgDB
-    debug osgGA${CMAKE_DEBUG_POSTFIX} optimized osgGA
-    debug OpenThreads${CMAKE_DEBUG_POSTFIX} optimized OpenThreads
-    Qt5::Core
-    Qt5::Gui
-    Qt5::OpenGL
-#    Qt5:Widgets
+TARGET_LINK_LIBRARIES( ${PROJECT_NAME}
+  ${OPENSCENEGRAPH_LIBRARIES}
+  Qt5::Core
+  Qt5::Gui
+  Qt5::OpenGL
 )
-
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
