@@ -55,6 +55,20 @@ The software is written on Windows 7, with QT and OpenSceneGraph libraries using
 
 Can be installed using commands `qmake` and `make` (possibly `cmake` and `make`). Also project files for QT Creator and Microsoft Visual Studio will be provided. 
 
+If compiling from source, make sure the dependencies are met. So far, the project relies onto the next open-source libraries:
+1. cmake
+2. Qt SDK (QtWidgets, QtOpenGL)
+3. OpenSceneGraph (core libraries, OpenGL support)
+
+After installation of the OpenSceneGraph (OSG for short), update the environment variables so that `cmake` could find the necessary libraries. Here is the example of the set variables on Linux (same works for `cygwin`):
+```
+export OPENTHREADS_LIB_DIR="/usr/local/lib64:/usr/local/lib"  
+export PATH="$OPENTHREADS_LIB_DIR:$PATH"  
+export LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib:$LD_LIBRARY_PATH"  
+export OSG_FILE_PATH="/usr/local/OpenSceneGraph/data:/usr/local/OpenSceneGraph/data/Images"  
+```
+Refer to the official OSG guide for more details or on how to set up the OSG using other platforms.
+
 ## Quick start
 
 The following sections will be added (each section will be a link inside a separate file): 
