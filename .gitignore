@@ -29,7 +29,7 @@
 
 # Other Qt files
 *build*
-#*.user
+*.user
 #*.Debug
 #*.Release
 #*.manifest
