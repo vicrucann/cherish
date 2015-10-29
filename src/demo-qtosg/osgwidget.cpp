@@ -5,6 +5,8 @@
 #include "osgwidget.h"
 
 #include <osg/Camera>
+#include <osg/StateSet>
+#include <osg/Material>
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
 #include <osgViewer/Viewer>
@@ -29,8 +31,15 @@ OSGWidget::OSGWidget(QWidget* parent):
     _selectionActive(false),
     _selectionFinished (true)
 {
-    //_graphicsWindow->setWindowRectangle(this->x(), this->y(), this->width(),this->height());
     osg::ref_ptr<osg::Node> root = osgDB::readNodeFile("../demo-osg/cow.osgt");
+
+    // Set material for basic lighting and enable depth tests. Else, the sphere
+    // will suffer from rendering errors.
+    osg::StateSet* stateSet = root->getOrCreateStateSet();
+    osg::Material* material = new osg::Material;
+    material->setColorMode(osg::Material::AMBIENT_AND_DIFFUSE);
+    stateSet->setAttributeAndModes(material, osg::StateAttribute::ON);
+    stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
 
     float aspectRatio = static_cast<float>( this->width() / 2 ) / static_cast<float>( this->height() );
     osg::Camera* camera = new osg::Camera;
