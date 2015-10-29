@@ -31,6 +31,7 @@
 #include <osg/ref_ptr>
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/CompositeViewer>
+//#include <osgViewer/Viewer>
 
 class OSGWidget : public QOpenGLWidget {
     Q_OBJECT
@@ -63,6 +64,9 @@ private:
     osgGA::EventQueue* getEventQueue() const;
 
     osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _graphicsWindow;
+    // the decision about composite viewer or not
+    // may be passed by a template
+    // also there could be default composite viewers which would consist of 3 most common views
     osg::ref_ptr<osgViewer::CompositeViewer> _viewer;
 
     //QTabletEvent::PointerType _pointer;

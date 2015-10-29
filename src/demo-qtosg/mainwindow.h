@@ -13,9 +13,12 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
     ~MainWindow();
+private slots:
+    void onCreateView();
+
 private:
     QMdiArea* _mdiArea;
-};
+}; // class MainWindow
 
 #endif // MAINWINDOW
 

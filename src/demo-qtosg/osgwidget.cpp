@@ -26,7 +26,6 @@
 OSGWidget::OSGWidget(QWidget* parent):
     QOpenGLWidget(parent),
     _graphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(),this->height()) ),
-    //_graphicsWindow(new osgViewer::GraphicsWindow()),
     _viewer(new osgViewer::CompositeViewer),
     _selectionActive(false),
     _selectionFinished (true)
@@ -41,9 +40,10 @@ OSGWidget::OSGWidget(QWidget* parent):
     stateSet->setAttributeAndModes(material, osg::StateAttribute::ON);
     stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
 
-    float aspectRatio = static_cast<float>( this->width() / 2 ) / static_cast<float>( this->height() );
+    const int nviews = 1;
+    float aspectRatio = static_cast<float>( this->width() / nviews ) / static_cast<float>( this->height() );
     osg::Camera* camera = new osg::Camera;
-    camera->setViewport( 0, 0, this->width() / 2, this->height() );
+    camera->setViewport( 0, 0, this->width() / nviews, this->height() );
     camera->setClearColor( osg::Vec4( 0.f, 0.f, 1.f, 1.f ) );
     camera->setProjectionMatrixAsPerspective( 30.f, aspectRatio, 1.f, 1000.f );
     camera->setGraphicsContext( _graphicsWindow );
@@ -60,20 +60,20 @@ OSGWidget::OSGWidget(QWidget* parent):
     view->setCameraManipulator(manipulator);
 
     // code for side view
-    osg::Camera* sideCamera = new osg::Camera;
+    /*osg::Camera* sideCamera = new osg::Camera;
     sideCamera->setViewport(this->width()/2, 0, this->width()/2, this->height());
     sideCamera->setClearColor( osg::Vec4( 0.f, 0.f, 1.f, 1.f ) );
     sideCamera->setProjectionMatrixAsPerspective( 30.f, aspectRatio, 1.f, 1000.f );
-    sideCamera->setGraphicsContext( _graphicsWindow );
+    sideCamera->setGraphicsContext( _graphicsWindow );*/
 
-    osgViewer::View* sideView = new osgViewer::View;
+    /*osgViewer::View* sideView = new osgViewer::View;
     sideView->setCamera( sideCamera );
     sideView->setSceneData( root.get() );
     sideView->addEventHandler( new osgViewer::StatsHandler );
-    sideView->setCameraManipulator( new osgGA::TrackballManipulator );
+    sideView->setCameraManipulator( new osgGA::TrackballManipulator );*/
 
     _viewer->addView(view);
-    _viewer->addView(sideView);
+    //_viewer->addView(sideView);
     _viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
     _viewer->realize();
 
@@ -322,10 +322,12 @@ void OSGWidget::onResize( int w, int h )
     std::vector<osg::Camera*> cameras;
     _viewer->getCameras( cameras );
 
-    assert( cameras.size() == 2 );
+    assert( cameras.size() == 1 );
 
-    cameras[0]->setViewport( 0, 0, this->width() / 2, this->height() );
-    cameras[1]->setViewport( this->width() / 2, 0, this->width() / 2, this->height() );
+    cameras[0]->setViewport( 0, 0, this->width(), this->height() );
+
+    //cameras[0]->setViewport( 0, 0, this->width() / 2, this->height() );
+    //cameras[1]->setViewport( this->width() / 2, 0, this->width() / 2, this->height() );
 }
 
 osgGA::EventQueue* OSGWidget::getEventQueue() const
