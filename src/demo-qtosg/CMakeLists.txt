@@ -25,8 +25,8 @@ set( SOURCES
     main.cpp
     osgwidget.h
     osgwidget.cpp
-    tabletapplication.h
-    tabletapplication.cpp
+    #tabletapplication.h
+    #tabletapplication.cpp
     mainwindow.h
     mainwindow.cpp
 )
