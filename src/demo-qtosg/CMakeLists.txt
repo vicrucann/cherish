@@ -29,6 +29,8 @@ set( SOURCES
     #tabletapplication.cpp
     mainwindow.h
     mainwindow.cpp
+    pickhandler.h
+    pickhandler.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "osgwidget.h"
+#include "pickhandler.h"
 
 #include <osg/Camera>
 #include <osg/StateSet>
@@ -52,7 +53,7 @@ OSGWidget::OSGWidget(QWidget* parent):
     view->setCamera(camera);
     view->setSceneData(root.get());
     view->addEventHandler(new osgViewer::StatsHandler);
-    //view->addEventHandler(new PickHandler);
+    view->addEventHandler(new PickHandler);
 
     osgGA::TrackballManipulator* manipulator = new osgGA::TrackballManipulator;
     manipulator->setAllowThrow( false );
