@@ -31,7 +31,6 @@
 #include <osg/ref_ptr>
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/CompositeViewer>
-//#include <osgViewer/Viewer>
 
 class OSGWidget : public QOpenGLWidget {
     Q_OBJECT
@@ -45,8 +44,8 @@ protected:
     virtual void paintGL() Q_DECL_OVERRIDE;
     virtual void resizeGL(int w, int h) Q_DECL_OVERRIDE;
 
-    virtual void keyPressEvent(QKeyEvent* event);
-    virtual void keyReleaseEvent(QKeyEvent* event);
+    //virtual void keyPressEvent(QKeyEvent* event);
+    //virtual void keyReleaseEvent(QKeyEvent* event);
 
     virtual void mouseMoveEvent(QMouseEvent* event);
     virtual void mousePressEvent(QMouseEvent* event);
@@ -62,11 +61,12 @@ private:
     virtual void onResize(int w, int h);
 
     osgGA::EventQueue* getEventQueue() const;
+    //void processSelection();
 
+    /// everything will be drawn on _graphicsWindow
     osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _graphicsWindow;
-    // the decision about composite viewer or not
-    // may be passed by a template
-    // also there could be default composite viewers which would consist of 3 most common views
+
+    /// there could be default composite viewers which would consist of 3 most common views
     osg::ref_ptr<osgViewer::CompositeViewer> _viewer;
 
     //QTabletEvent::PointerType _pointer;
@@ -74,7 +74,7 @@ private:
 
     bool _selectionActive, _selectionFinished;
     QPoint _selectionStart, _selectionEnd;
-    void processSelection();
+
     int _nview;
 
 }; // class OSGWidget
