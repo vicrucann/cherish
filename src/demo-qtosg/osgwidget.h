@@ -36,7 +36,7 @@
 class OSGWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
-    OSGWidget(QWidget* parent = 0);
+    OSGWidget(QWidget* parent = 0, const int nview = 1);
     virtual ~OSGWidget();
 
     //virtual void setTabletDevice(QTabletEvent::TabletDevice device) { _device = device; }
@@ -75,6 +75,7 @@ private:
     bool _selectionActive, _selectionFinished;
     QPoint _selectionStart, _selectionEnd;
     void processSelection();
+    int _nview;
 
 }; // class OSGWidget
 
