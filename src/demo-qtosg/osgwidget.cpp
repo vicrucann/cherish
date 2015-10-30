@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "osgwidget.h"
-//#include "pickhandler.h"
+#include "pickhandler.h"
 
 #include <osg/Camera>
 #include <osg/StateSet>
@@ -68,26 +68,26 @@ OSGWidget::OSGWidget(QWidget* parent, const int nview):
         sideCamera->setProjectionMatrixAsPerspective( 30.f, aspectRatio, 1.f, 1000.f );
         sideCamera->setGraphicsContext( _graphicsWindow );
 
+        osgGA::TrackballManipulator* sideManipulator = new osgGA::TrackballManipulator;
+        sideManipulator->setAllowThrow( false );
+
         osgViewer::View* sideView = new osgViewer::View;
         sideView->setCamera( sideCamera );
         sideView->setSceneData( root.get() );
         sideView->addEventHandler( new osgViewer::StatsHandler );
-        sideView->setCameraManipulator( new osgGA::TrackballManipulator );
+        sideView->setCameraManipulator( sideManipulator );
         _viewer->addView(sideView);
     }
 
     _viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
     _viewer->realize();
 
-    // Widget will get the keyboard events
-    // It is not set by default
+    /// Widget will get the keyboard events. It is not set by default.
     this->setFocusPolicy(Qt::StrongFocus);
-    this->setMinimumSize(512, 512);
+    this->setMinimumSize(256*_nview, 256);
 
-    // Widget will get mouse move events even
-    // with no mouse button pressed
-    // It is required so that graphics window
-    // can switch viewports properly
+    /// Widget will get mouse move events even with no mouse button pressed.
+    /// It is required so that graphics window can switch viewports properly.
     this->setMouseTracking(true);
 }
 
@@ -98,7 +98,7 @@ OSGWidget::~OSGWidget(){}
 /// system. They are enumerated in counter-clockwise order,
 /// starting from the lower-right quadrant that corresponds to
 /// the default case.
-/*QRect makeRectangle(const QPoint& first, const QPoint& second){
+QRect makeRectangle(const QPoint& first, const QPoint& second){
     if( second.x() >= first.x() && second.y() >= first.y() )
         return QRect( first, second );
     else if( second.x() < first.x() && second.y() >= first.y() )
@@ -110,18 +110,18 @@ OSGWidget::~OSGWidget(){}
 
     // should never reach this point
     return QRect();
-}*/
+}
 
 void OSGWidget::paintEvent(QPaintEvent *pev){
     this->makeCurrent();
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
     this->paintGL();
-    /*if (_selectionActive && !_selectionFinished){
+    if (_selectionActive && !_selectionFinished){
         painter.setPen( Qt::black );
         painter.setBrush( Qt::transparent );
         painter.drawRect(makeRectangle(_selectionStart, _selectionEnd));
-    }*/
+    }
     painter.end();
     this->doneCurrent();
 }
@@ -139,8 +139,8 @@ void OSGWidget::resizeGL(int w, int h){
 /// Does keyboard press processing, for example:
 /// key "s" is for selection
 /// key "d" is for saving the scene data
-/// key "h" is for going to "home" setting
-/*void OSGWidget::keyPressEvent(QKeyEvent *event){
+/// key "h" is for going to "home" camera setting
+void OSGWidget::keyPressEvent(QKeyEvent *event){
     QString keystr = event->text();
     const char* keydat = keystr.toLocal8Bit().data();
 
@@ -156,13 +156,13 @@ void OSGWidget::resizeGL(int w, int h){
         return;
     }
     this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KeySymbol (*keydat));
-}*/
+}
 
-/*void OSGWidget::keyReleaseEvent(QKeyEvent *event){
+void OSGWidget::keyReleaseEvent(QKeyEvent *event){
     QString keystr = event->text();
     const char* keydat = keystr.toLocal8Bit().data();
     this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KeySymbol(*keydat));
-}*/
+}
 
 void OSGWidget::mouseMoveEvent(QMouseEvent *event){
     if (_selectionActive && event->buttons() & Qt::LeftButton){
@@ -212,10 +212,10 @@ void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
     // Selection processing: Store end position and obtain selected objects
     // through polytope intersection.
     if( _selectionActive && event->button() == Qt::LeftButton ) {
-        /*_selectionEnd      = event->pos();
+        _selectionEnd      = event->pos();
         _selectionFinished = true; // Will force the painter to stop drawing the
         /// selection rectangle
-        this->processSelection();*/
+        this->processSelection();
     }
 
     // Normal processing
@@ -307,7 +307,7 @@ osgGA::EventQueue* OSGWidget::getEventQueue() const {
         throw std::runtime_error( "Unable to obtain valid event queue");
 }
 
-/*void OSGWidget::processSelection(){
+void OSGWidget::processSelection(){
     QRect selectionRectangle = makeRectangle( _selectionStart, _selectionEnd );
     int widgetHeight = this->height();
     double xMin = selectionRectangle.left();
@@ -346,4 +346,4 @@ osgGA::EventQueue* OSGWidget::getEventQueue() const {
         //for( auto&& intersection : intersections )
         //    qDebug() << "Selected a drawable:" << QString::fromStdString( intersection.drawable->getName() );
     }
-}*/
+}

@@ -8,18 +8,23 @@
  * Relies on builtin event system by Qt.
  * The widget contains an instance osgViewer::GraphicsWindowEmbedded,
  * whose graphics context could be attached to any number of cameras.
- * The cameras could be attached to some osgViewer::CompositeViewer instance.
+ * In turn, the cameras are attached to some
+ * osgViewer::CompositeViewer instance.
  *
  * The class requires minimum of: Qt 5.4, CMake 2.8.11, OpenSceneGraph 3.2
  *
- * Some usefule links:
- * The class is built based on the article found at
+ * References
+ * The class is built based on the official OSG and QT tutorials,
+ * as well as other articles:
+ * OSG example: OSGWindows
+ * OSG example: OSGKeyboardMouse
+ * OSG example: OSGCompositeViewer
+ * OSG example: OSGPick
+ * Article "Making Qt and OpenSceneGraph play nice":
  * <http://bastian.rieck.ru/blog/posts/2014/qt_and_openscenegraph/>
- * To extend the OSGWidget for threaded OpenGL:
+ * Article: "To extend the OSGWidget for threaded OpenGL":
  * <http://blog.qt.io/blog/2011/06/03/threaded-opengl-in-4-8/>.
- * The incorporation of Wacom tablet pen events is based on:
- * <http://doc.qt.io/qt-5/qtwidgets-widgets-tablet-example.html>.
- * All accessed Oct 2015.
+ * Qt example: TabletApplication
  *
  * Victoria Rudakova, Yale Graphics, 2015
  * <victoria.rudakova@yale.edu>
@@ -35,7 +40,7 @@
 class OSGWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
-    OSGWidget(QWidget* parent = 0, const int nview = 1);
+    OSGWidget(QWidget* parent = 0, const int nview = 2);
     virtual ~OSGWidget();
 
     //virtual void setTabletDevice(QTabletEvent::TabletDevice device) { _device = device; }
@@ -44,8 +49,8 @@ protected:
     virtual void paintGL() Q_DECL_OVERRIDE;
     virtual void resizeGL(int w, int h) Q_DECL_OVERRIDE;
 
-    //virtual void keyPressEvent(QKeyEvent* event);
-    //virtual void keyReleaseEvent(QKeyEvent* event);
+    virtual void keyPressEvent(QKeyEvent* event);
+    virtual void keyReleaseEvent(QKeyEvent* event);
 
     virtual void mouseMoveEvent(QMouseEvent* event);
     virtual void mousePressEvent(QMouseEvent* event);
@@ -61,12 +66,13 @@ private:
     virtual void onResize(int w, int h);
 
     osgGA::EventQueue* getEventQueue() const;
-    //void processSelection();
+    void processSelection();
 
     /// everything will be drawn on _graphicsWindow
     osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _graphicsWindow;
 
     /// there could be default composite viewers which would consist of 3 most common views
+    /// read Viewer vs CompositeViewer to better understand which to use
     osg::ref_ptr<osgViewer::CompositeViewer> _viewer;
 
     //QTabletEvent::PointerType _pointer;
