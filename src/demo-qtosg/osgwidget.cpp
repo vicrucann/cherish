@@ -22,8 +22,6 @@
 #include <QPainter>
 #include <QWheelEvent>
 
-
-
 OSGWidget::OSGWidget(QWidget* parent):
     QOpenGLWidget(parent),
     _graphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(),this->height()) ),
@@ -49,15 +47,15 @@ OSGWidget::OSGWidget(QWidget* parent):
     camera->setProjectionMatrixAsPerspective( 30.f, aspectRatio, 1.f, 1000.f );
     camera->setGraphicsContext( _graphicsWindow );
 
+    osgGA::TrackballManipulator* manipulator = new osgGA::TrackballManipulator;
+    manipulator->setAllowThrow( false );
+
     osgViewer::View* view = new osgViewer::View;
+    view->setName("Single view");
     view->setCamera(camera);
     view->setSceneData(root.get());
     view->addEventHandler(new osgViewer::StatsHandler);
     view->addEventHandler(new PickHandler);
-
-    osgGA::TrackballManipulator* manipulator = new osgGA::TrackballManipulator;
-    manipulator->setAllowThrow( false );
-
     view->setCameraManipulator(manipulator);
 
     // code for side view
@@ -115,7 +113,6 @@ void OSGWidget::paintEvent(QPaintEvent *pev){
     this->makeCurrent();
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-
     this->paintGL();
     if (_selectionActive && !_selectionFinished){
         painter.setPen( Qt::black );
@@ -132,7 +129,6 @@ void OSGWidget::paintGL(){
 
 void OSGWidget::resizeGL(int w, int h){
     this->getEventQueue()->windowResize(this->x(), this->y(), w, h);
-    //this->resize(QSize(w,h));
     _graphicsWindow->resized(this->x(), this->y(), w, h);
     this->onResize(w, h);
 }
@@ -185,34 +181,24 @@ void OSGWidget::mousePressEvent( QMouseEvent* event )
         _selectionEnd      = _selectionStart; // Deletes the old selection
         _selectionFinished = false;           // As long as this is set, the rectangle will be drawn
     }
-
-    // Normal processing
-    else
-    {
+    else {     // Normal processing
         // 1 = left mouse button
         // 2 = middle mouse button
         // 3 = right mouse button
-
         unsigned int button = 0;
-
-        switch( event->button() )
-        {
+        switch( event->button() ) {
         case Qt::LeftButton:
             button = 1;
             break;
-
         case Qt::MiddleButton:
             button = 2;
             break;
-
         case Qt::RightButton:
             button = 3;
             break;
-
         default:
             break;
         }
-
         this->getEventQueue()->mouseButtonPress( static_cast<float>( event->x() ),
                                                  static_cast<float>( event->y() ),
                                                  button );
@@ -223,42 +209,32 @@ void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
 {
     // Selection processing: Store end position and obtain selected objects
     // through polytope intersection.
-    if( _selectionActive && event->button() == Qt::LeftButton )
-    {
+    if( _selectionActive && event->button() == Qt::LeftButton ) {
         _selectionEnd      = event->pos();
         _selectionFinished = true; // Will force the painter to stop drawing the
         // selection rectangle
-
         this->processSelection();
     }
 
     // Normal processing
-    else
-    {
+    else  {
         // 1 = left mouse button
         // 2 = middle mouse button
         // 3 = right mouse button
-
         unsigned int button = 0;
-
-        switch( event->button() )
-        {
+        switch( event->button() ) {
         case Qt::LeftButton:
             button = 1;
             break;
-
         case Qt::MiddleButton:
             button = 2;
             break;
-
         case Qt::RightButton:
             button = 3;
             break;
-
         default:
             break;
         }
-
         this->getEventQueue()->mouseButtonRelease( static_cast<float>( event->x() ),
                                                    static_cast<float>( event->y() ),
                                                    button );
@@ -270,25 +246,22 @@ void OSGWidget::wheelEvent( QWheelEvent* event )
     // Ignore wheel events as long as the selection is active.
     if( _selectionActive )
         return;
-
     event->accept();
     int delta = event->delta();
-
     osgGA::GUIEventAdapter::ScrollingMotion motion = delta > 0 ?   osgGA::GUIEventAdapter::SCROLL_UP
                                                                  : osgGA::GUIEventAdapter::SCROLL_DOWN;
-
     this->getEventQueue()->mouseScroll( motion );
 }
 
-bool OSGWidget::event( QEvent* event )
-{
+/// A general function for any event.
+/// It ensures that OSGWidget is always repainted
+/// after the user's interactions.
+/// It is put into an event handler for ensuring to
+/// include all the possible events, and also for
+/// preventing code duplicates.
+bool OSGWidget::event( QEvent* event ) {
     bool handled = QOpenGLWidget::event( event );
-
-    // This ensures that the OSG widget is always going to be repainted after the
-    // user performed some interaction. Doing this in the event handler ensures
-    // that we don't forget about some event and prevents duplicate code.
-    switch( event->type() )
-    {
+    switch( event->type() ) {
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
     case QEvent::MouseButtonDblClick:
@@ -298,43 +271,33 @@ bool OSGWidget::event( QEvent* event )
     case QEvent::Wheel:
         this->update();
         break;
-
     default:
         break;
     }
-
     return handled;
 }
 
-void OSGWidget::onHome()
-{
+/// Return to the very initial "home" view.
+void OSGWidget::onHome() {
     osgViewer::ViewerBase::Views views;
     _viewer->getViews( views );
-
-    for( std::size_t i = 0; i < views.size(); i++ )
-    {
+    for( std::size_t i = 0; i < views.size(); i++ ) {
         osgViewer::View* view = views.at(i);
         view->home();
     }
 }
 
-void OSGWidget::onResize( int w, int h )
-{
+void OSGWidget::onResize( int w, int h ) {
     std::vector<osg::Camera*> cameras;
     _viewer->getCameras( cameras );
-
     assert( cameras.size() == 1 );
-
     cameras[0]->setViewport( 0, 0, this->width(), this->height() );
-
     //cameras[0]->setViewport( 0, 0, this->width() / 2, this->height() );
     //cameras[1]->setViewport( this->width() / 2, 0, this->width() / 2, this->height() );
 }
 
-osgGA::EventQueue* OSGWidget::getEventQueue() const
-{
+osgGA::EventQueue* OSGWidget::getEventQueue() const {
     osgGA::EventQueue* eventQueue = _graphicsWindow->getEventQueue();
-
     if( eventQueue )
         return eventQueue;
     else
@@ -380,5 +343,4 @@ void OSGWidget::processSelection(){
         //for( auto&& intersection : intersections )
         //    qDebug() << "Selected a drawable:" << QString::fromStdString( intersection.drawable->getName() );
     }
-
 }
