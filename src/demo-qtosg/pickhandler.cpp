@@ -24,8 +24,8 @@ bool PickHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdap
         camera->accept( iv );
         if( !intersector->containsIntersections() )
             return false;
-        auto intersections = intersector->getIntersections();
-        std::cout << "Got " << intersections.size() << " intersections:\n";
+        //auto intersections = intersector->getIntersections();
+        //std::cout << "Got " << intersections.size() << " intersections:\n";
         // c++11
         //for( auto&& intersection : intersections )
         //    std::cout << "  - Local intersection point = " << intersection.localIntersectionPoint << "\n";

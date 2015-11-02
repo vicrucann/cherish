@@ -340,7 +340,7 @@ void OSGWidget::processSelection(){
         if( !polytopeIntersector->containsIntersections() )
             continue;
 
-        auto intersections = polytopeIntersector->getIntersections();
+        //auto intersections = polytopeIntersector->getIntersections();
 
         // c++11 only
         //for( auto&& intersection : intersections )
