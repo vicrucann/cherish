@@ -20,11 +20,11 @@
  * OSG example: OSGKeyboardMouse
  * OSG example: OSGCompositeViewer
  * OSG example: OSGPick
+ * Qt example: TabletApplication
  * Article "Making Qt and OpenSceneGraph play nice":
  * <http://bastian.rieck.ru/blog/posts/2014/qt_and_openscenegraph/>
  * Article: "To extend the OSGWidget for threaded OpenGL":
  * <http://blog.qt.io/blog/2011/06/03/threaded-opengl-in-4-8/>.
- * Qt example: TabletApplication
  *
  * Victoria Rudakova, Yale Graphics, 2015
  * <victoria.rudakova@yale.edu>
@@ -43,11 +43,11 @@ public:
     OSGWidget(QWidget* parent = 0, const int nview = 2);
     virtual ~OSGWidget();
 
-    //virtual void setTabletDevice(QTabletEvent::TabletDevice device) { _device = device; }
+    virtual void setTabletDevice(QTabletEvent::TabletDevice device) { _tabletDevice = device; }
 protected:
-    virtual void paintEvent(QPaintEvent* pev) Q_DECL_OVERRIDE;
-    virtual void paintGL() Q_DECL_OVERRIDE;
-    virtual void resizeGL(int w, int h) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent* pev) Q_DECL_OVERRIDE;
+    void paintGL() Q_DECL_OVERRIDE;
+    void resizeGL(int w, int h) Q_DECL_OVERRIDE;
 
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void keyReleaseEvent(QKeyEvent* event);
@@ -59,7 +59,7 @@ protected:
 
     virtual bool event(QEvent* event);
 
-    //virtual void tabletEvent(QTabletEvent* ev) Q_DECL_OVERRIDE;
+    void tabletEvent(QTabletEvent* event) Q_DECL_OVERRIDE;
 
 private:
     virtual void onHome();
@@ -76,12 +76,13 @@ private:
     osg::ref_ptr<osgViewer::CompositeViewer> _viewer;
 
     //QTabletEvent::PointerType _pointer;
-    //QTabletEvent::TabletDevice _device;
+    QTabletEvent::TabletDevice _tabletDevice;
 
     bool _selectionActive, _selectionFinished;
     QPoint _selectionStart, _selectionEnd;
 
     int _nview;
+    bool _deviceDown; // pen touches the device?
 
 }; // class OSGWidget
 

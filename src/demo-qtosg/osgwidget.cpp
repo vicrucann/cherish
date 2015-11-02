@@ -28,7 +28,9 @@ OSGWidget::OSGWidget(QWidget* parent, const int nview):
     _viewer(new osgViewer::CompositeViewer),
     _selectionActive(false),
     _selectionFinished (true),
-    _nview(nview)
+    _nview(nview),
+    _tabletDevice(QTabletEvent::Stylus),
+    _deviceDown(false)
 {
     osg::ref_ptr<osg::Node> root = osgDB::readNodeFile("../demo-osg/cow.osgt");
 
@@ -255,12 +257,18 @@ void OSGWidget::wheelEvent( QWheelEvent* event )
     this->getEventQueue()->mouseScroll( motion );
 }
 
-/// A general function for any event.
-/// It ensures that OSGWidget is always repainted
-/// after the user's interactions.
-/// It is put into an event handler for ensuring to
-/// include all the possible events, and also for
-/// preventing code duplicates.
+void OSGWidget::tabletEvent(QTabletEvent *event){
+    std::cout << "event type: " << (int)event->type() << std::endl;
+    switch (event->type()){
+
+    }
+}
+
+/// A general function for any event. It ensures that OSGWidget is always repainted
+/// after the user's interactions. It is put into an event handler for ensuring to
+/// include all the possible events, and also for preventing code duplicates.
+/// The tablet events are sent to tabletEvent() if the device is used (this
+/// could be processed in MainWindow?).
 bool OSGWidget::event( QEvent* event ) {
     bool handled = QOpenGLWidget::event( event );
     switch( event->type() ) {
@@ -272,6 +280,9 @@ bool OSGWidget::event( QEvent* event ) {
     case QEvent::MouseMove:
     case QEvent::Wheel:
         this->update();
+        break;
+    case (QEvent::TabletEnterProximity || QEvent::TabletLeaveProximity  ) :
+        this->setTabletDevice(static_cast<QTabletEvent*>(event)->device());
         break;
     default:
         break;
