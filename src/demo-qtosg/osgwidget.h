@@ -42,8 +42,9 @@ class OSGWidget : public QOpenGLWidget {
 public:
     OSGWidget(QWidget* parent = 0, const int nview = 2);
     virtual ~OSGWidget();
-
-    virtual void setTabletDevice(QTabletEvent::TabletDevice device) { _tabletDevice = device; }
+public slots:
+    void setTabletDevice(QTabletEvent::TabletDevice device) { _tabletDevice = device; }
+    void getTabletDevice(bool active);
 protected:
     void paintEvent(QPaintEvent* pev) Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE;
@@ -81,9 +82,9 @@ private:
     bool _selectionActive, _selectionFinished;
     QPoint _selectionStart, _selectionEnd;
 
-    int _nview;
+    int _nview; // number of views per CompositeViewer
     bool _deviceDown; // pen touches the device?
-
+    bool _deviceActive;
 }; // class OSGWidget
 
 

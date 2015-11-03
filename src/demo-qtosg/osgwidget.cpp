@@ -29,12 +29,13 @@ OSGWidget::OSGWidget(QWidget* parent, const int nview):
     _selectionActive(false),
     _selectionFinished (true),
     _nview(nview),
-    _tabletDevice(QTabletEvent::Stylus),
-    _deviceDown(false)
+    _tabletDevice(QTabletEvent::Stylus), // http://doc.qt.io/qt-5/qtabletevent.html#TabletDevice-enum
+    _deviceDown(false),
+    _deviceActive(false)
 {
     osg::ref_ptr<osg::Node> root = osgDB::readNodeFile("../demo-osg/cow.osgt");
 
-    // Set material for basic lighting and enable depth tests. Else, the sphere
+    // Set material for basic lighting and enable depth tests. Or
     // will suffer from rendering errors.
     osg::StateSet* stateSet = root->getOrCreateStateSet();
     osg::Material* material = new osg::Material;
@@ -95,6 +96,11 @@ OSGWidget::OSGWidget(QWidget* parent, const int nview):
 
 OSGWidget::~OSGWidget(){}
 
+void OSGWidget::getTabletDevice(bool active){
+    std::cout << "OSGWidget, device: " << active << std::endl;
+    _deviceActive = active;
+}
+
 /// relative to the first point, the second point may be in
 /// either one of the four quadrants of an Euclidian coordinate
 /// system. They are enumerated in counter-clockwise order,
@@ -139,7 +145,7 @@ void OSGWidget::resizeGL(int w, int h){
 }
 
 /// Does keyboard press processing, for example:
-/// key "s" is for selection
+/// key "s" is for selection mode (draws rectangles)
 /// key "d" is for saving the scene data
 /// key "h" is for going to "home" camera setting
 void OSGWidget::keyPressEvent(QKeyEvent *event){
@@ -172,8 +178,7 @@ void OSGWidget::mouseMoveEvent(QMouseEvent *event){
         this->update();
     }
     else {
-        this->getEventQueue()->mouseMotion(static_cast<float>(event->x()),
-                                           static_cast<float>(event->y()));
+        this->getEventQueue()->mouseMotion(static_cast<float>(event->x()), static_cast<float>(event->y()));
     }
 }
 
@@ -185,27 +190,23 @@ void OSGWidget::mousePressEvent( QMouseEvent* event )
         _selectionEnd      = _selectionStart; // Deletes the old selection
         _selectionFinished = false;           // As long as this is set, the rectangle will be drawn
     }
-    else {     // Normal processing
-        // 1 = left mouse button
-        // 2 = middle mouse button
-        // 3 = right mouse button
+    else {
+        std::cout << "mouse pressed" << std::endl;
         unsigned int button = 0;
         switch( event->button() ) {
         case Qt::LeftButton:
-            button = 1;
+            button = 1; // 1 = left mouse button
             break;
         case Qt::MiddleButton:
-            button = 2;
+            button = 2; // 2 = middle mouse button
             break;
         case Qt::RightButton:
-            button = 3;
+            button = 3; // 3 = right mouse button
             break;
         default:
             break;
         }
-        this->getEventQueue()->mouseButtonPress( static_cast<float>( event->x() ),
-                                                 static_cast<float>( event->y() ),
-                                                 button );
+        this->getEventQueue()->mouseButtonPress(static_cast<float>(event->x()), static_cast<float>(event->y()), button);
     }
 }
 
@@ -219,34 +220,29 @@ void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
         /// selection rectangle
         this->processSelection();
     }
-
-    // Normal processing
-    else  {
-        // 1 = left mouse button
-        // 2 = middle mouse button
-        // 3 = right mouse button
+    else {
+        std::cout << "mouse released" << std::endl;
         unsigned int button = 0;
         switch( event->button() ) {
         case Qt::LeftButton:
-            button = 1;
+            button = 1; // 1 = left mouse button
             break;
         case Qt::MiddleButton:
-            button = 2;
+            button = 2; // 2 = middle mouse button
             break;
         case Qt::RightButton:
-            button = 3;
+            button = 3; // 3 = right mouse button
             break;
         default:
             break;
         }
-        this->getEventQueue()->mouseButtonRelease( static_cast<float>( event->x() ),
-                                                   static_cast<float>( event->y() ),
-                                                   button );
+        this->getEventQueue()->mouseButtonRelease(static_cast<float>(event->x()), static_cast<float>(event->y()), button);
     }
 }
 
 void OSGWidget::wheelEvent( QWheelEvent* event )
 {
+    std::cout << "mouse wheeled" << std::endl;
     // Ignore wheel events as long as the selection is active.
     if( _selectionActive )
         return;
@@ -258,9 +254,45 @@ void OSGWidget::wheelEvent( QWheelEvent* event )
 }
 
 void OSGWidget::tabletEvent(QTabletEvent *event){
-    std::cout << "event type: " << (int)event->type() << std::endl;
+    unsigned int button = 0;
+    //std::cout << "_buttons type: " << (int)event->buttons() << std::endl;
     switch (event->type()){
-
+    case QEvent::TabletPress:
+        std::cout << std::endl << "Tablet pressed" << std::endl;
+        //if (!_deviceDown) { }
+        switch(event->buttons()) {
+        //case 1: // touch and no buttons are pressed, default: rotate
+        //case 2: // no touch and lower button pressed, default: zoom
+        //case 3: // touch and lower button pressed, default: pan
+        //    button = 1; // redefined: rotate
+        //    break;
+        //case 4: // no touch and upper button pressed, default: rotate
+        //case 5: // touch and upper button pressed, default: rotate
+        default:
+            break;
+        }
+        this->getEventQueue()->mouseButtonPress(static_cast<float>(event->x()), static_cast<float>(event->y()), button);
+        break;
+    case QEvent::TabletRelease:
+        std::cout << "Tablet released" << std::endl << std::endl;
+        //if (_deviceDown){ }
+        switch(event->buttons()) {
+        //case 1: // touch and no buttons are pressed, default: rotate
+        //case 2: // no touch and lower button pressed, default: zoom
+        //case 3: // touch and lower button pressed, default: pan
+        //    button = 1; // redefined: rotate
+        //    break;
+        //case 4: // no touch and upper button pressed, default: rotate
+        //case 5: // touch and upper button pressed, default: rotate
+        default:
+            break;
+        }
+        this->getEventQueue()->mouseButtonRelease(static_cast<float>(event->x()), static_cast<float>(event->y()), button);
+        break;
+    case QEvent::TabletMove:
+        //if (_deviceDown){ }
+        this->getEventQueue()->mouseMotion(static_cast<float>(event->x()), static_cast<float>(event->y()));
+        break;
     }
 }
 
@@ -272,6 +304,23 @@ void OSGWidget::tabletEvent(QTabletEvent *event){
 bool OSGWidget::event( QEvent* event ) {
     bool handled = QOpenGLWidget::event( event );
     switch( event->type() ) {
+    case QEvent::TabletMove:
+        event->accept();
+        //tabletEvent(static_cast<QTabletEvent*>(event));
+        this->update();
+        break;
+    case QEvent::TabletPress:
+        event->accept();
+        _deviceDown = true;
+        //tabletEvent(static_cast<QTabletEvent*>(event));
+        this->update();
+        break;
+    case QEvent::TabletRelease:
+        event->accept();
+        _deviceDown = false;
+        //tabletEvent(static_cast<QTabletEvent*>(event));
+        this->update();
+        break;
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
     case QEvent::MouseButtonDblClick:
@@ -280,9 +329,6 @@ bool OSGWidget::event( QEvent* event ) {
     case QEvent::MouseMove:
     case QEvent::Wheel:
         this->update();
-        break;
-    case (QEvent::TabletEnterProximity || QEvent::TabletLeaveProximity  ) :
-        this->setTabletDevice(static_cast<QTabletEvent*>(event)->device());
         break;
     default:
         break;

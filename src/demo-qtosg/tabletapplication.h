@@ -16,16 +16,19 @@
  */
 
 #include <QApplication>
+#include <QTabletEvent>
 #include "osgwidget.h"
 
 class TabletApplication : public QApplication {
     Q_OBJECT
 public:
     TabletApplication(int& argv, char** argc): QApplication(argv, argc) {}
+signals:
+    void tabletProximity(bool near, QTabletEvent::PointerType pointer);
+    void sendTabletDevice(bool active);
+protected:
     bool event(QEvent* event) Q_DECL_OVERRIDE;
-    void setOSGWidget(OSGWidget* osgwid){ _osgwid = osgwid; }
 private:
-    OSGWidget* _osgwid;
 };
 
 #endif // TABLETAPPLICATION

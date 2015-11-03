@@ -13,11 +13,15 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
     ~MainWindow();
+public slots:
+    void getTabletDevice(bool active);
 private slots:
     void onCreateView();
-
+signals:
+    void sendTabletDevice(bool active);
 private:
     QMdiArea* _mdiArea;
+    bool _deviceActive;
 }; // class MainWindow
 
 #endif // MAINWINDOW
