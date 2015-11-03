@@ -97,8 +97,8 @@ OSGWidget::OSGWidget(QWidget* parent, const int nview):
 OSGWidget::~OSGWidget(){}
 
 void OSGWidget::getTabletDevice(bool active){
-    std::cout << "OSGWidget, device: " << active << std::endl;
     _deviceActive = active;
+    std::cout << "device status: " << active << std::endl;
 }
 
 /// relative to the first point, the second point may be in
@@ -177,7 +177,7 @@ void OSGWidget::mouseMoveEvent(QMouseEvent *event){
         _selectionEnd = event->pos();
         this->update();
     }
-    else {
+    else if (!_deviceDown || !_deviceActive) {
         this->getEventQueue()->mouseMotion(static_cast<float>(event->x()), static_cast<float>(event->y()));
     }
 }
@@ -190,7 +190,7 @@ void OSGWidget::mousePressEvent( QMouseEvent* event )
         _selectionEnd      = _selectionStart; // Deletes the old selection
         _selectionFinished = false;           // As long as this is set, the rectangle will be drawn
     }
-    else {
+    else if (!_deviceDown || !_deviceActive) {
         std::cout << "mouse pressed" << std::endl;
         unsigned int button = 0;
         switch( event->button() ) {
@@ -220,8 +220,8 @@ void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
         /// selection rectangle
         this->processSelection();
     }
-    else {
-        std::cout << "mouse released" << std::endl;
+    else if (!_deviceDown && !_deviceActive) {
+        std::cout << "mouse released, device status: " << !_deviceDown << " " << !_deviceActive << std::endl;
         unsigned int button = 0;
         switch( event->button() ) {
         case Qt::LeftButton:
@@ -263,9 +263,9 @@ void OSGWidget::tabletEvent(QTabletEvent *event){
         switch(event->buttons()) {
         //case 1: // touch and no buttons are pressed, default: rotate
         //case 2: // no touch and lower button pressed, default: zoom
-        //case 3: // touch and lower button pressed, default: pan
-        //    button = 1; // redefined: rotate
-        //    break;
+        case 3: // touch and lower button pressed, default: pan
+            button = 1; // redefined: rotate
+            break;
         //case 4: // no touch and upper button pressed, default: rotate
         //case 5: // touch and upper button pressed, default: rotate
         default:
@@ -276,12 +276,15 @@ void OSGWidget::tabletEvent(QTabletEvent *event){
     case QEvent::TabletRelease:
         std::cout << "Tablet released" << std::endl << std::endl;
         //if (_deviceDown){ }
-        switch(event->buttons()) {
+        switch(event->button()) { // buttons() will not work here, so have to use button()
+        /// 1: no button released, whether in the air or in touch
+        /// 2: lower button released, whether in the air or in touch
+        /// 4: bottom button released, whether in the air or in touch
         //case 1: // touch and no buttons are pressed, default: rotate
         //case 2: // no touch and lower button pressed, default: zoom
-        //case 3: // touch and lower button pressed, default: pan
-        //    button = 1; // redefined: rotate
-        //    break;
+        case 2: // touch and lower button pressed, default: pan
+            button = 1; // redefined: rotate
+            break;
         //case 4: // no touch and upper button pressed, default: rotate
         //case 5: // touch and upper button pressed, default: rotate
         default:
@@ -317,9 +320,9 @@ bool OSGWidget::event( QEvent* event ) {
         break;
     case QEvent::TabletRelease:
         event->accept();
-        _deviceDown = false;
         //tabletEvent(static_cast<QTabletEvent*>(event));
         this->update();
+        _deviceDown = false;
         break;
     case QEvent::KeyPress:
     case QEvent::KeyRelease:

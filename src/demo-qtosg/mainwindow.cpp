@@ -31,6 +31,5 @@ void MainWindow::onCreateView(){
 
 void MainWindow::getTabletDevice(bool active){
     _deviceActive = active;
-    std::cout << "MainWindow active: " << active << std::endl;
     emit sendTabletDevice(active);
 }
