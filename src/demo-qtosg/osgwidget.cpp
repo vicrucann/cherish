@@ -195,13 +195,13 @@ void OSGWidget::mousePressEvent( QMouseEvent* event )
         unsigned int button = 0;
         switch( event->button() ) {
         case Qt::LeftButton:
-            button = 1; // 1 = left mouse button
+            button = 1;
             break;
         case Qt::MiddleButton:
-            button = 2; // 2 = middle mouse button
+            button = 2;
             break;
         case Qt::RightButton:
-            button = 3; // 3 = right mouse button
+            button = 3;
             break;
         default:
             break;
@@ -210,28 +210,25 @@ void OSGWidget::mousePressEvent( QMouseEvent* event )
     }
 }
 
-void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
-{
+void OSGWidget::mouseReleaseEvent(QMouseEvent* event) {
     // Selection processing: Store end position and obtain selected objects
     // through polytope intersection.
     if( _selectionActive && event->button() == Qt::LeftButton ) {
         _selectionEnd      = event->pos();
-        _selectionFinished = true; // Will force the painter to stop drawing the
-        /// selection rectangle
+        _selectionFinished = true; // Will force the painter to stop drawing the selection rectangle
         this->processSelection();
     }
-    else if (!_deviceDown && !_deviceActive) {
-        std::cout << "mouse released, device status: " << !_deviceDown << " " << !_deviceActive << std::endl;
+    else if (!_deviceDown || !_deviceActive) {
         unsigned int button = 0;
         switch( event->button() ) {
         case Qt::LeftButton:
-            button = 1; // 1 = left mouse button
+            button = 1;
             break;
         case Qt::MiddleButton:
-            button = 2; // 2 = middle mouse button
+            button = 2;
             break;
         case Qt::RightButton:
-            button = 3; // 3 = right mouse button
+            button = 3;
             break;
         default:
             break;
@@ -242,7 +239,6 @@ void OSGWidget::mouseReleaseEvent(QMouseEvent* event)
 
 void OSGWidget::wheelEvent( QWheelEvent* event )
 {
-    std::cout << "mouse wheeled" << std::endl;
     // Ignore wheel events as long as the selection is active.
     if( _selectionActive )
         return;
@@ -255,19 +251,25 @@ void OSGWidget::wheelEvent( QWheelEvent* event )
 
 void OSGWidget::tabletEvent(QTabletEvent *event){
     unsigned int button = 0;
-    //std::cout << "_buttons type: " << (int)event->buttons() << std::endl;
+    int osg_rotate = 1, osg_pan = 2, osg_zoom = 3;
     switch (event->type()){
     case QEvent::TabletPress:
         std::cout << std::endl << "Tablet pressed" << std::endl;
         //if (!_deviceDown) { }
         switch(event->buttons()) {
-        //case 1: // touch and no buttons are pressed, default: rotate
-        //case 2: // no touch and lower button pressed, default: zoom
-        case 3: // touch and lower button pressed, default: pan
-            button = 1; // redefined: rotate
+        ///case 1: // touch and no buttons are pressed, default: rotate
+        case 2: // no touch and lower button pressed, default: zoom
+            button = osg_rotate;
             break;
-        //case 4: // no touch and upper button pressed, default: rotate
-        //case 5: // touch and upper button pressed, default: rotate
+        case 3: // touch and lower button pressed, default: pan
+            button = osg_rotate;
+            break;
+        case 4: // no touch and upper button pressed, default: rotate
+            button = osg_pan;
+            break;
+        case 5: // touch and upper button pressed, default: rotate
+            button = osg_pan;
+            break;
         default:
             break;
         }
@@ -279,14 +281,13 @@ void OSGWidget::tabletEvent(QTabletEvent *event){
         switch(event->button()) { // buttons() will not work here, so have to use button()
         /// 1: no button released, whether in the air or in touch
         /// 2: lower button released, whether in the air or in touch
-        /// 4: bottom button released, whether in the air or in touch
-        //case 1: // touch and no buttons are pressed, default: rotate
-        //case 2: // no touch and lower button pressed, default: zoom
-        case 2: // touch and lower button pressed, default: pan
-            button = 1; // redefined: rotate
+        /// 4: top button released, whether in the air or in touch
+        case 2:
+            button = osg_rotate;
             break;
-        //case 4: // no touch and upper button pressed, default: rotate
-        //case 5: // touch and upper button pressed, default: rotate
+        case 4:
+            button = osg_pan;
+            break;
         default:
             break;
         }
