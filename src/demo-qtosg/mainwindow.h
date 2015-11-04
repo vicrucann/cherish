@@ -17,6 +17,7 @@ public slots:
     void getTabletDevice(bool active);
 private slots:
     void onCreateView();
+    void onCreateView1();
 signals:
     void sendTabletDevice(bool active);
 private:
