@@ -20,19 +20,19 @@ Currently converting the prototype version into alpha version, very active devel
     * Demos, screen shots, videos, example outputs
 
 Implementation steps:
-* (done) Make QT5.5 and OSG-3.4.0 to work together
+* (done) Make QT5.5 and OSG-3.4.0 to work together (**October 2015**)
     * (done) On demand rendering
     * (done) Read / display a 3D demo scene
     * (done) Mouse navigation: cathing Qt events and passing them to OSG for processing
     * (done) Stylus navigation
     * (done) Stylus buttons programmation: cathing tablet events in QT and passing them to OSG
-* Basic entities - display
+* Basic entities - display (**Nov 2015**)
     * Canvas
     * Strokes - entered by Stylus
     * 2D geometric forms: polylines, rectangles, circles 
     * Photos = textured canvases?
-* Basic entities - navigation
-* Building and manipulation of a scene graph
+* Basic entities - navigation (**Nov 2015**)
+* Building and manipulation of a scene graph (**Nov 2015**)
     * Add / delete a canvas
     * Switch to another canvas
     * Add / delete a stroke to a current canvas
@@ -40,22 +40,25 @@ Implementation steps:
     * Select a canvas and all it contains
     * Select two or more canvases and their contents
     * Select number of entities within one canvas
-* Advanced entity manipulation
+* Advanced entity manipulation (**Dec 2015**)
     * Create a new canvas as a copy of current
     * Push strokes from one canvas to another
     * Move a photo from one canvas to another
-* Save and load of a scene graph to disk
-* Viewport entities
+* Save and load of a scene graph to disk (**Dec 2015**)
+* Viewport entities (**Dec 2015**)
     * Window views
     * Bookmarks
-* GUI integration
-* Unit tests
-* Configuration management
-* Memory leaks detection, performance measurements, optimization (threading), other improvements
-* Bug fixing, user feedback, tuning, refactoring
-* Prepare release
-* Installers and tarballs
-* User documentation
+* GUI integration (**Jan 2016**)
+* First user tests and feedback (**Jan 2016**)
+* Unit tests (**Jan 2016**)
+* Configuration management (**Feb 2016**)
+* Memory leaks detection, performance measurements, optimization (threading), other improvements (**Feb 2016**)
+* Bug fixing, user feedback, tuning, refactoring (**March 2016**)
+* Prepare first official `beta` release (**March 2016**)
+* Installers and tarballs (**April 2016**)
+* User documentation (**Jan-April 2016**)
+* Advanced features (**April 2016**)
+    * Path animation
 
 ![Alt text](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/gui-orig.png "Prototype GUI screenshot")  
 The initial prototype screen shot.
