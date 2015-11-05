@@ -2,7 +2,7 @@
 The **dureu3d** software is a heterogeneous framework for the modeling and representation of historical structures and archaeological sites in 3D. It is designed so that to unify the currently disparate data types available (e.g. 2D images, 3D strokes entered by user, text annotations attached to 3D locations, mesh representations of buildings) and to use the strength of each to support the others. For the data processing, rather than relying on either purely automatic approaches or human input, the framework supports speculation and reasoning in the form of both. As a result, the software is capable to take as input various raw heterogeneous data source and produce a labeled, corresponded and augmented data source that can be used in variety of applications.
 
 ###### Development status
-Currently converting the prototype version into alpha version, very active development. The current state of the project is not usable yet. Planned steps: 
+Currently converting the prototype version into alpha version, very active development. The current state of the project is not usable yet. Planned characteristics: 
 * Near-future steps
     * Version control on github
     * Functional / technical specification - [manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/manual.md) file
@@ -18,6 +18,44 @@ Currently converting the prototype version into alpha version, very active devel
     * Potential developer guidelines (where documentation is incomplete, desired features, known deficiencies, etc.)
     * FAQ section or file
     * Demos, screen shots, videos, example outputs
+
+Implementation steps:
+* (done) Make QT5.5 and OSG-3.4.0 to work together
+    * (done) On demand rendering
+    * (done) Read / display a 3D demo scene
+    * (done) Mouse navigation: cathing Qt events and passing them to OSG for processing
+    * (done) Stylus navigation
+    * (done) Stylus buttons programmation: cathing tablet events in QT and passing them to OSG
+* Basic entities - display
+    * Canvas
+    * Strokes - entered by Stylus
+    * 2D geometric forms: polylines, rectangles, circles 
+    * Photos = textured canvases?
+* Basic entities - navigation
+* Building and manipulation of a scene graph
+    * Add / delete a canvas
+    * Switch to another canvas
+    * Add / delete a stroke to a current canvas
+    * Add / delete a geometric shape to a current canvas
+    * Select a canvas and all it contains
+    * Select two or more canvases and their contents
+    * Select number of entities within one canvas
+* Advanced entity manipulation
+    * Create a new canvas as a copy of current
+    * Push strokes from one canvas to another
+    * Move a photo from one canvas to another
+* Save and load of a scene graph to disk
+* Viewport entities
+    * Window views
+    * Bookmarks
+* GUI integration
+* Unit tests
+* Configuration management
+* Memory leaks detection, performance measurements, optimization (threading), other improvements
+* Bug fixing, user feedback, tuning, refactoring
+* Prepare release
+* Installers and tarballs
+* User documentation
 
 ![Alt text](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/gui-orig.png "Prototype GUI screenshot")  
 The initial prototype screen shot.
