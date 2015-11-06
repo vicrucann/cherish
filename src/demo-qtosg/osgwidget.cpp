@@ -1,6 +1,8 @@
 #include <cassert>
 #include <stdexcept>
 #include <vector>
+#include <iostream>
+#include <string>
 
 #include "osgwidget.h"
 #include "pickhandler.h"
@@ -16,13 +18,55 @@
 #include <osgGA/TrackballManipulator>
 #include <osgUtil/IntersectionVisitor>
 #include <osgUtil/PolytopeIntersector>
+#include <osg/LineWidth>
 
 #include <QDebug>
 #include <QKeyEvent>
 #include <QPainter>
 #include <QWheelEvent>
 
-OSGWidget::OSGWidget(QWidget* parent, const int nview):
+osg::Drawable* createAxis(const osg::Vec3& corner,const osg::Vec3& xdir,const osg::Vec3& ydir,const osg::Vec3& zdir)
+{
+    // set up the Geometry.
+    osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
+
+    osg::Vec3Array* coords = new osg::Vec3Array(6);
+    (*coords)[0] = corner;
+    (*coords)[1] = corner+xdir;
+    (*coords)[2] = corner;
+    (*coords)[3] = corner+ydir;
+    (*coords)[4] = corner;
+    (*coords)[5] = corner+zdir;
+
+    geom->setVertexArray(coords);
+
+    osg::Vec4 x_color(float(38)/255.0f,float(139)/255.0f,float(210)/255.0f,1.0f); // solarized blue
+    osg::Vec4 y_color(float(133)/255.0f,float(153)/255.0f,float(0)/255.0f,1.0f); // solarized green
+    osg::Vec4 z_color(float(211)/255.0f,float(54)/255.0f,float(130)/255.0f,1.0f); // solarized magenta
+
+    osg::Vec4Array* color = new osg::Vec4Array(6);
+    (*color)[0] = x_color;
+    (*color)[1] = x_color;
+    (*color)[2] = y_color;
+    (*color)[3] = y_color;
+    (*color)[4] = z_color;
+    (*color)[5] = z_color;
+
+    geom->setColorArray(color, osg::Array::BIND_PER_VERTEX);
+
+    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,6));
+
+    osg::StateSet* stateset = new osg::StateSet;
+    osg::LineWidth* linewidth = new osg::LineWidth();
+    linewidth->setWidth(4.0f);
+    stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
+    stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+    geom->setStateSet(stateset);
+
+    return geom.release();
+}
+
+OSGWidget::OSGWidget(QWidget* parent, const int nview, const std::string& fname):
     QOpenGLWidget(parent),
     _graphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(),this->height()) ),
     _viewer(new osgViewer::CompositeViewer),
@@ -33,7 +77,31 @@ OSGWidget::OSGWidget(QWidget* parent, const int nview):
     _deviceDown(false),
     _deviceActive(false)
 {
-    osg::ref_ptr<osg::Node> root = osgDB::readNodeFile("../demo-osg/cow.osgt");
+    osg::ref_ptr<osg::Group> root = new osg::Group;
+    osg::ref_ptr<osg::Node> model = osgDB::readNodeFile(fname);
+    osg::ref_ptr<osg::Geode> axes = new osg::Geode;
+    axes->addDrawable(createAxis(osg::Vec3(0.0f,0.0f,0.0f), osg::Vec3(1.0f,0.0f,0.0f),
+                                 osg::Vec3(0.0f,1.0f,0.0f), osg::Vec3(0.0f,0.0f,1.0f)));
+    if (!fname.empty() && model!=NULL)
+        root->addChild(model);
+
+    // Generated after the regualr scene is finished being drawn
+    // on the screen. Set to the absolute reference frame, and
+    // is set as a custom fixed view matrix.
+    const int hudW=50;
+    const int hudH=50;
+    osg::ref_ptr<osg::Camera> _hudCamera = new osg::Camera;
+    _hudCamera->setClearMask(GL_DEPTH_BUFFER_BIT);
+    _hudCamera->setRenderOrder(osg::Camera::POST_RENDER);
+    _hudCamera->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
+    _hudCamera->setAllowEventFocus(false);
+    //hudCamera->setViewMatrixAsLookAt();
+    _hudCamera->setViewport(0, this->height()-hudH, hudW, hudH);
+    //_hudCamera->setProjectionMatrixAsPerspective( 30.f, aspectRatio, 1.f, 1000.f);
+    _hudCamera->setClearColor(osg::Vec4(float(0)/255.0f, float(43)/255.0f,
+                                        float(54)/255.0f, 1.0f)); // solarized base03
+    _hudCamera->addChild(axes.get());
+    root->addChild(_hudCamera.get());
 
     // Set material for basic lighting and enable depth tests. Or
     // will suffer from rendering errors.
@@ -46,9 +114,10 @@ OSGWidget::OSGWidget(QWidget* parent, const int nview):
     float aspectRatio = static_cast<float>( this->width() / _nview ) / static_cast<float>( this->height() );
     osg::Camera* camera = new osg::Camera;
     camera->setViewport( 0, 0, this->width() / _nview, this->height() );
-    camera->setClearColor( osg::Vec4( 0.f, 0.f, 1.f, 1.f ) );
     camera->setProjectionMatrixAsPerspective( 30.f, aspectRatio, 1.f, 1000.f );
     camera->setGraphicsContext( _graphicsWindow );
+    camera->setClearColor(osg::Vec4(float(235)/255.0f, float(246)/255.0f,
+                                    float(227)/255.0f, 1.0f)); // solarized base3
 
     osgGA::TrackballManipulator* manipulator = new osgGA::TrackballManipulator;
     manipulator->setAllowThrow( false );
@@ -67,9 +136,10 @@ OSGWidget::OSGWidget(QWidget* parent, const int nview):
     if (_nview == 2){
         osg::Camera* sideCamera = new osg::Camera;
         sideCamera->setViewport(this->width()/_nview, 0, this->width()/_nview, this->height());
-        sideCamera->setClearColor( osg::Vec4( 0.f, 0.f, 1.f, 1.f ) );
         sideCamera->setProjectionMatrixAsPerspective( 30.f, aspectRatio, 1.f, 1000.f );
         sideCamera->setGraphicsContext( _graphicsWindow );
+        sideCamera->setClearColor(osg::Vec4(float(235)/255.0f, float(246)/255.0f,
+                                        float(227)/255.0f, 1.0f)); // solarized base3
 
         osgGA::TrackballManipulator* sideManipulator = new osgGA::TrackballManipulator;
         sideManipulator->setAllowThrow( false );
@@ -87,7 +157,7 @@ OSGWidget::OSGWidget(QWidget* parent, const int nview):
 
     /// Widget will get the keyboard events. It is not set by default.
     this->setFocusPolicy(Qt::StrongFocus);
-    this->setMinimumSize(256*_nview, 256);
+    this->setMinimumSize(512*_nview, 512);
 
     /// Widget will get mouse move events even with no mouse button pressed.
     /// It is required so that graphics window can switch viewports properly.

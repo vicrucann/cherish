@@ -29,6 +29,8 @@
  * Victoria Rudakova, Yale Graphics, 2015
  * <victoria.rudakova@yale.edu>
 */
+#include <iostream>
+#include <string>
 
 #include <QOpenGLWidget>
 #include <QTabletEvent>
@@ -40,7 +42,7 @@
 class OSGWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
-    OSGWidget(QWidget* parent = 0, const int nview = 2);
+    OSGWidget(QWidget* parent = 0, const int nview = 2, const std::string& fname = "");
     virtual ~OSGWidget();
 public slots:
     void setTabletDevice(QTabletEvent::TabletDevice device) { _tabletDevice = device; }
@@ -75,6 +77,7 @@ private:
     /// there could be default composite viewers which would consist of 3 most common views
     /// read Viewer vs CompositeViewer to better understand which to use
     osg::ref_ptr<osgViewer::CompositeViewer> _viewer;
+    //osg::ref_ptr<osg::Camera> _hudCamera; // for coordiante axes
 
     //QTabletEvent::PointerType _pointer;
     QTabletEvent::TabletDevice _tabletDevice;

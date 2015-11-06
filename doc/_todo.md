@@ -2,6 +2,10 @@
 
 This file is intended for internal usage and is a temporary file. It contains a rough todo list with some useful links and other projected-related info for early development stage.
 
+## Ideas
+* One of the configuration settings could be to chose color schemes for background-foreground (e.g., solarized, standard black-white, etc).
+* In order to map the site to the geography area, use CoordinateSystemNode (see tutorial in OSG cookbook)
+
 ## MVC 
 
 **Model-View-Controller** - is used to separate the data from how the data is displayed and how it is manipulated.

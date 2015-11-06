@@ -16,8 +16,11 @@ public:
 public slots:
     void getTabletDevice(bool active);
 private slots:
-    void onCreateView();
+    void onCreateView2(); // have to figure out how to turn it into one function
+    // that takes number of views as an argument
     void onCreateView1();
+    void onCreateEmptyScene2();
+    void onCreateEmptyScene1();
 signals:
     void sendTabletDevice(bool active);
 private:

@@ -59,6 +59,7 @@ Implementation steps:
 * User documentation (**Jan-April 2016**)
 * Advanced features (**April 2016**)
     * Path animation
+    * Geographic coordinate system matching
 
 ![Alt text](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/gui-orig.png "Prototype GUI screenshot")  
 The initial prototype screen shot.
