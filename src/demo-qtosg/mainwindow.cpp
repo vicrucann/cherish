@@ -6,6 +6,7 @@
 #include <QMdiSubWindow>
 #include <QMenuBar>
 #include <QObject>
+#include <QList>
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     QMainWindow(parent, flags),

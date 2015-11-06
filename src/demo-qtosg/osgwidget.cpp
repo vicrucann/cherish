@@ -25,6 +25,35 @@
 #include <QPainter>
 #include <QWheelEvent>
 
+osg::Drawable* createCanvas(const osg::Vec3& center, const osg::Vec3& w,const osg::Vec3& h){
+    osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
+    osg::Vec3Array* coords = new osg::Vec3Array(4);
+    (*coords)[0] = center - w/2 - h/2;
+    (*coords)[1] = center - w/2 + h/2;
+    (*coords)[2] = center + w/2 - h/2;
+    (*coords)[3] = center + w/2 + h/2;
+    geom->setVertexArray(coords);
+    osg::Vec4 border_clr(float(101)/255.0f,float(123)/255.0f,float(131)/255.0f,1.0f); // solarized base00
+
+    osg::Vec4Array* color = new osg::Vec4Array(4);
+    (*color)[0] = border_clr;
+    (*color)[1] = border_clr;
+    (*color)[2] = border_clr;
+    (*color)[3] = border_clr;
+
+    geom->setColorArray(color, osg::Array::BIND_PER_VERTEX);
+    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,4));
+
+    osg::StateSet* stateset = new osg::StateSet;
+    osg::LineWidth* linewidth = new osg::LineWidth();
+    linewidth->setWidth(4.0f);
+    stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
+    stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+    geom->setStateSet(stateset);
+
+    return geom.release();
+}
+
 osg::Drawable* createAxis(const osg::Vec3& corner,const osg::Vec3& xdir,const osg::Vec3& ydir,const osg::Vec3& zdir)
 {
     // set up the Geometry.
@@ -80,10 +109,15 @@ OSGWidget::OSGWidget(QWidget* parent, const int nview, const std::string& fname)
     osg::ref_ptr<osg::Group> root = new osg::Group;
     osg::ref_ptr<osg::Node> model = osgDB::readNodeFile(fname);
     osg::ref_ptr<osg::Geode> axes = new osg::Geode;
+    osg::ref_ptr<osg::Geode> canva = new osg::Geode;
     axes->addDrawable(createAxis(osg::Vec3(0.0f,0.0f,0.0f), osg::Vec3(1.0f,0.0f,0.0f),
                                  osg::Vec3(0.0f,1.0f,0.0f), osg::Vec3(0.0f,0.0f,1.0f)));
     if (!fname.empty() && model!=NULL)
         root->addChild(model);
+    else { // add a "canvas"
+        canva->addDrawable(createCanvas(osg::Vec3(0.0f,0.0f,0.0f), osg::Vec3(5.0f,0.0f,0.0f),osg::Vec3(0.0f,3.0f,0.0f)));
+        root->addChild(canva.get());
+    }
 
     // Generated after the regualr scene is finished being drawn
     // on the screen. Set to the absolute reference frame, and
