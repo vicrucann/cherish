@@ -11,7 +11,7 @@
 class ViewWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
-    ViewWidget(QWidget* parent=0, int viewmode=1);
+    ViewWidget(osg::ref_ptr<osg::Group>& root, QWidget* parent=0, int viewmode=1);
     virtual ~ViewWidget();
 public slots:
     void getTabletActivity(bool active);
@@ -39,6 +39,7 @@ private:
 
     osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _graphicsWindow;
     osg::ref_ptr<osgViewer::CompositeViewer> _viewer;
+    osg::ref_ptr<osg::Group>& _root;
 
     QTabletEvent::TabletDevice _tabletDevice;
 

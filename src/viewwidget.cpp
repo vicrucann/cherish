@@ -12,70 +12,23 @@
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/EventQueue>
 #include <osgGA/TrackballManipulator>
-#include <osg/LineWidth>
 
 #include <QDebug>
 #include <QKeyEvent>
 #include <QPainter>
 #include <QWheelEvent>
 
-osg::Drawable* createAxis(const osg::Vec3& corner,const osg::Vec3& xdir,const osg::Vec3& ydir,const osg::Vec3& zdir)
-{
-    // set up the Geometry.
-    osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
-
-    osg::Vec3Array* coords = new osg::Vec3Array(6);
-    (*coords)[0] = corner;
-    (*coords)[1] = corner+xdir;
-    (*coords)[2] = corner;
-    (*coords)[3] = corner+ydir;
-    (*coords)[4] = corner;
-    (*coords)[5] = corner+zdir;
-
-    geom->setVertexArray(coords);
-
-    osg::Vec4 x_color(float(38)/255.0f,float(139)/255.0f,float(210)/255.0f,1.0f); // solarized blue
-    osg::Vec4 y_color(float(133)/255.0f,float(153)/255.0f,float(0)/255.0f,1.0f); // solarized green
-    osg::Vec4 z_color(float(211)/255.0f,float(54)/255.0f,float(130)/255.0f,1.0f); // solarized magenta
-
-    osg::Vec4Array* color = new osg::Vec4Array(6);
-    (*color)[0] = x_color;
-    (*color)[1] = x_color;
-    (*color)[2] = y_color;
-    (*color)[3] = y_color;
-    (*color)[4] = z_color;
-    (*color)[5] = z_color;
-
-    geom->setColorArray(color, osg::Array::BIND_PER_VERTEX);
-
-    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,6));
-
-    osg::StateSet* stateset = new osg::StateSet;
-    osg::LineWidth* linewidth = new osg::LineWidth();
-    linewidth->setWidth(4.0f);
-    stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
-    stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-    geom->setStateSet(stateset);
-
-    return geom.release();
-}
-
-ViewWidget::ViewWidget(QWidget* parent, int viewmode):
+ViewWidget::ViewWidget(osg::ref_ptr<osg::Group> &root, QWidget *parent, int viewmode):
     QOpenGLWidget(parent),
     _graphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(),this->height()) ),
     _viewer(new osgViewer::CompositeViewer),
+    _root(root),
     _tabletDevice(QTabletEvent::Stylus), // http://doc.qt.io/qt-5/qtabletevent.html#TabletDevice-enum
     _viewmode(viewmode),
     _deviceDown(false),
     _deviceActive(false)
 {
-    osg::ref_ptr<osg::Group> root = new osg::Group;
-    osg::ref_ptr<osg::Geode> axes = new osg::Geode;
-    axes->addDrawable(createAxis(osg::Vec3(0.0f,0.0f,0.0f), osg::Vec3(1.0f,0.0f,0.0f),
-                                     osg::Vec3(0.0f,1.0f,0.0f), osg::Vec3(0.0f,0.0f,1.0f)));
-    root->addChild(axes.get());
-
-    osg::StateSet* stateSet = root->getOrCreateStateSet();
+    osg::StateSet* stateSet = _root->getOrCreateStateSet();
     osg::Material* material = new osg::Material;
     material->setColorMode(osg::Material::AMBIENT_AND_DIFFUSE);
     stateSet->setAttributeAndModes(material, osg::StateAttribute::ON);
@@ -95,7 +48,7 @@ ViewWidget::ViewWidget(QWidget* parent, int viewmode):
     osgViewer::View* view = new osgViewer::View;
     view->setName("Single view");
     view->setCamera(camera);
-    view->setSceneData(root.get());
+    view->setSceneData(_root.get());
     view->addEventHandler(new osgViewer::StatsHandler);
     //view->addEventHandler(new PickHandler);
     view->setCameraManipulator(manipulator);
