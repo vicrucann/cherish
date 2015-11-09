@@ -6,7 +6,7 @@
 #include <osg/Drawable>
 #include <osg/BoundingBox>
 #include <osg/LineWidth>
-
+#include <osg/StateSet>
 
 Canvas::Canvas():
     _center(osg::Vec3(0.0f, 0.0f, 0.0f)),
@@ -51,9 +51,14 @@ void Canvas::addCanvasDrawables(){
     geom->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
     geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
 
+    osg::StateSet* stateset = new osg::StateSet;
+    osg::LineWidth* linewidth = new osg::LineWidth();
+    linewidth->setWidth(3.0f);
+    stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
+    stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+    geom->setStateSet(stateset);
+
     this->addDrawable(geom);
 
-    osg::LineWidth* linewidth = new osg::LineWidth();
-    linewidth->setWidth(4.0f);
-    this->getOrCreateStateSet()->setAttributeAndModes(linewidth, osg::StateAttribute::ON);
+    //this->getOrCreateStateSet()->setAttributeAndModes(linewidth, osg::StateAttribute::ON);
 }
