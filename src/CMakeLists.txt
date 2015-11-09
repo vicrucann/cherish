@@ -9,6 +9,7 @@ if(WIN32)
 else(WIN32)
     set(CMAKE_CXX_FLAGS "-W -Wall -Wno-unused")
 endif(WIN32)
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -32,6 +33,7 @@ set(SOURCES
     #scenegraph.cpp
     canvas.h
     canvas.cpp
+    settings.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

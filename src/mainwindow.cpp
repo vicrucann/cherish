@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "viewwidget.h"
 #include "canvas.h"
+#include "settings.h"
 
 #include <QMdiSubWindow>
 #include <QMenuBar>
@@ -56,8 +57,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     this->setCentralWidget(_mdiArea);
 
     /* Scene graph minimal initializations */
-    _axes->addDrawable(createAxes(osg::Vec3(0.0f,0.0f,0.0f), osg::Vec3(1.0f,0.0f,0.0f),
-                                  osg::Vec3(0.0f,1.0f,0.0f), osg::Vec3(0.0f,0.0f,1.0f)));
+    _axes->addDrawable(createAxes(osg::Vec3(0.0f,0.0f,0.0f), osg::Vec3(0.1f,0.0f,0.0f),
+                                  osg::Vec3(0.0f,0.1f,0.0f), osg::Vec3(0.0f,0.0f,0.1f)));
     _root->addChild(_axes.get());
 
     osg::BoundingBox bb(0.0f,0.0f,0.0f,1.0f,1.0f,1.0f);
@@ -95,17 +96,17 @@ osg::Drawable* MainWindow::createAxes(const osg::Vec3& corner,const osg::Vec3& x
 
     geom->setVertexArray(coords);
 
-    osg::Vec4 x_color(float(38)/255.0f,float(139)/255.0f,float(210)/255.0f,1.0f); // solarized blue
-    osg::Vec4 y_color(float(133)/255.0f,float(153)/255.0f,float(0)/255.0f,1.0f); // solarized green
-    osg::Vec4 z_color(float(211)/255.0f,float(54)/255.0f,float(130)/255.0f,1.0f); // solarized magenta
+    //osg::Vec4 x_color(float(38)/255.0f,float(139)/255.0f,float(210)/255.0f,1.0f); // solarized blue
+    //osg::Vec4 y_color(float(133)/255.0f,float(153)/255.0f,float(0)/255.0f,1.0f); // solarized green
+    //osg::Vec4 z_color(float(211)/255.0f,float(54)/255.0f,float(130)/255.0f,1.0f); // solarized magenta
 
     osg::Vec4Array* color = new osg::Vec4Array(6);
-    (*color)[0] = x_color;
-    (*color)[1] = x_color;
-    (*color)[2] = y_color;
-    (*color)[3] = y_color;
-    (*color)[4] = z_color;
-    (*color)[5] = z_color;
+    (*color)[0] = dureu::AXES_CLR_X;
+    (*color)[1] = dureu::AXES_CLR_X;
+    (*color)[2] = dureu::AXES_CLR_Y;
+    (*color)[3] = dureu::AXES_CLR_Y;
+    (*color)[4] = dureu::AXES_CLR_Z;
+    (*color)[5] = dureu::AXES_CLR_Z;
 
     geom->setColorArray(color, osg::Array::BIND_PER_VERTEX);
 
