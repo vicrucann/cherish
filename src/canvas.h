@@ -1,20 +1,24 @@
 #ifndef CANVAS
 #define CANVAS
 
-#include <osg/Group>
+#include "settings.h"
 
-class Canvas : public osg::Group {
+#include <osg/Geode>
+#include <osg/BoundingBox>
+
+class Canvas : public osg::Geode {
 public:
-    Canvas(){}
-    //Canvas(osg::Vec3 center, osg::Vec3 normal, osg::Vec4 color, int width, int height);
+    Canvas();
+    Canvas(osg::Vec3 center, osg::BoundingBox bb, osg::Vec4 color,double boundMargin = dureu::CANVAS_MIN_BOUND_MARGIN);
     ~Canvas(){}
 
 private:
+    void addCanvasDrawables();
     osg::Vec3 _center;
     osg::Vec3 _normal;
     osg::Vec4 _color;
-    int _width, _height;
-    bool _current, _previous;
+    osg::BoundingBox _bb;
+    double _boundMargin;
 };
 
 #endif // CANVAS

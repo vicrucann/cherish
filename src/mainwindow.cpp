@@ -7,6 +7,7 @@
 #include <QMenuBar>
 #include <QObject>
 
+#include <osg/ref_ptr>
 #include <osg/Group>
 #include <osg/StateSet>
 #include <osg/Material>
@@ -27,14 +28,21 @@ osg::Node* createCanvas(osg::BoundingBox& bb){
     (*vertices)[3] = top_right;
     geom->setVertexArray(vertices);
 
-    osg::Vec4 border_clr(float(101)/255.0f,float(123)/255.0f,float(131)/255.0f,1.0f); // solarized base00
+    //osg::Vec4 border_clr(float(101)/255.0f,float(123)/255.0f,float(131)/255.0f,1.0f); // solarized base00
     osg::Vec4Array* colors = new osg::Vec4Array(4);
-    (*colors)[0] = border_clr;
-    (*colors)[1] = border_clr;
-    (*colors)[2] = border_clr;
-    (*colors)[3] = border_clr;
-    geom->setColorArray(colors, osg::Array::BIND_OVERALL);
+    (*colors)[0] = dureu::CANVAS_CLR_CURRENT;
+    (*colors)[1] = dureu::CANVAS_CLR_CURRENT;
+    (*colors)[2] = dureu::CANVAS_CLR_CURRENT;
+    (*colors)[3] = dureu::CANVAS_CLR_CURRENT;
+    geom->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
     geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
+
+    osg::StateSet* stateset = new osg::StateSet;
+    osg::LineWidth* linewidth = new osg::LineWidth();
+    linewidth->setWidth(4.0f);
+    stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
+    stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+    geom->setStateSet(stateset);
 
     osg::Geode* geode = new osg::Geode;
     geode->addDrawable(geom);
@@ -62,8 +70,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     _root->addChild(_axes.get());
 
     osg::BoundingBox bb(0.0f,0.0f,0.0f,1.0f,1.0f,1.0f);
-    _root->addChild(createCanvas(bb));
 
+    osg::ref_ptr<Canvas> canvas_xy = new Canvas();
+    _root->addChild(canvas_xy.get());
 }
 
 MainWindow::~MainWindow(){}
@@ -95,11 +104,6 @@ osg::Drawable* MainWindow::createAxes(const osg::Vec3& corner,const osg::Vec3& x
     (*coords)[5] = corner+zdir;
 
     geom->setVertexArray(coords);
-
-    //osg::Vec4 x_color(float(38)/255.0f,float(139)/255.0f,float(210)/255.0f,1.0f); // solarized blue
-    //osg::Vec4 y_color(float(133)/255.0f,float(153)/255.0f,float(0)/255.0f,1.0f); // solarized green
-    //osg::Vec4 z_color(float(211)/255.0f,float(54)/255.0f,float(130)/255.0f,1.0f); // solarized magenta
-
     osg::Vec4Array* color = new osg::Vec4Array(6);
     (*color)[0] = dureu::AXES_CLR_X;
     (*color)[1] = dureu::AXES_CLR_X;

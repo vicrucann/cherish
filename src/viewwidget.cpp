@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include "viewwidget.h"
+#include "settings.h"
 
 #include <osg/Camera>
 #include <osg/StateSet>
@@ -39,8 +40,7 @@ ViewWidget::ViewWidget(osg::ref_ptr<osg::Group> &root, QWidget *parent, int view
     camera->setViewport( 0, 0, this->width(), this->height());
     camera->setProjectionMatrixAsPerspective( 30.f, aspectRatio, 1.f, 1000.f );
     camera->setGraphicsContext( _graphicsWindow );
-    camera->setClearColor(osg::Vec4(float(235)/255.0f, float(246)/255.0f,
-                                    float(227)/255.0f, 1.0f)); // solarized base3
+    camera->setClearColor(dureu::BACKGROUND_CLR);
 
     osgGA::TrackballManipulator* manipulator = new osgGA::TrackballManipulator;
     manipulator->setAllowThrow( false );
