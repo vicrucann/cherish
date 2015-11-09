@@ -95,9 +95,12 @@ void ViewWidget::resizeGL(int w, int h){
 void ViewWidget::keyPressEvent(QKeyEvent *event){
     QString keystr = event->text();
     const char* keydat = keystr.toLocal8Bit().data();
-    if (event->key() == Qt::Key_H) {
+    switch (event->key()) {
+    case Qt::Key_H:
         this->onHome();
         return;
+    default:
+        break;
     }
     this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KeySymbol (*keydat));
 }

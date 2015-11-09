@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "viewwidget.h"
+#include "canvas.h"
 
 #include <QMdiSubWindow>
 #include <QMenuBar>
@@ -10,6 +11,35 @@
 #include <osg/Material>
 #include <osg/Drawable>
 #include <osg/LineWidth>
+
+osg::Node* createCanvas(osg::BoundingBox& bb){
+    osg::Vec3 top_left(bb.xMin(),bb.yMin(),bb.zMax());
+    osg::Vec3 bottom_left(bb.xMin(),bb.yMin(),bb.zMin());
+    osg::Vec3 bottom_right(bb.xMax(),bb.yMin(),bb.zMin());
+    osg::Vec3 top_right(bb.xMax(),bb.yMin(),bb.zMax());
+
+    osg::Geometry* geom = new osg::Geometry;
+    osg::Vec3Array* vertices = new osg::Vec3Array(4);
+    (*vertices)[0] = top_left;
+    (*vertices)[1] = bottom_left;
+    (*vertices)[2] = bottom_right;
+    (*vertices)[3] = top_right;
+    geom->setVertexArray(vertices);
+
+    osg::Vec4 border_clr(float(101)/255.0f,float(123)/255.0f,float(131)/255.0f,1.0f); // solarized base00
+    osg::Vec4Array* colors = new osg::Vec4Array(4);
+    (*colors)[0] = border_clr;
+    (*colors)[1] = border_clr;
+    (*colors)[2] = border_clr;
+    (*colors)[3] = border_clr;
+    geom->setColorArray(colors, osg::Array::BIND_OVERALL);
+    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
+
+    osg::Geode* geode = new osg::Geode;
+    geode->addDrawable(geom);
+
+    return geode;
+}
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     QMainWindow(parent, flags),
@@ -25,10 +55,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
 
     this->setCentralWidget(_mdiArea);
 
-    /* Scene graph initializations */
+    /* Scene graph minimal initializations */
     _axes->addDrawable(createAxes(osg::Vec3(0.0f,0.0f,0.0f), osg::Vec3(1.0f,0.0f,0.0f),
                                   osg::Vec3(0.0f,1.0f,0.0f), osg::Vec3(0.0f,0.0f,1.0f)));
     _root->addChild(_axes.get());
+
+    osg::BoundingBox bb(0.0f,0.0f,0.0f,1.0f,1.0f,1.0f);
+    _root->addChild(createCanvas(bb));
+
 }
 
 MainWindow::~MainWindow(){}

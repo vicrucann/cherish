@@ -30,6 +30,8 @@ set(SOURCES
     viewwidget.cpp
     #scenegraph.h
     #scenegraph.cpp
+    canvas.h
+    canvas.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})
