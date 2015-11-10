@@ -30,8 +30,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     this->setCentralWidget(_mdiArea);
 
     /* Scene graph minimal initializations */
-    osg::ref_ptr<Axes> axes = new Axes(osg::Vec3(0.0f,0.0f,0.0f), osg::Vec3(0.1f,0.0f,0.0f),
-                                       osg::Vec3(0.0f,0.1f,0.0f), osg::Vec3(0.0f,0.0f,0.1f));
+    osg::ref_ptr<Axes> axes = new Axes(osg::Vec3(0.0f,0.0f,0.0f), osg::Vec3(dureu::AXES_SIZE,0.0f,0.0f),
+                                       osg::Vec3(0.0f,dureu::AXES_SIZE,0.0f), osg::Vec3(0.0f,0.0f,dureu::AXES_SIZE));
     _root->addChild(axes.get());
 
     osg::ref_ptr<Canvas> cnv_xy = new Canvas(osg::Vec3(1.0f,1.0f,0.0f),

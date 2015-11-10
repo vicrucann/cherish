@@ -55,6 +55,7 @@ const float CANVAS_MINH = 1.0f; // half height
 const float CANVAS_MINB = 0.1f; // bound
 const float CANVAS_CORNER = 0.2f; // corner size
 
+const float AXES_SIZE = 0.3f;
 const osg::Vec4 AXES_CLR_X = solarized::blue;
 const osg::Vec4 AXES_CLR_Y = solarized::cyan;
 const osg::Vec4 AXES_CLR_Z = solarized::red;

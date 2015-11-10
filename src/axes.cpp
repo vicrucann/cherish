@@ -7,6 +7,7 @@
 #include <osg/Vec3>
 #include <osg/BlendFunc>
 #include <osg/LineWidth>
+#include <osg/Geode>
 
 Axes::Axes(const osg::Vec3& corner,const osg::Vec3& xdir,const osg::Vec3& ydir,const osg::Vec3& zdir)
 {
@@ -42,7 +43,15 @@ Axes::Axes(const osg::Vec3& corner,const osg::Vec3& xdir,const osg::Vec3& ydir,c
     stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     geom->setStateSet(stateset);
-    this->addDrawable(geom.get());
+
+    osg::ref_ptr<osg::Geode> axes = new osg::Geode;
+    axes->addDrawable(geom.get());
+
+    /*  camera settings */
+    this->setClearMask(GL_DEPTH_BUFFER_BIT);
+    this->setRenderOrder(osg::Camera::POST_RENDER);
+    //this->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
+    this->addChild(axes.get());
 }
 
 Axes::~Axes(){}
