@@ -32,10 +32,10 @@ Canvas::Canvas(osg::Vec3f center, osg::Vec3f pA, osg::Vec3f pB, osg::Vec4f color
     _color(color),
     _vertices(new osg::Vec3Array(4))
 {
-    (*_vertices)[0] = pA+_center;
-    (*_vertices)[1] = pB+_center;
-    (*_vertices)[2] = -pA+_center;
-    (*_vertices)[3] = -pB+_center;
+    (*_vertices)[0] = pA + _center;
+    (*_vertices)[1] = pB + _center;
+    (*_vertices)[2] = -pA + _center;
+    (*_vertices)[3] = -pB + _center;
     osg::Plane plane(_normal, _center);
     assert(plane.valid());
     this->addCanvasDrawables();
@@ -56,13 +56,12 @@ void Canvas::addCanvasDrawables(){
 
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
-    linewidth->setWidth(1.0);
+    linewidth->setWidth(1.5);
     osg::BlendFunc* blendfunc = new osg::BlendFunc();
-    blendfunc->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ANTIALIAS);
+    //blendfunc->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ANTIALIAS);
     stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
     stateset->setAttributeAndModes(blendfunc, osg::StateAttribute::ON);
     stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
-    // also may be useful: osg::BlendFunc
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     geom->setStateSet(stateset);

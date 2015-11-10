@@ -20,13 +20,11 @@ private slots:
 signals:
     void sendTabletActivity(bool active);
 private:
-    osg::Drawable* createAxes(const osg::Vec3& corner,const osg::Vec3& xdir,const osg::Vec3& ydir,const osg::Vec3& zdir);
-
     QMdiArea* _mdiArea;
     bool _tabletActive;
 
-    osg::ref_ptr<osg::Group> _root; // scene graph
-    osg::ref_ptr<osg::Geode> _axes;
+    osg::ref_ptr<osg::Group> _root; // main graph that also includes HUD camera and such
+    osg::ref_ptr<osg::Group> _scene;  // scene graph only, includes canvases and their drawables only
 };
 
 #endif // MAINWINDOW

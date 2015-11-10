@@ -9,6 +9,15 @@
  * When more drawables are introduced by user, e.g., strokes,
  * the canvas borders (kept at variable verticies) are redifined
  * using osg::BoundingBox().
+ *
+ * TODO:
+ * For current canvas only: intersections (projection) line with
+ * previous canvas.
+ * Boundary margin: when initialize, make sure the boundaries do
+ * not overlap.
+ * Constructor: center, normal, color (set the boundaries based on
+ * default minimum values for size)
+ * Constructor: center, color, and to which plane is parallel (x=1,y=2,z=3)
  */
 
 #include "settings.h"

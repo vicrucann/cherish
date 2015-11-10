@@ -50,24 +50,10 @@ const osg::Vec4 CANVAS_CLR_PREVIOUS = solarized::violet;
 const osg::Vec4 CANVAS_CLR_REST = solarized::base1;
 const osg::Vec4 CANVAS_CLR_SELECTED = solarized::red;
 
-enum CANVAS_TYPE{
-    DEFAULT=1,
-    PHOTO=2
-};
-enum CANVAS_THICKNESS {
-    CURRENT = 4,
-    PREVIOUS = 3,
-    REST = 2
-};
-enum CANVAS_ORIENTATION{
-    OTHER=0,
-    XY=1,
-    XZ=2,
-    YZ=3
-};
-const float CANVAS_MIN_WIDTH = 2.0f;
-const float CANVAS_MIN_HEIGHT = 2.0f;
-const float CANVAS_MIN_BOUND_MARGIN = 0.1f;
+const float CANVAS_MINW = 1.2f; // half width
+const float CANVAS_MINH = 1.0f; // half height
+const float CANVAS_MINB = 0.1f; // bound
+const float CANVAS_CORNER = 0.2f; // corner size
 
 const osg::Vec4 AXES_CLR_X = solarized::blue;
 const osg::Vec4 AXES_CLR_Y = solarized::cyan;

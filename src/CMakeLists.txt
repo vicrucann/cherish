@@ -33,6 +33,8 @@ set(SOURCES
     #scenegraph.cpp
     canvas.h
     canvas.cpp
+    axes.h
+    axes.cpp
     settings.h
 )
 
