@@ -1,3 +1,6 @@
+#include <assert.h>
+#include <iostream>
+
 #include "canvas.h"
 #include "settings.h"
 
@@ -7,8 +10,10 @@
 #include <osg/BoundingBox>
 #include <osg/LineWidth>
 #include <osg/StateSet>
+#include <osg/Plane>
+#include <osg/BlendFunc>
 
-Canvas::Canvas():
+/*Canvas::Canvas():
     _center(osg::Vec3(0.0f, 0.0f, 0.0f)),
     _normal(osg::Vec3(0.0f, 0.0f, 0.0f)),
     _color(dureu::CANVAS_CLR_CURRENT),
@@ -17,30 +22,28 @@ Canvas::Canvas():
     _boundMargin(dureu::CANVAS_MIN_BOUND_MARGIN)
 {
     this->addCanvasDrawables();
-}
+}*/
 
-Canvas::Canvas(osg::Vec3 center, osg::BoundingBox bb, osg::Vec4 color, double boundMargin):
+/* Given three points on a plane (canvas), color and bound margin;
+ * initialize normal and canvas current size */
+Canvas::Canvas(osg::Vec3f center, osg::Vec3f pA, osg::Vec3f pB, osg::Vec4f color):
     _center(center),
-    _bb(bb),
+    _normal((pA - center)^(pB - center)), // cross product returns normal
     _color(color),
-    _boundMargin(boundMargin)
+    _vertices(new osg::Vec3Array(4))
 {
+    (*_vertices)[0] = pA+_center;
+    (*_vertices)[1] = pB+_center;
+    (*_vertices)[2] = -pA+_center;
+    (*_vertices)[3] = -pB+_center;
+    osg::Plane plane(_normal, _center);
+    assert(plane.valid());
     this->addCanvasDrawables();
 }
 
 void Canvas::addCanvasDrawables(){
-    osg::Vec3 top_left(_bb.xMin(), _bb.yMin(), _bb.zMax());
-    osg::Vec3 bottom_left(_bb.xMin(), _bb.yMin(), _bb.zMin());
-    osg::Vec3 bottom_right(_bb.xMax(), _bb.yMin(), _bb.zMin());
-    osg::Vec3 top_right(_bb.xMax(), _bb.yMin(), _bb.zMax());
-
     osg::Geometry* geom = new osg::Geometry;
-    osg::Vec3Array* vertices = new osg::Vec3Array(4);
-    (*vertices)[0] = top_left;
-    (*vertices)[1] = bottom_left;
-    (*vertices)[2] = bottom_right;
-    (*vertices)[3] = top_right;
-    geom->setVertexArray(vertices);
+    geom->setVertexArray(_vertices);
 
     osg::Vec4Array* colors = new osg::Vec4Array(4);
     (*colors)[0] = _color;
@@ -53,8 +56,14 @@ void Canvas::addCanvasDrawables(){
 
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
-    linewidth->setWidth(3.0f);
+    linewidth->setWidth(1.0);
+    osg::BlendFunc* blendfunc = new osg::BlendFunc();
+    blendfunc->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ANTIALIAS);
     stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
+    stateset->setAttributeAndModes(blendfunc, osg::StateAttribute::ON);
+    stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
+    // also may be useful: osg::BlendFunc
+    stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     geom->setStateSet(stateset);
 
