@@ -3,31 +3,31 @@
 ## Content
 
 1. **Files**: input and output
-    * Opening and saving files
-    * Import and export (data sources, file formats)
-    * Print current camera view
+    * Opening and saving files (`osg` and `osgt` file formats - standard formats of `OpenSceneGraph`)
+    * Import and export (import images like `jpg`, `bmp`, `png` and `tif`; export as other 3d formats: `3ds` and `obj`)
+    * Print camera view (user has to specify the camera id, for example they can chose it from a camera list)
     * Inputs: project files, stroke model files, photographs, raster diagrams, simplified 3D models (meshes), SfM (future), geo data - Google-map-like data (future)
     * Outputs: project files
 2. **Window multiplication tool** (like tmux)
-    * Create new window
-    * Switch between windows
-    * Remove the window
-    * Deactivate window
+    * Create new viewing window
+    * Switch between windows (is done by a mouse, no GUI here)
+    * Remove the window (mouse controller)
+    * Deactivate window (GUI option, for example, in `Tools` menu there will be `Windows list` where user can chose a window by id and chose to deactivate it)
     * Change window type (e.g., photos, strokes, diagrams, view windows, bookmarks)
     * Create sub-window of specific type (raw data: photographs, raw data: 3D meshes, raw data: diagrams, etc.)
     * (ideas): hide/show dialogue, bookmarks window, outline mode, full screen mode, preview mode, switch window and duplicate window (when using 2 screens or more)
 2. **Principal tools**
-    * Select tool: add and subtract from a selection set, expanding the selection set using mouse, selecting multiple entities, selecting or deselecting all geometry, selecting a single entity
+    * Select tool: add and subtract from a selection set, expanding the selection set using mouse, selecting multiple entities, selecting or deselecting all geometry, selecting a single entity (it should be implemented as a window where you can view the scene graph info and where each entity has its own id)
     * Select within a canvas
     * Select a canvas
     * Eraser tool: for pen and for mouse
     * Paint bucket tool: transparency
 5. **Drawing tools** - Geometric shapes and paths
-    * Rectangles and squares
-    * 3D Objects: boxes
-    * Ellipses, circles and arcs
-    * Polygons
-    * Bezier curve pen: *strokes* and polylines (one-degree Bezier)
+    * Rectangles
+    * 3D Objects: boxes (future)
+    * Ellipses and arcs
+    * Polygons and polylines
+    * Bezier curve pen: *strokes* 
 2. **Modification tools** (2D and 3D transformations for a selected canvas)
     * Move tool (translation): making copies, moving groups, moving precisely, moving several entities, moving a single entity (e.g., strokes only)
     * Rotate tool: making rotated copies, folding along an axis of rotation (future), rotating precisely
