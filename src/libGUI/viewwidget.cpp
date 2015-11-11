@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <stdexcept>
+#include <math.h>
 
 #include <QDebug>
 #include <QKeyEvent>
@@ -15,6 +16,7 @@
 #include <osgViewer/ViewerEventHandlers>
 #include <osgGA/EventQueue>
 #include <osgGA/TrackballManipulator>
+#include <osg/Matrix>
 
 #include "viewwidget.h"
 #include "settings.h"
@@ -36,9 +38,9 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, int viewm
     stateSet->setAttributeAndModes(material, osg::StateAttribute::ON);
     stateSet->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
 
-    float aspectRatio = static_cast<float>( this->width() ) / static_cast<float>( this->height() );
+    float aspectRatio = static_cast<float>( this->width() /_viewmode ) / static_cast<float>( this->height() );
     osg::Camera* camera = new osg::Camera;
-    camera->setViewport( 0, 0, this->width(), this->height());
+    camera->setViewport( 0, 0, this->width() / _viewmode, this->height());
     camera->setProjectionMatrixAsPerspective( 30.f, aspectRatio, 1.f, 1000.f );
     camera->setGraphicsContext( _graphicsWindow );
     camera->setClearColor(dureu::BACKGROUND_CLR);
@@ -56,13 +58,34 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, int viewm
 
     _viewer->addView(view);
 
+    if (_viewmode == 2) {
+        osg::Camera* sideCamera = new osg::Camera;
+        sideCamera->setViewport(this->width()/_viewmode, 0, this->width()/_viewmode, this->height());
+        //osg::Matrix R = osg::Matrix::rotate(-dureu::PI*0.5, 0, 0, 1);
+        //osg::Matrix T = osg::Matrix::translate(10, 0, 0);
+        sideCamera->setProjectionMatrixAsPerspective(30.f, aspectRatio, 1.f, 1000.f);
+        //sideCamera->setViewMatrixAsLookAt(osg::Vec3(0,-5,20), // eye above x plane
+        //                                  osg::Vec3(0,0,0), // gaze at origin
+        //                                  osg::Vec3(0,0,1)); // usual up vector
+        sideCamera->setGraphicsContext( _graphicsWindow );
+        sideCamera->setClearColor(dureu::BACKGROUND_CLR);
 
+        osgGA::TrackballManipulator* sideManipulator = new osgGA::TrackballManipulator;
+        sideManipulator->setAllowThrow( false );
+
+        osgViewer::View* sideView = new osgViewer::View;
+        sideView->setCamera( sideCamera );
+        sideView->setSceneData( _root.get() );
+        sideView->addEventHandler( new osgViewer::StatsHandler );
+        sideView->setCameraManipulator( sideManipulator );
+        _viewer->addView(sideView);
+    }
 
     _viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
     _viewer->realize();
 
     this->setFocusPolicy(Qt::StrongFocus);
-    this->setMinimumSize(512, 512);
+    this->setMinimumSize(512*_viewmode, 512);
     this->setMouseTracking(true);
 }
 
@@ -190,6 +213,7 @@ void ViewWidget::tabletEvent(QTabletEvent *event){
         case 1:
             if (_deviceSketch && _deviceDown){
                 std::cout << "stylus press: start sketch" << std::endl;
+                button = 0;
                 break;
             }
             else
@@ -220,6 +244,7 @@ void ViewWidget::tabletEvent(QTabletEvent *event){
         case 1:
             if (_deviceSketch && _deviceDown){
                 std::cout << "stylus release: stop sketch" << std::endl;
+                button = 0;
                 break;
             }
             else
@@ -237,6 +262,7 @@ void ViewWidget::tabletEvent(QTabletEvent *event){
         break;
     case QEvent::TabletMove:
         if (_deviceSketch && _deviceDown){
+            button = 0;
             std::cout << "stylus sketching" << std::endl;
         }
         this->getEventQueue()->mouseMotion(static_cast<float>(event->x()), static_cast<float>(event->y()));

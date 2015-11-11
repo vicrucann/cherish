@@ -43,6 +43,8 @@ const osg::Vec4 green = osg::Vec4(float(133)/255.0f, float(153)/255.0f, float(0)
 
 namespace dureu{
 
+const double PI = 3.14159265359;
+
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;
 
 const osg::Vec4 CANVAS_CLR_CURRENT = solarized::magenta;
