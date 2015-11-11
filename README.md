@@ -27,11 +27,11 @@ Implementation steps:
     * (done) Stylus navigation
     * (done) Stylus buttons programmation: cathing tablet events in QT and passing them to OSG
 * Basic entities - display (**Nov 2015**)
-    * Canvas
+    * (done) Canvas
     * Strokes - entered by Stylus
     * 2D geometric forms: polylines, rectangles, circles 
     * Photos = textured canvases?
-* Basic entities - navigation (**Nov 2015**)
+* (done) Basic entities - navigation (**Nov 2015**)
 * Building and manipulation of a scene graph (**Nov 2015**)
     * Add / delete a canvas
     * Switch to another canvas
