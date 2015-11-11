@@ -13,16 +13,21 @@
 #include <osg/Plane>
 #include <osg/BlendFunc>
 
-/*Canvas::Canvas():
-    _center(osg::Vec3(0.0f, 0.0f, 0.0f)),
-    _normal(osg::Vec3(0.0f, 0.0f, 0.0f)),
-    _color(dureu::CANVAS_CLR_CURRENT),
-    _bb(osg::BoundingBox(-dureu::CANVAS_MIN_WIDTH/2.0, 0, -dureu::CANVAS_MIN_HEIGHT/2.0,
-                         dureu::CANVAS_MIN_WIDTH/2.0, 0, dureu::CANVAS_MIN_HEIGHT/2.0)),
-    _boundMargin(dureu::CANVAS_MIN_BOUND_MARGIN)
+Canvas::Canvas():
+    _center(osg::Vec3f(0.0f, 0.0f, 0.0f)),
+    _normal(osg::Vec3f(0.0f, 1.0f, 0.0f)),
+    _color(dureu::CANVAS_CLR_REST),
+    _vertices(new osg::Vec3Array(4))
 {
+    osg::Plane plane(_normal, _center);
+    assert(plane.valid());
+    osg::Vec4 params = plane.asVec4();
+    (*_vertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, 0.0f, dureu::CANVAS_MINH);
+    (*_vertices)[1] = osg::Vec3f(-dureu::CANVAS_MINW, 0.0f, dureu::CANVAS_MINH);
+    (*_vertices)[2] = osg::Vec3f(-dureu::CANVAS_MINW, 0.0f, -dureu::CANVAS_MINH);
+    (*_vertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, 0.0f, -dureu::CANVAS_MINH);
     this->addCanvasDrawables();
-}*/
+}
 
 /* Given three points on a plane (canvas), color and bound margin;
  * initialize normal and canvas current size */

@@ -17,8 +17,13 @@ public slots:
     void getTabletActivity(bool active);
 signals:
     void sendTabletActivity(bool active);
+    void sendStylusSketchStatus(bool sketch);
 private slots:
     void onCreateViewer();
+    void onCreateDoubleViewer();
+    void onLoadCow();
+    void onSetStylusSketchON();
+    void onSetStylusSketchOFF();
 private:
     QMdiArea* _mdiArea;
     bool _tabletActive;

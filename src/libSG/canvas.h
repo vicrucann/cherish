@@ -27,6 +27,7 @@
 
 class Canvas : public osg::Geode {
 public:
+    Canvas();
     Canvas(osg::Vec3f center, osg::Vec3f pA, osg::Vec3f pB, osg::Vec4f color);
     ~Canvas(){}
 

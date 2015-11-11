@@ -19,7 +19,6 @@
 #include "viewwidget.h"
 #include "settings.h"
 
-
 ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, int viewmode):
     QOpenGLWidget(parent),
     _graphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(),this->height()) ),
@@ -28,7 +27,8 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, int viewm
     _tabletDevice(QTabletEvent::Stylus), // http://doc.qt.io/qt-5/qtabletevent.html#TabletDevice-enum
     _viewmode(viewmode),
     _deviceDown(false),
-    _deviceActive(false)
+    _deviceActive(false),
+    _deviceSketch(false)
 {
     osg::StateSet* stateSet = _root->getOrCreateStateSet();
     osg::Material* material = new osg::Material;
@@ -55,6 +55,9 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, int viewm
     view->setCameraManipulator(manipulator);
 
     _viewer->addView(view);
+
+
+
     _viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
     _viewer->realize();
 
@@ -67,6 +70,10 @@ ViewWidget::~ViewWidget(){}
 
 void ViewWidget::getTabletActivity(bool active){
     _deviceActive = active;
+}
+
+void ViewWidget::getStylusSketchStatus(bool sketch){
+    _deviceSketch = sketch;
 }
 
 void ViewWidget::paintEvent(QPaintEvent *pev){
@@ -174,17 +181,29 @@ void ViewWidget::tabletEvent(QTabletEvent *event){
     switch (event->type()){
     case QEvent::TabletPress:
         switch(event->buttons()) {
-        ///case 1: // touch and no buttons are pressed, default: rotate
-        case 2: // no touch and lower button pressed, default: zoom
+        /// buttons() define the Wacom behaviour
+        /// 1: touch and no buttons are pressed, default: rotate
+        /// 2: no touch and lower button pressed, default: zoom
+        /// 3: touch and lower button pressed, default: pan
+        /// 4: no touch and upper button pressed, default: rotate
+        /// 5: touch and upper button pressed, default: rotate
+        case 1:
+            if (_deviceSketch && _deviceDown){
+                std::cout << "stylus press: start sketch" << std::endl;
+                break;
+            }
+            else
+                break;
+        case 2:
             button = osg_rotate;
             break;
-        case 3: // touch and lower button pressed, default: pan
+        case 3:
             button = osg_rotate;
             break;
-        case 4: // no touch and upper button pressed, default: rotate
+        case 4:
             button = osg_pan;
             break;
-        case 5: // touch and upper button pressed, default: rotate
+        case 5:
             button = osg_pan;
             break;
         default:
@@ -198,6 +217,13 @@ void ViewWidget::tabletEvent(QTabletEvent *event){
         /// 1: no button released, whether in the air or in touch
         /// 2: lower button released, whether in the air or in touch
         /// 4: top button released, whether in the air or in touch
+        case 1:
+            if (_deviceSketch && _deviceDown){
+                std::cout << "stylus release: stop sketch" << std::endl;
+                break;
+            }
+            else
+                break;
         case 2:
             button = osg_rotate;
             break;
@@ -210,6 +236,9 @@ void ViewWidget::tabletEvent(QTabletEvent *event){
         this->getEventQueue()->mouseButtonRelease(static_cast<float>(event->x()), static_cast<float>(event->y()), button);
         break;
     case QEvent::TabletMove:
+        if (_deviceSketch && _deviceDown){
+            std::cout << "stylus sketching" << std::endl;
+        }
         this->getEventQueue()->mouseMotion(static_cast<float>(event->x()), static_cast<float>(event->y()));
         break;
     }

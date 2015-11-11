@@ -1,6 +1,9 @@
 #include "iostream"
 
+#include <osg/ref_ptr>
 #include <osg/Group>
+#include <osg/Node>
+#include <osgDB/ReadFile>
 
 #include "rootscene.h"
 #include "axes.h"
@@ -15,13 +18,19 @@ RootScene::RootScene():
                    osg::Vec3(0.0f,0.0f,dureu::AXES_SIZE)))
 {
     this->addChild(_axes.get());
-    osg::ref_ptr<Canvas> cnv_xz = new Canvas(osg::Vec3(1.0f,0.0f,1.0f),
-                                             osg::Vec3(dureu::CANVAS_MINW, 0.0f, dureu::CANVAS_MINH),
-                                             osg::Vec3(-dureu::CANVAS_MINW,0.0f, dureu::CANVAS_MINH),
-                                             dureu::CANVAS_CLR_CURRENT);
+    osg::ref_ptr<Canvas> cnv_xz = new Canvas();
     _userScene->addChild(cnv_xz.get());
 
     this->addChild(_userScene.get());
 }
 
 RootScene::~RootScene(){}
+
+bool RootScene::loadSceneFromFile(const std::string fname){
+    osg::ref_ptr<osg::Node> snode = osgDB::readNodeFile(fname);
+    if (!snode){
+        return false;
+    }
+    _userScene->addChild(snode.get());
+    return true;
+}

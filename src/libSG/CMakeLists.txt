@@ -14,6 +14,8 @@ set (SOURCES_SG
     axes.cpp
     rootscene.h
     rootscene.cpp
+    stroke.h
+    stroke.cpp
 )
 
 add_library(libSG ${SOURCES_SG})
