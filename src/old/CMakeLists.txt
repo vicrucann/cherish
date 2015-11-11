@@ -21,6 +21,29 @@ find_package(OpenSceneGraph REQUIRED COMPONENTS osgDB osgGA osgUtil osgViewer)
 
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
-add_subdirectory(dureu3d)
-add_subdirectory(gui)
-add_subdirectory(scenegraph)
+set(SOURCES
+    main.cpp
+    dureuapplication.h
+    dureuapplication.cpp
+    mainwindow.h
+    mainwindow.cpp
+    viewwidget.h
+    viewwidget.cpp
+    #scenegraph.h
+    #scenegraph.cpp
+    canvas.h
+    canvas.cpp
+    axes.h
+    axes.cpp
+    settings.h
+)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_link_libraries( ${PROJECT_NAME}
+  ${OPENSCENEGRAPH_LIBRARIES}
+  Qt5::Core
+  Qt5::Gui
+  Qt5::OpenGL
+)
+
