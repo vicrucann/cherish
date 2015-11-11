@@ -4,7 +4,7 @@ find_package(OpenSceneGraph REQUIRED COMPONENTS osgDB osgGA osgUtil osgViewer)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 include_directories(
-  ${CMAKE_SOURCE_DIR}/gui
+  ${CMAKE_SOURCE_DIR}/libGUI
   ${CMAKE_SOURCE_DIR}/dureu3d)
 
 set (SOURCES_SG
@@ -16,8 +16,8 @@ set (SOURCES_SG
     axes.cpp
 )
 
-add_library(scenegraph ${SOURCES_SG})
+add_library(libSG ${SOURCES_SG})
 
-target_link_libraries( scenegraph
+target_link_libraries( libSG
   ${OPENSCENEGRAPH_LIBRARIES}
 )

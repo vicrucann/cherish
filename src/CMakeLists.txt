@@ -22,5 +22,5 @@ find_package(OpenSceneGraph REQUIRED COMPONENTS osgDB osgGA osgUtil osgViewer)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 add_subdirectory(dureu3d)
-add_subdirectory(gui)
-add_subdirectory(scenegraph)
+add_subdirectory(libGUI)
+add_subdirectory(libSG)

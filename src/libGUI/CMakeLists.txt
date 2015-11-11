@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.11)
 
-include_directories(${CMAKE_SOURCE_DIR}/dureu3d ${CMAKE_SOURCE_DIR}/scenegraph)
+include_directories(${CMAKE_SOURCE_DIR}/dureu3d ${CMAKE_SOURCE_DIR}/libSG)
 
 find_package(Qt5Core)
 find_package(Qt5Gui)
@@ -15,9 +15,9 @@ set(SOURCES_GUI
   viewwidget.h
   )
 
-add_library(gui ${SOURCES_GUI})
+add_library(libGUI ${SOURCES_GUI})
 
-target_link_libraries( gui
+target_link_libraries( libGUI
   Qt5::Core
   Qt5::Gui
   Qt5::OpenGL

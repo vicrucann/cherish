@@ -1,7 +1,7 @@
 project(dureu3d)
 cmake_minimum_required(VERSION 2.8.11)
 
-include_directories(${CMAKE_SOURCE_DIR}/gui ${CMAKE_SOURCE_DIR}/scenegraph)
+include_directories(${CMAKE_SOURCE_DIR}/libGUI ${CMAKE_SOURCE_DIR}/libSG)
 
 set(SOURCES
     main.cpp
@@ -15,7 +15,7 @@ target_link_libraries( ${PROJECT_NAME}
   Qt5::Core
   Qt5::Gui
   Qt5::OpenGL
-
-  gui
-  scenegraph
+  # defined within dureu3d
+  libGUI
+  libSG
 )
