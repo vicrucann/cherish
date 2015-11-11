@@ -7,11 +7,12 @@
 #include <osg/ref_ptr>
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/CompositeViewer>
+#include "rootscene.h"
 
 class ViewWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
-    ViewWidget(osg::ref_ptr<osg::Group>& root, QWidget* parent=0, int viewmode=1);
+    ViewWidget(osg::ref_ptr<RootScene>& root, QWidget* parent=0, int viewmode=1);
     virtual ~ViewWidget();
 public slots:
     void getTabletActivity(bool active);
@@ -35,11 +36,11 @@ private:
     virtual void onHome();
     virtual void onResize(int w, int h);
 
-    osgGA::EventQueue* getEventQueue() const;
+    osgGA::EventQueue* getEventQueue() const; // for osg to process mouse and keyboard events
 
-    osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _graphicsWindow;
-    osg::ref_ptr<osgViewer::CompositeViewer> _viewer;
-    osg::ref_ptr<osg::Group>& _root;
+    osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _graphicsWindow; // osg grpahics context
+    osg::ref_ptr<osgViewer::CompositeViewer> _viewer; // Camera setup
+    osg::ref_ptr<RootScene>& _root; // scene to view
 
     QTabletEvent::TabletDevice _tabletDevice;
 

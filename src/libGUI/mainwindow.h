@@ -5,8 +5,8 @@
 #include <QMdiArea>
 
 #include <osg/ref_ptr>
-#include <osg/Group>
-#include <osg/Drawable>
+
+#include "rootscene.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -15,16 +15,15 @@ public:
     ~MainWindow();
 public slots:
     void getTabletActivity(bool active);
-private slots:
-    void onCreateViewer();
 signals:
     void sendTabletActivity(bool active);
+private slots:
+    void onCreateViewer();
 private:
     QMdiArea* _mdiArea;
     bool _tabletActive;
 
-    osg::ref_ptr<osg::Group> _root; // main graph that also includes HUD camera and such
-    osg::ref_ptr<osg::Group> _scene;  // scene graph only, includes canvases and their drawables only
+    osg::ref_ptr<RootScene> _rootScene; // main scene graph
 };
 
 #endif // MAINWINDOW

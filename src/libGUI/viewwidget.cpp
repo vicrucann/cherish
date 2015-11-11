@@ -3,8 +3,10 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "viewwidget.h"
-#include "settings.h"
+#include <QDebug>
+#include <QKeyEvent>
+#include <QPainter>
+#include <QWheelEvent>
 
 #include <osg/Camera>
 #include <osg/StateSet>
@@ -14,12 +16,11 @@
 #include <osgGA/EventQueue>
 #include <osgGA/TrackballManipulator>
 
-#include <QDebug>
-#include <QKeyEvent>
-#include <QPainter>
-#include <QWheelEvent>
+#include "viewwidget.h"
+#include "settings.h"
 
-ViewWidget::ViewWidget(osg::ref_ptr<osg::Group> &root, QWidget *parent, int viewmode):
+
+ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, int viewmode):
     QOpenGLWidget(parent),
     _graphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(),this->height()) ),
     _viewer(new osgViewer::CompositeViewer),

@@ -1,6 +1,8 @@
 #include <iostream>
-#include "dureuapplication.h"
+
 #include <QtWidgets>
+
+#include "dureuapplication.h"
 
 DureuApplication::DureuApplication(int &argv, char **argc):
     QApplication(argv, argc)

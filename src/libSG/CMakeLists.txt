@@ -8,12 +8,12 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/dureu3d)
 
 set (SOURCES_SG
-    #scenegraph.h
-    #scenegraph.cpp
     canvas.h
     canvas.cpp
     axes.h
     axes.cpp
+    rootscene.h
+    rootscene.cpp
 )
 
 add_library(libSG ${SOURCES_SG})
