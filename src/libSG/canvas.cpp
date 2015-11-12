@@ -17,11 +17,12 @@ Canvas::Canvas():
     _center(osg::Vec3f(0.0f, 0.0f, 0.0f)),
     _normal(osg::Vec3f(0.0f, 1.0f, 0.0f)),
     _color(dureu::CANVAS_CLR_REST),
-    _vertices(new osg::Vec3Array(4))
+    _vertices(new osg::Vec3Array(4)),
+    _geometry(new osg::Geometry)
 {
     osg::Plane plane(_normal, _center);
     assert(plane.valid());
-    osg::Vec4 params = plane.asVec4();
+    //osg::Vec4 params = plane.asVec4();
     (*_vertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, 0.0f, dureu::CANVAS_MINH);
     (*_vertices)[1] = osg::Vec3f(-dureu::CANVAS_MINW, 0.0f, dureu::CANVAS_MINH);
     (*_vertices)[2] = osg::Vec3f(-dureu::CANVAS_MINW, 0.0f, -dureu::CANVAS_MINH);
@@ -35,7 +36,8 @@ Canvas::Canvas(osg::Vec3f center, osg::Vec3f pA, osg::Vec3f pB, osg::Vec4f color
     _center(center),
     _normal((pA - center)^(pB - center)), // cross product returns normal
     _color(color),
-    _vertices(new osg::Vec3Array(4))
+    _vertices(new osg::Vec3Array(4)),
+    _geometry(new osg::Geometry)
 {
     (*_vertices)[0] = pA + _center;
     (*_vertices)[1] = pB + _center;
@@ -47,17 +49,11 @@ Canvas::Canvas(osg::Vec3f center, osg::Vec3f pA, osg::Vec3f pB, osg::Vec4f color
 }
 
 void Canvas::addCanvasDrawables(){
-    osg::Geometry* geom = new osg::Geometry;
-    geom->setVertexArray(_vertices);
+    _geometry->setVertexArray(_vertices);
 
-    osg::Vec4Array* colors = new osg::Vec4Array(4);
-    (*colors)[0] = _color;
-    (*colors)[1] = _color;
-    (*colors)[2] = _color;
-    (*colors)[3] = _color;
+    this->setColor(_color);
 
-    geom->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
-    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
+    _geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
 
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
@@ -69,9 +65,19 @@ void Canvas::addCanvasDrawables(){
     stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-    geom->setStateSet(stateset);
+    _geometry->setStateSet(stateset);
 
-    this->addDrawable(geom);
+    this->addDrawable(_geometry);
 
     //this->getOrCreateStateSet()->setAttributeAndModes(linewidth, osg::StateAttribute::ON);
+}
+
+void Canvas::setColor(osg::Vec4 color){
+    _color = color;
+    osg::Vec4Array* colors = new osg::Vec4Array(4);
+    (*colors)[0] = _color;
+    (*colors)[1] = _color;
+    (*colors)[2] = _color;
+    (*colors)[3] = _color;
+    _geometry->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
 }

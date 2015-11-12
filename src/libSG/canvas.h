@@ -22,8 +22,10 @@
 
 #include "settings.h"
 
+#include <osg/ref_ptr>
 #include <osg/Geode>
 #include <osg/BoundingBox>
+#include <osg/Geometry>
 
 class Canvas : public osg::Geode {
 public:
@@ -31,12 +33,15 @@ public:
     Canvas(osg::Vec3f center, osg::Vec3f pA, osg::Vec3f pB, osg::Vec4f color);
     ~Canvas(){}
 
+    void setColor(osg::Vec4f color);
+
 private:
     void addCanvasDrawables();
     osg::Vec3f _center;
     osg::Vec3f _normal;
     osg::Vec4f _color;
     osg::Vec3Array* _vertices;
+    osg::ref_ptr<osg::Geometry> _geometry;
 };
 
 #endif // CANVAS
