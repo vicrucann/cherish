@@ -4,6 +4,7 @@
 #include <osg/Group>
 #include <osg/Node>
 #include <osgDB/ReadFile>
+#include "osg/MatrixTransform"
 
 #include "rootscene.h"
 #include "axes.h"
@@ -20,6 +21,12 @@ RootScene::RootScene():
     this->addChild(_axes.get());
     osg::ref_ptr<Canvas> cnv_xz = new Canvas();
     _userScene->addChild(cnv_xz.get());
+
+    osg::ref_ptr<Canvas> cnv_xy = new Canvas();
+    osg::ref_ptr<osg::MatrixTransform> trans_xy = new osg::MatrixTransform;
+    trans_xy->setMatrix(osg::Matrix::rotate(-dureu::PI*0.5, 0, 0, 1));
+    trans_xy->addChild(cnv_xy.get());
+    _userScene->addChild(trans_xy.get());
 
     this->addChild(_userScene.get());
 }
