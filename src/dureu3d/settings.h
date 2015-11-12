@@ -1,6 +1,9 @@
 #ifndef SETTINGS
 #define SETTINGS
 
+#include <iostream>
+#include <string>
+
 #include <osg/Vec4>
 
 /*
@@ -51,6 +54,7 @@ const osg::Vec4 CANVAS_CLR_CURRENT = solarized::magenta;
 const osg::Vec4 CANVAS_CLR_PREVIOUS = solarized::violet;
 const osg::Vec4 CANVAS_CLR_REST = solarized::base1;
 const osg::Vec4 CANVAS_CLR_SELECTED = solarized::red;
+const std::string CANVAS_NAME = "Canvas";
 
 const float CANVAS_MINW = 1.2f; // half width
 const float CANVAS_MINH = 1.0f; // half height
