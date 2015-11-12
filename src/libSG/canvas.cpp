@@ -15,7 +15,7 @@
 
 Canvas::Canvas():
     _center(osg::Vec3f(0.0f, 0.0f, 0.0f)),
-    _normal(osg::Vec3f(0.0f, 1.0f, 0.0f)),
+    _normal(osg::Vec3f(0.0f, -1.0f, 0.0f)),
     _color(dureu::CANVAS_CLR_REST),
     _vertices(new osg::Vec3Array(4)),
     _geometry(new osg::Geometry)
