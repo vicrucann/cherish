@@ -59,25 +59,31 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, int viewm
     _viewer->addView(view);
 
     if (_viewmode == 2) {
-        osg::Camera* sideCamera = new osg::Camera;
-        sideCamera->setViewport(this->width()/_viewmode, 0, this->width()/_viewmode, this->height());
-        //osg::Matrix R = osg::Matrix::rotate(-dureu::PI*0.5, 0, 0, 1);
-        //osg::Matrix T = osg::Matrix::translate(10, 0, 0);
-        sideCamera->setProjectionMatrixAsPerspective(30.f, aspectRatio, 1.f, 1000.f);
-        //sideCamera->setViewMatrixAsLookAt(osg::Vec3(0,-5,20), // eye above x plane
-        //                                  osg::Vec3(0,0,0), // gaze at origin
-        //                                  osg::Vec3(0,0,1)); // usual up vector
-        sideCamera->setGraphicsContext( _graphicsWindow );
-        sideCamera->setClearColor(dureu::BACKGROUND_CLR);
+        osgViewer::View* sideView = new osgViewer::View;
+        sideView->getCamera()->setGraphicsContext(_graphicsWindow);
+        sideView->getCamera()->setViewport(this->width()/_viewmode, 0, this->width()/_viewmode, this->height());
+        sideView->getCamera()->setClearColor(dureu::BACKGROUND_CLR);
+        sideView->setSceneData( _root.get() );
 
+        osg::Vec3 lookDir = osg::Vec3(-osg::X_AXIS);
+        osg::Vec3 up = osg::Vec3(osg::Z_AXIS);
+        osg::Vec3 center = _root->getBound().center();
+        double radius = _root->getBound().radius();
+        sideView->getCamera()->setViewMatrixAsLookAt(center-lookDir*(radius*3.f),
+                                                     center,
+                                                     up);
+        sideView->getCamera()->setProjectionMatrixAsPerspective(30.f, aspectRatio, 1.f, 1000.f);
+
+        /*osg::Camera* sideCamera = new osg::Camera;
         osgGA::TrackballManipulator* sideManipulator = new osgGA::TrackballManipulator;
         sideManipulator->setAllowThrow( false );
 
         osgViewer::View* sideView = new osgViewer::View;
         sideView->setCamera( sideCamera );
-        sideView->setSceneData( _root.get() );
         sideView->addEventHandler( new osgViewer::StatsHandler );
         sideView->setCameraManipulator( sideManipulator );
+
+*/
         _viewer->addView(sideView);
     }
 
