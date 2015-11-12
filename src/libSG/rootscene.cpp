@@ -24,22 +24,22 @@ RootScene::RootScene():
 
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
     trans_xz->setMatrix(osg::Matrix::identity());
-    this->addCanvas(dureu::CANVAS_CLR_CURRENT, trans_xz);
+    this->addCanvas(trans_xz, dureu::CANVAS_CLR_CURRENT);
 
     osg::ref_ptr<osg::MatrixTransform> trans_xy = new osg::MatrixTransform;
     trans_xy->setMatrix(osg::Matrix::rotate(-dureu::PI*0.5, 0, 0, 1) * osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f));
-    this->addCanvas(dureu::CANVAS_CLR_PREVIOUS, trans_xy);
+    this->addCanvas(trans_xy, dureu::CANVAS_CLR_PREVIOUS);
 
     osg::ref_ptr<osg::MatrixTransform> trans_yz = new osg::MatrixTransform;
     trans_yz->setMatrix(osg::Matrix::rotate(-dureu::PI*0.5, 1, 0, 0) * osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f));
-    this->addCanvas(dureu::CANVAS_CLR_REST, trans_yz);
+    this->addCanvas(trans_yz, dureu::CANVAS_CLR_REST);
 
     this->addChild(_userScene.get());
 }
 
 RootScene::~RootScene(){}
 
-void RootScene::addCanvas(const osg::Vec4f& color, osg::ref_ptr<osg::MatrixTransform>& transform){
+void RootScene::addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f& color){
     osg::ref_ptr<Canvas> cnv = new Canvas();
     cnv->setColor(color);
     this->setCanvasName(cnv);

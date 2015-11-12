@@ -17,7 +17,7 @@ public:
     RootScene();
     ~RootScene();
 
-    void addCanvas(const osg::Vec4f &color, osg::ref_ptr<osg::MatrixTransform>& transform);
+    void addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f &color);
 
     bool loadSceneFromFile(const std::string fname);
 private:
