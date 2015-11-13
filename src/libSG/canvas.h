@@ -18,6 +18,23 @@
  * Constructor: center, normal, color (set the boundaries based on
  * default minimum values for size)
  * Constructor: center, color, and to which plane is parallel (x=1,y=2,z=3)
+ *
+ * Canvas representation (ideas):
+ * Given plane parameters and canvas centroid
+ * Extract normal
+ * Extract local x' and y' coordinate vectors (make sure they are axes aligned)
+ * The point within the canvas is defined by a local 2d coordinate p' = (a,b)
+ * The global 3d coordinate of such point is calculated: p = a*x' + b*y'
+ *
+ * Therefore, it enough to represent a canvas by a normal and a centroid,
+ * or plane equation Ax+By+Cz+D=0 and centroid 3D coordinate.
+ *
+ * When the canvas is transformed by rotation or offset, we only need to
+ * apply the TransformMatrix to the canvas internal parameters:
+ * - either centroid and normal
+ * - or plane and centroid
+ * Then update info on 3d coordinates based on the newly obtained local coordinate
+ * system x' and y'.
  */
 
 #include "settings.h"
