@@ -21,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     menuTest->addAction("Load cow to the scene",  this, SLOT(onLoadCow()));
     menuTest->addAction("Stylus draw ON", this, SLOT(onSetStylusSketchON()));
     menuTest->addAction("Stylus draw OFF", this, SLOT(onSetStylusSketchOFF()));
+    menuTest->addAction("Global axes ON", this, SLOT(onSetGloAxesON()));
+    menuTest->addAction("Global axes OFF", this, SLOT(onSetGloAxesOFF()));
 
     this->setCentralWidget(_mdiArea);
 }
@@ -75,5 +77,13 @@ void MainWindow::onSetStylusSketchON(){
 
 void MainWindow::onSetStylusSketchOFF(){
     emit sendStylusSketchStatus(false);
+}
+
+void MainWindow::onSetGloAxesON() {
+    _rootScene->setAxesVisible();
+}
+
+void MainWindow::onSetGloAxesOFF() {
+    _rootScene->setAxesInvisible();
 }
 
