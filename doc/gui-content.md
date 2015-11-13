@@ -61,7 +61,66 @@ __________________________________________
 
 ### Help
 
-## Tool box
+## Toolbars
+ 
+### Camera
+* Orbit
+* Pan
+* Zoom
+* Zoom Window
+* Zoom Extents
+* Previous (to go to previous camera position)
+
+### Drawing
+* Stylus 
+* Polyline 
+
+### Edit
+* Move
+* Rotate
+* Scale
+* Offset
+
+### Canvases
+* Looks like drop-down list which allows to select a canvas by its id name
+
+### Principal
+* Select
+* Eraser
+
+### Standard
+* --
+    * New
+    * Open
+    * Save
+* --
+    * Cut
+    * Copy
+    * Paste
+    * Erase
+* --
+    * Undo
+    * Redo
+* --
+    * Print
+
+### Styles
+* All (view all entities)
+* Strokes (view strokes only)
+* Images (view images only)
+
+### Views
+* Iso
+* Top
+* Front
+* Right
+* Back
+* Left
+
+### Viewers
+* Virtual screen mode
+* Two screen mode
+* Full screen
 
 ## Hint window
 

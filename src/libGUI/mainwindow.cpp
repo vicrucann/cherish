@@ -13,13 +13,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     _rootScene(new RootScene())
 {
     QMenuBar* menuBar = this->menuBar();
-    QMenu* menu = menuBar->addMenu("Test");
+    QMenu* menuTest = menuBar->addMenu("Test");
+    QMenuBar* menuTestViewers = menuBar->addMenu("TB Viewer");
 
-    menu->addAction("Add scene viewer", this, SLOT(onCreateViewer()));
-    menu->addAction("Add scene double viewer", this, SLOT(onCreateDoubleViewer()));
-    menu->addAction("Load cow to the scene",  this, SLOT(onLoadCow()));
-    menu->addAction("Stylus draw ON", this, SLOT(onSetStylusSketchON()));
-    menu->addAction("Stylus draw OFF", this, SLOT(onSetStylusSketchOFF()));
+    menuTest->addAction("Add scene viewer", this, SLOT(onCreateViewer()));
+    menuTest->addAction("Add scene double viewer", this, SLOT(onCreateDoubleViewer()));
+    menuTest->addAction("Load cow to the scene",  this, SLOT(onLoadCow()));
+    menuTest->addAction("Stylus draw ON", this, SLOT(onSetStylusSketchON()));
+    menuTest->addAction("Stylus draw OFF", this, SLOT(onSetStylusSketchOFF()));
 
     this->setCentralWidget(_mdiArea);
 }
