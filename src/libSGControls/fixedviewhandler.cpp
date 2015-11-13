@@ -15,7 +15,7 @@ FixedViewHandler::FixedViewHandler():
 }
 
 bool FixedViewHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa){
-    osgViewer::View* view = static_cast<osgViewer::View*> (&aa);
+    osgViewer::View* view = dynamic_cast<osgViewer::View*> (&aa);
     if (view){
         switch (ea.getEventType()){
         case osgGA::GUIEventAdapter::PUSH:
