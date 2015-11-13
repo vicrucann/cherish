@@ -20,7 +20,7 @@
 class ViewWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
-    ViewWidget(osg::ref_ptr<RootScene>& root, QWidget* parent=0, int viewmode=1);
+    ViewWidget(osg::ref_ptr<RootScene>& root, QWidget* parent=0, Qt::WindowFlags f = 0, int viewmode=1);
     virtual ~ViewWidget();
 public slots:
     void getTabletActivity(bool active);

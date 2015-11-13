@@ -44,7 +44,7 @@ void MainWindow::onCreateViewer(){
 }
 
 void MainWindow::onCreateDoubleViewer(){
-    ViewWidget* vwid = new ViewWidget(_rootScene, this, 2);
+    ViewWidget* vwid = new ViewWidget(_rootScene, this, Qt::Widget, 2);
     QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
                      vwid, SLOT(getTabletActivity(bool)));
     QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),
@@ -54,7 +54,7 @@ void MainWindow::onCreateDoubleViewer(){
 }
 
 void MainWindow::onCreateOutsideViewer(){
-    ViewWidget* vwid = new ViewWidget(_rootScene); // memory leak????
+    ViewWidget* vwid = new ViewWidget(_rootScene, this, Qt::Window);
     QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
                      vwid, SLOT(getTabletActivity(bool)));
     QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),

@@ -21,8 +21,8 @@
 #include "viewwidget.h"
 #include "settings.h"
 
-ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, int viewmode):
-    QOpenGLWidget(parent),
+ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::WindowFlags f, int viewmode):
+    QOpenGLWidget(parent, f),
     _graphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(),this->height()) ),
     _viewer(new osgViewer::CompositeViewer),
     _root(root),
