@@ -21,6 +21,7 @@ signals:
 private slots:
     void onCreateViewer();
     void onCreateDoubleViewer();
+    void onCreateOutsideViewer();
     void onLoadCow();
     void onSetStylusSketchON();
     void onSetStylusSketchOFF();
