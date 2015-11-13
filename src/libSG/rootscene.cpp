@@ -26,18 +26,24 @@ RootScene::RootScene():
     trans_xz->setMatrix(osg::Matrix::identity());
     this->addCanvas(trans_xz, dureu::CANVAS_CLR_CURRENT);
 
-    osg::ref_ptr<osg::MatrixTransform> trans_xy = new osg::MatrixTransform;
-    trans_xy->setMatrix(osg::Matrix::rotate(-dureu::PI*0.5, 0, 0, 1) * osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f));
-    this->addCanvas(trans_xy, dureu::CANVAS_CLR_PREVIOUS);
+    this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 0, 1),
+                    osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f),
+                    dureu::CANVAS_CLR_PREVIOUS);
 
-    osg::ref_ptr<osg::MatrixTransform> trans_yz = new osg::MatrixTransform;
-    trans_yz->setMatrix(osg::Matrix::rotate(-dureu::PI*0.5, 1, 0, 0) * osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f));
-    this->addCanvas(trans_yz, dureu::CANVAS_CLR_REST);
+    this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 1, 0, 0),
+                    osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f),
+                    dureu::CANVAS_CLR_REST);
 
     this->addChild(_userScene.get());
 }
 
 RootScene::~RootScene(){}
+
+void RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg::Vec4 &color){
+    osg::ref_ptr<osg::MatrixTransform> transform = new osg::MatrixTransform;
+    transform->setMatrix(R*T); // left hand coordinate system, see OSG docs
+    this->addCanvas(transform, color);
+}
 
 void RootScene::addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f& color){
     osg::ref_ptr<Canvas> cnv = new Canvas();

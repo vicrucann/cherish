@@ -8,16 +8,19 @@
 #include <osg/Group>
 #include <osg/Geode>
 #include <osg/Node>
+#include <osg/Matrix>
 
 #include "axes.h"
 #include "canvas.h"
+#include "settings.h"
 
 class RootScene : public osg::Group {
 public:
     RootScene();
     ~RootScene();
 
-    void addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f &color);
+    void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const osg::Vec4& color = dureu::CANVAS_CLR_CURRENT);
+    void addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f &color = dureu::CANVAS_CLR_CURRENT);
 
     bool loadSceneFromFile(const std::string fname);
 private:
