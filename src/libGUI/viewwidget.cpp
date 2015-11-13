@@ -76,16 +76,6 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
         sideView->getCamera()->setProjectionMatrixAsPerspective(30.f, aspectRatio, 1.f, 1000.f);
         sideView->addEventHandler(new FixedViewHandler);
 
-        /*osg::Camera* sideCamera = new osg::Camera;
-        osgGA::TrackballManipulator* sideManipulator = new osgGA::TrackballManipulator;
-        sideManipulator->setAllowThrow( false );
-
-        osgViewer::View* sideView = new osgViewer::View;
-        sideView->setCamera( sideCamera );
-        sideView->addEventHandler( new osgViewer::StatsHandler );
-        sideView->setCameraManipulator( sideManipulator );
-
-*/
         _viewer->addView(sideView);
     }
 
