@@ -52,7 +52,7 @@ bool FixedViewHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
                 if ( _distance<0.0 )
                     _distance = bs.radius() * 3.0;
                 center = bs.center();
-                center -= (side * _offsetX + up * _offsetY) * 0.1;
+                center -= (side * _offsetX + up * _offsetY) * 0.01; // 0.01 is how fast the movement is
                 view->getCamera()->setViewMatrixAsLookAt( center-lookDir*_distance, center, up );
             }
             break;
