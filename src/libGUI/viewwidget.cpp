@@ -20,6 +20,7 @@
 
 #include "viewwidget.h"
 #include "settings.h"
+#include "auxiliaryviewupdater.h"
 
 ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::WindowFlags f, int viewmode):
     QOpenGLWidget(parent, f),
@@ -73,6 +74,7 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
                                                      center,
                                                      up);
         sideView->getCamera()->setProjectionMatrixAsPerspective(30.f, aspectRatio, 1.f, 1000.f);
+        sideView->addEventHandler(new AuxiliaryViewUpdater);
 
         /*osg::Camera* sideCamera = new osg::Camera;
         osgGA::TrackballManipulator* sideManipulator = new osgGA::TrackballManipulator;
