@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    int mode = 0;
+    int mode = 2;
     QDesktopWidget* d = a.desktop();
 
     MainWindow w;
