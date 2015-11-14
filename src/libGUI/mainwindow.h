@@ -21,9 +21,12 @@ signals:
 private slots:
     void onCreateViewer();
     void onCreateDoubleViewer();
+    void onCreateOutsideViewer();
     void onLoadCow();
     void onSetStylusSketchON();
     void onSetStylusSketchOFF();
+    void onSetGloAxesON();
+    void onSetGloAxesOFF();
 private:
     QMdiArea* _mdiArea;
     bool _tabletActive;

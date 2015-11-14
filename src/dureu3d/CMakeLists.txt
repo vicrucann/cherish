@@ -18,4 +18,5 @@ target_link_libraries( ${PROJECT_NAME}
   # defined within dureu3d
   libGUI
   libSG
+  libSGControls
 )

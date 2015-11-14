@@ -20,9 +20,10 @@
 
 #include "viewwidget.h"
 #include "settings.h"
+#include "fixedviewhandler.h"
 
-ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, int viewmode):
-    QOpenGLWidget(parent),
+ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::WindowFlags f, int viewmode):
+    QOpenGLWidget(parent, f),
     _graphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(),this->height()) ),
     _viewer(new osgViewer::CompositeViewer),
     _root(root),
@@ -73,17 +74,8 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, int viewm
                                                      center,
                                                      up);
         sideView->getCamera()->setProjectionMatrixAsPerspective(30.f, aspectRatio, 1.f, 1000.f);
+        sideView->addEventHandler(new FixedViewHandler);
 
-        /*osg::Camera* sideCamera = new osg::Camera;
-        osgGA::TrackballManipulator* sideManipulator = new osgGA::TrackballManipulator;
-        sideManipulator->setAllowThrow( false );
-
-        osgViewer::View* sideView = new osgViewer::View;
-        sideView->setCamera( sideCamera );
-        sideView->addEventHandler( new osgViewer::StatsHandler );
-        sideView->setCameraManipulator( sideManipulator );
-
-*/
         _viewer->addView(sideView);
     }
 

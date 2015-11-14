@@ -6,6 +6,7 @@
 #include <osg/Node>
 #include <osgDB/ReadFile>
 #include "osg/MatrixTransform"
+#include <osgUtil/SceneView>
 
 #include "rootscene.h"
 #include "axes.h"
@@ -38,6 +39,24 @@ RootScene::RootScene():
 }
 
 RootScene::~RootScene(){}
+
+void RootScene::setAxesVisible() // not working version
+{
+    const int imask = osgUtil::SceneView::VariablesMask::ALL_VARIABLES;
+    _axes->getChild(0)->setNodeMask(0xffffffff);
+    _axes->setInheritanceMask(imask);
+    _axes->setCullMask(0xffffffff);
+    _axes->setNodeMask(0xffffffff);
+}
+
+void RootScene::setAxesInvisible() // not working version
+{
+    const int imask = (osgUtil::SceneView::VariablesMask::ALL_VARIABLES &
+                 ~osgUtil::SceneView::VariablesMask::CULL_MASK);
+    _axes->getChild(0)->setNodeMask(0x02);
+    _axes->setInheritanceMask(imask);
+    _axes->setCullMask(0x04);
+}
 
 void RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg::Vec4 &color){
     osg::ref_ptr<osg::MatrixTransform> transform = new osg::MatrixTransform;

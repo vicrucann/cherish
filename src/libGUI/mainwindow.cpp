@@ -13,13 +13,16 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     _rootScene(new RootScene())
 {
     QMenuBar* menuBar = this->menuBar();
-    QMenu* menu = menuBar->addMenu("Test");
+    QMenu* menuTest = menuBar->addMenu("Test");
 
-    menu->addAction("Add scene viewer", this, SLOT(onCreateViewer()));
-    menu->addAction("Add scene double viewer", this, SLOT(onCreateDoubleViewer()));
-    menu->addAction("Load cow to the scene",  this, SLOT(onLoadCow()));
-    menu->addAction("Stylus draw ON", this, SLOT(onSetStylusSketchON()));
-    menu->addAction("Stylus draw OFF", this, SLOT(onSetStylusSketchOFF()));
+    menuTest->addAction("Add scene viewer", this, SLOT(onCreateViewer()));
+    menuTest->addAction("Add scene double viewer", this, SLOT(onCreateDoubleViewer()));
+    menuTest->addAction("Add outisde viewer", this, SLOT(onCreateOutsideViewer()));
+    menuTest->addAction("Load cow to the scene",  this, SLOT(onLoadCow()));
+    menuTest->addAction("Stylus draw ON", this, SLOT(onSetStylusSketchON()));
+    menuTest->addAction("Stylus draw OFF", this, SLOT(onSetStylusSketchOFF()));
+    menuTest->addAction("Global axes ON", this, SLOT(onSetGloAxesON()));
+    menuTest->addAction("Global axes OFF", this, SLOT(onSetGloAxesOFF()));
 
     this->setCentralWidget(_mdiArea);
 }
@@ -43,13 +46,22 @@ void MainWindow::onCreateViewer(){
 }
 
 void MainWindow::onCreateDoubleViewer(){
-    ViewWidget* vwid = new ViewWidget(_rootScene, this, 2);
+    ViewWidget* vwid = new ViewWidget(_rootScene, this, Qt::Widget, 2);
     QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
                      vwid, SLOT(getTabletActivity(bool)));
     QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),
                      vwid, SLOT(getStylusSketchStatus(bool)) );
     QMdiSubWindow* subwin = _mdiArea->addSubWindow(vwid);
     subwin->show();
+}
+
+void MainWindow::onCreateOutsideViewer(){
+    ViewWidget* vwid = new ViewWidget(_rootScene, this, Qt::Window);
+    QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
+                     vwid, SLOT(getTabletActivity(bool)));
+    QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),
+                     vwid, SLOT(getStylusSketchStatus(bool)) );
+    vwid->show();
 }
 
 void MainWindow::onLoadCow(){
@@ -65,5 +77,13 @@ void MainWindow::onSetStylusSketchON(){
 
 void MainWindow::onSetStylusSketchOFF(){
     emit sendStylusSketchStatus(false);
+}
+
+void MainWindow::onSetGloAxesON() {
+    _rootScene->setAxesVisible();
+}
+
+void MainWindow::onSetGloAxesOFF() {
+    _rootScene->setAxesInvisible();
 }
 
