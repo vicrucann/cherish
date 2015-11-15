@@ -17,6 +17,6 @@ bool DureuApplication::event(QEvent* event){
             emit sendTabletActivity(active);
             return true;
         }
-        return QApplication::event(event);
+    return QApplication::event(event);
 }
 

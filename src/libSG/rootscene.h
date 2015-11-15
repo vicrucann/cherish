@@ -25,6 +25,8 @@ public:
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const osg::Vec4& color = dureu::CANVAS_CLR_CURRENT);
     void addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f &color = dureu::CANVAS_CLR_CURRENT);
 
+
+
     bool loadSceneFromFile(const std::string fname);
 private:
     void setCanvasName(osg::ref_ptr<Canvas> &cnv);
