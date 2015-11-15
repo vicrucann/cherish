@@ -9,15 +9,18 @@
 #include "mainwindow.h"
 #include "viewwidget.h"
 #include "settings.h"
+#include "bookmarkwidget.h"
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     QMainWindow(parent, flags),
     _desktop(0),
     _mdiArea(new QMdiArea(this)),
+    _bookmarks(new BookmarkWidget(this)),
     _tabletActive(false),
     _rootScene(new RootScene())
 {
     this->onCreateViewer();
+    this->addDockWidget(Qt::BottomDockWidgetArea, _bookmarks);
 
     QMenuBar* menuBar = this->menuBar();
     QMenu* menuTest = menuBar->addMenu("Test");

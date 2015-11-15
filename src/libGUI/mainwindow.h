@@ -10,6 +10,7 @@
 #include "rootscene.h"
 #include "settings.h"
 #include "viewwidget.h"
+#include "bookmarkwidget.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -36,6 +37,7 @@ private:
 
     QDesktopWidget* _desktop;
     QMdiArea* _mdiArea;
+    BookmarkWidget* _bookmarks;
     bool _tabletActive;
 
     osg::ref_ptr<RootScene> _rootScene; // main scene graph
