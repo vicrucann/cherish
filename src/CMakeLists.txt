@@ -7,7 +7,7 @@ if(WIN32)
         add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
     endif(MSVC)
 else(WIN32)
-    set(CMAKE_CXX_FLAGS "-W -Wall -Wno-unused")
+    set(CMAKE_CXX_FLAGS "-W -Wall -Wno-unused -std=c++0x")
 endif(WIN32)
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 
