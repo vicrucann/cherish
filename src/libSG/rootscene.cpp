@@ -83,6 +83,12 @@ bool RootScene::loadSceneFromFile(const std::string fname){
 
 void RootScene::setCanvasName(osg::ref_ptr<Canvas>& cnv){
     // name = Canvas1, Canvas2, ... where number is defined by _idCanvas
+    // better way to deal with the name:
+    // node->setName("Canvas1"); // as before
+    // node->setUserValue("id", _idCanvas);
+    // to retirive:
+    // node->getUserValue("id", returnedStrings);
+    // std::string name = node->getName();
     cnv->setName(dureu::CANVAS_NAME +
                  static_cast<std::ostringstream*>( &(std::ostringstream() << _idCanvas) )->str());
     _idCanvas++;
