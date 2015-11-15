@@ -1,6 +1,10 @@
+#include <iostream>
+
 #include <QMdiSubWindow>
 #include <QMenuBar>
 #include <QObject>
+#include <QRect>
+#include <QSize>
 
 #include "mainwindow.h"
 #include "viewwidget.h"
@@ -8,6 +12,7 @@
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     QMainWindow(parent, flags),
+    _desktop(0),
     _mdiArea(new QMdiArea(this)),
     _tabletActive(false),
     _rootScene(new RootScene())
@@ -28,6 +33,37 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
 }
 
 MainWindow::~MainWindow(){}
+
+void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) {
+    _desktop = desktop;
+    QRect availS = _desktop->availableGeometry();
+    QRect fullS = _desktop->geometry();
+    int nscreen = _desktop->screenCount();
+    double scale = 0.9;
+    double scale_inv = 1-scale;
+    switch (mode) {
+    case dureu::APPMODE::MIN_SCREEN:
+        this->resize(QSize(availS.width()*scale, availS.height()*scale));
+        this->move(availS.width()*scale_inv, fullS.height()-availS.height());
+        break;
+    case dureu::APPMODE::MAX_SCREEN:
+        this->showMaximized();
+        break;
+    case dureu::APPMODE::FULL_SCREEN:
+        this->showFullScreen();
+        break;
+    case dureu::APPMODE::VIRTUAL_WINDOW: // needs testing and fixing
+        this->resize(QSize(fullS.width(), fullS.height()));
+        break;
+    case dureu::APPMODE::DISATTACHED_MENU:
+        this->resize(QSize(availS.width()*scale, fullS.height()*scale_inv));
+        this->move(availS.width()*scale_inv, fullS.height()-availS.height());
+        break;
+    default:
+        std::cerr << "Application mode not recognized, closing application" << std::endl;
+        exit(1);
+    }
+}
 
 void MainWindow::getTabletActivity(bool active){
     _tabletActive = active;
