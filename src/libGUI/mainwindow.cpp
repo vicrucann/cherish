@@ -17,10 +17,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     _tabletActive(false),
     _rootScene(new RootScene())
 {
+    this->onCreateViewer();
+
     QMenuBar* menuBar = this->menuBar();
     QMenu* menuTest = menuBar->addMenu("Test");
 
-    menuTest->addAction("Add scene viewer", this, SLOT(onCreateViewer()));
     menuTest->addAction("Add scene double viewer", this, SLOT(onCreateDoubleViewer()));
     menuTest->addAction("Add outisde viewer", this, SLOT(onCreateOutsideViewer()));
     menuTest->addAction("Load cow to the scene",  this, SLOT(onLoadCow()));
@@ -42,20 +43,19 @@ void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) 
     double scale = 0.9;
     double scale_inv = 1-scale;
     switch (mode) {
-    case dureu::APPMODE::MIN_SCREEN:
-        this->resize(QSize(availS.width()*scale, availS.height()*scale));
-        this->move(availS.width()*scale_inv, fullS.height()-availS.height());
+    case dureu::APPMODE::SCREEN_MIN:
+        this->showNormal();
         break;
-    case dureu::APPMODE::MAX_SCREEN:
+    case dureu::APPMODE::SCREEN_MAX:
         this->showMaximized();
         break;
-    case dureu::APPMODE::FULL_SCREEN:
+    case dureu::APPMODE::SCREEN_FULL:
         this->showFullScreen();
         break;
-    case dureu::APPMODE::VIRTUAL_WINDOW: // needs testing and fixing
+    case dureu::APPMODE::SCREEN_VIRTUAL: // needs testing and fixing
         this->resize(QSize(fullS.width(), fullS.height()));
         break;
-    case dureu::APPMODE::DISATTACHED_MENU:
+    case dureu::APPMODE::SCREEN_DETACHED:
         this->resize(QSize(availS.width()*scale, fullS.height()*scale_inv));
         this->move(availS.width()*scale_inv, fullS.height()-availS.height());
         break;
@@ -78,6 +78,8 @@ void MainWindow::onCreateViewer(){
     QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),
                      vwid, SLOT(getStylusSketchStatus(bool)) );
     QMdiSubWindow* subwin = _mdiArea->addSubWindow(vwid);
+    subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    vwid->showMaximized();
     subwin->show();
 }
 

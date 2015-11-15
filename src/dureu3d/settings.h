@@ -49,11 +49,11 @@ namespace dureu{
 const double PI = 3.14159265359;
 
 enum APPMODE{
-    MAX_SCREEN = 0,
-    MIN_SCREEN = 1,
-    FULL_SCREEN = 2,
-    VIRTUAL_WINDOW = 3,
-    DISATTACHED_MENU = 4
+    SCREEN_MAX = 0,
+    SCREEN_MIN = 1,
+    SCREEN_FULL = 2,
+    SCREEN_VIRTUAL = 3,
+    SCREEN_DETACHED = 4
 };
 
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;

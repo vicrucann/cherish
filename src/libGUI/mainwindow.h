@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
     ~MainWindow();
-    void SetDesktopWidget(QDesktopWidget* desktop, dureu::APPMODE mode = dureu::APPMODE::MAX_SCREEN);
+    void SetDesktopWidget(QDesktopWidget* desktop, dureu::APPMODE mode = dureu::APPMODE::SCREEN_MIN);
 public slots:
     void getTabletActivity(bool active);
 signals:

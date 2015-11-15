@@ -81,9 +81,12 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
 
     _viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
     _viewer->realize();
-
+    int minS = 512;
+    if (parent->width() > parent->height())
+        this->setMinimumSize(minS*_viewmode, minS);
+    else
+        this->setMinimumSize(minS, minS*_viewmode);
     this->setFocusPolicy(Qt::StrongFocus);
-    this->setMinimumSize(512*_viewmode, 512);
     this->setMouseTracking(true);
 }
 
