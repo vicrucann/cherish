@@ -56,6 +56,14 @@ enum APPMODE{
     SCREEN_DETACHED = 4
 };
 
+enum MOUSE_MODE {
+    MOUSE_PICK,
+    MOUSE_SKETCH,
+    MOUSE_NAVIGATE,
+    MOUSE_EDIT,
+    MOUSE_BOOKMARK
+};
+
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;
 
 const osg::Vec4 CANVAS_CLR_CURRENT = solarized::magenta;
