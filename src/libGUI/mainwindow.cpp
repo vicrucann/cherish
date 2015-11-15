@@ -72,11 +72,7 @@ void MainWindow::getTabletActivity(bool active){
 
 /* Create an ordinary single view window on the scene _root */
 void MainWindow::onCreateViewer(){    
-    ViewWidget* vwid = new ViewWidget(_rootScene, this);
-    QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
-                     vwid, SLOT(getTabletActivity(bool)));
-    QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),
-                     vwid, SLOT(getStylusSketchStatus(bool)) );
+    ViewWidget* vwid = createViewer();
     QMdiSubWindow* subwin = _mdiArea->addSubWindow(vwid);
     subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     vwid->showMaximized();
@@ -84,21 +80,13 @@ void MainWindow::onCreateViewer(){
 }
 
 void MainWindow::onCreateDoubleViewer(){
-    ViewWidget* vwid = new ViewWidget(_rootScene, this, Qt::Widget, 2);
-    QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
-                     vwid, SLOT(getTabletActivity(bool)));
-    QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),
-                     vwid, SLOT(getStylusSketchStatus(bool)) );
+    ViewWidget* vwid = createViewer(Qt::Widget, 2);
     QMdiSubWindow* subwin = _mdiArea->addSubWindow(vwid);
     subwin->show();
 }
 
 void MainWindow::onCreateOutsideViewer(){
-    ViewWidget* vwid = new ViewWidget(_rootScene, this, Qt::Window);
-    QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
-                     vwid, SLOT(getTabletActivity(bool)));
-    QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),
-                     vwid, SLOT(getStylusSketchStatus(bool)) );
+    ViewWidget* vwid = createViewer(Qt::Window);
     vwid->show();
 }
 
@@ -123,5 +111,15 @@ void MainWindow::onSetGloAxesON() {
 
 void MainWindow::onSetGloAxesOFF() {
     _rootScene->setAxesInvisible();
+}
+
+ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
+{
+    ViewWidget* vwid = new ViewWidget(_rootScene, this, f, viewmode);
+    QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
+                     vwid, SLOT(getTabletActivity(bool)));
+    QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),
+                     vwid, SLOT(getStylusSketchStatus(bool)) );
+    return vwid;
 }
 

@@ -9,6 +9,7 @@
 
 #include "rootscene.h"
 #include "settings.h"
+#include "viewwidget.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -31,6 +32,8 @@ private slots:
     void onSetGloAxesON();
     void onSetGloAxesOFF();
 private:
+    ViewWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
+
     QDesktopWidget* _desktop;
     QMdiArea* _mdiArea;
     bool _tabletActive;
