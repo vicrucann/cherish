@@ -45,8 +45,8 @@ Implementation steps:
     * Push strokes from one canvas to another
     * Move a photo from one canvas to another
 * Save and load of a scene graph to disk (**Dec 2015**)
-* Viewport entities (**Dec 2015**)
-    * Window views
+* Viewer entities (**Dec 2015**)
+    * Model views: built-in, second screen, detached menu, viewer splitters, viewer views setup (front, top, iso)
     * Bookmarks
 * GUI integration (**Jan 2016**)
 * First user tests and feedback (**Jan 2016**)
