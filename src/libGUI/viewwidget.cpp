@@ -46,6 +46,8 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     camera->setGraphicsContext( _graphicsWindow );
     camera->setClearColor(dureu::BACKGROUND_CLR);
 
+    // if manipulator is disabled, make sure to take care of view matrix
+    // and then you can process event by evenhandler.
     osgGA::TrackballManipulator* manipulator = new osgGA::TrackballManipulator;
     manipulator->setAllowThrow( false );
 
