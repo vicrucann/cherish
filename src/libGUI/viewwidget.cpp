@@ -21,6 +21,7 @@
 #include "viewwidget.h"
 #include "settings.h"
 #include "eventhandler.h"
+#include "basehandler.h"
 
 ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::WindowFlags f, int viewmode):
     QOpenGLWidget(parent, f),
@@ -48,16 +49,17 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
 
     // if manipulator is disabled, make sure to take care of view matrix
     // and then you can process event by evenhandler.
-    osgGA::TrackballManipulator* manipulator = new osgGA::TrackballManipulator;
-    manipulator->setAllowThrow( false );
+    //osgGA::TrackballManipulator* manipulator = new osgGA::TrackballManipulator;
+    //manipulator->setAllowThrow( false );
 
     osgViewer::View* view = new osgViewer::View;
     view->setName("Single view");
     view->setCamera(camera);
     view->setSceneData(_root.get());
-    view->addEventHandler(new osgViewer::StatsHandler);
+    view->addEventHandler(new BaseHandler);
+    //view->addEventHandler(new osgViewer::StatsHandler);
     //view->addEventHandler(new PickHandler);
-    view->setCameraManipulator(manipulator);
+    //view->setCameraManipulator(manipulator);
 
     _viewer->addView(view);
 

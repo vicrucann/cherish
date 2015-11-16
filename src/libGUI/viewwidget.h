@@ -46,6 +46,8 @@ private:
     virtual void onResize(int w, int h);
 
     osgGA::EventQueue* getEventQueue() const; // for osg to process mouse and keyboard events
+    // for more info see reference osgGA::EventQueue and osgGA::GUIEventAdapter
+    // the later's enums are used in EventHandler.h
 
     osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _graphicsWindow; // osg graphics context
     osg::ref_ptr<osgViewer::CompositeViewer> _viewer; // Camera setup
