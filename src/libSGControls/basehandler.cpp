@@ -31,6 +31,8 @@ bool BaseHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapt
                     this->getTransformation(eye, center, up);
                     view->getCamera()->setViewMatrixAsLookAt(eye, center, up);
                 }
+        default:
+            return false; // unhandled events
         }
     }
     return false;

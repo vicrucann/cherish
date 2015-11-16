@@ -52,10 +52,19 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     //osgGA::TrackballManipulator* manipulator = new osgGA::TrackballManipulator;
     //manipulator->setAllowThrow( false );
 
+    osg::Vec3 lookDir = osg::Vec3(-osg::X_AXIS);
+    osg::Vec3 up = osg::Vec3(osg::Z_AXIS);
+    osg::Vec3 center = _root->getBound().center();
+    double radius = _root->getBound().radius();
+
     osgViewer::View* view = new osgViewer::View;
     view->setName("Single view");
     view->setCamera(camera);
     view->setSceneData(_root.get());
+    view->getCamera()->setViewMatrixAsLookAt(center-lookDir*(radius*3.f),
+                                                 center,
+                                                 up);
+    view->getCamera()->setProjectionMatrixAsPerspective(30.f, aspectRatio, 1.f, 1000.f);
     view->addEventHandler(new BaseHandler);
     //view->addEventHandler(new osgViewer::StatsHandler);
     //view->addEventHandler(new PickHandler);
@@ -70,10 +79,6 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
         sideView->getCamera()->setClearColor(dureu::BACKGROUND_CLR);
         sideView->setSceneData( _root.get() );
 
-        osg::Vec3 lookDir = osg::Vec3(-osg::X_AXIS);
-        osg::Vec3 up = osg::Vec3(osg::Z_AXIS);
-        osg::Vec3 center = _root->getBound().center();
-        double radius = _root->getBound().radius();
         sideView->getCamera()->setViewMatrixAsLookAt(center-lookDir*(radius*3.f),
                                                      center,
                                                      up);
