@@ -46,19 +46,19 @@ void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) 
     double scale = 0.9;
     double scale_inv = 1-scale;
     switch (mode) {
-    case dureu::APPMODE::SCREEN_MIN:
+    case dureu::SCREEN_MIN:
         this->showNormal();
         break;
-    case dureu::APPMODE::SCREEN_MAX:
+    case dureu::SCREEN_MAX:
         this->showMaximized();
         break;
-    case dureu::APPMODE::SCREEN_FULL:
+    case dureu::SCREEN_FULL:
         this->showFullScreen();
         break;
-    case dureu::APPMODE::SCREEN_VIRTUAL: // needs testing and fixing
+    case dureu::SCREEN_VIRTUAL: // needs testing and fixing
         this->resize(QSize(fullS.width(), fullS.height()));
         break;
-    case dureu::APPMODE::SCREEN_DETACHED:
+    case dureu::SCREEN_DETACHED:
         this->resize(QSize(availS.width()*scale, fullS.height()*scale_inv));
         this->move(availS.width()*scale_inv, fullS.height()-availS.height());
         break;
