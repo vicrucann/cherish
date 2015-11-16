@@ -42,7 +42,7 @@ RootScene::~RootScene(){}
 
 void RootScene::setAxesVisible() // not working version
 {
-    const int imask = osgUtil::SceneView::VariablesMask::ALL_VARIABLES;
+    const int imask = (int)osgUtil::SceneView::VariablesMask::ALL_VARIABLES;
     _axes->getChild(0)->setNodeMask(0xffffffff);
     _axes->setInheritanceMask(imask);
     _axes->setCullMask(0xffffffff);
@@ -51,7 +51,7 @@ void RootScene::setAxesVisible() // not working version
 
 void RootScene::setAxesInvisible() // not working version
 {
-    const int imask = (osgUtil::SceneView::VariablesMask::ALL_VARIABLES &
+    const int imask = (int)(osgUtil::SceneView::VariablesMask::ALL_VARIABLES &
                  ~osgUtil::SceneView::VariablesMask::CULL_MASK);
     _axes->getChild(0)->setNodeMask(0x02);
     _axes->setInheritanceMask(imask);

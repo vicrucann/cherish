@@ -60,6 +60,7 @@ enum MOUSE_MODE {
     MOUSE_PICK, // for selection and delete
     MOUSE_SKETCH, // to draw strokes and 2D geometric shapes
     MOUSE_NAVIGATE, // rotate, zoom, pan the camera
+    MOUSE_NAVIGATE_FIXED,
     MOUSE_EDIT, // rotate, translate, offset the selected entity
     MOUSE_BOOKMARK // create bookmark (take a snapshot of a selected viewer)
 };

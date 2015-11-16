@@ -1,11 +1,15 @@
 cmake_minimum_required(VERSION 2.8.11)
 
 find_package(OpenSceneGraph REQUIRED COMPONENTS osgDB osgGA osgUtil osgViewer)
-include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
+include_directories(
+    ${OPENSCENEGRAPH_INCLUDE_DIRS}
+    ${CMAKE_SOURCE_DIR}/dureu3d)
 
 set (SOURCES_SGControls
     fixedviewhandler.h
     fixedviewhandler.cpp
+    eventhandler.h
+    eventhandler.cpp
 )
 
 add_library(libSGControls ${SOURCES_SGControls})
