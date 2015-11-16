@@ -10,6 +10,8 @@ set (SOURCES_SGControls
     fixedviewhandler.cpp
     eventhandler.h
     eventhandler.cpp
+    basehandler.h
+    basehandler.cpp
 )
 
 add_library(libSGControls ${SOURCES_SGControls})
