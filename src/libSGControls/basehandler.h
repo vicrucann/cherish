@@ -32,15 +32,21 @@ public:
 protected:
     virtual void zoomIn();
     virtual void zoomOut();
+    virtual void rotate(float mouseXNorm, float mouseYNorm);
     void setWheelZoomFactor(double wzf);
+    void setTrackballSize(double ts);
 private:
+    float tb_project_to_sphere( float r, float x, float y );
+
     double _zoom;
     float _panX, _panY;
     float _angleH, _angleV; // horizontal and vertical angles of rotation
     float _dx, _dy; // mouse coords on screen
+    float _nx, _ny; // to keep normalized screen coords
     osg::Vec3d _eye, _center, _up; // camera params
 
     double _wheelZoomFactor;
+    double _trackballSize;
     osg::ref_ptr<osgGA::OrbitManipulator> _orbit;
 };
 
