@@ -6,81 +6,73 @@
 #include "basehandler.h"
 
 BaseHandler::BaseHandler():
-    _center(osg::Vec3(0.f, 0.f, 0.f)),
-    _rotation(osg::Quat(0,0,0,0)),
-    _distance(1.),
-    _trackballSize(0.8),
-    _wheelZoomFactor(0.1),
-    _minimumDistance(0.05)
+    _zoom(-1.0),
+    _panX(0.f),
+    _panY(0.f),
+    _angleH(0.f),
+    _angleV(0.f),
+    _dx(-1.f),
+    _dy(-1.f),
+    _eye(osg::Vec3d(0.f,0.f,0.f)),
+    _center(osg::Vec3d(0.f,0.f,0.f)),
+    _up(osg::Vec3d(0.f,0.f,-1.f))
 {
 }
 
 bool BaseHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa){
     osgViewer::View* view = dynamic_cast<osgViewer::View*>(&aa);
-    if (view && view->getCamera()){
-        osg::Vec3d eye, center, up;
-        view->getCamera()->getViewMatrixAsLookAt( eye, center, up );
-        this->setTransformation(eye,center,up);
+    if (view){
+        if (view->getCamera())
+            view->getCamera()->getViewMatrixAsLookAt(_eye, _center, _up);
         switch (ea.getEventType()){
-        case osgGA::GUIEventAdapter::SCROLL:
-            zoomModel(_wheelZoomFactor);
-        case osgGA::GUIEventAdapter::SCROLL_DOWN:
-            zoomModel(-_wheelZoomFactor);
-        case osgGA::GUIEventAdapter::FRAME:
-                if (view->getCamera()){
-                    this->getTransformation(eye, center, up);
-                    view->getCamera()->setViewMatrixAsLookAt(eye, center, up);
+        case osgGA::GUIEventAdapter::PUSH:
+            _dx = -1.f;
+            _dy = -1.f;
+            break;
+        case osgGA::GUIEventAdapter::DRAG:
+            if (_dx>0.f && _dy>0.f){
+                if (ea.getButtonMask()==osgGA::GUIEventAdapter::MIDDLE_MOUSE_BUTTON){
+                    this->panCamera(ea.getX(), ea.getY());
                 }
+            }
+            _dx = ea.getX();
+            _dy = ea.getY();
+        case osgGA::GUIEventAdapter::FRAME:
+            if (view->getCamera()){
+                this->adjustCamera(view->getSceneData()->getBound());
+                view->getCamera()->setViewMatrixAsLookAt(_eye, _center, _up);
+            }
+            break;
         default:
-            return false; // unhandled events
+            break;
         }
     }
     return false;
 }
 
-void BaseHandler::setTransformation(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
-{
-    osg::Vec3d lv( center - eye );
-
-    osg::Vec3d f( lv );
-    f.normalize();
-    osg::Vec3d s( f^up );
-    s.normalize();
-    osg::Vec3d u( s^f );
-    u.normalize();
-
-    osg::Matrixd rotation_matrix( s[0], u[0], -f[0], 0.0f,
-                            s[1], u[1], -f[1], 0.0f,
-                            s[2], u[2], -f[2], 0.0f,
-                            0.0f, 0.0f,  0.0f, 1.0f );
-
-    _center = center;
-    _distance = lv.length();
-    _rotation = rotation_matrix.getRotate().inverse();
-
-    // fix current rotation
-    //if( getVerticalAxisFixed() )
-    //    fixVerticalAxis( _center, _rotation, true );
+void BaseHandler::panCamera(float x, float y) {
+    _panX += x - _dx;
+    _panY += y - _dy;
 }
 
-void BaseHandler::getTransformation(osg::Vec3d &eye, osg::Vec3d &center, osg::Vec3d &up) const
-{
-    center = _center;
-    eye = _center + _rotation * osg::Vec3d( 0., 0., _distance );
-    up = _rotation * osg::Vec3d( 0., 1., 0. );
+void BaseHandler::zoomCamera(float dy) {
 }
 
-void BaseHandler::zoomModel(const float dy, bool pushForwardIfNeeded)
-{
-    float scale = 1.0f + dy;
-    float minDist = _minimumDistance;
-    if( _distance*scale > minDist )
-        _distance *= scale;
-    else {
-        float scale = -_distance;
-        osg::Matrixd rotation_matrix( _rotation );
-        osg::Vec3d dv = (osg::Vec3d( 0.0f, 0.0f, -1.0f ) * rotation_matrix) * (dy * scale);
-        _center += dv;
-    }
+void BaseHandler::rotateCamera() {
+}
+
+void BaseHandler::adjustCamera(osg::BoundingSphere bs){
+    // orthogonal basis, see details in Chapter 15 "Working with cameras" in
+    // the book "Essentials of Interactive Computer Graphics: Concepts and Implementation"
+
+    // adjust eye from rotation params first?
+    osg::Vec3d lookDir = _center - _eye;
+    lookDir.normalize();
+    osg::Vec3d side = lookDir ^ _up;
+    side.normalize();
+    if (_zoom<0.0)
+        _zoom = bs.radius()*3.0;
+    _center = bs.center() - (side*_panX + _up*_panY)*0.01;
+    _eye = _center - lookDir*_zoom;
 }
 

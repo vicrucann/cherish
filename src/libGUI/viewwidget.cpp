@@ -52,13 +52,13 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     //osgGA::TrackballManipulator* manipulator = new osgGA::TrackballManipulator;
     //manipulator->setAllowThrow( false );
 
-    osg::Vec3 lookDir = osg::Vec3(-osg::X_AXIS);
+    osg::Vec3 lookDir = osg::Vec3(osg::Y_AXIS);
     osg::Vec3 up = osg::Vec3(osg::Z_AXIS);
     osg::Vec3 center = _root->getBound().center();
     double radius = _root->getBound().radius();
 
     osgViewer::View* view = new osgViewer::View;
-    view->setName("Single view");
+    view->setName("Main Viewer");
     view->setCamera(camera);
     view->setSceneData(_root.get());
     view->getCamera()->setViewMatrixAsLookAt(center-lookDir*(radius*3.f),

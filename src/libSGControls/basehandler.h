@@ -20,6 +20,7 @@
 #include <osgGA/GUIEventHandler>
 #include <osgGA/GUIEventAdapter>
 #include <osgGA/GUIActionAdapter>
+#include <osgGA/TrackballManipulator>
 #include <osg/observer_ptr>
 #include <osg/Matrix>
 
@@ -29,19 +30,18 @@ class BaseHandler : public osgGA::GUIEventHandler {
 public:
     BaseHandler();
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-
-    virtual void setTransformation (const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up);
-    virtual void getTransformation (osg::Vec3d &eye, osg::Vec3d &center, osg::Vec3d &up) const;
 protected:
-    virtual void 	zoomModel (const float dy, bool pushForwardIfNeeded=true);
+    virtual void panCamera(float x, float y);
+    virtual void zoomCamera(float dy);
+    virtual void rotateCamera();
 
-    // same camera parameters as in osgGA::OrbitManipulator
-    osg::Vec3 _center;
-    osg::Quat _rotation;
-    double _distance;
-    double _trackballSize;
-    double _wheelZoomFactor;
-    double _minimumDistance;
+    double _zoom;
+    float _panX, _panY;
+    float _angleH, _angleV; // horizontal and vertical angles of rotation
+    float _dx, _dy; // mouse coords on screen
+    osg::Vec3d _eye, _center, _up; // camera params
+private:
+    void adjustCamera(osg::BoundingSphere bs);
 };
 
 
