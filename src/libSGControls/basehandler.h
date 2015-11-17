@@ -20,9 +20,8 @@
 #include <osgGA/GUIEventHandler>
 #include <osgGA/GUIEventAdapter>
 #include <osgGA/GUIActionAdapter>
-#include <osgGA/TrackballManipulator>
-#include <osg/observer_ptr>
-#include <osg/Matrix>
+#include <osgGA/OrbitManipulator>
+#include <osg/ref_ptr>
 
 #include "rootscene.h"
 
@@ -31,15 +30,10 @@ public:
     BaseHandler();
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 protected:
-    virtual void panCamera(float x, float y);
-    virtual void zoomCameraMouse(float mouseY, int widnowHeight);
-    virtual void zoomCameraScroll(float dy);
-    virtual void rotateCamera();
-
+    virtual void zoomIn();
+    virtual void zoomOut();
     void setWheelZoomFactor(double wzf);
 private:
-    void adjustCamera(osg::BoundingSphere bs);
-
     double _zoom;
     float _panX, _panY;
     float _angleH, _angleV; // horizontal and vertical angles of rotation
@@ -47,6 +41,7 @@ private:
     osg::Vec3d _eye, _center, _up; // camera params
 
     double _wheelZoomFactor;
+    osg::ref_ptr<osgGA::OrbitManipulator> _orbit;
 };
 
 
