@@ -32,16 +32,21 @@ public:
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 protected:
     virtual void panCamera(float x, float y);
-    virtual void zoomCamera(float dy);
+    virtual void zoomCameraMouse(float mouseY, int widnowHeight);
+    virtual void zoomCameraScroll(float dy);
     virtual void rotateCamera();
+
+    void setWheelZoomFactor(double wzf);
+private:
+    void adjustCamera(osg::BoundingSphere bs);
 
     double _zoom;
     float _panX, _panY;
     float _angleH, _angleV; // horizontal and vertical angles of rotation
     float _dx, _dy; // mouse coords on screen
     osg::Vec3d _eye, _center, _up; // camera params
-private:
-    void adjustCamera(osg::BoundingSphere bs);
+
+    double _wheelZoomFactor;
 };
 
 
