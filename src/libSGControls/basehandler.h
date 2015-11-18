@@ -30,12 +30,19 @@ public:
     BaseHandler();
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 protected:
-    virtual void zoomIn();
-    virtual void zoomOut();
-    virtual void rotate(float mouseXNorm, float mouseYNorm);
+    virtual void pan(float x, float y);
+    virtual void zoomMouse(float mouseY, int widnowHeight);
+    virtual void zoomScroll(float dy);
+    virtual void rotate(float x, float y);
+
+    //virtual void zoomIn();
+    //virtual void zoomOut();
+    //virtual void rotate(float mouseXNorm, float mouseYNorm);
     void setWheelZoomFactor(double wzf);
     void setTrackballSize(double ts);
 private:
+    void adjustCamera(osg::BoundingSphere bs);
+    void trackball(osg::Quat &rotq, float x, float y, float dx, float dy);
     float tb_project_to_sphere( float r, float x, float y );
 
     double _zoom;
@@ -43,6 +50,7 @@ private:
     float _angleH, _angleV; // horizontal and vertical angles of rotation
     float _dx, _dy; // mouse coords on screen
     float _nx, _ny; // to keep normalized screen coords
+    osg::Quat _rotation;
     osg::Vec3d _eye, _center, _up; // camera params
 
     double _wheelZoomFactor;
