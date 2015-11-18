@@ -69,8 +69,12 @@ bool BaseManipulator::performMovementMiddleMouseButton(const double eventTimeDel
     return this->wrapRotation(eventTimeDelta, dx, dy);
 }
 
-bool BaseManipulator::wrapRotation(const double eventTimeDelta, const double dx, const double dy)
+bool BaseManipulator::performMovementRightMouseButton(const double eventTimeDelta, const double dx, const double dy)
 {
+    return this->wrapPan(eventTimeDelta, dx, dy);
+}
+
+bool BaseManipulator::wrapRotation(const double eventTimeDelta, const double dx, const double dy){
     // rotate camera
     if( getVerticalAxisFixed() )
         rotateWithFixedVertical( dx, dy );
@@ -78,5 +82,12 @@ bool BaseManipulator::wrapRotation(const double eventTimeDelta, const double dx,
         rotateTrackball( _ga_t0->getXnormalized(), _ga_t0->getYnormalized(),
                          _ga_t1->getXnormalized(), _ga_t1->getYnormalized(),
                          getThrowScale( eventTimeDelta ) );
+    return true;
+}
+
+bool BaseManipulator::wrapPan(const double eventTimeDelta, const double dx, const double dy){
+    // pan model
+    float scale = -0.3f * _distance * getThrowScale( eventTimeDelta );
+    panModel( dx*scale, dy*scale );
     return true;
 }

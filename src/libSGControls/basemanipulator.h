@@ -19,7 +19,10 @@ protected:
     ~BaseManipulator();
     virtual bool performMovementLeftMouseButton (const double eventTimeDelta, const double dx, const double dy);
     virtual bool performMovementMiddleMouseButton( const double eventTimeDelta, const double dx, const double dy );
+    virtual bool performMovementRightMouseButton (const double eventTimeDelta, const double dx, const double dy);
+
     virtual bool wrapRotation(const double eventTimeDelta, const double dx, const double dy);
+    virtual bool wrapPan(const double eventTimeDelta, const double dx, const double dy);
 };
 
 #endif // BASEMANIPULATOR
