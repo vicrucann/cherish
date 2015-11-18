@@ -91,3 +91,8 @@ bool BaseManipulator::wrapPan(const double eventTimeDelta, const double dx, cons
     panModel( dx*scale, dy*scale );
     return true;
 }
+
+bool BaseManipulator::wrapZoom(const double eventTimeDelta, const double /*dx*/, const double dy){
+    zoomModel( dy * getThrowScale( eventTimeDelta ), true );
+    return true;
+}

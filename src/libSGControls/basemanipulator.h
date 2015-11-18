@@ -23,6 +23,7 @@ protected:
 
     virtual bool wrapRotation(const double eventTimeDelta, const double dx, const double dy);
     virtual bool wrapPan(const double eventTimeDelta, const double dx, const double dy);
+    virtual bool wrapZoom(const double eventTimeDelta, const double, const double dy);
 };
 
 #endif // BASEMANIPULATOR
