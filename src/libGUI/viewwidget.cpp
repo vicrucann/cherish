@@ -22,6 +22,7 @@
 #include "settings.h"
 #include "eventhandler.h"
 #include "basehandler.h"
+#include "basemanipulator.h"
 
 ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::WindowFlags f, int viewmode):
     QOpenGLWidget(parent, f),
@@ -65,10 +66,12 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
                                                  center,
                                                  up);
     view->getCamera()->setProjectionMatrixAsPerspective(30.f, aspectRatio, 1.f, 1000.f);
-    view->addEventHandler(new BaseHandler);
+    //view->addEventHandler(new BaseHandler);
     //view->addEventHandler(new osgViewer::StatsHandler);
     //view->addEventHandler(new PickHandler);
-    //view->setCameraManipulator(manipulator);
+    BaseManipulator* bm = new BaseManipulator;
+    bm->setAllowThrow(false);
+    view->setCameraManipulator(bm);
 
     _viewer->addView(view);
 

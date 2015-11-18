@@ -15,6 +15,8 @@ set (SOURCES_SGControls
     eventhandler.cpp
     basehandler.h
     basehandler.cpp
+    basemanipulator.h
+    basemanipulator.cpp
 )
 
 add_library(libSGControls ${SOURCES_SGControls})
