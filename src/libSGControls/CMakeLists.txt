@@ -18,7 +18,6 @@ set (SOURCES_SGControls
     basemanipulator.h
     basemanipulator.cpp
     zoommanipulator.h
-    zoommanipulator.cpp
     rotatemanipulator.h
 )
 
