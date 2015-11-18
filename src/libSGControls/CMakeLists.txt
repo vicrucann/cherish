@@ -19,6 +19,8 @@ set (SOURCES_SGControls
     basemanipulator.cpp
     zoommanipulator.h
     rotatemanipulator.h
+    manipulator.h
+    manipulator.cpp
 )
 
 add_library(libSGControls ${SOURCES_SGControls})
