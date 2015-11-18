@@ -23,6 +23,7 @@
 #include "eventhandler.h"
 #include "basehandler.h"
 #include "zoommanipulator.h"
+#include "rotatemanipulator.h"
 
 ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::WindowFlags f, int viewmode):
     QOpenGLWidget(parent, f),
@@ -69,7 +70,7 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     //view->addEventHandler(new BaseHandler);
     //view->addEventHandler(new osgViewer::StatsHandler);
     //view->addEventHandler(new PickHandler);
-    ZoomManipulator* man = new ZoomManipulator;
+    RotateManipulator* man = new RotateManipulator;
     man->setAllowThrow(false);
     view->setCameraManipulator(man);
 
