@@ -12,7 +12,6 @@
 class Manipulator : public osgGA::TrackballManipulator {
 public:
     Manipulator(dureu::MANIP_MODE mode = dureu::MANIP_NONE);
-    dureu::MANIP_MODE getMode();
     void setMode(dureu::MANIP_MODE mode);
 protected:
     virtual bool performMovementLeftMouseButton (const double eventTimeDelta, const double dx, const double dy);
