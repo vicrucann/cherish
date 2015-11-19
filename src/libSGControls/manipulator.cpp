@@ -5,6 +5,16 @@ Manipulator::Manipulator(dureu::MANIP_MODE mode):
 {
 }
 
+dureu::MANIP_MODE Manipulator::getMode()
+{
+    return _mode;
+}
+
+void Manipulator::setMode(dureu::MANIP_MODE mode)
+{
+    _mode = mode;
+}
+
 bool Manipulator::performMovementLeftMouseButton(const double eventTimeDelta, const double dx, const double dy)
 {
     switch (_mode){
