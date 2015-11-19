@@ -1,6 +1,23 @@
 #ifndef ROOTSCENE
 #define ROOTSCENE
 
+/* RootScene
+ * It contains all the entities that will appear on the scene.
+ * It includes both user scene and default entities (axis).
+ * The user scene has the following structure (tree branch example):
+ * [Root] -> <Transform1> -> (Canvas11) -> `Stroke111`
+ *        -> <Transform2> -> (Canvas21)
+ *                        -> (Canvas22) -> `Stroke221`
+ *                                      -> `Stroke222`
+ * ...
+ *
+ * Where we denote:
+ * [] - an osg::Group inherited
+ * <> - osg::MatrixTransform inherited
+ * () - osg::Geode inherited
+ * `` - osg::Drawable inherited
+ */
+
 #include <iostream>
 #include <string>
 

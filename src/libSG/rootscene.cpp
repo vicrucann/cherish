@@ -66,8 +66,10 @@ void RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg:
     this->addCanvas(transform, color);
 }
 
-// the tree branch will always look like this:
-// root -> transform -> canvas
+// The tree branch will always look like this:
+// Toot -> Transform -> Canvas
+// So whenever trying to deleteCanvas, it is actually necessary to delete
+// its parental transform only (when using removeChild() from root)
 void RootScene::addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f& color){
     osg::ref_ptr<Canvas> cnv = new Canvas();
     cnv->setColor(color);
@@ -95,6 +97,8 @@ bool RootScene::deleteCanvas(Canvas *cnv)
         std::cerr << "The canvas pointer is NULL" << std::endl;
         return true;
     }
+    // delete the parental transform and the child canvas
+    // will be deleted automatically
     return _userScene->removeChild(cnv->getParent(0));
 }
 
