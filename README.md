@@ -31,9 +31,9 @@ Implementation steps:
     * Strokes - entered by Stylus
     * 2D geometric forms: polylines, rectangles, circles 
     * Photos = textured canvases?
-* (done) Basic entities - navigation (**Nov 2015**)
+* (done) Camera navigation: zoom, pan, rotate and different mouse modes (**Nov 2015**)
 * Building and manipulation of a scene graph (**Nov 2015**)
-    * Add / delete a canvas
+    * (done)Add / delete a canvas
     * Switch to another canvas
     * Add / delete a stroke to a current canvas
     * Add / delete a geometric shape to a current canvas
