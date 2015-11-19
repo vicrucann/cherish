@@ -32,6 +32,7 @@ private slots:
     void onSetStylusSketchOFF();
     void onSetGloAxesON();
     void onSetGloAxesOFF();
+    void onDeleteCanvas();
 private:
     ViewWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
 

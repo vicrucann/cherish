@@ -17,6 +17,8 @@ set (SOURCES_SG
     rootscene.cpp
     stroke.h
     stroke.cpp
+    findnodevisitor.h
+    findnodevisitor.cpp
 )
 
 add_library(libSG ${SOURCES_SG})

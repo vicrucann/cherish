@@ -19,13 +19,14 @@ public:
     RootScene();
     ~RootScene();
 
-    void setAxesVisible();
+    void setAxesVisible(); // replace by one function: setAxesVisibility(bool)
     void setAxesInvisible();
 
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const osg::Vec4& color = dureu::CANVAS_CLR_CURRENT);
     void addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f &color = dureu::CANVAS_CLR_CURRENT);
-
-
+    bool deleteCanvas(const std::string name);
+    bool deleteCanvas(const int id);
+    bool deleteCanvas(Canvas* cnv);
 
     bool loadSceneFromFile(const std::string fname);
 private:

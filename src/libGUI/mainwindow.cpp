@@ -33,6 +33,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     menuTest->addAction("Global axes ON", this, SLOT(onSetGloAxesON()));
     menuTest->addAction("Global axes OFF", this, SLOT(onSetGloAxesOFF()));
 
+    QMenu* menuTC = menuBar->addMenu("TestCanvas");
+    menuTC->addAction("Delete canvas 3", this, SLOT(onDeleteCanvas()));
+
     this->setCentralWidget(_mdiArea);
 }
 
@@ -114,6 +117,12 @@ void MainWindow::onSetGloAxesON() {
 
 void MainWindow::onSetGloAxesOFF() {
     _rootScene->setAxesInvisible();
+}
+
+void MainWindow::onDeleteCanvas()
+{
+    // this is just to show how a certain canvas can be deleted
+    _rootScene->deleteCanvas(2); // we delete a canvas with id "3"
 }
 
 ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)

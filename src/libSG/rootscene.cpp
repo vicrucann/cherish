@@ -7,11 +7,13 @@
 #include <osgDB/ReadFile>
 #include "osg/MatrixTransform"
 #include <osgUtil/SceneView>
+#include <osg/ValueObject>
 
 #include "rootscene.h"
 #include "axes.h"
 #include "settings.h"
 #include "canvas.h"
+#include "findnodevisitor.h"
 
 RootScene::RootScene():
     _userScene(new osg::Group),
@@ -64,12 +66,36 @@ void RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg:
     this->addCanvas(transform, color);
 }
 
+// the tree branch will always look like this:
+// root -> transform -> canvas
 void RootScene::addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f& color){
     osg::ref_ptr<Canvas> cnv = new Canvas();
     cnv->setColor(color);
     this->setCanvasName(cnv);
     transform->addChild(cnv.get());
     _userScene->addChild(transform.get());
+}
+
+bool RootScene::deleteCanvas(const std::string name)
+{
+    std::cout << "Trying to delete canvas with name " << name << std::endl;
+    findNodeVisitor fnv(name);
+    _userScene->accept(fnv);
+    return deleteCanvas(dynamic_cast<Canvas*>(fnv.getNode()));
+}
+
+bool RootScene::deleteCanvas(const int id)
+{
+    return deleteCanvas(dureu::NAME_CANVAS + std::to_string(static_cast<long double>(id)));
+}
+
+bool RootScene::deleteCanvas(Canvas *cnv)
+{
+    if (!cnv){
+        std::cerr << "The canvas pointer is NULL" << std::endl;
+        return true;
+    }
+    return _userScene->removeChild(cnv->getParent(0));
 }
 
 bool RootScene::loadSceneFromFile(const std::string fname){
@@ -82,14 +108,6 @@ bool RootScene::loadSceneFromFile(const std::string fname){
 }
 
 void RootScene::setCanvasName(osg::ref_ptr<Canvas>& cnv){
-    // name = Canvas1, Canvas2, ... where number is defined by _idCanvas
-    // better way to deal with the name:
-    // node->setName("Canvas1"); // as before
-    // node->setUserValue("id", _idCanvas);
-    // to retirive:
-    // node->getUserValue("id", returnedStrings);
-    // std::string name = node->getName();
-    cnv->setName(dureu::NAME_CANVAS +
-                 static_cast<std::ostringstream*>( &(std::ostringstream() << _idCanvas) )->str());
-    _idCanvas++;
+    cnv->setName(dureu::NAME_CANVAS + std::to_string(static_cast<long double>(_idCanvas++)));
+    std::cout << "New Canvas created: " << cnv->getName() << std::endl;
 }
