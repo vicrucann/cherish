@@ -15,10 +15,10 @@ set (SOURCES_SGControls
     eventhandler.cpp
     basehandler.h
     basehandler.cpp
-    basemanipulator.h
-    basemanipulator.cpp
-    zoommanipulator.h
-    rotatemanipulator.h
+    #basemanipulator.h
+    #basemanipulator.cpp
+    #zoommanipulator.h
+    #rotatemanipulator.h
     manipulator.h
     manipulator.cpp
 )
