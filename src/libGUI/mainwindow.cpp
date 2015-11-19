@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     _rootScene(new RootScene())
 {
     this->onCreateViewer();
-    this->addDockWidget(Qt::LeftDockWidgetArea, _bookmarks);
+    //this->addDockWidget(Qt::LeftDockWidgetArea, _bookmarks);
 
     QMenuBar* menuBar = this->menuBar();
     QMenu* menuTest = menuBar->addMenu("Test");

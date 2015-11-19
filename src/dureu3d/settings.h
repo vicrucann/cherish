@@ -78,7 +78,6 @@ const osg::Vec4 CANVAS_CLR_CURRENT = solarized::magenta;
 const osg::Vec4 CANVAS_CLR_PREVIOUS = solarized::violet;
 const osg::Vec4 CANVAS_CLR_REST = solarized::base1;
 const osg::Vec4 CANVAS_CLR_SELECTED = solarized::red;
-const std::string CANVAS_NAME = "Canvas";
 
 const float CANVAS_MINW = 1.2f; // half width
 const float CANVAS_MINH = 1.0f; // half height
@@ -89,6 +88,12 @@ const float AXES_SIZE = 0.3f;
 const osg::Vec4 AXES_CLR_X = solarized::blue;
 const osg::Vec4 AXES_CLR_Y = solarized::cyan;
 const osg::Vec4 AXES_CLR_Z = solarized::red;
+
+// entity "names"
+const std::string NAME_CANVAS = "Canvas";
+const std::string NAME_STROKE = "Stroke";
+const std::string NAME_GEOMETRY = "Geometry";
+const std::string NAME_IMAGE = "Image";
 
 } // namespace dura
 

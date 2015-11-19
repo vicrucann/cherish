@@ -89,7 +89,7 @@ void RootScene::setCanvasName(osg::ref_ptr<Canvas>& cnv){
     // to retirive:
     // node->getUserValue("id", returnedStrings);
     // std::string name = node->getName();
-    cnv->setName(dureu::CANVAS_NAME +
+    cnv->setName(dureu::NAME_CANVAS +
                  static_cast<std::ostringstream*>( &(std::ostringstream() << _idCanvas) )->str());
     _idCanvas++;
 }
