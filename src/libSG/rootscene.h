@@ -39,8 +39,6 @@ public:
     RootScene();
     ~RootScene();
 
-    void setAxesVisible(); // replace by one function: setAxesVisibility(bool)
-    void setAxesInvisible();
     void setAxesVisibility(bool vis);
 
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const osg::Vec4& color = dureu::CANVAS_CLR_CURRENT);

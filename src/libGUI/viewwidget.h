@@ -7,6 +7,9 @@
  * Wacom tablet.
  * OSG captures those events and does corresponding scene graph
  * manipulation or editing.
+ *
+ * For more related info see chapter 9 "Interacting with outside elements"
+ * of the book "OSG beginner's guide"
  */
 
 #include <QOpenGLWidget>
@@ -27,7 +30,7 @@ public slots:
     void getStylusSketchStatus(bool sketch);
 protected:
     void paintEvent(QPaintEvent* pev) Q_DECL_OVERRIDE;
-    void paintGL() Q_DECL_OVERRIDE;
+    void paintGL() Q_DECL_OVERRIDE; // the osg::frame() is called from here
     void resizeGL(int w, int h) Q_DECL_OVERRIDE;
 
     virtual void keyPressEvent(QKeyEvent* event);
@@ -49,7 +52,10 @@ private:
     // for more info see reference osgGA::EventQueue and osgGA::GUIEventAdapter
     // the later's enums are used in EventHandler.h
 
-    osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _graphicsWindow; // osg graphics context
+    // to create a graphics context without worrying about the rendering context
+    // and related buffer attributes
+    osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _graphicsWindow;
+
     osg::ref_ptr<osgViewer::CompositeViewer> _viewer; // Camera setup
     osg::ref_ptr<RootScene>& _root; // scene to view
 
