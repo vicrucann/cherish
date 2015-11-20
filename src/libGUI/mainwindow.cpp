@@ -112,11 +112,11 @@ void MainWindow::onSetStylusSketchOFF(){
 }
 
 void MainWindow::onSetGloAxesON() {
-    _rootScene->setAxesVisible();
+    _rootScene->setAxesVisibility(true);
 }
 
 void MainWindow::onSetGloAxesOFF() {
-    _rootScene->setAxesInvisible();
+    _rootScene->setAxesVisibility(false);
 }
 
 void MainWindow::onDeleteCanvas()

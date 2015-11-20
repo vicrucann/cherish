@@ -18,7 +18,7 @@
 
 RootScene::RootScene():
     _userScene(new osg::Group),
-    _axis(new osg::Switch),
+    _axesSwitch(new osg::Switch),
     _axes(new Axes(osg::Vec3(0.0f,0.0f,0.0f),
                    osg::Vec3(dureu::AXES_SIZE,0.0f,0.0f),
                    osg::Vec3(0.0f,dureu::AXES_SIZE,0.0f),
@@ -28,8 +28,8 @@ RootScene::RootScene():
     // Just to show an example of how the axis type should be used
     // The switch is so that to have possibility to chose whether to
     // render the axis or not
-    _axis->addChild(_axes.get(), true);
-    this->addChild(_axis.get());
+    _axesSwitch->addChild(_axes.get(), true);
+    this->addChild(_axesSwitch.get());
     //this->addChild(_axes.get());
 
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
@@ -49,24 +49,9 @@ RootScene::RootScene():
 
 RootScene::~RootScene(){}
 
-void RootScene::setAxesVisible() // not working version
+void RootScene::setAxesVisibility(bool vis)
 {
-    _axis->setChildValue(_axes.get(), true);
-    /*const int imask = (int)osgUtil::SceneView::VariablesMask::ALL_VARIABLES;
-    _axes->getChild(0)->setNodeMask(0xffffffff);
-    _axes->setInheritanceMask(imask);
-    _axes->setCullMask(0xffffffff);
-    _axes->setNodeMask(0xffffffff);*/
-}
-
-void RootScene::setAxesInvisible() // not working version
-{
-    _axis->setChildValue(_axes.get(), false);
-    /*const int imask = (int)(osgUtil::SceneView::VariablesMask::ALL_VARIABLES &
-                 ~osgUtil::SceneView::VariablesMask::CULL_MASK);
-    _axes->getChild(0)->setNodeMask(0x02);
-    _axes->setInheritanceMask(imask);
-    _axes->setCullMask(0x04);*/
+    _axesSwitch->setChildValue(_axes.get(), vis);
 }
 
 void RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg::Vec4 &color){

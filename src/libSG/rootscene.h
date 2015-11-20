@@ -10,12 +10,14 @@
  *                        -> (Canvas22) -> `Stroke221`
  *                                      -> `Stroke222`
  * ...
+ *       -> {Switch} -> {Axes}
  *
  * Where we denote:
  * [] - an osg::Group inherited
  * <> - osg::MatrixTransform inherited
  * () - osg::Geode inherited
  * `` - osg::Drawable inherited
+ * {} - other osg inherited types such as camera or switch nodes
  */
 
 #include <iostream>
@@ -39,6 +41,7 @@ public:
 
     void setAxesVisible(); // replace by one function: setAxesVisibility(bool)
     void setAxesInvisible();
+    void setAxesVisibility(bool vis);
 
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const osg::Vec4& color = dureu::CANVAS_CLR_CURRENT);
     void addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f &color = dureu::CANVAS_CLR_CURRENT);
@@ -51,7 +54,7 @@ private:
     void setCanvasName(osg::ref_ptr<Canvas> &cnv);
 
     osg::ref_ptr<osg::Group> _userScene;
-    osg::ref_ptr<osg::Switch> _axis;
+    osg::ref_ptr<osg::Switch> _axesSwitch;
     osg::ref_ptr<Axes> _axes;
     unsigned int _idCanvas;
 };
