@@ -74,7 +74,6 @@ void RootScene::addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const o
 
 bool RootScene::deleteCanvas(const std::string name)
 {
-    std::cout << "Trying to delete canvas with name " << name << std::endl;
     findNodeVisitor fnv(name);
     _userScene->accept(fnv);
     return deleteCanvas(dynamic_cast<Canvas*>(fnv.getNode()));
@@ -87,13 +86,19 @@ bool RootScene::deleteCanvas(const int id)
 
 bool RootScene::deleteCanvas(Canvas *cnv)
 {
+    std::cout << "Trying to delete canvas with name " << name;
     if (!cnv){
         std::cerr << "The canvas pointer is NULL" << std::endl;
         return true;
     }
     // delete the parental transform and the child canvas
     // will be deleted automatically
-    return _userScene->removeChild(cnv->getParent(0));
+    bool success = _userScene->removeChild(cnv->getParent(0));
+    if (success)
+        std::cout << " success" << std::endl;
+    else
+        std::cout << " failure" << std::endl;
+    return success;
 }
 
 bool RootScene::loadSceneFromFile(const std::string fname){
