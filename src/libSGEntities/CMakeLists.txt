@@ -6,6 +6,7 @@ include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 include_directories(
     ${CMAKE_SOURCE_DIR}/libGUI
     ${CMAKE_SOURCE_DIR}/dureu3d
+    ${CMAKE_SOURCE_DIR}/libSGUtils
 )
 
 set (SOURCES_SGEntities

@@ -8,7 +8,9 @@ include_directories(
 )
 
 set (SOURCES_SGUtils
-	logfilehandler.h
+    logfilehandler.h
+    observescenecallback.h
+    observescenecallback.cpp
 )
 
 add_library(libSGUtils ${SOURCES_SGUtils})

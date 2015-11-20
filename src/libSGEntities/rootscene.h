@@ -33,6 +33,7 @@
 #include "axes.h"
 #include "canvas.h"
 #include "settings.h"
+//#include "observescenecallback.h"
 
 class RootScene : public osg::Group {
 public:
@@ -55,6 +56,7 @@ private:
     osg::ref_ptr<osg::Switch> _axesSwitch;
     osg::ref_ptr<Axes> _axes;
     unsigned int _idCanvas;
+    //osg::ref_ptr<ObserveSceneCallback> _observer;
 };
 
 #endif // SCENE

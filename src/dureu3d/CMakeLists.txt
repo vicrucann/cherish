@@ -1,7 +1,10 @@
 project(dureu3d)
 cmake_minimum_required(VERSION 2.8.11)
 
-include_directories(${CMAKE_SOURCE_DIR}/libGUI ${CMAKE_SOURCE_DIR}/libSGEntities)
+include_directories(
+    ${CMAKE_SOURCE_DIR}/libGUI
+    ${CMAKE_SOURCE_DIR}/libSGEntities
+)
 
 set(SOURCES
     main.cpp

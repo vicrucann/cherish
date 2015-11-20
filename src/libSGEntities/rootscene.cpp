@@ -24,6 +24,7 @@ RootScene::RootScene():
                    osg::Vec3(0.0f,dureu::AXES_SIZE,0.0f),
                    osg::Vec3(0.0f,0.0f,dureu::AXES_SIZE))),
     _idCanvas(0)
+    //_observer(new ObserveSceneCallback)
 {
     // Just to show an example of how the axis type should be used
     // The switch is so that to have possibility to chose whether to
@@ -45,6 +46,9 @@ RootScene::RootScene():
                     dureu::CANVAS_CLR_REST);
 
     this->addChild(_userScene.get());
+
+    //_observer->setScenePointer(_userScene.get());
+    //_userScene->addUpdateCallback(_observer.get());
 }
 
 RootScene::~RootScene(){}
