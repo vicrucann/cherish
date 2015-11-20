@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 2.8.11)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/dureu3d
-    ${CMAKE_SOURCE_DIR}/libSG
+    ${CMAKE_SOURCE_DIR}/libSGEntities
     ${CMAKE_SOURCE_DIR}/libSGControls
+    ${CMAKE_SOURCE_DIR}/libSGUtils
 )
 
 find_package(Qt5Core)

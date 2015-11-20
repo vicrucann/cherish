@@ -7,16 +7,12 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/libSGEntities
 )
 
-
-set (SOURCES_SGControls
-    eventhandler.h
-    eventhandler.cpp
-    manipulator.h
-    manipulator.cpp
+set (SOURCES_SGUtils
+	logfilehandler.h
 )
 
-add_library(libSGControls ${SOURCES_SGControls})
+add_library(libSGUtils ${SOURCES_SGUtils})
 
-target_link_libraries( libSGControls
+target_link_libraries( libSGUtils
 	${OPENSCENEGRAPH_LIBRARIES}
 )

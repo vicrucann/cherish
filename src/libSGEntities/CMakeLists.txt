@@ -4,11 +4,11 @@ find_package(OpenSceneGraph REQUIRED COMPONENTS osgDB osgGA osgUtil osgViewer)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 include_directories(
-  ${CMAKE_SOURCE_DIR}/libGUI
-  ${CMAKE_SOURCE_DIR}/dureu3d
+    ${CMAKE_SOURCE_DIR}/libGUI
+    ${CMAKE_SOURCE_DIR}/dureu3d
 )
 
-set (SOURCES_SG
+set (SOURCES_SGEntities
     canvas.h
     canvas.cpp
     axes.h
@@ -21,8 +21,10 @@ set (SOURCES_SG
     findnodevisitor.cpp
 )
 
-add_library(libSG ${SOURCES_SG})
+add_library(libSGEntities
+    ${SOURCES_SGEntities}
+)
 
-target_link_libraries( libSG
+target_link_libraries( libSGEntities
   ${OPENSCENEGRAPH_LIBRARIES}
 )

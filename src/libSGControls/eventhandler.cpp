@@ -17,7 +17,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     }
 }
 
-void EventHandler::resetMode(dureu::MOUSE_MODE mode)
+void EventHandler::setMode(dureu::MOUSE_MODE mode)
 {
     _mode = mode;
 }

@@ -23,5 +23,6 @@ include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 add_subdirectory(dureu3d)
 add_subdirectory(libGUI)
-add_subdirectory(libSG)
+add_subdirectory(libSGEntities)
 add_subdirectory(libSGControls)
+add_subdirectory(libSGUtils)

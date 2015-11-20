@@ -20,7 +20,7 @@ class EventHandler : public osgGA::GUIEventHandler {
 public:
     EventHandler(dureu::MOUSE_MODE mode = dureu::MOUSE_PICK);
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-    void resetMode(dureu::MOUSE_MODE mode);
+    void setMode(dureu::MOUSE_MODE mode);
 private:
     dureu::MOUSE_MODE _mode;
 };
