@@ -8,6 +8,7 @@
 #include "osg/MatrixTransform"
 #include <osgUtil/SceneView>
 #include <osg/ValueObject>
+#include <osg/Switch>
 
 #include "rootscene.h"
 #include "axes.h"
@@ -17,13 +18,19 @@
 
 RootScene::RootScene():
     _userScene(new osg::Group),
+    _axis(new osg::Switch),
     _axes(new Axes(osg::Vec3(0.0f,0.0f,0.0f),
                    osg::Vec3(dureu::AXES_SIZE,0.0f,0.0f),
                    osg::Vec3(0.0f,dureu::AXES_SIZE,0.0f),
                    osg::Vec3(0.0f,0.0f,dureu::AXES_SIZE))),
     _idCanvas(0)
 {
-    this->addChild(_axes.get());
+    // Just to show an example of how the axis type should be used
+    // The switch is so that to have possibility to chose whether to
+    // render the axis or not
+    _axis->addChild(_axes.get(), true);
+    this->addChild(_axis.get());
+    //this->addChild(_axes.get());
 
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
     trans_xz->setMatrix(osg::Matrix::identity());
@@ -44,20 +51,22 @@ RootScene::~RootScene(){}
 
 void RootScene::setAxesVisible() // not working version
 {
-    const int imask = (int)osgUtil::SceneView::VariablesMask::ALL_VARIABLES;
+    _axis->setChildValue(_axes.get(), true);
+    /*const int imask = (int)osgUtil::SceneView::VariablesMask::ALL_VARIABLES;
     _axes->getChild(0)->setNodeMask(0xffffffff);
     _axes->setInheritanceMask(imask);
     _axes->setCullMask(0xffffffff);
-    _axes->setNodeMask(0xffffffff);
+    _axes->setNodeMask(0xffffffff);*/
 }
 
 void RootScene::setAxesInvisible() // not working version
 {
-    const int imask = (int)(osgUtil::SceneView::VariablesMask::ALL_VARIABLES &
+    _axis->setChildValue(_axes.get(), false);
+    /*const int imask = (int)(osgUtil::SceneView::VariablesMask::ALL_VARIABLES &
                  ~osgUtil::SceneView::VariablesMask::CULL_MASK);
     _axes->getChild(0)->setNodeMask(0x02);
     _axes->setInheritanceMask(imask);
-    _axes->setCullMask(0x04);
+    _axes->setCullMask(0x04);*/
 }
 
 void RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg::Vec4 &color){
