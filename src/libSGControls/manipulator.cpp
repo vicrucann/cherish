@@ -19,6 +19,8 @@ bool Manipulator::performMovementLeftMouseButton(const double eventTimeDelta, co
         return this->wrapPan(eventTimeDelta, dx, dy);
     case dureu::MANIP_ROTATE:
         return this->wrapRotation(eventTimeDelta, dx, dy);
+    case dureu::MANIP_FIXEDVIEW:
+        return this->wrapPan(eventTimeDelta, dx, dy);
     case dureu::MANIP_NONE:
         return false;
     default:
@@ -28,7 +30,10 @@ bool Manipulator::performMovementLeftMouseButton(const double eventTimeDelta, co
 
 bool Manipulator::performMovementMiddleMouseButton(const double eventTimeDelta, const double dx, const double dy)
 {
-    return this->wrapRotation(eventTimeDelta, dx, dy);
+    if (_mode == dureu::MANIP_FIXEDVIEW)
+        return false;
+    else
+        return this->wrapRotation(eventTimeDelta, dx, dy);
 }
 
 bool Manipulator::performMovementRightMouseButton(const double eventTimeDelta, const double dx, const double dy)

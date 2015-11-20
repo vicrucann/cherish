@@ -86,7 +86,7 @@ bool RootScene::deleteCanvas(const int id)
 
 bool RootScene::deleteCanvas(Canvas *cnv)
 {
-    std::cout << "Trying to delete canvas with name " << name;
+    std::cout << "Trying to delete canvas with name " << cnv->getName();
     if (!cnv){
         std::cerr << "The canvas pointer is NULL" << std::endl;
         return true;

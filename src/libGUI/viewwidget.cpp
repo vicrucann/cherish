@@ -20,8 +20,6 @@
 
 #include "viewwidget.h"
 #include "settings.h"
-#include "eventhandler.h"
-#include "basehandler.h"
 #include "manipulator.h"
 
 ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::WindowFlags f, int viewmode):
@@ -70,7 +68,9 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     //view->addEventHandler(new osgViewer::StatsHandler);
     //view->addEventHandler(new PickHandler);
     Manipulator* man = new Manipulator(dureu::MANIP_ROTATE);
+    Manipulator* manfix = new Manipulator(dureu::MANIP_FIXEDVIEW);
     man->setAllowThrow(false);
+    manfix->setAllowThrow(false);
     view->setCameraManipulator(man);
 
     _viewer->addView(view);
@@ -86,7 +86,8 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
                                                      center,
                                                      up);
         sideView->getCamera()->setProjectionMatrixAsPerspective(30.f, aspectRatio, 1.f, 1000.f);
-        sideView->addEventHandler(new EventHandler(dureu::MOUSE_NAVIGATE_FIXED));
+        sideView->setCameraManipulator(manfix);
+        //sideView->addEventHandler(new EventHandler(dureu::MOUSE_NAVIGATE_FIXED));
 
         _viewer->addView(sideView);
     }

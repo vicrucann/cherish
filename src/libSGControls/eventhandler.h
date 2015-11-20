@@ -15,7 +15,6 @@
 #include <osg/ref_ptr>
 
 #include "settings.h"
-#include "fixedviewhandler.h"
 
 class EventHandler : public osgGA::GUIEventHandler {
 public:
@@ -24,7 +23,6 @@ public:
     void resetMode(dureu::MOUSE_MODE mode);
 private:
     dureu::MOUSE_MODE _mode;
-    osg::ref_ptr<FixedViewHandler> _FVH;
 };
 
 #endif // EVENTHANDLER

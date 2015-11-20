@@ -9,16 +9,8 @@ include_directories(
 
 
 set (SOURCES_SGControls
-    fixedviewhandler.h
-    fixedviewhandler.cpp
     eventhandler.h
     eventhandler.cpp
-    basehandler.h
-    basehandler.cpp
-    #basemanipulator.h
-    #basemanipulator.cpp
-    #zoommanipulator.h
-    #rotatemanipulator.h
     manipulator.h
     manipulator.cpp
 )
