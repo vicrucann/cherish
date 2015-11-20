@@ -6,6 +6,7 @@ include_directories(${CMAKE_SOURCE_DIR}/libGUI ${CMAKE_SOURCE_DIR}/libSG)
 set(SOURCES
     main.cpp
     settings.h
+    logfilehandler.h
 )
 
 add_executable(${PROJECT_NAME} ${SOURCES})

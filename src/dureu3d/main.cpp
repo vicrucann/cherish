@@ -7,7 +7,8 @@
 
 int main(int argc, char** argv)
 {
-    std::cout << "Dura-Europus In Situ: 3D reconstruction of historical sites." << std::endl;
+    osg::notify(osg::NOTICE) << "Dura-Europus In Situ: 3D reconstruction of historical sites." << std::endl;
+    osg::notify(osg::NOTICE) << "Starting application..." << std::endl;
 
     DureuApplication dura_app(argc, argv);
     QDesktopWidget* desktop = dura_app.desktop();
