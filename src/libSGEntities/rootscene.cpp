@@ -69,22 +69,28 @@ void RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg:
 // So whenever trying to deleteCanvas, it is actually necessary to delete
 // its parental transform only (when using removeChild() from root)
 void RootScene::addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f& color){
-    osg::ref_ptr<Canvas> cnv = new Canvas();
+    osg::ref_ptr<Canvas> cnv = new Canvas(transform);
     cnv->setColor(color);
     this->setCanvasName(cnv);
-    transform->addChild(cnv.get());
-    _userScene->addChild(transform.get());
+    //transform->addChild(cnv.get());
+    _userScene->addChild(cnv.get());
 }
 
 bool RootScene::deleteCanvas(const std::string name)
 {
+    std::cout << "deleteCanvas string" << std::endl;
     findNodeVisitor fnv(name);
     _userScene->accept(fnv);
+    if (fnv.getNode() == NULL){
+        std::cout << "No entity with such name found: " << name << std::endl;
+        return true;
+    }
     return deleteCanvas(dynamic_cast<Canvas*>(fnv.getNode()));
 }
 
 bool RootScene::deleteCanvas(const int id)
 {
+    std::cout << "deleteCanvas int" << std::endl;
     return deleteCanvas(dureu::NAME_CANVAS + std::to_string(static_cast<long double>(id)));
 }
 
@@ -97,7 +103,7 @@ bool RootScene::deleteCanvas(Canvas *cnv)
     }
     // delete the parental transform and the child canvas
     // will be deleted automatically
-    bool success = _userScene->removeChild(cnv->getParent(0));
+    bool success = _userScene->removeChild(cnv);
     if (success)
         std::cout << " success" << std::endl;
     else

@@ -122,6 +122,7 @@ void MainWindow::onSetGloAxesOFF() {
 void MainWindow::onDeleteCanvas()
 {
     // this is just to show how a certain canvas can be deleted
+    std::cout << "backcall in" << std::endl;
     _rootScene->deleteCanvas(2); // we delete a canvas with id "3"
 }
 

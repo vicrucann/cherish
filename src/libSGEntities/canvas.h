@@ -41,13 +41,17 @@
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
+#include <osg/Group>
 #include <osg/BoundingBox>
 #include <osg/Geometry>
+#include <osg/MatrixTransform>
+#include <osg/Switch>
 
-class Canvas : public osg::Geode {
+class Canvas : public osg::Group {
 public:
-    Canvas();
-    Canvas(osg::Vec3f center, osg::Vec3f pA, osg::Vec3f pB, osg::Vec4f color);
+//    Canvas();
+//    Canvas(osg::Vec3f center, osg::Vec3f pA, osg::Vec3f pB, osg::Vec4f color);
+    Canvas(osg::MatrixTransform *transform);
     ~Canvas(){}
 
     void setColor(osg::Vec4f color);
@@ -58,7 +62,10 @@ private:
     osg::Vec3f _normal;
     osg::Vec4f _color;
     osg::Vec3Array* _vertices;
+    osg::ref_ptr<osg::Geode> _geode;
     osg::ref_ptr<osg::Geometry> _geometry;
+    osg::ref_ptr<osg::MatrixTransform> _transform;
+    osg::ref_ptr<osg::Switch> _switch;
 };
 
 #endif // CANVAS

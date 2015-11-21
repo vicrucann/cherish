@@ -13,6 +13,7 @@
 #include <osg/Plane>
 #include <osg/BlendFunc>
 
+/*
 Canvas::Canvas():
     _center(osg::Vec3f(0.0f, 0.0f, 0.0f)),
     _normal(osg::Vec3f(0.0f, -1.0f, 0.0f)),
@@ -28,10 +29,11 @@ Canvas::Canvas():
     (*_vertices)[2] = osg::Vec3f(-dureu::CANVAS_MINW, 0.0f, -dureu::CANVAS_MINH);
     (*_vertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, 0.0f, -dureu::CANVAS_MINH);
     this->addCanvasDrawables();
-}
+}*/
 
 /* Given three points on a plane (canvas), color and bound margin;
  * initialize normal and canvas current size */
+/*
 Canvas::Canvas(osg::Vec3f center, osg::Vec3f pA, osg::Vec3f pB, osg::Vec4f color):
     _center(center),
     _normal((pA - center)^(pB - center)), // cross product returns normal
@@ -46,6 +48,26 @@ Canvas::Canvas(osg::Vec3f center, osg::Vec3f pA, osg::Vec3f pB, osg::Vec4f color
     osg::Plane plane(_normal, _center);
     assert(plane.valid());
     this->addCanvasDrawables();
+}*/
+
+Canvas::Canvas(osg::MatrixTransform *transform):
+    _center(osg::Vec3f(0.0f, 0.0f, 0.0f)),
+    _normal(osg::Vec3f(0.0f, -1.0f, 0.0f)),
+    _color(dureu::CANVAS_CLR_REST),
+    _vertices(new osg::Vec3Array(4)),
+    _geode(new osg::Geode),
+    _geometry(new osg::Geometry),
+    _transform(transform),
+    _switch(new osg::Switch)
+{
+    (*_vertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, 0.0f, dureu::CANVAS_MINH);
+    (*_vertices)[1] = osg::Vec3f(-dureu::CANVAS_MINW, 0.0f, dureu::CANVAS_MINH);
+    (*_vertices)[2] = osg::Vec3f(-dureu::CANVAS_MINW, 0.0f, -dureu::CANVAS_MINH);
+    (*_vertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, 0.0f, -dureu::CANVAS_MINH);
+    this->addCanvasDrawables();
+    _transform->addChild(_geode.get());
+    _switch->addChild(_transform.get(), true);
+    this->addChild(_switch.get());
 }
 
 void Canvas::addCanvasDrawables(){
@@ -67,7 +89,7 @@ void Canvas::addCanvasDrawables(){
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     _geometry->setStateSet(stateset);
 
-    this->addDrawable(_geometry);
+    _geode->addDrawable(_geometry);
 
     //this->getOrCreateStateSet()->setAttributeAndModes(linewidth, osg::StateAttribute::ON);
 }
