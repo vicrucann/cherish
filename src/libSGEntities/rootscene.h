@@ -28,7 +28,6 @@
 #include <osg/Geode>
 #include <osg/Node>
 #include <osg/Matrix>
-#include <osg/Switch>
 
 #include "axes.h"
 #include "canvas.h"
@@ -53,7 +52,6 @@ private:
     void setCanvasName(osg::ref_ptr<Canvas> &cnv);
 
     osg::ref_ptr<osg::Group> _userScene;
-    osg::ref_ptr<osg::Switch> _axesSwitch;
     osg::ref_ptr<Axes> _axes;
     unsigned int _idCanvas;
     //osg::ref_ptr<ObserveSceneCallback> _observer;

@@ -9,11 +9,17 @@
 #include <osg/LineWidth>
 #include <osg/Geode>
 
-Axes::Axes(const osg::Vec3& corner,const osg::Vec3& xdir,const osg::Vec3& ydir,const osg::Vec3& zdir):
+Axes::Axes():
     _geometry(new osg::Geometry),
-    _geode(new osg::Geode)
+    _geode(new osg::Geode),
+    _camera(new osg::Camera),
+    _switch(new osg::Switch)
 {
-    //osg::ref_ptr<osg::Geometry> geom = new osg::Geometry;
+    osg::Vec3 corner = osg::Vec3(0.0f,0.0f,0.0f);
+    osg::Vec3 xdir = osg::Vec3(dureu::AXES_SIZE,0.0f,0.0f);
+    osg::Vec3 ydir = osg::Vec3(0.0f,dureu::AXES_SIZE,0.0f);
+    osg::Vec3 zdir = osg::Vec3(0.0f,0.0f,dureu::AXES_SIZE);
+
     osg::Vec3Array* coords = new osg::Vec3Array(6);
     (*coords)[0] = corner;
     (*coords)[1] = corner+xdir;
@@ -40,20 +46,27 @@ Axes::Axes(const osg::Vec3& corner,const osg::Vec3& xdir,const osg::Vec3& ydir,c
     linewidth->setWidth(3.0f);
     stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
     osg::BlendFunc* blendfunc = new osg::BlendFunc();
-    //blendfunc->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ANTIALIAS);
     stateset->setAttributeAndModes(blendfunc, osg::StateAttribute::ON);
     stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     _geometry->setStateSet(stateset);
 
-    //osg::ref_ptr<osg::Geode> axes = new osg::Geode;
     _geode->addDrawable(_geometry.get());
 
     /*  camera settings */
-    this->setClearMask(GL_DEPTH_BUFFER_BIT);
-    this->setRenderOrder(osg::Camera::POST_RENDER);
+    _camera->setClearMask(GL_DEPTH_BUFFER_BIT);
+    _camera->setRenderOrder(osg::Camera::POST_RENDER);
     //this->setReferenceFrame(osg::Camera::ABSOLUTE_RF);
-    this->addChild(_geode.get());
+    _camera->addChild(_geode.get());
+
+    _switch->addChild(_camera.get(), true);
+
+    this->addChild(_switch.get());
 }
 
 Axes::~Axes(){}
+
+void Axes::setVisibility(bool vis)
+{
+    _switch->setChildValue(_camera.get(), vis);
+}

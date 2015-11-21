@@ -18,21 +18,10 @@
 
 RootScene::RootScene():
     _userScene(new osg::Group),
-    _axesSwitch(new osg::Switch),
-    _axes(new Axes(osg::Vec3(0.0f,0.0f,0.0f),
-                   osg::Vec3(dureu::AXES_SIZE,0.0f,0.0f),
-                   osg::Vec3(0.0f,dureu::AXES_SIZE,0.0f),
-                   osg::Vec3(0.0f,0.0f,dureu::AXES_SIZE))),
+    _axes(new Axes),
     _idCanvas(0)
     //_observer(new ObserveSceneCallback)
 {
-    // Just to show an example of how the axis type should be used
-    // The switch is so that to have possibility to chose whether to
-    // render the axis or not
-    _axesSwitch->addChild(_axes.get(), true);
-    this->addChild(_axesSwitch.get());
-    //this->addChild(_axes.get());
-
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
     trans_xz->setMatrix(osg::Matrix::identity());
     this->addCanvas(trans_xz, dureu::CANVAS_CLR_CURRENT);
@@ -46,6 +35,7 @@ RootScene::RootScene():
                     dureu::CANVAS_CLR_REST);
 
     this->addChild(_userScene.get());
+    this->addChild(_axes.get());
 
     //_observer->setScenePointer(_userScene.get());
     //_userScene->addUpdateCallback(_observer.get());
@@ -53,9 +43,8 @@ RootScene::RootScene():
 
 RootScene::~RootScene(){}
 
-void RootScene::setAxesVisibility(bool vis)
-{
-    _axesSwitch->setChildValue(_axes.get(), vis);
+void RootScene::setAxesVisibility(bool vis) {
+    _axes->setVisibility(vis);
 }
 
 void RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg::Vec4 &color){
