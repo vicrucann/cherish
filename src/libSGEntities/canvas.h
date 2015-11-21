@@ -55,6 +55,7 @@ public:
     ~Canvas(){}
 
     void setColor(osg::Vec4f color);
+    void setVisibility(bool vis);
 
 private:
     void addCanvasDrawables();

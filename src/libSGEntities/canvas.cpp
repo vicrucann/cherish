@@ -70,6 +70,11 @@ Canvas::Canvas(osg::MatrixTransform *transform):
     this->addChild(_switch.get());
 }
 
+void Canvas::setVisibility(bool vis)
+{
+    _switch->setChildValue(_switch->getChild(0), vis);
+}
+
 void Canvas::addCanvasDrawables(){
     _geometry->setVertexArray(_vertices);
 

@@ -68,5 +68,5 @@ Axes::~Axes(){}
 
 void Axes::setVisibility(bool vis)
 {
-    _switch->setChildValue(_camera.get(), vis);
+    _switch->setChildValue(_switch->getChild(0), vis);
 }
