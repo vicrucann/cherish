@@ -3,6 +3,11 @@
 
 /* Axes branch structure:
  * Group -> Switch -> Camera -> Geode -> Drawables
+ * Inherits from osg::Group so that to hold any structure we want
+ * osg::Switch variable is used to set up visibility of the axes
+ * osg::Camera variable sets up the drawables to be always post rendered
+ * osg::Geode contains all the drawables of the axes
+ * osg::Drawable variable contans lines representing the axes
  */
 
 #include <osg/ref_ptr>
