@@ -13,43 +13,6 @@
 #include <osg/Plane>
 #include <osg/BlendFunc>
 
-/*
-Canvas::Canvas():
-    _center(osg::Vec3f(0.0f, 0.0f, 0.0f)),
-    _normal(osg::Vec3f(0.0f, -1.0f, 0.0f)),
-    _color(dureu::CANVAS_CLR_REST),
-    _vertices(new osg::Vec3Array(4)),
-    _geometry(new osg::Geometry)
-{
-    osg::Plane plane(_normal, _center);
-    assert(plane.valid());
-    //osg::Vec4 params = plane.asVec4();
-    (*_vertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, 0.0f, dureu::CANVAS_MINH);
-    (*_vertices)[1] = osg::Vec3f(-dureu::CANVAS_MINW, 0.0f, dureu::CANVAS_MINH);
-    (*_vertices)[2] = osg::Vec3f(-dureu::CANVAS_MINW, 0.0f, -dureu::CANVAS_MINH);
-    (*_vertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, 0.0f, -dureu::CANVAS_MINH);
-    this->addCanvasDrawables();
-}*/
-
-/* Given three points on a plane (canvas), color and bound margin;
- * initialize normal and canvas current size */
-/*
-Canvas::Canvas(osg::Vec3f center, osg::Vec3f pA, osg::Vec3f pB, osg::Vec4f color):
-    _center(center),
-    _normal((pA - center)^(pB - center)), // cross product returns normal
-    _color(color),
-    _vertices(new osg::Vec3Array(4)),
-    _geometry(new osg::Geometry)
-{
-    (*_vertices)[0] = pA + _center;
-    (*_vertices)[1] = pB + _center;
-    (*_vertices)[2] = -pA + _center;
-    (*_vertices)[3] = -pB + _center;
-    osg::Plane plane(_normal, _center);
-    assert(plane.valid());
-    this->addCanvasDrawables();
-}*/
-
 Canvas::Canvas(osg::MatrixTransform *transform):
     _center(osg::Vec3f(0.0f, 0.0f, 0.0f)),
     _normal(osg::Vec3f(0.0f, -1.0f, 0.0f)),

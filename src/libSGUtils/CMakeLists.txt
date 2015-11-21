@@ -11,6 +11,8 @@ set (SOURCES_SGUtils
     logfilehandler.h
     observescenecallback.h
     observescenecallback.cpp
+    findnodevisitor.h
+    findnodevisitor.cpp
 )
 
 add_library(libSGUtils ${SOURCES_SGUtils})
