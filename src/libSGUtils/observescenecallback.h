@@ -16,14 +16,12 @@
 #include <osg/observer_ptr>
 #include <osgText/Text>
 
-#include "rootscene.h"
-
 class ObserveSceneCallback : public osg::NodeCallback {
 public:
     virtual void operator ()(osg::Node* node, osg::NodeVisitor* nv);
-    void setScenePointer(RootScene* scene);
+    void setScenePointer(osg::Group* scene);
 private:
-    osg::observer_ptr<RootScene> _scene;
+    osg::observer_ptr<osg::Group> _scene;
     osg::ref_ptr<osgText::Text> _text;
 };
 
