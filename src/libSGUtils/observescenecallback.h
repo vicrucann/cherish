@@ -20,6 +20,7 @@ class ObserveSceneCallback : public osg::NodeCallback {
 public:
     virtual void operator ()(osg::Node* node, osg::NodeVisitor* nv);
     void setScenePointer(osg::Group* scene);
+    void setTextPointer(osgText::Text* text);
 private:
     osg::observer_ptr<osg::Group> _scene;
     osg::ref_ptr<osgText::Text> _text;
