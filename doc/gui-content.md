@@ -128,3 +128,23 @@ __________________________________________
 ## Coordinates
 
 ## Other panels: other tools
+
+### Scene structure
+
+```
+Entities        | Visibility | Current  
+----------------------------------------  
+Layer1          |     v      |    -  
+|__ Canvas1     |     v      |    -  
+|__ Canvas2     |     o      |    -  
+|__ Group1      |     v      |    -  
+    |__ Canvas3 |     v      |    -  
+    |__ Canvas4 |     o      |    -  
+Layer2          |     o      |    -  
+|__ Canvas5     |     o      |    *  
+-----------------------------------------  
+```
+
+Each `Visibility` property is represented by a `bool` variable. The visibility of a `Group` sets the same visibility for all of its children. The same holds for a `Layer`. It would be great to use an icon of an "eye" to represent the visibility: e.g., an eye would indicate the corresponding entity is visible, while the closed eye (or crossed eye) would indicate an entyty's invisibility (if no icons can be found, just use letters `v` to represent visibility and 'o' to represent invisibility). 
+
+The `Current` property indicates what is the current entity which is the user is editing. The corresponding entity would be selected by a color. It is possible to select an individual canvas or a group of canvases, a layer or a group of layers; it will also be possible to do selection of different entities, e.g.: different canvases and group of canvases, or a layer and canvases (using keyboard buttor `<Ctrl>` as an example).  The current property should be represented by an icon of a pen or a simple asteric character.
