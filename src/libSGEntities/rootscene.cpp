@@ -68,7 +68,7 @@ void RootScene::addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const o
 bool RootScene::deleteCanvas(const std::string name)
 {
     std::cout << "deleteCanvas string" << std::endl;
-    findNodeVisitor fnv(name);
+    FindNodeVisitor fnv(name);
     _userScene->accept(fnv);
     if (fnv.getNode() == NULL){
         std::cout << "No entity with such name found: " << name << std::endl;
