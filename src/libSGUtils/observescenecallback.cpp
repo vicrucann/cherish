@@ -7,7 +7,7 @@ ObserveSceneCallback::ObserveSceneCallback():
     _text(new osgText::Text),
     _geode(new osg::Geode)
 {
-    this->setTextProperties(osg::Vec3(0.f, 0.f, 0.f), 0.1f);
+    this->setTextProperties(osg::Vec3(-1.f, 0.f, 0.f), 0.1f);
     _geode->addDrawable(_text.get());
 }
 
@@ -41,7 +41,7 @@ void ObserveSceneCallback::setTextProperties(const osg::Vec3 &pos, float size) {
     std::cout << "  Observer->setTextProperties(pos, size)" << std::endl;
     _text->setDataVariance(osg::Object::DYNAMIC);
     _text->setCharacterSize(size);
-    _text->setAxisAlignment(osgText::TextBase::XZ_PLANE);
+    _text->setAxisAlignment(osgText::TextBase::XY_PLANE);
     _text->setPosition(pos);
     _text->setText("Scene structure; ");
     _text->setColor(solarized::base0);

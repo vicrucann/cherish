@@ -22,14 +22,14 @@ class HUDCamera: public osg::Camera{
 public:
     HUDCamera(double left, double right, double bottom, double top)
     {
-        //this->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+        this->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
         this->setClearMask(GL_DEPTH_BUFFER_BIT);
         this->setRenderOrder(osg::Camera::POST_RENDER);
         this->setAllowEventFocus(false);
-        //this->setProjectionMatrix(osg::Matrix::ortho2D(0.f, 1.f, 0.f, 1.f));
+        this->setProjectionMatrix(osg::Matrix::ortho2D(-15.f, 15.f, -15.f, 15.f));
         this->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
-        this->addTestDrawables();
+        //this->addTestDrawables();
     }
 
     void addTestDrawables(){
