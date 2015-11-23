@@ -16,12 +16,12 @@
 #include "canvas.h"
 #include "findnodevisitor.h"
 
-#include "observescenecallback.h"
-
 RootScene::RootScene():
     _userScene(new osg::Group),
     _axes(new Axes),
-    _idCanvas(0)
+    _idCanvas(0),
+    _observer(new ObserveSceneCallback),
+    _hud(new HUDCamera(0, 800, 0, 600))
 {
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
     trans_xz->setMatrix(osg::Matrix::identity());
@@ -39,6 +39,8 @@ RootScene::RootScene():
     this->addChild(_axes.get());
 
     this->setSceneObserver();
+    _hud->addChild(_observer->getTextGeode());
+    this->addChild(_hud.get());
 }
 
 RootScene::~RootScene(){}
@@ -124,6 +126,9 @@ Canvas *RootScene::getCanvas(const std::string name) const{
     return dynamic_cast<Canvas*>(fnv.getNode());
 }
 
+//osg::Geode *RootScene::getSceneObserverText() const
+//{}
+
 void RootScene::setCanvasName(osg::ref_ptr<Canvas>& cnv){
     cnv->setName(getEntityName(dureu::NAME_CANVAS, _idCanvas++));
     std::cout << "  New Canvas created: " << cnv->getName() << std::endl;
@@ -134,8 +139,8 @@ std::string RootScene::getEntityName(const std::string &name, unsigned int id) c
 }
 
 bool RootScene::setSceneObserver() {
-    osg::ref_ptr<ObserveSceneCallback> observer = new ObserveSceneCallback;
-    observer->setScenePointer(_userScene);
-    _userScene->addUpdateCallback(observer.get());
+    _observer->setScenePointer(_userScene);
+    _userScene->addUpdateCallback(_observer.get());
     return true;
 }
+

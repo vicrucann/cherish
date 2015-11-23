@@ -18,8 +18,6 @@ set (SOURCES_SGEntities
     rootscene.cpp
     stroke.h
     stroke.cpp
-    #findnodevisitor.h
-    #findnodevisitor.cpp
 )
 
 add_library(libSGEntities

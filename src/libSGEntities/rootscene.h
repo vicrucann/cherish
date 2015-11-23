@@ -36,6 +36,8 @@
 #include "axes.h"
 #include "canvas.h"
 #include "settings.h"
+#include "../libSGUtils/observescenecallback.h"
+#include "hudcamera.h"
 
 class RootScene : public osg::Group {
 public:
@@ -55,6 +57,8 @@ public:
     unsigned int getMaxCanvasId() const;
     Canvas* getCanvas(unsigned int id) const;
     Canvas* getCanvas(const std::string name) const;
+
+    //osg::Geode* getSceneObserverText() const;
 protected:
     void setCanvasName(osg::ref_ptr<Canvas> &cnv);
     std::string getEntityName(const std::string& name, unsigned int id) const;
@@ -63,6 +67,8 @@ private:
     osg::ref_ptr<osg::Group> _userScene;
     osg::ref_ptr<Axes> _axes;
     unsigned int _idCanvas;
+    osg::ref_ptr<ObserveSceneCallback> _observer;
+    osg::ref_ptr<HUDCamera> _hud;
 };
 
 #endif // SCENE

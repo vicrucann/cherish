@@ -15,15 +15,21 @@
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
 #include <osgText/Text>
+#include <osg/Geode>
 
 class ObserveSceneCallback : public osg::NodeCallback {
 public:
+    ObserveSceneCallback();
     virtual void operator ()(osg::Node* node, osg::NodeVisitor* nv);
     void setScenePointer(osg::Group* scene);
     void setTextPointer(osgText::Text* text);
+    osg::Geode* getTextGeode() const;
 private:
+    void setTextProperties(const osg::Vec3& pos, float size);
+
     osg::observer_ptr<osg::Group> _scene;
     osg::ref_ptr<osgText::Text> _text;
+    osg::ref_ptr<osg::Geode> _geode;
 };
 
 #endif // OBSERVESCENECALLBACK

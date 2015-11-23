@@ -7,6 +7,7 @@
 
 int main(int argc, char** argv)
 {
+    //osg::setNotifyLevel(osg::INFO);
     osg::notify(osg::NOTICE) << "Dura-Europus In Situ: 3D reconstruction of historical sites." << std::endl;
     osg::notify(osg::NOTICE) << "Starting application..." << std::endl;
 
