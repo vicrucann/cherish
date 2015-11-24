@@ -21,6 +21,7 @@
 #include "viewwidget.h"
 #include "settings.h"
 #include "manipulator.h"
+#include "eventhandler.h"
 
 ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::WindowFlags f, int viewmode):
     QOpenGLWidget(parent, f),
@@ -31,7 +32,9 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     _viewmode(viewmode),
     _deviceDown(false),
     _deviceActive(false),
-    _deviceSketch(false)
+    _deviceSketch(false),
+    _modeManip(dureu::MANIP_ROTATE),
+    _modeMouse(dureu::MOUSE_NAVIGATE)
 {
     osg::StateSet* stateSet = _root->getOrCreateStateSet();
     osg::Material* material = new osg::Material;
@@ -67,11 +70,13 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     //view->addEventHandler(new BaseHandler);
     //view->addEventHandler(new osgViewer::StatsHandler);
     //view->addEventHandler(new PickHandler);
-    Manipulator* man = new Manipulator(dureu::MANIP_ROTATE);
+    Manipulator* man = new Manipulator(_modeManip);
     Manipulator* manfix = new Manipulator(dureu::MANIP_FIXEDVIEW);
+    EventHandler* eh = new EventHandler(_modeMouse);
     man->setAllowThrow(false);
     manfix->setAllowThrow(false);
     view->setCameraManipulator(man);
+    view->addEventHandler(eh);
 
     _viewer->addView(view);
 

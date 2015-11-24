@@ -33,6 +33,7 @@ private slots:
     void onSetGloAxesON();
     void onSetGloAxesOFF();
     void onDeleteCanvas();
+    void onDeleteCow();
 private:
     ViewWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
 

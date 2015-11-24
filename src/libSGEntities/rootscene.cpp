@@ -65,7 +65,7 @@ void RootScene::addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const o
     _userScene->addChild(cnv.get());
 }
 
-bool RootScene::deleteCanvas(const std::string name){
+bool RootScene::deleteCanvas(const std::string &name){
     std::cout << "  RootScene->deleteCanvas(string)" << std::endl;
     Canvas* cnv = this->getCanvas(name);
     if (!cnv){
@@ -86,26 +86,50 @@ bool RootScene::deleteCanvas(const int id){
 }
 
 bool RootScene::deleteCanvas(Canvas *cnv){
-    std::cout << "  RootScene->deleteCanvas(Canvas*): " << cnv->getName();
-    if (!cnv){
-        std::cerr << "The canvas pointer is NULL" << std::endl;
+    return deleteNode(cnv);
+}
+
+bool RootScene::deleteNode(const std::string &name)
+{
+    std::cout << "  RootScene->deleteNode(string): " << name << std::endl;
+    osg::Node* node = this->getNode(name);
+    std::cout << "Node child idx: " << _userScene->getChildIndex(node) << std::endl;
+    if (!node){
+        std::cerr << "The node pointer is NULL" << std::endl;
+        return false;
+    }
+    return deleteNode(node);
+}
+
+bool RootScene::deleteNode(osg::Node *node)
+{
+    std::cout << "  RootScene->deleteNode(osg::Node*): " << node->getName() << std::endl;
+    if (!node){
+        std::cerr << "The node pointer is NULL" << std::endl;
         return true;
     }
-    bool success = _userScene->removeChild(cnv);
-    if (success) std::cout << " success" << std::endl;
-    else std::cout << " failure" << std::endl;
+    std::cout << "Trying to delete node with ptr: " << node << std::endl;
+    std::cout << " and name: " << node->getName() << std::endl;
+    //bool success = _userScene->removeChild(tn);
+    bool success = _userScene->removeChild(node);
+    if (success) std::cout << "Success on removeChild(osg::Node*)" << std::endl;
+    else std::cerr << "Failure to removeChild(osg::Node*)" << std::endl;
     return success;
 }
 
-bool RootScene::loadSceneFromFile(const std::string fname){
-    std::cout << "RootScene->loadSceneFromFile(string)" << std::endl;
-    osg::ref_ptr<osg::Node> snode = osgDB::readNodeFile(fname);
-    if (!snode){
+bool RootScene::loadSceneFromFile(const std::string& fname, const std::string& name){
+    std::cout << "  RootScene->loadSceneFromFile(string)" << std::endl;
+    osg::Node* node = osgDB::readNodeFile(fname);
+    //osg::ref_ptr<osg::Node> snode = osgDB::readNodeFile(fname);
+    if (!node){
         std::cerr << "File could not be loaded: " << fname << std::endl;
         return false;
     }
-    _userScene->addChild(snode.get());
-    return true;
+    std::cout << "Trying to load node with ptr: " << node << std::endl;
+    bool success = _userScene->addChild(node);
+    this->setNodeName(node, name);
+    std::cout << "New _userSceme child idx is: " << _userScene->getChildIndex(node) << std::endl;
+    return success;
 }
 
 unsigned int RootScene::getMaxCanvasId() const {
@@ -116,7 +140,7 @@ Canvas *RootScene::getCanvas(unsigned int id) const {
     return getCanvas(getEntityName(dureu::NAME_CANVAS, id));
 }
 
-Canvas *RootScene::getCanvas(const std::string name) const{
+Canvas *RootScene::getCanvas(const std::string &name) const{
     std::cout << "  RootScene->getCanvas(string)" << std::endl;
     FindNodeVisitor fnv(name);
     _userScene->accept(fnv);
@@ -127,8 +151,30 @@ Canvas *RootScene::getCanvas(const std::string name) const{
     return dynamic_cast<Canvas*>(fnv.getNode());
 }
 
-//osg::Geode *RootScene::getSceneObserverText() const
-//{}
+osg::Node *RootScene::getNode(const std::string &name) const
+{
+    std::cout << "  RootScene->getNode(string)" << std::endl;
+    FindNodeVisitor fnv(name);
+    _userScene->accept(fnv);
+    if (fnv.getNode() == NULL){
+        std::cerr << "No entity with such name found: " << name << std::endl;
+        return NULL;
+    }
+    return fnv.getNode();
+}
+
+void RootScene::setNodeName(osg::Node *node, const std::string &name)
+{
+    std::cout << "  RootScene->setNodeName(osg::Node*, string&)" << std::endl;
+    unsigned int idx = _userScene->getChildIndex(node);
+    if (_userScene->getNumChildren()<=idx){
+        std::cerr << "The entity of given name is not direct child of the _userScene" << std::endl;
+        std::cerr << "The name was not setup" << std::endl;
+        return;
+    }
+    node->setName(name);
+    std::cout << "The new name is " << node->getName() << std::endl;
+}
 
 void RootScene::setCanvasName(osg::ref_ptr<Canvas>& cnv){
     cnv->setName(getEntityName(dureu::NAME_CANVAS, _idCanvas++));

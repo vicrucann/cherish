@@ -48,16 +48,20 @@ public:
 
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const osg::Vec4& color = dureu::CANVAS_CLR_CURRENT);
     void addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f &color = dureu::CANVAS_CLR_CURRENT);
-    bool deleteCanvas(const std::string name);
+    bool deleteCanvas(const std::string& name);
     bool deleteCanvas(const int id);
     bool deleteCanvas(Canvas* cnv);
+    bool deleteNode(const std::string& name);
+    bool deleteNode(osg::Node* node);
 
-    bool loadSceneFromFile(const std::string fname);
+    bool loadSceneFromFile(const std::string& fname, const std::string& name);
 
     unsigned int getMaxCanvasId() const;
     Canvas* getCanvas(unsigned int id) const;
-    Canvas* getCanvas(const std::string name) const;
+    Canvas* getCanvas(const std::string& name) const;
+    osg::Node* getNode(const std::string& name) const;
 
+    void setNodeName(osg::Node* node, const std::string& name);
     //osg::Geode* getSceneObserverText() const;
 protected:
     void setCanvasName(osg::ref_ptr<Canvas> &cnv);

@@ -19,6 +19,7 @@
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/CompositeViewer>
 #include "rootscene.h"
+#include "settings.h"
 
 class ViewWidget : public QOpenGLWidget {
     Q_OBJECT
@@ -65,6 +66,9 @@ private:
     bool _deviceDown; // pen touches the device?
     bool _deviceActive; // pen is in device approximation?
     bool _deviceSketch;
+
+    dureu::MANIP_MODE _modeManip;
+    dureu::MOUSE_MODE _modeMouse;
 };
 
 #endif // VIEWWIDGET

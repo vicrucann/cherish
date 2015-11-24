@@ -1,5 +1,6 @@
 #include "eventhandler.h"
 #include <iostream>
+#include <osgViewer/View>
 
 EventHandler::EventHandler(dureu::MOUSE_MODE mode):
     _mode(mode)
@@ -8,13 +9,17 @@ EventHandler::EventHandler(dureu::MOUSE_MODE mode):
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
-    switch(_mode){
-    case dureu::MOUSE_NAVIGATE:
-        return true;
-    default:
-        std::cout << "Unrecognized event handler, not processed" << std::endl;
-        return true;
+    if (_mode == dureu::MOUSE_NAVIGATE)
+        return false;
+    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
+    if (viewer){
+        switch(_mode){
+        default:
+            std::cout << "Unrecognized event handler, not processed" << std::endl;
+            return false;
+        }
     }
+    return false;
 }
 
 void EventHandler::setMode(dureu::MOUSE_MODE mode)

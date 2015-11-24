@@ -33,8 +33,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     menuTest->addAction("Global axes ON", this, SLOT(onSetGloAxesON()));
     menuTest->addAction("Global axes OFF", this, SLOT(onSetGloAxesOFF()));
 
-    QMenu* menuTC = menuBar->addMenu("TestCanvas");
+    QMenu* menuTC = menuBar->addMenu("TestModels");
     menuTC->addAction("Delete canvas 3", this, SLOT(onDeleteCanvas()));
+    menuTC->addAction("Delete cow.osg", this, SLOT(onDeleteCow()));
 
     this->setCentralWidget(_mdiArea);
 }
@@ -97,7 +98,7 @@ void MainWindow::onCreateOutsideViewer(){
 }
 
 void MainWindow::onLoadCow(){
-    bool success = _rootScene->loadSceneFromFile("../../samples/cow.osgt");
+    bool success = _rootScene->loadSceneFromFile("../../samples/cow.osgt", "cow.node");
     if (!success){
         std::cerr << "The filename provided was not correct, or the model could not be read" << std::endl;
     }
@@ -123,6 +124,10 @@ void MainWindow::onDeleteCanvas()
 {
     // this is just to show how a certain canvas can be deleted
     _rootScene->deleteCanvas(2); // we delete a canvas with id "3"
+}
+
+void MainWindow::onDeleteCow() {
+    _rootScene->deleteNode("cow.node");
 }
 
 ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
