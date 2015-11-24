@@ -43,7 +43,8 @@ void Canvas::addCanvasDrawables(){
 
     this->setColor(_color);
 
-    _geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
+    // for debuggin LINE_LOOP replaced to QUADS
+    _geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
 
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();

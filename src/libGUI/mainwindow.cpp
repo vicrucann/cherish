@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     menuTM->addAction("Navigation: zoom", this, SLOT(onMouseZoom()));
     menuTM->addAction("Naviagation: pan", this, SLOT(onMousePan()));
     menuTM->addAction("Mouse: pick", this, SLOT(onMousePick()));
+    menuTM->addAction("Mouse: erase", this, SLOT(onMouseErase()));
 
     this->setCentralWidget(_mdiArea);
 }
@@ -150,6 +151,11 @@ void MainWindow::onMousePan(){
 
 void MainWindow::onMousePick(){
     emit sendMouseMode(dureu::MOUSE_PICK);
+}
+
+void MainWindow::onMouseErase()
+{
+    emit sendMouseMode(dureu::MOUSE_ERASE);
 }
 
 ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)

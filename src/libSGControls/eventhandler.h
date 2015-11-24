@@ -13,18 +13,27 @@
 #include <osgGA/GUIEventAdapter>
 #include <osgGA/GUIActionAdapter>
 #include <osg/ref_ptr>
+#include <osg/observer_ptr>
 
 #include "settings.h"
+#include "canvas.h"
 
 class EventHandler : public osgGA::GUIEventHandler {
 public:
     EventHandler(dureu::MOUSE_MODE mode = dureu::MOUSE_PICK);
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void setMode(dureu::MOUSE_MODE mode);
-    virtual void doOperation(const osgUtil::LineSegmentIntersector::Intersection& intersections);
-    virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& intersections);
-private:
+
+    virtual void doOperation(const osgUtil::LineSegmentIntersector::Intersection& result);
+    virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& result);
+    virtual void doErase(const osgUtil::LineSegmentIntersector::Intersection& result);
+
+    void setCanvasColor(const osg::Vec4& color);
+protected:
     dureu::MOUSE_MODE _mode;
+    osg::observer_ptr<Canvas> _lastCanvas;
+private:
+    // test variables
 };
 
 #endif // EVENTHANDLER

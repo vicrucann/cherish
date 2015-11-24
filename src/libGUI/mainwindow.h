@@ -40,6 +40,7 @@ private slots:
     void onMouseZoom();
     void onMousePan();
     void onMousePick();
+    void onMouseErase();
 private:
     ViewWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
 
