@@ -13,7 +13,7 @@
 #include <osg/Plane>
 #include <osg/BlendFunc>
 
-Canvas::Canvas(osg::MatrixTransform *transform):
+Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _center(osg::Vec3f(0.0f, 0.0f, 0.0f)),
     _normal(osg::Vec3f(0.0f, -1.0f, 0.0f)),
     _color(dureu::CANVAS_CLR_REST),
@@ -23,13 +23,18 @@ Canvas::Canvas(osg::MatrixTransform *transform):
     _transform(transform),
     _switch(new osg::Switch)
 {
+    this->setName(name);
     (*_vertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, 0.0f, dureu::CANVAS_MINH);
     (*_vertices)[1] = osg::Vec3f(-dureu::CANVAS_MINW, 0.0f, dureu::CANVAS_MINH);
     (*_vertices)[2] = osg::Vec3f(-dureu::CANVAS_MINW, 0.0f, -dureu::CANVAS_MINH);
     (*_vertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, 0.0f, -dureu::CANVAS_MINH);
     this->addCanvasDrawables();
     _transform->addChild(_geode.get());
+    _transform->setName(this->getName() + "Transform");
     _switch->addChild(_transform.get(), true);
+    _switch->setName(this->getName() + "Switch");
+    _geode->setName(this->getName() + "Geode");
+    _geometry->setName(this->getName() + "Geometry");
     this->addChild(_switch.get());
 }
 

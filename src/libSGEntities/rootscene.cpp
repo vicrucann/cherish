@@ -24,6 +24,8 @@ RootScene::RootScene():
     _observer(new ObserveSceneCallback),
     _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
 {
+    _userScene->setName("UserScene");
+
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
     trans_xz->setMatrix(osg::Matrix::identity());
     this->addCanvas(trans_xz, dureu::CANVAS_CLR_CURRENT);
@@ -42,6 +44,7 @@ RootScene::RootScene():
     this->setSceneObserver();
     _hud->addChild(_observer->getTextGeode());
     this->addChild(_hud.get());
+    this->setName("RootScene");
 }
 
 RootScene::~RootScene(){}
@@ -59,9 +62,10 @@ void RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg:
 
 void RootScene::addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f& color){
     std::cout << "  RootScene->addCanvas(transform, color)" << std::endl;
-    osg::ref_ptr<Canvas> cnv = new Canvas(transform);
+    osg::ref_ptr<Canvas> cnv = new Canvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
     cnv->setColor(color);
-    this->setCanvasName(cnv);
+    // this->setCanvasName(cnv);
+    // in case if user sets the name manually, make sure all the children are renamed!!
     _userScene->addChild(cnv.get());
 }
 
@@ -178,7 +182,9 @@ void RootScene::setNodeName(osg::Node *node, const std::string &name)
 
 void RootScene::setCanvasName(osg::ref_ptr<Canvas>& cnv){
     cnv->setName(getEntityName(dureu::NAME_CANVAS, _idCanvas++));
-    std::cout << "  New Canvas created: " << cnv->getName() << std::endl;
+    std::cout << "  Canvas renamed: " << cnv->getName() << std::endl;
+    // have to go in loop and rename all the children so they all start with
+    // canvas name
 }
 
 std::string RootScene::getEntityName(const std::string &name, unsigned int id) const{

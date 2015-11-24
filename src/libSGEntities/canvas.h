@@ -49,7 +49,7 @@
 
 class Canvas : public osg::Group {
 public:
-    Canvas(osg::MatrixTransform *transform);
+    Canvas(osg::MatrixTransform *transform, const std::string& name);
     ~Canvas(){}
 
     void setColor(osg::Vec4f color);

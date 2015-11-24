@@ -85,7 +85,6 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
 {
     std::cout << "  doErase()" << std::endl;
     std::cout << "node path size: " << result.nodePath.size() << std::endl;
-    //osg::Geode* geode = dynamic_cast<osg::Geode*>(result.nodePath.back());
     for (unsigned int i = 0; i < result.nodePath.size(); ++i){
         osg::Node* node = dynamic_cast<osg::Node*>(result.nodePath.at(i));
         std::cout << "#" << i <<", supposed canvas, check name: " << node->getName() << std::endl;
