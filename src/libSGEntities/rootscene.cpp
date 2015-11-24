@@ -22,7 +22,7 @@ RootScene::RootScene():
     _axes(new Axes),
     _idCanvas(0),
     _observer(new ObserveSceneCallback),
-    _hud(new HUDCamera(0, 800, 0, 600))
+    _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
 {
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
     trans_xz->setMatrix(osg::Matrix::identity());

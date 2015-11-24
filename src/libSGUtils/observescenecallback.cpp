@@ -7,7 +7,7 @@ ObserveSceneCallback::ObserveSceneCallback():
     _text(new osgText::Text),
     _geode(new osg::Geode)
 {
-    this->setTextProperties(osg::Vec3(-1.f, 0.f, 0.f), 1.f);
+    this->setTextProperties(osg::Vec3(dureu::HUD_TEXT_POSX, dureu::HUD_TEXT_POSY, dureu::HUD_TEXT_POSZ), dureu::HUD_TEXT_SIZE);
     _geode->addDrawable(_text.get());
 }
 
@@ -15,10 +15,8 @@ void ObserveSceneCallback::operator ()(osg::Node *node, osg::NodeVisitor *nv)
 {
     std::string content = "Scene structure; ";
     if (_scene.valid()){
-        //std::cout << "Scene number of children: " << _scene->getNumChildren() << std::endl;
         for (unsigned int i=0; i<_scene->getNumChildren(); ++i){
             if (_scene->getChild(i)) {
-                //std::cout << "ObserveSceneCallback(): child with name: " << _scene->getChild(i)->getName() << std::endl;
                 content += _scene->getChild(i)->getName() + "; ";
             }
         }

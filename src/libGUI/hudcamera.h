@@ -26,7 +26,7 @@ public:
         this->setClearMask(GL_DEPTH_BUFFER_BIT);
         this->setRenderOrder(osg::Camera::POST_RENDER);
         this->setAllowEventFocus(false);
-        this->setProjectionMatrix(osg::Matrix::ortho2D(-15.f, 15.f, -15.f, 15.f));
+        this->setProjectionMatrix(osg::Matrix::ortho2D(left,right,bottom,top));
         this->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
 
         //this->addTestDrawables();

@@ -95,6 +95,15 @@ const std::string NAME_STROKE = "Stroke";
 const std::string NAME_GEOMETRY = "Geometry";
 const std::string NAME_IMAGE = "Image";
 
+const float HUD_LEFT = -50.f;
+const float HUD_RIGHT = 50.f;
+const float HUD_TOP = 40.f;
+const float HUD_BOTTOM = -40.f;
+const float HUD_TEXT_SIZE = 1.f;
+const float HUD_TEXT_POSX = HUD_LEFT + 2.f;
+const float HUD_TEXT_POSY = HUD_BOTTOM + 15.f;
+const float HUD_TEXT_POSZ = 0.f;
+
 } // namespace dura
 
 #endif // SETTINGS
