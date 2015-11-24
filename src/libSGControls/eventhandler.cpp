@@ -89,7 +89,15 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
         osg::Node* node = dynamic_cast<osg::Node*>(result.nodePath.at(i));
         std::cout << "#" << i <<", supposed canvas, check name: " << node->getName() << std::endl;
     }
-
+    std::cout << "Trying to delete the canvas" << std::endl;
+    osg::Group* parent = dynamic_cast<osg::Group*>(result.nodePath.at(2)); // RootScene
+    osg::Node* child = dynamic_cast<osg::Node*>(result.nodePath.at(3));
+    if (!parent){
+        std::cerr << "Could not retrieve RootScene" << std::endl;
+        return;
+    }
+    bool success = parent->removeChild(child);
+    std::cout << "success is " << success << std::endl;
 }
 
 void EventHandler::setCanvasColor(const osg::Vec4 &color){
