@@ -56,11 +56,13 @@ void EventHandler::doOperation(const osgUtil::LineSegmentIntersector::Intersecti
     switch(_mode){
     case dureu::MOUSE_PICK:
         doPick(result);
+        break;
     case dureu::MOUSE_ERASE:
         doErase(result);
+        break;
     default:
-        //std::cerr << "Unrecognized event handler, not processed" << std::endl;
-        ;
+        std::cerr << "Unrecognized event handler, not processed" << std::endl;
+        break;
     }
 }
 
@@ -72,9 +74,15 @@ void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &r
         this->setCanvasColor(dureu::CANVAS_CLR_REST);
         _lastCanvas = NULL;
     }
-    osg::Geometry* geom = dynamic_cast<osg::Geometry*>(result.drawable.get());
     // now search for parent to retrieve ptr on Canvas
-
+    Canvas* cnv = dynamic_cast<Canvas*>(result.nodePath.at(3));
+    if (!cnv){
+        std::cerr << "Could not dynamic_cast to Canvas*" << std::endl;
+        return;
+    }
+    std::cout << "assumed canvas with name: " << cnv->getName() << std::endl;
+    cnv->setColor(dureu::CANVAS_CLR_CURRENT);
+    _lastCanvas = cnv;
 }
 
 // check nodepath to see how to go far enough so that to get canvas type
@@ -91,7 +99,7 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
     }
     std::cout << "Trying to delete the canvas" << std::endl;
     osg::Group* parent = dynamic_cast<osg::Group*>(result.nodePath.at(2)); // RootScene
-    osg::Node* child = dynamic_cast<osg::Node*>(result.nodePath.at(3));
+    osg::Node* child = dynamic_cast<osg::Node*>(result.nodePath.at(3)); // Canvas
     if (!parent){
         std::cerr << "Could not retrieve RootScene" << std::endl;
         return;

@@ -28,11 +28,11 @@ RootScene::RootScene():
 
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
     trans_xz->setMatrix(osg::Matrix::identity());
-    this->addCanvas(trans_xz, dureu::CANVAS_CLR_CURRENT);
+    this->addCanvas(trans_xz, dureu::CANVAS_CLR_REST);
 
     this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 0, 1),
                     osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f),
-                    dureu::CANVAS_CLR_PREVIOUS);
+                    dureu::CANVAS_CLR_REST);
 
     this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 1, 0, 0),
                     osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f),
