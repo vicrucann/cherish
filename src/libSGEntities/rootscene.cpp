@@ -1,5 +1,6 @@
 #include "iostream"
 #include <sstream>
+#include <stdlib.h>
 
 #include <osg/ref_ptr>
 #include <osg/Group>
@@ -135,7 +136,9 @@ void RootScene::setCanvasName(osg::ref_ptr<Canvas>& cnv){
 }
 
 std::string RootScene::getEntityName(const std::string &name, unsigned int id) const{
-    return name + std::to_string(static_cast<long double>(id));
+    char buffer[10];
+    itoa(id, buffer, 10);
+    return name + std::string(buffer);//std::to_string(static_cast<long double>(id));
 }
 
 bool RootScene::setSceneObserver() {

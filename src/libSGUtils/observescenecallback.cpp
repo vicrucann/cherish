@@ -7,7 +7,7 @@ ObserveSceneCallback::ObserveSceneCallback():
     _text(new osgText::Text),
     _geode(new osg::Geode)
 {
-    this->setTextProperties(osg::Vec3(-1.f, 0.f, 0.f), 0.1f);
+    this->setTextProperties(osg::Vec3(-1.f, 0.f, 0.f), 1.f);
     _geode->addDrawable(_text.get());
 }
 
