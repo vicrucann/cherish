@@ -65,7 +65,7 @@ public:
 
     //osg::Geode* getSceneObserverText() const;
 protected:
-    void setCanvasName(osg::ref_ptr<Canvas> &cnv);
+    void setCanvasName(Canvas* cnv);
     std::string getEntityName(const std::string& name, unsigned int id) const;
     bool setSceneObserver();
 private:

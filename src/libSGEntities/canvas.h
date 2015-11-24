@@ -55,6 +55,11 @@ public:
     void setColor(osg::Vec4f color);
     void setVisibility(bool vis);
 
+    void setSwitchName(const std::string& parentName);
+    void setTransformName(const std::string& parentName);
+    void setGeometryName(const std::string& parentName);
+    void setGeodeName(const std::string& parentName);
+
 private:
     void addCanvasDrawables();
     osg::Vec3f _center;

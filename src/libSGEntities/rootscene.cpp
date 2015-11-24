@@ -45,6 +45,9 @@ RootScene::RootScene():
     _hud->addChild(_observer->getTextGeode());
     this->addChild(_hud.get());
     this->setName("RootScene");
+
+    // to test the rename of canvas:
+    //this->setCanvasName(getCanvas(0)); // Canvas0 should be renamed to Canvas3
 }
 
 RootScene::~RootScene(){}
@@ -64,8 +67,6 @@ void RootScene::addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const o
     std::cout << "  RootScene->addCanvas(transform, color)" << std::endl;
     osg::ref_ptr<Canvas> cnv = new Canvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
     cnv->setColor(color);
-    // this->setCanvasName(cnv);
-    // in case if user sets the name manually, make sure all the children are renamed!!
     _userScene->addChild(cnv.get());
 }
 
@@ -180,11 +181,13 @@ void RootScene::setNodeName(osg::Node *node, const std::string &name)
     std::cout << "The new name is " << node->getName() << std::endl;
 }
 
-void RootScene::setCanvasName(osg::ref_ptr<Canvas>& cnv){
+void RootScene::setCanvasName(Canvas *cnv){
     cnv->setName(getEntityName(dureu::NAME_CANVAS, _idCanvas++));
     std::cout << "  Canvas renamed: " << cnv->getName() << std::endl;
-    // have to go in loop and rename all the children so they all start with
-    // canvas name
+    cnv->setSwitchName(cnv->getName());
+    cnv->setTransformName(cnv->getName());
+    cnv->setGeodeName(cnv->getName());
+    cnv->setGeometryName(cnv->getName());
 }
 
 std::string RootScene::getEntityName(const std::string &name, unsigned int id) const{

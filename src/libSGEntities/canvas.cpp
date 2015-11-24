@@ -43,6 +43,26 @@ void Canvas::setVisibility(bool vis)
     _switch->setChildValue(_switch->getChild(0), vis);
 }
 
+void Canvas::setSwitchName(const std::string &parentName)
+{
+    _switch->setName(parentName + "Switch");
+}
+
+void Canvas::setTransformName(const std::string &parentName)
+{
+    _transform->setName(parentName + "Transform");
+}
+
+void Canvas::setGeometryName(const std::string &parentName)
+{
+    _geometry->setName(parentName + "Geometry");
+}
+
+void Canvas::setGeodeName(const std::string &parentName)
+{
+    _geode->setName(parentName + "Geode");
+}
+
 void Canvas::addCanvasDrawables(){
     _geometry->setVertexArray(_vertices);
 
