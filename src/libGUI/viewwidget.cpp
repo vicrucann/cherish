@@ -33,8 +33,7 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     _deviceDown(false),
     _deviceActive(false),
     _deviceSketch(false),
-    _modeManip(dureu::MANIP_ROTATE),
-    _modeMouse(dureu::MOUSE_NAVIGATE)
+    _modeMouse(dureu::MOUSE_ROTATE)
 {
     osg::StateSet* stateSet = _root->getOrCreateStateSet();
     osg::Material* material = new osg::Material;
@@ -70,8 +69,8 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     //view->addEventHandler(new BaseHandler);
     //view->addEventHandler(new osgViewer::StatsHandler);
     //view->addEventHandler(new PickHandler);
-    Manipulator* man = new Manipulator(_modeManip);
-    Manipulator* manfix = new Manipulator(dureu::MANIP_FIXEDVIEW);
+    Manipulator* man = new Manipulator(_modeMouse);
+    Manipulator* manfix = new Manipulator(dureu::MOUSE_FIXEDVIEW);
     EventHandler* eh = new EventHandler(_modeMouse);
     man->setAllowThrow(false);
     manfix->setAllowThrow(false);

@@ -9,7 +9,8 @@ EventHandler::EventHandler(dureu::MOUSE_MODE mode):
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
-    if (_mode == dureu::MOUSE_NAVIGATE)
+    if (_mode == dureu::MOUSE_ROTATE || _mode == dureu::MOUSE_PAN ||
+            _mode == dureu::MOUSE_ZOOM || _mode == dureu::MOUSE_FIXEDVIEW)
         return false;
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (viewer){

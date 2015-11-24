@@ -37,6 +37,12 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     menuTC->addAction("Delete canvas 3", this, SLOT(onDeleteCanvas()));
     menuTC->addAction("Delete cow.osg", this, SLOT(onDeleteCow()));
 
+    QMenu* menuTM = menuBar->addMenu("TestMouse");
+    menuTM->addAction("Naviagation: rotate", this, SLOT(onMouseRotate()));
+    menuTM->addAction("Navigation: zoom", this, SLOT(onMouseZoom()));
+    menuTM->addAction("Naviagation: pan", this, SLOT(onMousePan()));
+    menuTM->addAction("Mouse: pick", this, SLOT(onMousePick()));
+
     this->setCentralWidget(_mdiArea);
 }
 
@@ -128,6 +134,25 @@ void MainWindow::onDeleteCanvas()
 
 void MainWindow::onDeleteCow() {
     _rootScene->deleteNode("cow.node");
+}
+
+void MainWindow::onMouseRotate()
+{
+}
+
+void MainWindow::onMouseZoom()
+{
+
+}
+
+void MainWindow::onMousePan()
+{
+
+}
+
+void MainWindow::onMousePick()
+{
+
 }
 
 ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)

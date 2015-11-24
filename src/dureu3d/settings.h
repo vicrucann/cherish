@@ -59,17 +59,12 @@ enum APPMODE{
 enum MOUSE_MODE {
     MOUSE_PICK, // for selection and delete
     MOUSE_SKETCH, // to draw strokes and 2D geometric shapes
-    MOUSE_NAVIGATE, // MANIP_MODE is on
     MOUSE_EDIT, // rotate, translate, offset the selected entity
-    MOUSE_BOOKMARK // create bookmark (take a snapshot of a selected viewer)
-};
-
-enum MANIP_MODE {
-    MANIP_ROTATE,
-    MANIP_ZOOM,
-    MANIP_PAN,
-    MANIP_FIXEDVIEW,
-    MANIP_NONE
+    MOUSE_BOOKMARK, // create bookmark (take a snapshot of a selected viewer)
+    MOUSE_ROTATE,
+    MOUSE_ZOOM,
+    MOUSE_PAN,
+    MOUSE_FIXEDVIEW
 };
 
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;

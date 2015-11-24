@@ -11,8 +11,8 @@
 
 class Manipulator : public osgGA::TrackballManipulator {
 public:
-    Manipulator(dureu::MANIP_MODE mode = dureu::MANIP_NONE);
-    void setMode(dureu::MANIP_MODE mode);
+    Manipulator(dureu::MOUSE_MODE mode = dureu::MOUSE_ROTATE);
+    void setMode(dureu::MOUSE_MODE mode);
 protected:
     virtual bool performMovementLeftMouseButton (const double eventTimeDelta, const double dx, const double dy);
     virtual bool performMovementMiddleMouseButton( const double eventTimeDelta, const double dx, const double dy );
@@ -22,7 +22,7 @@ private:
     virtual bool wrapPan(const double eventTimeDelta, const double dx, const double dy);
     virtual bool wrapZoom(const double eventTimeDelta, const double, const double dy);
 
-    int _mode;
+    dureu::MOUSE_MODE _mode;
 };
 
 #endif // MANIPULATOR

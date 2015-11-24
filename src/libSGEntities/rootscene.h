@@ -62,6 +62,8 @@ public:
     osg::Node* getNode(const std::string& name) const;
 
     void setNodeName(osg::Node* node, const std::string& name);
+
+    void setMouseMode(dureu::MOUSE_MODE modeMouse);
     //osg::Geode* getSceneObserverText() const;
 protected:
     void setCanvasName(osg::ref_ptr<Canvas> &cnv);

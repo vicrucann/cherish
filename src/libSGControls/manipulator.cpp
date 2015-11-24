@@ -1,11 +1,11 @@
 #include "manipulator.h"
 
-Manipulator::Manipulator(dureu::MANIP_MODE mode):
+Manipulator::Manipulator(dureu::MOUSE_MODE mode):
     _mode(mode)
 {
 }
 
-void Manipulator::setMode(dureu::MANIP_MODE mode)
+void Manipulator::setMode(dureu::MOUSE_MODE mode)
 {
     _mode = mode;
 }
@@ -13,16 +13,14 @@ void Manipulator::setMode(dureu::MANIP_MODE mode)
 bool Manipulator::performMovementLeftMouseButton(const double eventTimeDelta, const double dx, const double dy)
 {
     switch (_mode){
-    case dureu::MANIP_ZOOM:
+    case dureu::MOUSE_ZOOM:
         return this->wrapZoom(eventTimeDelta, dx, dy);
-    case dureu::MANIP_PAN:
+    case dureu::MOUSE_PAN:
         return this->wrapPan(eventTimeDelta, dx, dy);
-    case dureu::MANIP_ROTATE:
+    case dureu::MOUSE_ROTATE:
         return this->wrapRotation(eventTimeDelta, dx, dy);
-    case dureu::MANIP_FIXEDVIEW:
+    case dureu::MOUSE_FIXEDVIEW:
         return this->wrapPan(eventTimeDelta, dx, dy);
-    case dureu::MANIP_NONE:
-        return false;
     default:
         return false;
     }
@@ -30,7 +28,7 @@ bool Manipulator::performMovementLeftMouseButton(const double eventTimeDelta, co
 
 bool Manipulator::performMovementMiddleMouseButton(const double eventTimeDelta, const double dx, const double dy)
 {
-    if (_mode == dureu::MANIP_FIXEDVIEW)
+    if (_mode == dureu::MOUSE_FIXEDVIEW)
         return false;
     else
         return this->wrapRotation(eventTimeDelta, dx, dy);

@@ -34,6 +34,11 @@ private slots:
     void onSetGloAxesOFF();
     void onDeleteCanvas();
     void onDeleteCow();
+
+    void onMouseRotate();
+    void onMouseZoom();
+    void onMousePan();
+    void onMousePick();
 private:
     ViewWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
 

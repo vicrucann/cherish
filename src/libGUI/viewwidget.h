@@ -67,7 +67,6 @@ private:
     bool _deviceActive; // pen is in device approximation?
     bool _deviceSketch;
 
-    dureu::MANIP_MODE _modeManip;
     dureu::MOUSE_MODE _modeMouse;
 };
 
