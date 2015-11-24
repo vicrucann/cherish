@@ -21,6 +21,8 @@ public:
     EventHandler(dureu::MOUSE_MODE mode = dureu::MOUSE_PICK);
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void setMode(dureu::MOUSE_MODE mode);
+    virtual void doOperation(const osgUtil::LineSegmentIntersector::Intersection& intersections);
+    virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& intersections);
 private:
     dureu::MOUSE_MODE _mode;
 };

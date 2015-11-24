@@ -22,8 +22,7 @@ RootScene::RootScene():
     _axes(new Axes),
     _idCanvas(0),
     _observer(new ObserveSceneCallback),
-    _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP)),
-    _modeMouse(dureu::MOUSE_ROTATE)
+    _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
 {
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
     trans_xz->setMatrix(osg::Matrix::identity());
@@ -175,14 +174,6 @@ void RootScene::setNodeName(osg::Node *node, const std::string &name)
     }
     node->setName(name);
     std::cout << "The new name is " << node->getName() << std::endl;
-}
-
-void RootScene::setMouseMode(dureu::MOUSE_MODE modeMouse){
-    _modeMouse = modeMouse;
-}
-
-dureu::MOUSE_MODE RootScene::getMouseMode() const{
-    return _modeMouse;
 }
 
 void RootScene::setCanvasName(osg::ref_ptr<Canvas>& cnv){

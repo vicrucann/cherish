@@ -137,22 +137,18 @@ void MainWindow::onDeleteCow() {
 }
 
 void MainWindow::onMouseRotate(){
-    _rootScene->setMouseMode(dureu::MOUSE_ROTATE);
     emit sendMouseMode(dureu::MOUSE_ROTATE);
 }
 
 void MainWindow::onMouseZoom(){
-    _rootScene->setMouseMode(dureu::MOUSE_ZOOM);
     emit sendMouseMode(dureu::MOUSE_ZOOM);
 }
 
 void MainWindow::onMousePan(){
-    _rootScene->setMouseMode(dureu::MOUSE_PAN);
     emit sendMouseMode(dureu::MOUSE_PAN);
 }
 
 void MainWindow::onMousePick(){
-    _rootScene->setMouseMode(dureu::MOUSE_PICK);
     emit sendMouseMode(dureu::MOUSE_PICK);
 }
 
