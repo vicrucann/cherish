@@ -6,7 +6,8 @@
 
 EventHandler::EventHandler(dureu::MOUSE_MODE mode):
     _mode(mode),
-    _lastCanvas(0)
+    _lastCanvas(0),
+    _prevCanvas(0)
 {
 }
 
@@ -66,12 +67,18 @@ void EventHandler::doOperation(const osgUtil::LineSegmentIntersector::Intersecti
     }
 }
 
+// colors when they are deleted?
 void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &result){
     std::cout << "  doPick()" << std::endl;
     if (_lastCanvas.valid()){
+        if (_prevCanvas.valid()){
+            this->setPrevCanvasColor(dureu::CANVAS_CLR_REST);
+            _prevCanvas = NULL;
+        }
         // later can include previous color setting
         // but for that need to keep a observer variable on previous node
-        this->setCanvasColor(dureu::CANVAS_CLR_REST);
+        this->setLastCanvasColor(dureu::CANVAS_CLR_PREVIOUS);
+        _prevCanvas = _lastCanvas;
         _lastCanvas = NULL;
     }
     // now search for parent to retrieve ptr on Canvas
@@ -108,6 +115,10 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
     std::cout << "success is " << success << std::endl;
 }
 
-void EventHandler::setCanvasColor(const osg::Vec4 &color){
+void EventHandler::setLastCanvasColor(const osg::Vec4 &color){
     _lastCanvas->setColor(color);
+}
+
+void EventHandler::setPrevCanvasColor(const osg::Vec4 &color){
+    _prevCanvas->setColor(color);
 }
