@@ -13,11 +13,16 @@ ObserveSceneCallback::ObserveSceneCallback():
 
 void ObserveSceneCallback::operator ()(osg::Node *node, osg::NodeVisitor *nv)
 {
-    std::string content = "Scene structure; ";
+    std::string content = "Scene structure:\n";
     if (_scene.valid()){
         for (unsigned int i=0; i<_scene->getNumChildren(); ++i){
+            // first level of the scene;
+            // when more levels will be added, then we can always check if there is
+            // need to display the current level by checking the number of canvases;
+            // Then we can use nested loops to go through each child of each entity,
+            // and display them
             if (_scene->getChild(i)) {
-                content += _scene->getChild(i)->getName() + "; ";
+                content += "|-- " + _scene->getChild(i)->getName() + "\n";
             }
         }
     }
@@ -41,7 +46,6 @@ void ObserveSceneCallback::setTextProperties(const osg::Vec3 &pos, float size) {
     _text->setCharacterSize(size);
     _text->setAxisAlignment(osgText::TextBase::XY_PLANE);
     _text->setPosition(pos);
-    _text->setText("Scene structure; ");
     _text->setColor(solarized::base0);
 }
 
