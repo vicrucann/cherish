@@ -20,6 +20,8 @@
 #include <osgViewer/CompositeViewer>
 #include "rootscene.h"
 #include "settings.h"
+#include "../libSGControls/manipulator.h"
+#include "../libSGControls/eventhandler.h"
 
 class ViewWidget : public QOpenGLWidget {
     Q_OBJECT
@@ -29,6 +31,7 @@ public:
 public slots:
     void getTabletActivity(bool active);
     void getStylusSketchStatus(bool sketch);
+    void recieveMouseMode(dureu::MOUSE_MODE mode);
 protected:
     void paintEvent(QPaintEvent* pev) Q_DECL_OVERRIDE;
     void paintGL() Q_DECL_OVERRIDE; // the osg::frame() is called from here
@@ -68,6 +71,8 @@ private:
     bool _deviceSketch;
 
     dureu::MOUSE_MODE _modeMouse;
+    osg::ref_ptr<Manipulator> _manipulator;
+    osg::ref_ptr<EventHandler> _EH;
 };
 
 #endif // VIEWWIDGET

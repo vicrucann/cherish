@@ -136,23 +136,24 @@ void MainWindow::onDeleteCow() {
     _rootScene->deleteNode("cow.node");
 }
 
-void MainWindow::onMouseRotate()
-{
+void MainWindow::onMouseRotate(){
+    _rootScene->setMouseMode(dureu::MOUSE_ROTATE);
+    emit sendMouseMode(dureu::MOUSE_ROTATE);
 }
 
-void MainWindow::onMouseZoom()
-{
-
+void MainWindow::onMouseZoom(){
+    _rootScene->setMouseMode(dureu::MOUSE_ZOOM);
+    emit sendMouseMode(dureu::MOUSE_ZOOM);
 }
 
-void MainWindow::onMousePan()
-{
-
+void MainWindow::onMousePan(){
+    _rootScene->setMouseMode(dureu::MOUSE_PAN);
+    emit sendMouseMode(dureu::MOUSE_PAN);
 }
 
-void MainWindow::onMousePick()
-{
-
+void MainWindow::onMousePick(){
+    _rootScene->setMouseMode(dureu::MOUSE_PICK);
+    emit sendMouseMode(dureu::MOUSE_PICK);
 }
 
 ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
@@ -162,6 +163,8 @@ ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
                      vwid, SLOT(getTabletActivity(bool)));
     QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),
                      vwid, SLOT(getStylusSketchStatus(bool)) );
+    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)),
+                     vwid, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
     return vwid;
 }
 

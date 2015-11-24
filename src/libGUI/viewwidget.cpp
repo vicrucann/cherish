@@ -20,8 +20,6 @@
 
 #include "viewwidget.h"
 #include "settings.h"
-#include "manipulator.h"
-#include "eventhandler.h"
 
 ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::WindowFlags f, int viewmode):
     QOpenGLWidget(parent, f),
@@ -33,7 +31,9 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     _deviceDown(false),
     _deviceActive(false),
     _deviceSketch(false),
-    _modeMouse(dureu::MOUSE_ROTATE)
+    _modeMouse(dureu::MOUSE_ROTATE),
+    _manipulator(new Manipulator(_modeMouse)),
+    _EH(new EventHandler(_modeMouse))
 {
     osg::StateSet* stateSet = _root->getOrCreateStateSet();
     osg::Material* material = new osg::Material;
@@ -69,13 +69,11 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     //view->addEventHandler(new BaseHandler);
     //view->addEventHandler(new osgViewer::StatsHandler);
     //view->addEventHandler(new PickHandler);
-    Manipulator* man = new Manipulator(_modeMouse);
     Manipulator* manfix = new Manipulator(dureu::MOUSE_FIXEDVIEW);
-    EventHandler* eh = new EventHandler(_modeMouse);
-    man->setAllowThrow(false);
+    _manipulator->setAllowThrow(false);
     manfix->setAllowThrow(false);
-    view->setCameraManipulator(man);
-    view->addEventHandler(eh);
+    view->setCameraManipulator(_manipulator.get());
+    view->addEventHandler(_EH.get());
 
     _viewer->addView(view);
 
@@ -115,6 +113,13 @@ void ViewWidget::getTabletActivity(bool active){
 
 void ViewWidget::getStylusSketchStatus(bool sketch){
     _deviceSketch = sketch;
+}
+
+void ViewWidget::recieveMouseMode(dureu::MOUSE_MODE mode){
+    std::cout << "Changing mouse mode to: " << mode << std::endl;
+    _modeMouse = mode;
+    _manipulator->setMode(_modeMouse);
+    _EH->setMode(_modeMouse);
 }
 
 void ViewWidget::paintEvent(QPaintEvent *pev){

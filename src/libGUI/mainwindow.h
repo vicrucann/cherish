@@ -23,6 +23,7 @@ public slots:
 signals:
     void sendTabletActivity(bool active);
     void sendStylusSketchStatus(bool sketch);
+    void sendMouseMode(dureu::MOUSE_MODE mode);
 private slots:
     void onCreateViewer();
     void onCreateDoubleViewer();
