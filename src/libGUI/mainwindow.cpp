@@ -17,13 +17,15 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     _mdiArea(new QMdiArea(this)),
     _bookmarks(new BookmarkWidget(this)),
     _tabletActive(false),
-    _rootScene(new RootScene())
+    _rootScene(new RootScene()),
+    _menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
 {
+    this->setMenuBar(_menuBar);
     this->onCreateViewer();
     //this->addDockWidget(Qt::LeftDockWidgetArea, _bookmarks);
 
-    QMenuBar* menuBar = this->menuBar();
-    QMenu* menuTest = menuBar->addMenu("Test");
+    //QMenuBar* menuBar = this->menuBar();
+    QMenu* menuTest = _menuBar->addMenu("Test");
 
     menuTest->addAction("Add scene double viewer", this, SLOT(onCreateDoubleViewer()));
     menuTest->addAction("Add outisde viewer", this, SLOT(onCreateOutsideViewer()));
@@ -33,11 +35,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     menuTest->addAction("Global axes ON", this, SLOT(onSetGloAxesON()));
     menuTest->addAction("Global axes OFF", this, SLOT(onSetGloAxesOFF()));
 
-    QMenu* menuTC = menuBar->addMenu("TestModels");
+    QMenu* menuTC = _menuBar->addMenu("TestModels");
     menuTC->addAction("Delete canvas 3", this, SLOT(onDeleteCanvas()));
     menuTC->addAction("Delete cow.osg", this, SLOT(onDeleteCow()));
 
-    QMenu* menuTM = menuBar->addMenu("TestMouse");
+    QMenu* menuTM = _menuBar->addMenu("TestMouse");
     menuTM->addAction("Naviagation: rotate", this, SLOT(onMouseRotate()));
     menuTM->addAction("Navigation: zoom", this, SLOT(onMouseZoom()));
     menuTM->addAction("Naviagation: pan", this, SLOT(onMousePan()));
@@ -47,7 +49,10 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     this->setCentralWidget(_mdiArea);
 }
 
-MainWindow::~MainWindow(){}
+MainWindow::~MainWindow(){
+    if (_menuBar)
+        delete _menuBar;
+}
 
 void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) {
     _desktop = desktop;

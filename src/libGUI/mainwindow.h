@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QMdiArea>
 #include <QDesktopWidget>
+#include <QMenuBar>
 
 #include <osg/ref_ptr>
 
@@ -50,6 +51,8 @@ private:
     bool _tabletActive;
 
     osg::ref_ptr<RootScene> _rootScene; // main scene graph
+
+    QMenuBar* _menuBar;
 };
 
 #endif // MAINWINDOW
