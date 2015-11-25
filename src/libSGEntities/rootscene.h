@@ -37,17 +37,22 @@
 #include "canvas.h"
 #include "settings.h"
 #include "../libSGUtils/observescenecallback.h"
-#include "hudcamera.h"
+#include "../libGUI/hudcamera.h"
 
 class RootScene : public osg::Group {
 public:
     RootScene();
     ~RootScene();
+    void initialize();
 
     void setAxesVisibility(bool vis);
 
-    void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const osg::Vec4& color = dureu::CANVAS_CLR_CURRENT);
-    void addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f &color = dureu::CANVAS_CLR_CURRENT);
+    std::string getNameUserScene() const;
+
+    Canvas* addCanvas();
+    Canvas* addCanvas(const osg::Matrix& R, const osg::Matrix& T, const osg::Vec4& color = dureu::CANVAS_CLR_CURRENT);
+    Canvas* addCanvas(osg::MatrixTransform* transform, const osg::Vec4f &color = dureu::CANVAS_CLR_CURRENT);
+    Canvas* addCanvas(Canvas* canvasCopy);
     bool deleteCanvas(const std::string& name);
     bool deleteCanvas(const int id);
     bool deleteCanvas(Canvas* cnv);

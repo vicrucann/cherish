@@ -24,6 +24,12 @@ RootScene::RootScene():
     _observer(new ObserveSceneCallback),
     _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
 {
+    this->initialize();
+}
+
+RootScene::~RootScene(){}
+
+void RootScene::initialize(){
     _userScene->setName("UserScene");
 
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
@@ -50,24 +56,40 @@ RootScene::RootScene():
     //this->setCanvasName(getCanvas(0)); // Canvas0 should be renamed to Canvas3
 }
 
-RootScene::~RootScene(){}
-
 void RootScene::setAxesVisibility(bool vis) {
     _axes->setVisibility(vis);
 }
 
-void RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg::Vec4 &color){
-    std::cout << "  RootScene->addCanvas(R,T, color)" << std::endl;
-    osg::ref_ptr<osg::MatrixTransform> transform = new osg::MatrixTransform;
-    transform->setMatrix(R*T); // left hand coordinate system, see OSG docs
-    this->addCanvas(transform, color);
+std::string RootScene::getNameUserScene() const{
+    return _userScene->getName();
 }
 
-void RootScene::addCanvas(osg::ref_ptr<osg::MatrixTransform>& transform, const osg::Vec4f& color){
+Canvas *RootScene::addCanvas(){
+    osg::MatrixTransform* transform = new osg::MatrixTransform;
+    transform->setMatrix(osg::Matrix::identity());
+    return addCanvas(transform, dureu::CANVAS_CLR_CURRENT);
+}
+
+Canvas *RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg::Vec4 &color){
+    std::cout << "  RootScene->addCanvas(R,T, color)" << std::endl;
+    osg::MatrixTransform* transform = new osg::MatrixTransform;
+    transform->setMatrix(R*T); // left hand coordinate system, see OSG docs
+    return this->addCanvas(transform, color);
+}
+
+Canvas* RootScene::addCanvas(osg::MatrixTransform* transform, const osg::Vec4f& color){
     std::cout << "  RootScene->addCanvas(transform, color)" << std::endl;
-    osg::ref_ptr<Canvas> cnv = new Canvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
+    Canvas* cnv = new Canvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
     cnv->setColor(color);
-    _userScene->addChild(cnv.get());
+    _userScene->addChild(cnv);
+    return cnv;
+}
+
+Canvas *RootScene::addCanvas(Canvas *canvasCopy){
+    osg::MatrixTransform* transform = canvasCopy->getTransform();
+    canvasCopy->setColor(dureu::CANVAS_CLR_PREVIOUS);
+    // make offset along the normal
+    return this->addCanvas(transform, dureu::CANVAS_CLR_CURRENT);
 }
 
 bool RootScene::deleteCanvas(const std::string &name){

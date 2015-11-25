@@ -38,9 +38,26 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     this->addChild(_switch.get());
 }
 
+osg::Vec4f Canvas::getColor() const{
+    return _color;
+}
+
 void Canvas::setVisibility(bool vis)
 {
     _switch->setChildValue(_switch->getChild(0), vis);
+}
+
+bool Canvas::getVisibility() const{
+    return _switch->getChildValue(_switch->getChild(0));
+}
+
+void Canvas::setTransform(osg::MatrixTransform *transform){
+    _transform = transform;
+}
+
+osg::MatrixTransform *Canvas::getTransform() const
+{
+    return _transform.get();
 }
 
 void Canvas::setSwitchName(const std::string &parentName)

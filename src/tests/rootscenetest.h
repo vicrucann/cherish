@@ -3,16 +3,24 @@
 
 #include <QObject>
 #include <QTest>
+#include <osg/ref_ptr>
+
+#include "../libSGEntities/rootscene.h"
 
 class RootSceneTest : public QObject {
     Q_OBJECT
 public:
-    RootSceneTest(){
-        ;
-    }
-protected:
+    RootSceneTest();
+private slots:
+    void initialValues();
+
+    void addDeleteCanvas();
+    //void addCanvasCopyAs();
+    //void deleteCanvas();
+
+    void setNameUserScene();
 private:
-    void test();
+    osg::ref_ptr<RootScene> _RS;
 };
 
 #endif // TEST_ROOTSCENE

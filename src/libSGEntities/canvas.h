@@ -53,7 +53,13 @@ public:
     ~Canvas(){}
 
     void setColor(osg::Vec4f color);
+    osg::Vec4f getColor() const;
+
     void setVisibility(bool vis);
+    bool getVisibility() const;
+
+    void setTransform(osg::MatrixTransform* transform);
+    osg::MatrixTransform* getTransform() const;
 
     void setSwitchName(const std::string& parentName);
     void setTransformName(const std::string& parentName);
