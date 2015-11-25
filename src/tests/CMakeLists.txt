@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 2.8.11)
 
-include_directories( ${dureu3d_SOURCE_DIR}
-        #${CMAKE_SOURCE_DIR}/dureu3d
-        #${CMAKE_SOURCE_DIR}/libGUI
-        #${CMAKE_SOURCE_DIR}/libSGEntities
-        #${CMAKE_SOURCE_DIR}/libSGControls
-        #${CMAKE_SOURCE_DIR}/libSGUtils
+include_directories(
+    ${dureu3d_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/dureu3d
+    ${CMAKE_SOURCE_DIR}/libGUI
+    ${CMAKE_SOURCE_DIR}/libSGEntities
+    ${CMAKE_SOURCE_DIR}/libSGControls
+    ${CMAKE_SOURCE_DIR}/libSGUtils
 )
 
 SET( TEST_LIBRARIES

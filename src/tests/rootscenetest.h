@@ -5,7 +5,7 @@
 #include <QTest>
 #include <osg/ref_ptr>
 
-#include "../libSGEntities/rootscene.h"
+#include "rootscene.h"
 
 class RootSceneTest : public QObject {
     Q_OBJECT
