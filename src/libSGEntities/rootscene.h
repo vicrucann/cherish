@@ -77,6 +77,7 @@ private:
     osg::ref_ptr<osg::Group> _userScene;
     osg::ref_ptr<Axes> _axes;
     unsigned int _idCanvas;
+    unsigned int _idNode; // for misc entities
     osg::ref_ptr<ObserveSceneCallback> _observer;
     osg::ref_ptr<HUDCamera> _hud;
 };

@@ -21,6 +21,7 @@ RootScene::RootScene():
     _userScene(new osg::Group),
     _axes(new Axes),
     _idCanvas(0),
+    _idNode(0),
     _observer(new ObserveSceneCallback),
     _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
 {
