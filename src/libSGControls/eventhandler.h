@@ -17,10 +17,11 @@
 
 #include "settings.h"
 #include "canvas.h"
+#include "rootscene.h"
 
 class EventHandler : public osgGA::GUIEventHandler {
 public:
-    EventHandler(dureu::MOUSE_MODE mode = dureu::MOUSE_PICK);
+    EventHandler(RootScene* root, dureu::MOUSE_MODE mode = dureu::MOUSE_PICK);
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void setMode(dureu::MOUSE_MODE mode);
 
@@ -32,6 +33,7 @@ public:
     void setPrevCanvasColor(const osg::Vec4& color);
 protected:
     dureu::MOUSE_MODE _mode;
+    osg::observer_ptr<RootScene> _root;
     osg::observer_ptr<Canvas> _lastCanvas;
     osg::observer_ptr<Canvas> _prevCanvas;
 private:

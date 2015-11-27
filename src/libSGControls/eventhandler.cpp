@@ -4,8 +4,9 @@
 #include <osgUtil/LineSegmentIntersector>
 #include <osgUtil/IntersectionVisitor>
 
-EventHandler::EventHandler(dureu::MOUSE_MODE mode):
+EventHandler::EventHandler(RootScene *root, dureu::MOUSE_MODE mode):
     _mode(mode),
+    _root(root),
     _lastCanvas(0),
     _prevCanvas(0)
 {
@@ -70,17 +71,6 @@ void EventHandler::doOperation(const osgUtil::LineSegmentIntersector::Intersecti
 // colors when they are deleted?
 void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &result){
     std::cout << "  doPick()" << std::endl;
-    if (_lastCanvas.valid()){
-        if (_prevCanvas.valid()){
-            this->setPrevCanvasColor(dureu::CANVAS_CLR_REST);
-            _prevCanvas = NULL;
-        }
-        // later can include previous color setting
-        // but for that need to keep a observer variable on previous node
-        this->setLastCanvasColor(dureu::CANVAS_CLR_PREVIOUS);
-        _prevCanvas = _lastCanvas;
-        _lastCanvas = NULL;
-    }
     // now search for parent to retrieve ptr on Canvas
     Canvas* cnv = dynamic_cast<Canvas*>(result.nodePath.at(3));
     if (!cnv){
@@ -88,8 +78,7 @@ void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &r
         return;
     }
     std::cout << "assumed canvas with name: " << cnv->getName() << std::endl;
-    cnv->setColor(dureu::CANVAS_CLR_CURRENT);
-    _lastCanvas = cnv;
+    _root->setCanvasCurrent(cnv);
 }
 
 // check nodepath to see how to go far enough so that to get canvas type
@@ -100,10 +89,10 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
 {
     std::cout << "  doErase()" << std::endl;
     std::cout << "node path size: " << result.nodePath.size() << std::endl;
-    for (unsigned int i = 0; i < result.nodePath.size(); ++i){
-        osg::Node* node = dynamic_cast<osg::Node*>(result.nodePath.at(i));
-        std::cout << "#" << i <<", supposed canvas, check name: " << node->getName() << std::endl;
-    }
+    //for (unsigned int i = 0; i < result.nodePath.size(); ++i){
+    //    osg::Node* node = dynamic_cast<osg::Node*>(result.nodePath.at(i));
+    //    std::cout << "#" << i <<", supposed canvas, check name: " << node->getName() << std::endl;
+   // }
     std::cout << "Trying to delete the canvas" << std::endl;
     osg::Group* parent = dynamic_cast<osg::Group*>(result.nodePath.at(2)); // RootScene
     osg::Node* child = dynamic_cast<osg::Node*>(result.nodePath.at(3)); // Canvas
@@ -111,6 +100,7 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
         std::cerr << "Could not retrieve RootScene" << std::endl;
         return;
     }
+    _root->setCanvasCurrent(_root->getCanvasPrevious());
     bool success = parent->removeChild(child);
     std::cout << "success is " << success << std::endl;
 }

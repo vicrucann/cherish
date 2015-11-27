@@ -23,7 +23,9 @@ RootScene::RootScene():
     _idCanvas(0),
     _idNode(0),
     _observer(new ObserveSceneCallback),
-    _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
+    _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP)),
+    _canvasCurrent(0),
+    _canvasPrevious(0)
 {
     this->initialize();
 }
@@ -35,15 +37,15 @@ void RootScene::initialize(){
 
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
     trans_xz->setMatrix(osg::Matrix::identity());
-    this->addCanvas(trans_xz, dureu::CANVAS_CLR_REST);
+    Canvas* cnv0 = this->addCanvas(trans_xz);
 
-    this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 0, 1),
-                    osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f),
-                    dureu::CANVAS_CLR_REST);
+    Canvas* cnv1 = this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 0, 1),
+                    osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f));
 
     this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 1, 0, 0),
-                    osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f),
-                    dureu::CANVAS_CLR_REST);
+                    osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f));
+    this->setCanvasCurrent(cnv0);
+    this->setCanvasPrevious(cnv1);
 
     this->addChild(_userScene.get());
     this->addChild(_axes.get());
@@ -68,29 +70,29 @@ std::string RootScene::getNameUserScene() const{
 Canvas *RootScene::addCanvas(){
     osg::MatrixTransform* transform = new osg::MatrixTransform;
     transform->setMatrix(osg::Matrix::identity());
-    return addCanvas(transform, dureu::CANVAS_CLR_CURRENT);
+    return addCanvas(transform);
 }
 
-Canvas *RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T, const osg::Vec4 &color){
+Canvas *RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T){
     std::cout << "  RootScene->addCanvas(R,T, color)" << std::endl;
     osg::MatrixTransform* transform = new osg::MatrixTransform;
     transform->setMatrix(R*T); // left hand coordinate system, see OSG docs
-    return this->addCanvas(transform, color);
+    return this->addCanvas(transform);
 }
 
-Canvas* RootScene::addCanvas(osg::MatrixTransform* transform, const osg::Vec4f& color){
-    std::cout << "  RootScene->addCanvas(transform, color)" << std::endl;
+Canvas* RootScene::addCanvas(osg::MatrixTransform* transform){
+    std::cout << "  RootScene->addCanvas(transform)" << std::endl;
     Canvas* cnv = new Canvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
-    cnv->setColor(color);
     _userScene->addChild(cnv);
+    this->setCanvasCurrent(cnv);
     return cnv;
 }
 
 Canvas *RootScene::addCanvas(Canvas *canvasCopy){
     osg::MatrixTransform* transform = canvasCopy->getTransform();
-    canvasCopy->setColor(dureu::CANVAS_CLR_PREVIOUS);
+    //canvasCopy->setColor(dureu::CANVAS_CLR_PREVIOUS);
     // make offset along the normal
-    return this->addCanvas(transform, dureu::CANVAS_CLR_CURRENT);
+    return this->addCanvas(transform);
 }
 
 bool RootScene::deleteCanvas(const std::string &name){
@@ -114,6 +116,7 @@ bool RootScene::deleteCanvas(const int id){
 }
 
 bool RootScene::deleteCanvas(Canvas *cnv){
+    this->setCanvasCurrent(_canvasPrevious.get());
     return deleteNode(cnv);
 }
 
@@ -202,6 +205,52 @@ void RootScene::setNodeName(osg::Node *node, const std::string &name)
     }
     node->setName(name);
     std::cout << "The new name is " << node->getName() << std::endl;
+}
+
+bool RootScene::setCanvasCurrent(Canvas *cnv)
+{
+    // if canvasCurr and canvasPrev are equal, search for the nearest
+    // valiable candidate to assign the previous to
+    // if no canvases available at all, the observer ptrs are set to NULL
+    if (_canvasCurrent.valid()){
+        if (_canvasPrevious.valid()){
+            _canvasPrevious->setColor(dureu::CANVAS_CLR_REST);
+            _canvasPrevious = NULL;
+        }
+        _canvasCurrent->setColor(dureu::CANVAS_CLR_PREVIOUS);
+        _canvasPrevious = _canvasCurrent;
+        _canvasCurrent = NULL;
+    }
+    if (!cnv){
+        std::cout << "The input canvas pointer is NULL, no current canvas is assigned" << std::endl;
+        return false;
+    }
+    _canvasCurrent = cnv;
+    _canvasCurrent->setColor(dureu::CANVAS_CLR_CURRENT);
+    return true;
+}
+
+bool RootScene::setCanvasPrevious(Canvas *cnv)
+{
+    if (_canvasPrevious.valid()){
+        _canvasPrevious->setColor(dureu::CANVAS_CLR_REST);
+        _canvasPrevious = NULL;
+    }
+    if (!cnv){
+        std::cerr << "The input canvas pointed is not valid" << std::endl;
+        return false;
+    }
+    _canvasPrevious = cnv;
+    _canvasPrevious->setColor(dureu::CANVAS_CLR_PREVIOUS);
+    return true;
+}
+
+Canvas *RootScene::getCanvasCurrent() const{
+    return _canvasCurrent.get();
+}
+
+Canvas *RootScene::getCanvasPrevious() const{
+    return _canvasPrevious.get();
 }
 
 void RootScene::setCanvasName(Canvas *cnv){

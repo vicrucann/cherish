@@ -33,7 +33,7 @@ ViewWidget::ViewWidget(osg::ref_ptr<RootScene> &root, QWidget *parent, Qt::Windo
     _deviceSketch(false),
     _modeMouse(dureu::MOUSE_ROTATE),
     _manipulator(new Manipulator(_modeMouse)),
-    _EH(new EventHandler(_modeMouse))
+    _EH(new EventHandler(_root.get(), _modeMouse))
 {
     osg::StateSet* stateSet = _root->getOrCreateStateSet();
     osg::Material* material = new osg::Material;

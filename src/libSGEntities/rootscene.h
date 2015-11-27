@@ -28,6 +28,7 @@
 #include <string>
 
 #include <osg/ref_ptr>
+#include <osg/observer_ptr>
 #include <osg/Group>
 #include <osg/Geode>
 #include <osg/Node>
@@ -50,8 +51,8 @@ public:
     std::string getNameUserScene() const;
 
     Canvas* addCanvas();
-    Canvas* addCanvas(const osg::Matrix& R, const osg::Matrix& T, const osg::Vec4& color = dureu::CANVAS_CLR_CURRENT);
-    Canvas* addCanvas(osg::MatrixTransform* transform, const osg::Vec4f &color = dureu::CANVAS_CLR_CURRENT);
+    Canvas* addCanvas(const osg::Matrix& R, const osg::Matrix& T);
+    Canvas* addCanvas(osg::MatrixTransform* transform);
     Canvas* addCanvas(Canvas* canvasCopy);
     bool deleteCanvas(const std::string& name);
     bool deleteCanvas(const int id);
@@ -68,6 +69,11 @@ public:
 
     void setNodeName(osg::Node* node, const std::string& name);
 
+    bool setCanvasCurrent(Canvas* cnv);
+    bool setCanvasPrevious(Canvas* cnv);
+    Canvas* getCanvasCurrent() const;
+    Canvas* getCanvasPrevious() const;
+
     //osg::Geode* getSceneObserverText() const;
 protected:
     void setCanvasName(Canvas* cnv);
@@ -80,6 +86,8 @@ private:
     unsigned int _idNode; // for misc entities
     osg::ref_ptr<ObserveSceneCallback> _observer;
     osg::ref_ptr<HUDCamera> _hud;
+    osg::observer_ptr<Canvas> _canvasCurrent;
+    osg::observer_ptr<Canvas> _canvasPrevious;
 };
 
 #endif // SCENE
