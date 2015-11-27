@@ -11,12 +11,12 @@ RootSceneTest::RootSceneTest():
 
 void RootSceneTest::initialValues(){
     QVERIFY(_RS->getNameUserScene() == "UserScene");
-
     // initial number of canvases
     QVERIFY(_RS->getMaxCanvasId() == 3);
-
     // direct children: axes, hud and userScene
     QVERIFY(_RS->getNumChildren() == 3);
+    QVERIFY(_RS->getCanvasCurrent() == _RS->getCanvas(0));
+    QVERIFY(_RS->getCanvasPrevious() == _RS->getCanvas(1));
 }
 
 void RootSceneTest::addDeleteCanvas(){

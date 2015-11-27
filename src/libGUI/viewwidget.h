@@ -16,6 +16,7 @@
 #include <QTabletEvent>
 
 #include <osg/ref_ptr>
+#include <osg/observer_ptr>
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/CompositeViewer>
 #include "rootscene.h"
@@ -26,7 +27,7 @@
 class ViewWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
-    ViewWidget(osg::ref_ptr<RootScene>& root, QWidget* parent=0, Qt::WindowFlags f = 0, int viewmode=1);
+    ViewWidget(RootScene* root, QWidget* parent=0, Qt::WindowFlags f = 0, int viewmode=1);
     virtual ~ViewWidget();
 public slots:
     void getTabletActivity(bool active);
@@ -61,7 +62,8 @@ private:
     osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _graphicsWindow;
 
     osg::ref_ptr<osgViewer::CompositeViewer> _viewer; // Camera setup
-    osg::ref_ptr<RootScene>& _root; // scene to view
+    osg::observer_ptr<RootScene> _root;
+    //osg::ref_ptr<RootScene>& _root; // scene to view
 
     QTabletEvent::TabletDevice _tabletDevice;
 

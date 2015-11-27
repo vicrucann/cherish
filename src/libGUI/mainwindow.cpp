@@ -165,7 +165,7 @@ void MainWindow::onMouseErase()
 
 ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
 {
-    ViewWidget* vwid = new ViewWidget(_rootScene, this, f, viewmode);
+    ViewWidget* vwid = new ViewWidget(_rootScene.get(), this, f, viewmode);
     QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
                      vwid, SLOT(getTabletActivity(bool)));
     QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),

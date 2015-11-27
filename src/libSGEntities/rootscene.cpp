@@ -212,6 +212,8 @@ bool RootScene::setCanvasCurrent(Canvas *cnv)
     // if canvasCurr and canvasPrev are equal, search for the nearest
     // valiable candidate to assign the previous to
     // if no canvases available at all, the observer ptrs are set to NULL
+    if (cnv == _canvasCurrent.get())
+        return true;
     if (_canvasCurrent.valid()){
         if (_canvasPrevious.valid()){
             _canvasPrevious->setColor(dureu::CANVAS_CLR_REST);
@@ -232,6 +234,8 @@ bool RootScene::setCanvasCurrent(Canvas *cnv)
 
 bool RootScene::setCanvasPrevious(Canvas *cnv)
 {
+    if (cnv == _canvasPrevious.get())
+        return true;
     if (_canvasPrevious.valid()){
         _canvasPrevious->setColor(dureu::CANVAS_CLR_REST);
         _canvasPrevious = NULL;
