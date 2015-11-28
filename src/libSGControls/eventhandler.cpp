@@ -6,9 +6,7 @@
 
 EventHandler::EventHandler(RootScene *root, dureu::MOUSE_MODE mode):
     _mode(mode),
-    _root(root),
-    _lastCanvas(0),
-    _prevCanvas(0)
+    _root(root)
 {
 }
 
@@ -103,12 +101,4 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
     _root->setCanvasCurrent(_root->getCanvasPrevious());
     bool success = parent->removeChild(child);
     std::cout << "success is " << success << std::endl;
-}
-
-void EventHandler::setLastCanvasColor(const osg::Vec4 &color){
-    _lastCanvas->setColor(color);
-}
-
-void EventHandler::setPrevCanvasColor(const osg::Vec4 &color){
-    _prevCanvas->setColor(color);
 }

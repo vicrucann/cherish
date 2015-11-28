@@ -28,14 +28,9 @@ public:
     virtual void doOperation(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doErase(const osgUtil::LineSegmentIntersector::Intersection& result);
-
-    void setLastCanvasColor(const osg::Vec4& color);
-    void setPrevCanvasColor(const osg::Vec4& color);
 protected:
     dureu::MOUSE_MODE _mode;
     osg::observer_ptr<RootScene> _root;
-    osg::observer_ptr<Canvas> _lastCanvas;
-    osg::observer_ptr<Canvas> _prevCanvas;
 private:
     // test variables
 };

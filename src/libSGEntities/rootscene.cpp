@@ -117,6 +117,14 @@ bool RootScene::deleteCanvas(const int id){
 
 bool RootScene::deleteCanvas(Canvas *cnv){
     this->setCanvasCurrent(_canvasPrevious.get());
+    for (int i=0;i<this->getMaxCanvasId();++i){
+        Canvas* cnvi = this->getCanvas(i);
+        if (cnvi != NULL && cnvi != this->getCanvasCurrent() && cnvi != cnv){
+            this->setCanvasPrevious(cnvi);
+            std::cout << "Previous canvas is set to name" << this->getCanvasPrevious()->getName() << std::endl;
+            break;
+        }
+    }
     return deleteNode(cnv);
 }
 

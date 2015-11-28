@@ -13,13 +13,11 @@ public:
     RootSceneTest();
 private slots:
     void initialValues();
-
     void addDeleteCanvas();
-    //void addCanvasCopyAs();
-    //void deleteCanvas();
-
     void setNameUserScene();
 private:
+    void assertConstants();
+
     osg::ref_ptr<RootScene> _RS;
 };
 
