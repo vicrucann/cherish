@@ -80,6 +80,22 @@ void Canvas::setGeodeName(const std::string &parentName)
     _geode->setName(parentName + "Geode");
 }
 
+std::string Canvas::getSwitchName() const{
+    return _switch->getName();
+}
+
+std::string Canvas::getTransformName() const{
+    return _transform->getName();
+}
+
+std::string Canvas::getGeometryName() const{
+    return _geometry->getName();
+}
+
+std::string Canvas::getGeodeName() const{
+    return _geode->getName();
+}
+
 void Canvas::addCanvasDrawables(){
     _geometry->setVertexArray(_vertices);
 

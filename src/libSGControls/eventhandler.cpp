@@ -92,13 +92,14 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
     //    std::cout << "#" << i <<", supposed canvas, check name: " << node->getName() << std::endl;
    // }
     std::cout << "Trying to delete the canvas" << std::endl;
-    osg::Group* parent = dynamic_cast<osg::Group*>(result.nodePath.at(2)); // RootScene
-    osg::Node* child = dynamic_cast<osg::Node*>(result.nodePath.at(3)); // Canvas
-    if (!parent){
-        std::cerr << "Could not retrieve RootScene" << std::endl;
-        return;
-    }
-    _root->setCanvasCurrent(_root->getCanvasPrevious());
-    bool success = parent->removeChild(child);
+    //osg::Group* parent = dynamic_cast<osg::Group*>(result.nodePath.at(2)); // RootScene
+    Canvas* canvas = dynamic_cast<Canvas*>(result.nodePath.at(3)); // Canvas
+    //if (!parent){
+    //    std::cerr << "Could not retrieve RootScene" << std::endl;
+    //    return;
+   // }
+    //_root->setCanvasCurrent(_root->getCanvasPrevious());
+    //bool success = parent->removeChild(child);
+    bool success = _root->deleteCanvas(canvas);
     std::cout << "success is " << success << std::endl;
 }

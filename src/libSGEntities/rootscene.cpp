@@ -83,8 +83,12 @@ Canvas *RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T){
 Canvas* RootScene::addCanvas(osg::MatrixTransform* transform){
     std::cout << "  RootScene->addCanvas(transform)" << std::endl;
     Canvas* cnv = new Canvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
-    _userScene->addChild(cnv);
     this->setCanvasCurrent(cnv);
+    bool success = _userScene->addChild(cnv);
+    if (!success){
+        std::cerr << "Could not add a canvas as a child of _userScene" << std::endl;
+        cnv = 0;
+    }
     return cnv;
 }
 
@@ -106,26 +110,40 @@ bool RootScene::deleteCanvas(const std::string &name){
 }
 
 bool RootScene::deleteCanvas(const int id){
-    std::cout << "  RootScene->deleteCanvas(int)" << std::endl;
+    std::cout << "--RootScene->deleteCanvas(int)" << std::endl;
     Canvas* cnv = this->getCanvas(id);
     if (!cnv){
-        std::cerr << "The canvas pointer is NULL" << std::endl;
+        std::cerr << "--the canvas pointer is NULL" << std::endl;
         return false;
     }
     return deleteCanvas(cnv);
 }
 
 bool RootScene::deleteCanvas(Canvas *cnv){
-    this->setCanvasCurrent(_canvasPrevious.get());
-    for (int i=0;i<this->getMaxCanvasId();++i){
-        Canvas* cnvi = this->getCanvas(i);
-        if (cnvi != NULL && cnvi != this->getCanvasCurrent() && cnvi != cnv){
-            this->setCanvasPrevious(cnvi);
-            std::cout << "Previous canvas is set to name" << this->getCanvasPrevious()->getName() << std::endl;
-            break;
+    std::cout << "--RootScene->deleteCanvas(Canvas*)" << std::endl;
+    if (cnv == this->getCanvasCurrent()){
+        std::cout << "--current camera is set to previous, to name: " << this->getCanvasCurrent()->getName() << std::endl;
+        this->setCanvasCurrent(this->getCanvasPrevious());
+    }
+    if (cnv == this->getCanvasPrevious() || getCanvasCurrent() == getCanvasCurrent()){
+        for (unsigned int i=0;i<this->getMaxCanvasId();++i){
+            Canvas* cnvi = this->getCanvas(i);
+            if (cnvi != NULL && cnvi != this->getCanvasCurrent() && cnvi != cnv){
+                this->setCanvasPrevious(cnvi);
+                std::cout << "--previous canvas is set to name: " << this->getCanvasPrevious()->getName() << std::endl;
+                break;
+            }
         }
     }
     return deleteNode(cnv);
+}
+
+// we return bool and not osg::Node like it is done for the Canvas type
+// because we already pass pointer on that node
+bool RootScene::addNode(osg::Node *node){
+    std::cout << "RootScene->addNode(Node*)" << std::endl;
+    node->setName(getEntityName(dureu::NAME_ENTITY, _idNode++));
+    return _userScene->addChild(node);
 }
 
 bool RootScene::deleteNode(const std::string &name)
@@ -156,23 +174,24 @@ bool RootScene::deleteNode(osg::Node *node)
     return success;
 }
 
-bool RootScene::loadSceneFromFile(const std::string& fname, const std::string& name){
-    std::cout << "  RootScene->loadSceneFromFile(string)" << std::endl;
+osg::Node* RootScene::loadSceneFromFile(const std::string& fname){
+    std::cout << "--RootScene->loadSceneFromFile(string)" << std::endl;
     osg::Node* node = osgDB::readNodeFile(fname);
-    //osg::ref_ptr<osg::Node> snode = osgDB::readNodeFile(fname);
     if (!node){
-        std::cerr << "File could not be loaded: " << fname << std::endl;
-        return false;
+        std::cerr << "--File could not be loaded: " << fname << std::endl;
+        return 0;
     }
-    std::cout << "Trying to load node with ptr: " << node << std::endl;
-    bool success = _userScene->addChild(node);
-    this->setNodeName(node, name);
-    std::cout << "New _userSceme child idx is: " << _userScene->getChildIndex(node) << std::endl;
-    return success;
+    std::cout << "--Trying to load node with ptr: " << node << std::endl;
+    this->addNode(node);
+    return node;
 }
 
 unsigned int RootScene::getMaxCanvasId() const {
     return _idCanvas;
+}
+
+unsigned int RootScene::getMaxNodeId() const{
+    return _idNode;
 }
 
 Canvas *RootScene::getCanvas(unsigned int id) const {
@@ -180,39 +199,57 @@ Canvas *RootScene::getCanvas(unsigned int id) const {
 }
 
 Canvas *RootScene::getCanvas(const std::string &name) const{
-    std::cout << "  RootScene->getCanvas(string)" << std::endl;
+    std::cout << "--RootScene->getCanvas(string)" << std::endl;
     FindNodeVisitor fnv(name);
     _userScene->accept(fnv);
     if (fnv.getNode() == NULL){
-        std::cerr << "No entity with such name found: " << name << std::endl;
+        std::cout << "--No entity with such name found: " << name << std::endl;
         return NULL;
     }
     return dynamic_cast<Canvas*>(fnv.getNode());
 }
 
+osg::Node *RootScene::getNode(unsigned int id) const{
+    return getNode(getEntityName(dureu::NAME_ENTITY, id));
+}
+
 osg::Node *RootScene::getNode(const std::string &name) const
 {
-    std::cout << "  RootScene->getNode(string)" << std::endl;
+    std::cout << "--RootScene->getNode(string)" << std::endl;
     FindNodeVisitor fnv(name);
     _userScene->accept(fnv);
     if (fnv.getNode() == NULL){
-        std::cerr << "No entity with such name found: " << name << std::endl;
+        std::cerr << "--No entity with such name found: " << name << std::endl;
         return NULL;
     }
     return fnv.getNode();
 }
 
-void RootScene::setNodeName(osg::Node *node, const std::string &name)
+bool RootScene::setCanvasName(Canvas *cnv, const std::string &name)
+{
+    std::cout << "--RootScene->setCanvasName(Canvas*, string&)" << std::endl;
+    return setNodeName(cnv, name);
+}
+
+bool RootScene::setNodeName(osg::Node *node, const std::string &name)
 {
     std::cout << "  RootScene->setNodeName(osg::Node*, string&)" << std::endl;
     unsigned int idx = _userScene->getChildIndex(node);
     if (_userScene->getNumChildren()<=idx){
-        std::cerr << "The entity of given name is not direct child of the _userScene" << std::endl;
-        std::cerr << "The name was not setup" << std::endl;
-        return;
+        std::cout << "The entity of given name is not direct child of the _userScene" << std::endl;
+        std::cout << "The name was not setup" << std::endl;
+        return false;
+    }
+    for (unsigned int i = 0; i<_userScene->getNumChildren(); ++i){
+        if (_userScene->getChild(i)->getName() == name){
+            std::cout << "The requested name is already in use by another entity" << std::endl;
+            std::cout << "The name was not setup" << std::endl;
+            return false;
+        }
     }
     node->setName(name);
     std::cout << "The new name is " << node->getName() << std::endl;
+    return true;
 }
 
 bool RootScene::setCanvasCurrent(Canvas *cnv)

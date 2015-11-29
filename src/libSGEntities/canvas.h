@@ -66,6 +66,11 @@ public:
     void setGeometryName(const std::string& parentName);
     void setGeodeName(const std::string& parentName);
 
+    std::string getSwitchName() const;
+    std::string getTransformName() const;
+    std::string getGeometryName() const;
+    std::string getGeodeName() const;
+
 private:
     void addCanvasDrawables();
     osg::Vec3f _center;

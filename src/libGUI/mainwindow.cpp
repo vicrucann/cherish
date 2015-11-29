@@ -110,7 +110,7 @@ void MainWindow::onCreateOutsideViewer(){
 }
 
 void MainWindow::onLoadCow(){
-    bool success = _rootScene->loadSceneFromFile("../../samples/cow.osgt", "cow.node");
+    bool success = _rootScene->loadSceneFromFile("../../samples/cow.osgt");
     if (!success){
         std::cerr << "The filename provided was not correct, or the model could not be read" << std::endl;
     }

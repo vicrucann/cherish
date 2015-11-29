@@ -87,6 +87,7 @@ const osg::Vec4 AXES_CLR_Z = solarized::red;
 
 // entity "names"
 const std::string NAME_CANVAS = "Canvas";
+const std::string NAME_ENTITY = "Entity";
 const std::string NAME_STROKE = "Stroke";
 const std::string NAME_GEOMETRY = "Geometry";
 const std::string NAME_IMAGE = "Image";

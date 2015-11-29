@@ -14,6 +14,9 @@ public:
 private slots:
     void initialValues();
     void addDeleteCanvas();
+    void addDeleteNode();
+    void renameCanvas();
+    void renameNode();
     void setNameUserScene();
 private:
     void assertConstants();

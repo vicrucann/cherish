@@ -57,17 +57,24 @@ public:
     bool deleteCanvas(const std::string& name);
     bool deleteCanvas(const int id);
     bool deleteCanvas(Canvas* cnv);
+
+    bool addNode(osg::Node* node);
     bool deleteNode(const std::string& name);
     bool deleteNode(osg::Node* node);
 
-    bool loadSceneFromFile(const std::string& fname, const std::string& name);
+    osg::Node *loadSceneFromFile(const std::string& fname);
 
     unsigned int getMaxCanvasId() const;
+    unsigned int getMaxNodeId() const;
+
     Canvas* getCanvas(unsigned int id) const;
     Canvas* getCanvas(const std::string& name) const;
+
+    osg::Node* getNode(unsigned int id) const;
     osg::Node* getNode(const std::string& name) const;
 
-    void setNodeName(osg::Node* node, const std::string& name);
+    bool setCanvasName(Canvas* cnv, const std::string& name);
+    bool setNodeName(osg::Node* node, const std::string& name);
 
     bool setCanvasCurrent(Canvas* cnv);
     bool setCanvasPrevious(Canvas* cnv);
