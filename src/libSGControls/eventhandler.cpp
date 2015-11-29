@@ -70,7 +70,7 @@ void EventHandler::doOperation(const osgUtil::LineSegmentIntersector::Intersecti
 void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &result){
     std::cout << "  doPick()" << std::endl;
     // now search for parent to retrieve ptr on Canvas
-    Canvas* cnv = dynamic_cast<Canvas*>(result.nodePath.at(3));
+    Canvas* cnv = getCanvas(result);
     if (!cnv){
         std::cerr << "Could not dynamic_cast to Canvas*" << std::endl;
         return;
@@ -86,20 +86,11 @@ void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &r
 void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &result)
 {
     std::cout << "  doErase()" << std::endl;
-    std::cout << "node path size: " << result.nodePath.size() << std::endl;
-    //for (unsigned int i = 0; i < result.nodePath.size(); ++i){
-    //    osg::Node* node = dynamic_cast<osg::Node*>(result.nodePath.at(i));
-    //    std::cout << "#" << i <<", supposed canvas, check name: " << node->getName() << std::endl;
-   // }
-    std::cout << "Trying to delete the canvas" << std::endl;
     //osg::Group* parent = dynamic_cast<osg::Group*>(result.nodePath.at(2)); // RootScene
-    Canvas* canvas = dynamic_cast<Canvas*>(result.nodePath.at(3)); // Canvas
-    //if (!parent){
-    //    std::cerr << "Could not retrieve RootScene" << std::endl;
-    //    return;
-   // }
-    //_root->setCanvasCurrent(_root->getCanvasPrevious());
-    //bool success = parent->removeChild(child);
-    bool success = _root->deleteCanvas(canvas);
+    bool success = _root->deleteCanvas(getCanvas(result));
     std::cout << "success is " << success << std::endl;
+}
+
+Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
+    return dynamic_cast<Canvas*>(result.nodePath.at(3));
 }

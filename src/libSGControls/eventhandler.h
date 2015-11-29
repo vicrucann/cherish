@@ -28,7 +28,10 @@ public:
     virtual void doOperation(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doErase(const osgUtil::LineSegmentIntersector::Intersection& result);
+
 protected:
+    Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
+
     dureu::MOUSE_MODE _mode;
     osg::observer_ptr<RootScene> _root;
 private:
