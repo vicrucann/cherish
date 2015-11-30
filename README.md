@@ -34,14 +34,14 @@ Implementation steps:
 * (done) Camera navigation: zoom, pan, rotate and different mouse modes (**Nov 2015**)
 * Building and manipulation of a scene graph (**Nov 2015**)
     * (done)Add / delete a canvas
-    * Switch to another canvas
+    * (done) Switch to another canvas
     * Add / delete a stroke to a current canvas
     * Add / delete a geometric shape to a current canvas
     * Select a canvas and all it contains
     * Select two or more canvases and their contents
     * Select number of entities within one canvas
 * Advanced entity manipulation (**Dec 2015**)
-    * Create a new canvas as a copy of current
+    * (done) Create a new canvas as a copy of current
     * Push strokes from one canvas to another
     * Move a photo from one canvas to another
 * Save and load of a scene graph to disk (**Dec 2015**)
