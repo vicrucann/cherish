@@ -313,7 +313,7 @@ void RootScene::setCanvasName(Canvas *cnv){
 
 std::string RootScene::getEntityName(const std::string &name, unsigned int id) const{
     char buffer[10];
-    snprintf(buffer, sizeof(buffer), "%d", id);
+    sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
     //itoa(id, buffer, 10);
     return name + std::string(buffer);//std::to_string(static_cast<long double>(id));
 }
