@@ -42,6 +42,7 @@ private slots:
     void onMousePan();
     void onMousePick();
     void onMouseErase();
+    void onMouseSketch();
 private:
     ViewWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
 

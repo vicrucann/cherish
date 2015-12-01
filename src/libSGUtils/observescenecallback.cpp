@@ -45,7 +45,7 @@ void ObserveSceneCallback::setTextPointer(osgText::Text *text){
 }
 
 void ObserveSceneCallback::setTextProperties(const osg::Vec3 &pos, float size) {
-    std::cout << "  Observer->setTextProperties(pos, size)" << std::endl;
+    osg::notify(osg::NOTICE) << "setTextProperties(): (Vec3&, float)" << std::endl;
     _text->setDataVariance(osg::Object::DYNAMIC);
     _text->setCharacterSize(size);
     _text->setAxisAlignment(osgText::TextBase::XY_PLANE);

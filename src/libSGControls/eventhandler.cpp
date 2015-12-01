@@ -22,11 +22,11 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
         return false;
 
-    std::cout << "  Processing mouse event..." << std::endl;
+    std::cout << "handle(): Processing mouse event..." << std::endl;
 
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (viewer){
-        std::cout << "Viewer is read" << std::endl;
+        std::cout <<  "handle(): Viewer is read" << std::endl;
         osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(
                     osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
         osgUtil::IntersectionVisitor iv(intersector);
@@ -34,11 +34,10 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         osg::Camera* camera = viewer->getCamera();
         if (!camera)
             return false;
-        std::cout << "Camera is read" << std::endl;
+        std::cout <<  "handle(): Camera is read" << std::endl;
         camera->accept(iv);
         if (intersector->containsIntersections()){
-            std::cout << "Found intersections" << std::endl;
-            std::cout << "# of intersections: " << (intersector->getIntersections()).size() << std::endl;
+            std::cout << "handle(): # of intersections: " << (intersector->getIntersections()).size() << std::endl;
             const osgUtil::LineSegmentIntersector::Intersection& result = *(intersector->getIntersections().begin());
             doOperation(result);
         }
@@ -60,37 +59,43 @@ void EventHandler::doOperation(const osgUtil::LineSegmentIntersector::Intersecti
     case dureu::MOUSE_ERASE:
         doErase(result);
         break;
+    case dureu::MOUSE_SKETCH:
+        doSketch(result);
+        break;
     default:
-        std::cerr << "Unrecognized event handler, not processed" << std::endl;
+        std::cerr << "doOperation(): unrecognized event handler, not processed" << std::endl;
         break;
     }
 }
 
-// colors when they are deleted?
 void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &result){
-    std::cout << "  doPick()" << std::endl;
-    // now search for parent to retrieve ptr on Canvas
     Canvas* cnv = getCanvas(result);
     if (!cnv){
-        std::cerr << "Could not dynamic_cast to Canvas*" << std::endl;
+        std::cerr << "doPick(): could not dynamic_cast<Canvas*>" << std::endl;
         return;
     }
-    std::cout << "assumed canvas with name: " << cnv->getName() << std::endl;
+    std::cout << "doPick(): assumed canvas with name: " << cnv->getName() << std::endl;
     _root->setCanvasCurrent(cnv);
 }
 
 // check nodepath to see how to go far enough so that to get canvas type
-// nodepath; back() returns the very parent
-// we need something like back()+c , where c is an arbitrary number of where in SceneRoot
-// our canvases are located
 void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &result)
 {
-    std::cout << "  doErase()" << std::endl;
-    //osg::Group* parent = dynamic_cast<osg::Group*>(result.nodePath.at(2)); // RootScene
-    bool success = _root->deleteCanvas(getCanvas(result));
-    std::cout << "success is " << success << std::endl;
+    Canvas* cnv = getCanvas(result);
+    if (!cnv){
+        std::cerr << "doErase(): could not dynamic_cast<Canvas*>" << std::endl;
+        return;
+    }
+    std::cout << "doErase(): assumed canvas with name: " << cnv->getName() << std::endl;
+    bool success = _root->deleteCanvas(cnv);
+    std::cout << "doErase(): success is " << success << std::endl;
+}
+
+void EventHandler::doSketch(const osgUtil::LineSegmentIntersector::Intersection &result)
+{
+    std::cout << "  doSketch()" << std::endl;
 }
 
 Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
-    return dynamic_cast<Canvas*>(result.nodePath.at(3));
+    return dynamic_cast<Canvas*>(result.nodePath.at(_root->getCanvasLevel()));
 }

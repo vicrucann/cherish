@@ -52,13 +52,13 @@ RootScene::~RootScene(){}
 bool RootScene::addUserScene()
 {
     if (!_userScene){
-        std::cout << "UserScene pointer is NULL" << std::endl;
+         std::cerr << "addUserScene(): UserScene pointer is NULL" << std::endl;
         return false;
     }
     for (unsigned int i=0; i<this->getNumChildren(); ++i){
         Node* node = this->getChild(i);
         if (node == _userScene){
-            std::cout << "UserScene is already a child of the scene" << std::endl;
+             std::cerr << "addUserScene(): UserScene is already a child of the scene" << std::endl;
             return false;
         }
     }
@@ -80,13 +80,13 @@ bool RootScene::getAxesVisibility() const{
 
 bool RootScene::addAxes(){
     if (!_axes.get()){
-        std::cout << "Axes pointer is NULL" << std::endl;
+         std::cerr << "addAxes(): Axes pointer is NULL" << std::endl;
         return false;
     }
     for (unsigned int i=0; i<this->getNumChildren(); ++i){
         Node* node = this->getChild(i);
         if (node == _axes.get()){
-            std::cout << "Global axes is already on the scene" << std::endl;
+             std::cerr << "addAxes(): Global axes is already on the scene" << std::endl;
             return false;
         }
     }
@@ -112,13 +112,13 @@ const ObserveSceneCallback *RootScene::getSceneObserver() const{
 
 bool RootScene::addHudCamera(){
     if (!_hud.get()){
-        std::cout << "HUD is null" << std::endl;
+         std::cerr << "addHudCamera(): HUD is null" << std::endl;
         return false;
     }
     for (unsigned int i=0; i<this->getNumChildren(); ++i){
         Node* node = this->getChild(i);
         if (node == _hud.get()){
-            std::cout << "HUD is already on the scene" << std::endl;
+             std::cerr << "addHudCamera(): HUD is already on the scene" << std::endl;
             return false;
         }
     }
@@ -132,18 +132,14 @@ const HUDCamera *RootScene::getHudCamera() const{
 
 bool RootScene::setHudCameraObserve(){
     if (!_observer.get()){
-        std::cout << "Observer is empty" << std::endl;
+         std::cerr << "setHudCameraObserve(): Observer is empty" << std::endl;
         return false;
     }
     if (!_hud.get()){
-        std::cout << "HUD is NULL" << std::endl;
+         std::cerr << "setHudCameraObserve(): HUD is NULL" << std::endl;
         return false;
     }
-    if (_hud->getNumChildren() > 0){
-        std::cout << "HUD already has an observer" << std::endl;
-        return false;
-    }
-    return _hud->addChild(_observer->getTextGeode());
+    return _hud->setText(_observer->getTextGeode());
 }
 
 void RootScene::setHudCameraVisibility(bool vis){
@@ -161,63 +157,67 @@ Canvas *RootScene::addCanvas(){
 }
 
 Canvas *RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T){
-    std::cout << "  RootScene->addCanvas(R,T, color)" << std::endl;
+    std::cout << "addCanvas(): (R,T, color)" << std::endl;
     osg::MatrixTransform* transform = new osg::MatrixTransform;
     transform->setMatrix(R*T); // left hand coordinate system, see OSG docs
     return this->addCanvas(transform);
 }
 
 Canvas* RootScene::addCanvas(osg::MatrixTransform* transform){
-    std::cout << "  RootScene->addCanvas(transform)" << std::endl;
+    std::cout << "addCanvas(): (transform)" << std::endl;
     Canvas* cnv = new Canvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
     this->setCanvasCurrent(cnv);
     bool success = _userScene->addChild(cnv);
     if (!success){
-        std::cerr << "Could not add a canvas as a child of _userScene" << std::endl;
+        std::cerr << "addCanvas(): Could not add a canvas as a child of _userScene" << std::endl;
         cnv = 0;
     }
     return cnv;
 }
 
 Canvas *RootScene::addCanvas(Canvas *canvasCopy){
+    std::cout << "addCanvas(): (Canvas*)" << std::endl;
     osg::MatrixTransform* transform = canvasCopy->getTransform();
-    //canvasCopy->setColor(dureu::CANVAS_CLR_PREVIOUS);
     // make offset along the normal
     return this->addCanvas(transform);
 }
 
 bool RootScene::deleteCanvas(const std::string &name){
-    std::cout << "  RootScene->deleteCanvas(string)" << std::endl;
+    std::cout << "deleteCanvas(): (string&)" << std::endl;
     Canvas* cnv = this->getCanvas(name);
     if (!cnv){
-        std::cerr << "The canvas pointer is NULL" << std::endl;
+        std::cerr << "deleteCanvas(): The canvas pointer is NULL" << std::endl;
         return false;
     }
     return deleteCanvas(cnv);
 }
 
 bool RootScene::deleteCanvas(const int id){
-    std::cout << "--RootScene->deleteCanvas(int)" << std::endl;
+    std::cout << "deleteCanvas(): (int)" << std::endl;
     Canvas* cnv = this->getCanvas(id);
     if (!cnv){
-        std::cerr << "--the canvas pointer is NULL" << std::endl;
+        std::cerr << "deleteCanvas(): the canvas pointer is NULL" << std::endl;
         return false;
     }
     return deleteCanvas(cnv);
 }
 
 bool RootScene::deleteCanvas(Canvas *cnv){
-    std::cout << "--RootScene->deleteCanvas(Canvas*)" << std::endl;
+    std::cout << "deleteCanvas(): (Canvas*)" << std::endl;
     if (cnv == this->getCanvasCurrent()){
-        std::cout << "--current camera is set to previous, to name: " << this->getCanvasCurrent()->getName() << std::endl;
+        std::cout << "deleteCanvas(): current canvas is set to previous, to name: " << this->getCanvasCurrent()->getName() << std::endl;
         this->setCanvasCurrent(this->getCanvasPrevious());
     }
+
+    // replace the search block to the next:
+    // iterate over all the children
+    // see if the type is canvas, check if it's not current or prev or to delete
     if (cnv == this->getCanvasPrevious() || getCanvasCurrent() == getCanvasCurrent()){
         for (unsigned int i=0;i<this->getMaxCanvasId();++i){
             Canvas* cnvi = this->getCanvas(i);
             if (cnvi != NULL && cnvi != this->getCanvasCurrent() && cnvi != cnv){
                 this->setCanvasPrevious(cnvi);
-                std::cout << "--previous canvas is set to name: " << this->getCanvasPrevious()->getName() << std::endl;
+                std::cout << "deleteCanvas(): previous canvas is set to name: " << this->getCanvasPrevious()->getName() << std::endl;
                 break;
             }
         }
@@ -228,18 +228,18 @@ bool RootScene::deleteCanvas(Canvas *cnv){
 // we return bool and not osg::Node like it is done for the Canvas type
 // because we already pass pointer on that node
 bool RootScene::addNode(osg::Node *node){
-    std::cout << "RootScene->addNode(Node*)" << std::endl;
+    std::cout << "addNode(): (Node*)" << std::endl;
     node->setName(getEntityName(dureu::NAME_ENTITY, _idNode++));
     return _userScene->addChild(node);
 }
 
 bool RootScene::deleteNode(const std::string &name)
 {
-    std::cout << "  RootScene->deleteNode(string): " << name << std::endl;
+    std::cout << "deleteNode(): (string&): " << name << std::endl;
     osg::Node* node = this->getNode(name);
-    std::cout << "Node child idx: " << _userScene->getChildIndex(node) << std::endl;
+    std::cout << "deleteNode(): Node child idx: " << _userScene->getChildIndex(node) << std::endl;
     if (!node){
-        std::cerr << "The node pointer is NULL" << std::endl;
+        std::cerr << "deleteNode(): The node pointer is NULL" << std::endl;
         return false;
     }
     return deleteNode(node);
@@ -247,28 +247,28 @@ bool RootScene::deleteNode(const std::string &name)
 
 bool RootScene::deleteNode(osg::Node *node)
 {
-    std::cout << "  RootScene->deleteNode(osg::Node*): " << node->getName() << std::endl;
+    std::cout << "deleteNode(): (osg::Node*): " << node->getName() << std::endl;
     if (!node){
-        std::cerr << "The node pointer is NULL" << std::endl;
+        std::cerr << "deleteNode(): The node pointer is NULL" << std::endl;
         return true;
     }
-    std::cout << "Trying to delete node with ptr: " << node << std::endl;
-    std::cout << " and name: " << node->getName() << std::endl;
+    std::cout << "deleteNode(): Trying to delete node with ptr: " << node << std::endl;
+    std::cout << "deleteNode():   and name: " << node->getName() << std::endl;
     //bool success = _userScene->removeChild(tn);
     bool success = _userScene->removeChild(node);
-    if (success) std::cout << "Success on removeChild(osg::Node*)" << std::endl;
-    else std::cerr << "Failure to removeChild(osg::Node*)" << std::endl;
+    if (success) std::cout << "deleteNode(): Success on removeChild(osg::Node*)" << std::endl;
+    else std::cerr << "deleteNode(): Failure to removeChild(osg::Node*)" << std::endl;
     return success;
 }
 
 osg::Node* RootScene::loadSceneFromFile(const std::string& fname){
-    std::cout << "--RootScene->loadSceneFromFile(string)" << std::endl;
+    std::cout << "loadSceneFromFile(): (string&)" << std::endl;
     osg::Node* node = osgDB::readNodeFile(fname);
     if (!node){
-        std::cerr << "--File could not be loaded: " << fname << std::endl;
+        std::cerr << "loadSceneFromFile(): File could not be loaded: " << fname << std::endl;
         return 0;
     }
-    std::cout << "--Trying to load node with ptr: " << node << std::endl;
+    std::cout << "loadSceneFromFile(): Trying to load node with ptr: " << node << std::endl;
     this->addNode(node);
     return node;
 }
@@ -286,11 +286,11 @@ Canvas *RootScene::getCanvas(unsigned int id) const {
 }
 
 Canvas *RootScene::getCanvas(const std::string &name) const{
-    std::cout << "--RootScene->getCanvas(string)" << std::endl;
+    std::cout << "getCanvas(): (string&)" << std::endl;
     FindNodeVisitor fnv(name);
     _userScene->accept(fnv);
     if (fnv.getNode() == NULL){
-        std::cout << "--No entity with such name found: " << name << std::endl;
+        std::cerr << "getCanvas(): No entity with such name found: " << name << std::endl;
         return NULL;
     }
     return dynamic_cast<Canvas*>(fnv.getNode());
@@ -302,11 +302,11 @@ osg::Node *RootScene::getNode(unsigned int id) const{
 
 osg::Node *RootScene::getNode(const std::string &name) const
 {
-    std::cout << "--RootScene->getNode(string)" << std::endl;
+    std::cout << "getNode(): (string&)" << std::endl;
     FindNodeVisitor fnv(name);
     _userScene->accept(fnv);
     if (fnv.getNode() == NULL){
-        std::cerr << "--No entity with such name found: " << name << std::endl;
+        std::cerr << "getNode(): No entity with such name found: " << name << std::endl;
         return NULL;
     }
     return fnv.getNode();
@@ -314,23 +314,23 @@ osg::Node *RootScene::getNode(const std::string &name) const
 
 bool RootScene::setCanvasName(Canvas *cnv, const std::string &name)
 {
-    std::cout << "--RootScene->setCanvasName(Canvas*, string&)" << std::endl;
+    std::cout << "setCanvasName(): (Canvas*, string&)" << std::endl;
     return setNodeName(cnv, name);
 }
 
 bool RootScene::setNodeName(osg::Node *node, const std::string &name)
 {
-    std::cout << "  RootScene->setNodeName(osg::Node*, string&)" << std::endl;
+    std::cout << "setNodeName(): (osg::Node*, string&)" << std::endl;
     unsigned int idx = _userScene->getChildIndex(node);
     if (_userScene->getNumChildren()<=idx){
-        std::cout << "The entity of given name is not direct child of the _userScene" << std::endl;
-        std::cout << "The name was not setup" << std::endl;
+        std::cerr << "setNodeName(): The entity of given name is not direct child of the _userScene" << std::endl;
+        std::cerr << "setNodeName(): The name was not setup" << std::endl;
         return false;
     }
     for (unsigned int i = 0; i<_userScene->getNumChildren(); ++i){
         if (_userScene->getChild(i)->getName() == name){
-            std::cout << "The requested name is already in use by another entity" << std::endl;
-            std::cout << "The name was not setup" << std::endl;
+            std::cerr << "setNodeName(): The requested name is already in use by another entity" << std::endl;
+            std::cerr << "setNodeName(): The name was not setup" << std::endl;
             return false;
         }
     }
@@ -356,7 +356,7 @@ bool RootScene::setCanvasCurrent(Canvas *cnv)
         _canvasCurrent = NULL;
     }
     if (!cnv){
-        std::cout << "The input canvas pointer is NULL, no current canvas is assigned" << std::endl;
+        std::cerr << "setCanvasCurrent(): The input canvas pointer is NULL, no current canvas is assigned" << std::endl;
         return false;
     }
     _canvasCurrent = cnv;
@@ -373,7 +373,7 @@ bool RootScene::setCanvasPrevious(Canvas *cnv)
         _canvasPrevious = NULL;
     }
     if (!cnv){
-        std::cerr << "The input canvas pointed is not valid" << std::endl;
+        std::cerr << "setCanvasPrevious(): The input canvas pointed is not valid" << std::endl;
         return false;
     }
     _canvasPrevious = cnv;
@@ -389,9 +389,15 @@ Canvas *RootScene::getCanvasPrevious() const{
     return _canvasPrevious.get();
 }
 
+// what is the deepness (degree) in a RootScene tree?
+// this -> _userScene -> Canvas
+unsigned int RootScene::getCanvasLevel() const{
+    return 3;
+}
+
 void RootScene::setCanvasName(Canvas *cnv){
     cnv->setName(getEntityName(dureu::NAME_CANVAS, _idCanvas++));
-    std::cout << "  Canvas renamed: " << cnv->getName() << std::endl;
+    std::cout << "setCanvasName(): Canvas renamed: " << cnv->getName() << std::endl;
     cnv->setSwitchName(cnv->getName());
     cnv->setTransformName(cnv->getName());
     cnv->setGeodeName(cnv->getName());
@@ -408,7 +414,7 @@ std::string RootScene::getEntityName(const std::string &name, unsigned int id) c
 bool RootScene::setSceneObserver() {
     _observer->setName("SceneObserver");
     if (_observer->getScenePointer()!=NULL){
-        std::cout << "SceneObserver will be overriden" << std::endl;
+        std::cerr << "setSceneObserver(): SceneObserver will be overriden" << std::endl;
     }
     _observer->setScenePointer(_userScene.get());
     _userScene->addUpdateCallback(_observer.get());

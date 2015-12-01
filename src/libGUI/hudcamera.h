@@ -39,11 +39,24 @@ public:
     }
 
     void setVisibility(bool vis){
+        osg::notify(osg::NOTICE) << "HUDCamera: set visibility to " << vis << std::endl;
         _switch->setChildValue(_switch->getChild(0), vis);
     }
 
     bool getVisibility(){
         return _switch->getChildValue(_switch->getChild(0));
+    }
+
+    bool setText(osg::Geode* text){
+        if (!text){
+            osg::notify(osg::WARN) << "setText(): text pointer is NULL" << std::endl;
+            return false;
+        }
+        if (_camera->getNumChildren()>0){
+            osg::notify(osg::WARN) << "setText(): there is already a text pointer attached" << std::endl;
+            return false;
+        }
+        return _camera->addChild(text);
     }
 
     void addTestDrawables(){

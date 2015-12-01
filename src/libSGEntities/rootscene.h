@@ -95,7 +95,7 @@ public:
     Canvas* getCanvasCurrent() const;
     Canvas* getCanvasPrevious() const;
 
-    //osg::Geode* getSceneObserverText() const;
+    unsigned int getCanvasLevel() const;
 protected:
     void setCanvasName(Canvas* cnv);
     std::string getEntityName(const std::string& name, unsigned int id) const;
