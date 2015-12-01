@@ -13,6 +13,11 @@ public:
     RootSceneTest();
 private slots:
     void initialValues();
+    void userSceneSetGet();
+    void axesVisibility();
+    void axesSetGet();
+    void observerGet();
+    void hudGetSet();
     void addDeleteCanvas();
     void addDeleteNode();
     void renameCanvas();

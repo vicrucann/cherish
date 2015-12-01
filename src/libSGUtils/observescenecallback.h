@@ -22,6 +22,7 @@ public:
     ObserveSceneCallback();
     virtual void operator ()(osg::Node* node, osg::NodeVisitor* nv);
     void setScenePointer(osg::Group* scene);
+    const osg::Group* getScenePointer() const;
     void setTextPointer(osgText::Text* text);
     osg::Geode* getTextGeode() const;
 private:

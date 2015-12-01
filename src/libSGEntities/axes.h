@@ -24,6 +24,7 @@ public:
     ~Axes();
 
     void setVisibility(bool vis);
+    bool getVisibility() const;
 
 private:
     osg::ref_ptr<osg::Geometry> _geometry;

@@ -36,6 +36,10 @@ void ObserveSceneCallback::setScenePointer(osg::Group *scene){
     _scene = scene;
 }
 
+const osg::Group *ObserveSceneCallback::getScenePointer() const{
+    return _scene.get();
+}
+
 void ObserveSceneCallback::setTextPointer(osgText::Text *text){
     _text = text;
 }

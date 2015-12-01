@@ -16,6 +16,46 @@ void RootSceneTest::initialValues(){
     QVERIFY(_RS->getCanvasPrevious() == _RS->getCanvas(1));
 }
 
+void RootSceneTest::userSceneSetGet()
+{
+    QVERIFY(!_RS->addUserScene());
+    QVERIFY(_RS->getUserScene()->getName() == "UserScene");
+    assertConstants();
+}
+
+void RootSceneTest::axesVisibility(){
+    QVERIFY(_RS->getAxesVisibility());
+    _RS->setAxesVisibility(false);
+    QVERIFY(!_RS->getAxesVisibility());
+    _RS->setAxesVisibility(true);
+    assertConstants();
+}
+
+void RootSceneTest::axesSetGet()
+{
+    QVERIFY(!_RS->addAxes());
+    QVERIFY(_RS->getAxes()->getName() == "Axes");
+    assertConstants();
+}
+
+void RootSceneTest::observerGet()
+{
+    QVERIFY(_RS->getSceneObserver()->getName() == "SceneObserver");
+    assertConstants();
+}
+
+void RootSceneTest::hudGetSet()
+{
+    QVERIFY(!_RS->addHudCamera());
+    QVERIFY(_RS->getHudCamera()->getName() == "HUDCamera");
+    QVERIFY(!_RS->setHudCameraObserve());
+    QVERIFY(_RS->getHudCameraVisibility());
+    _RS->setHudCameraVisibility(false);
+    QVERIFY(!_RS->getHudCameraVisibility());
+    _RS->setHudCameraVisibility(true);
+    assertConstants();
+}
+
 void RootSceneTest::addDeleteCanvas(){
     std::cout << "TEST: add default +Canvas3" << std::endl;
     Canvas* cnv = _RS->addCanvas();
@@ -132,9 +172,9 @@ void RootSceneTest::renameNode() {
 }
 
 void RootSceneTest::setNameUserScene(){
-    _RS->setName("SceneMy");
-    QVERIFY(_RS->getName() == "SceneMy");
-    _RS->setName("UserScene");
+    _RS->setNameUserScene("SceneMy");
+    QVERIFY(_RS->getNameUserScene() == "SceneMy");
+    _RS->setNameUserScene("UserScene");
     assertConstants();
 }
 
@@ -145,8 +185,14 @@ void RootSceneTest::assertConstants(){
     QVERIFY(_RS->getCanvasCurrent()->getColor() == dureu::CANVAS_CLR_CURRENT);
     QVERIFY(_RS->getCanvasPrevious()->getColor() == dureu::CANVAS_CLR_PREVIOUS);
 
+    QVERIFY(_RS->getName() == "RootScene");
     QVERIFY(_RS->getNumChildren() == 3);
     QVERIFY(_RS->getNameUserScene() == "UserScene");
+    QVERIFY(_RS->getUserScene() == _RS->getChild(0));
+    QVERIFY(_RS->getAxesVisibility());
+    QVERIFY(_RS->getAxes() == _RS->getChild(1));
+    QVERIFY(_RS->getHudCamera()->getName() == "HUDCamera");
+    QVERIFY(_RS->getHudCameraVisibility());
 }
 
 QTEST_MAIN(RootSceneTest)

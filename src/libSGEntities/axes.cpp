@@ -70,3 +70,7 @@ void Axes::setVisibility(bool vis)
 {
     _switch->setChildValue(_switch->getChild(0), vis);
 }
+
+bool Axes::getVisibility() const{
+    return _switch->getChildValue(_switch->getChild(0));
+}

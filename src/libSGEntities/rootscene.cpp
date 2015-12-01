@@ -20,21 +20,13 @@
 RootScene::RootScene():
     _userScene(new osg::Group),
     _axes(new Axes),
-    _idCanvas(0),
-    _idNode(0),
     _observer(new ObserveSceneCallback),
     _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP)),
     _canvasCurrent(0),
-    _canvasPrevious(0)
+    _canvasPrevious(0),
+    _idCanvas(0),
+    _idNode(0)
 {
-    this->initialize();
-}
-
-RootScene::~RootScene(){}
-
-void RootScene::initialize(){
-    _userScene->setName("UserScene");
-
     osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
     trans_xz->setMatrix(osg::Matrix::identity());
     Canvas* cnv0 = this->addCanvas(trans_xz);
@@ -47,24 +39,119 @@ void RootScene::initialize(){
     this->setCanvasCurrent(cnv0);
     this->setCanvasPrevious(cnv1);
 
-    this->addChild(_userScene.get());
-    this->addChild(_axes.get());
-
+    this->addUserScene(); // child #0
+    this->addAxes(); // child #1
     this->setSceneObserver();
-    _hud->addChild(_observer->getTextGeode());
-    this->addChild(_hud.get());
+    this->addHudCamera();
+    this->setHudCameraObserve(); // child #2
     this->setName("RootScene");
+}
 
-    // to test the rename of canvas:
-    //this->setCanvasName(getCanvas(0)); // Canvas0 should be renamed to Canvas3
+RootScene::~RootScene(){}
+
+bool RootScene::addUserScene()
+{
+    if (!_userScene){
+        std::cout << "UserScene pointer is NULL" << std::endl;
+        return false;
+    }
+    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+        Node* node = this->getChild(i);
+        if (node == _userScene){
+            std::cout << "UserScene is already a child of the scene" << std::endl;
+            return false;
+        }
+    }
+    _userScene->setName("UserScene");
+    return this->addChild(_userScene.get());
+}
+
+const osg::Group *RootScene::getUserScene() const{
+    return _userScene.get();
 }
 
 void RootScene::setAxesVisibility(bool vis) {
     _axes->setVisibility(vis);
 }
 
+bool RootScene::getAxesVisibility() const{
+    return _axes->getVisibility();
+}
+
+bool RootScene::addAxes(){
+    if (!_axes.get()){
+        std::cout << "Axes pointer is NULL" << std::endl;
+        return false;
+    }
+    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+        Node* node = this->getChild(i);
+        if (node == _axes.get()){
+            std::cout << "Global axes is already on the scene" << std::endl;
+            return false;
+        }
+    }
+    _axes->setName("Axes");
+    return this->addChild(_axes.get());
+}
+
+const Axes* RootScene::getAxes() const{
+    return _axes.get();
+}
+
+void RootScene::setNameUserScene(const std::string &name){
+    _userScene->setName(name);
+}
+
 std::string RootScene::getNameUserScene() const{
     return _userScene->getName();
+}
+
+const ObserveSceneCallback *RootScene::getSceneObserver() const{
+    return _observer.get();
+}
+
+bool RootScene::addHudCamera(){
+    if (!_hud.get()){
+        std::cout << "HUD is null" << std::endl;
+        return false;
+    }
+    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+        Node* node = this->getChild(i);
+        if (node == _hud.get()){
+            std::cout << "HUD is already on the scene" << std::endl;
+            return false;
+        }
+    }
+    _hud->setName("HUDCamera");
+    return this->addChild(_hud.get());
+}
+
+const HUDCamera *RootScene::getHudCamera() const{
+    return _hud.get();
+}
+
+bool RootScene::setHudCameraObserve(){
+    if (!_observer.get()){
+        std::cout << "Observer is empty" << std::endl;
+        return false;
+    }
+    if (!_hud.get()){
+        std::cout << "HUD is NULL" << std::endl;
+        return false;
+    }
+    if (_hud->getNumChildren() > 0){
+        std::cout << "HUD already has an observer" << std::endl;
+        return false;
+    }
+    return _hud->addChild(_observer->getTextGeode());
+}
+
+void RootScene::setHudCameraVisibility(bool vis){
+    _hud->setVisibility(vis);
+}
+
+bool RootScene::getHudCameraVisibility() const{
+    return _hud->getVisibility();
 }
 
 Canvas *RootScene::addCanvas(){
@@ -319,7 +406,11 @@ std::string RootScene::getEntityName(const std::string &name, unsigned int id) c
 }
 
 bool RootScene::setSceneObserver() {
-    _observer->setScenePointer(_userScene);
+    _observer->setName("SceneObserver");
+    if (_observer->getScenePointer()!=NULL){
+        std::cout << "SceneObserver will be overriden" << std::endl;
+    }
+    _observer->setScenePointer(_userScene.get());
     _userScene->addUpdateCallback(_observer.get());
     return true;
 }

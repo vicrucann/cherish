@@ -44,11 +44,25 @@ class RootScene : public osg::Group {
 public:
     RootScene();
     ~RootScene();
-    void initialize();
+
+    bool addUserScene();
+    const osg::Group* getUserScene() const;
 
     void setAxesVisibility(bool vis);
+    bool getAxesVisibility() const;
+    bool addAxes();
+    const Axes* getAxes() const;
 
+    void setNameUserScene(const std::string& name);
     std::string getNameUserScene() const;
+
+    const ObserveSceneCallback* getSceneObserver() const;
+
+    bool addHudCamera();
+    const HUDCamera* getHudCamera() const;
+    bool setHudCameraObserve();
+    void setHudCameraVisibility(bool vis);
+    bool getHudCameraVisibility() const;
 
     Canvas* addCanvas();
     Canvas* addCanvas(const osg::Matrix& R, const osg::Matrix& T);
@@ -89,12 +103,12 @@ protected:
 private:
     osg::ref_ptr<osg::Group> _userScene;
     osg::ref_ptr<Axes> _axes;
-    unsigned int _idCanvas;
-    unsigned int _idNode; // for misc entities
     osg::ref_ptr<ObserveSceneCallback> _observer;
     osg::ref_ptr<HUDCamera> _hud;
     osg::observer_ptr<Canvas> _canvasCurrent;
     osg::observer_ptr<Canvas> _canvasPrevious;
+    unsigned int _idCanvas;
+    unsigned int _idNode; // for misc entities
 };
 
 #endif // SCENE

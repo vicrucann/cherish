@@ -1,7 +1,9 @@
 #ifndef HUDCAMERA
 #define HUDCAMERA
 
+#include <osg/Group>
 #include <osg/Camera>
+#include <osg/Switch>
 #include <osg/Transform>
 #include <osg/StateAttribute>
 #include <osg/Matrix>
@@ -18,18 +20,30 @@
  * text and images.
  */
 
-class HUDCamera: public osg::Camera{
+class HUDCamera: public osg::Group{
 public:
-    HUDCamera(double left, double right, double bottom, double top)
+    HUDCamera(double left, double right, double bottom, double top):
+        _camera(new osg::Camera),
+        _switch(new osg::Switch)
     {
-        this->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-        this->setClearMask(GL_DEPTH_BUFFER_BIT);
-        this->setRenderOrder(osg::Camera::POST_RENDER);
-        this->setAllowEventFocus(false);
-        this->setProjectionMatrix(osg::Matrix::ortho2D(left,right,bottom,top));
-        this->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+        this->addChild(_switch);
+        _switch->addChild(_camera);
 
+        _camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+        _camera->setClearMask(GL_DEPTH_BUFFER_BIT);
+        _camera->setRenderOrder(osg::Camera::POST_RENDER);
+        _camera->setAllowEventFocus(false);
+        _camera->setProjectionMatrix(osg::Matrix::ortho2D(left,right,bottom,top));
+        _camera->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
         //this->addTestDrawables();
+    }
+
+    void setVisibility(bool vis){
+        _switch->setChildValue(_switch->getChild(0), vis);
+    }
+
+    bool getVisibility(){
+        return _switch->getChildValue(_switch->getChild(0));
     }
 
     void addTestDrawables(){
@@ -64,6 +78,9 @@ public:
         this->addChild(geode);
     }
 
+private:
+    osg::Camera* _camera;
+    osg::Switch* _switch;
 }; //class HUDCamera
 
 #endif // HUDCAMERA
