@@ -6,7 +6,9 @@
 
 EventHandler::EventHandler(RootScene *root, dureu::MOUSE_MODE mode):
     _mode(mode),
-    _root(root)
+    _root(root),
+    _x0(0),
+    _y0(0)
 {
 }
 
@@ -42,6 +44,8 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             doOperation(result);
         }
     }
+    _x0 = ea.getX();
+    _y0 = ea.getY();
     return false;
 }
 
