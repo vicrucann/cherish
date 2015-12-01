@@ -34,8 +34,10 @@ private slots:
     void onSetStylusSketchOFF();
     void onSetGloAxesON();
     void onSetGloAxesOFF();
+
     void onDeleteCanvas();
     void onDeleteCow();
+    void onChangeSizeCanvas();
 
     void onMouseRotate();
     void onMouseZoom();

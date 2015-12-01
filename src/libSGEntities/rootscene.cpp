@@ -27,15 +27,17 @@ RootScene::RootScene():
     _idCanvas(0),
     _idNode(0)
 {
-    osg::ref_ptr<osg::MatrixTransform> trans_xz = new osg::MatrixTransform;
-    trans_xz->setMatrix(osg::Matrix::identity());
-    Canvas* cnv0 = this->addCanvas(trans_xz);
+    osg::ref_ptr<osg::MatrixTransform> trans_i = new osg::MatrixTransform;
+    trans_i->setMatrix(osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f) );
+    //Canvas* cnv0 = this->addCanvas(trans_xz);
+    Canvas* cnv0 = this->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0),
+                                   osg::Matrix::translate(0.f, 0.f, 0.f));
 
-    Canvas* cnv1 = this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 0, 1),
+    Canvas* cnv1 = this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 1, 0),
                     osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f));
 
-    this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 1, 0, 0),
-                    osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f));
+    this->addCanvas(trans_i);
+
     this->setCanvasCurrent(cnv0);
     this->setCanvasPrevious(cnv1);
 

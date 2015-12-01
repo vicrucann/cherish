@@ -52,6 +52,8 @@ public:
     Canvas(osg::MatrixTransform *transform, const std::string& name);
     ~Canvas(){}
 
+    void testWidthPlus();
+
     void setColor(osg::Vec4f color);
     osg::Vec4f getColor() const;
 
@@ -70,15 +72,16 @@ public:
     std::string getTransformName() const;
     std::string getGeometryName() const;
     std::string getGeodeName() const;
-
 private:
     void addCanvasDrawables();
     osg::Vec3f _center;
     osg::Vec3f _normal;
     osg::Vec4f _color;
     osg::Vec3Array* _vertices;
+    osg::Vec3Array* _corner; // quad to be used for picking a canvas by mouse
     osg::ref_ptr<osg::Geode> _geode;
     osg::ref_ptr<osg::Geometry> _geometry;
+    osg::ref_ptr<osg::Geometry> _pickable;
     osg::ref_ptr<osg::MatrixTransform> _transform;
     osg::ref_ptr<osg::Switch> _switch;
 };

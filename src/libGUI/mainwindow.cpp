@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     QMenu* menuTC = _menuBar->addMenu("TestModels");
     menuTC->addAction("Delete canvas 3", this, SLOT(onDeleteCanvas()));
     menuTC->addAction("Delete cow.osg", this, SLOT(onDeleteCow()));
+    menuTC->addAction("Increase size of current canvas", this, SLOT(onChangeSizeCanvas()));
 
     QMenu* menuTM = _menuBar->addMenu("TestMouse");
     menuTM->addAction("Naviagation: rotate", this, SLOT(onMouseRotate()));
@@ -141,6 +142,11 @@ void MainWindow::onDeleteCanvas()
 
 void MainWindow::onDeleteCow() {
     _rootScene->deleteNode("cow.node");
+}
+
+void MainWindow::onChangeSizeCanvas()
+{
+    _rootScene->getCanvasCurrent()->testWidthPlus();
 }
 
 void MainWindow::onMouseRotate(){
