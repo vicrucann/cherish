@@ -25,10 +25,14 @@ public:
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void setMode(dureu::MOUSE_MODE mode);
 
-    virtual void doOperation(const osgUtil::LineSegmentIntersector::Intersection& result);
+    virtual void doOperation(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
+                             const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doErase(const osgUtil::LineSegmentIntersector::Intersection& result);
-    virtual void doSketch(const osgUtil::LineSegmentIntersector::Intersection& result);
+    virtual void doSketch(const osgUtil::LineSegmentIntersector::Intersection& result,
+                          double x, double y);
+    virtual void doEdit(const osgUtil::LineSegmentIntersector::Intersection& result,
+                        double x, double y);
 
 protected:
     Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
@@ -36,8 +40,7 @@ protected:
     dureu::MOUSE_MODE _mode;
     osg::observer_ptr<RootScene> _root;
 private:
-    double _x0,_y0;
-    // test variables
+    double _x0,_y0; // used for edit and sketch modes
 };
 
 #endif // EVENTHANDLER

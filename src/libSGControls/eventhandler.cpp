@@ -7,21 +7,22 @@
 EventHandler::EventHandler(RootScene *root, dureu::MOUSE_MODE mode):
     _mode(mode),
     _root(root),
-    _x0(0),
-    _y0(0)
+    _x0(-1),
+    _y0(-1)
 {
 }
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    // if it's mouse navigation mode, don't process event
+    // it will be processed by mouse navigator
     if (_mode == dureu::MOUSE_ROTATE || _mode == dureu::MOUSE_PAN ||
             _mode == dureu::MOUSE_ZOOM || _mode == dureu::MOUSE_FIXEDVIEW)
         return false;
 
-    // for the moment we proceed only if it is release() and left
-    // mouse button was pressed
-    if (ea.getEventType()!=osgGA::GUIEventAdapter::PUSH ||
-            ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+    // process only if the event comes from left mouse button
+    // otherwise, do nothing
+    if (ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
         return false;
 
     std::cout << "handle(): Processing mouse event..." << std::endl;
@@ -41,11 +42,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         if (intersector->containsIntersections()){
             std::cout << "handle(): # of intersections: " << (intersector->getIntersections()).size() << std::endl;
             const osgUtil::LineSegmentIntersector::Intersection& result = *(intersector->getIntersections().begin());
-            doOperation(result);
+            doOperation(ea, aa, result);
         }
     }
-    _x0 = ea.getX();
-    _y0 = ea.getY();
     return false;
 }
 
@@ -54,20 +53,47 @@ void EventHandler::setMode(dureu::MOUSE_MODE mode)
     _mode = mode;
 }
 
-void EventHandler::doOperation(const osgUtil::LineSegmentIntersector::Intersection &result)
+void EventHandler::doOperation(const osgGA::GUIEventAdapter &ea,
+                               osgGA::GUIActionAdapter &aa,
+                               const osgUtil::LineSegmentIntersector::Intersection &result)
 {
-    switch(_mode){
-    case dureu::MOUSE_PICK:
-        doPick(result);
-        break;
-    case dureu::MOUSE_ERASE:
-        doErase(result);
-        break;
-    case dureu::MOUSE_SKETCH:
-        doSketch(result);
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        switch (_mode){
+        case dureu::MOUSE_PICK:
+            doPick(result);
+            break;
+        case dureu::MOUSE_ERASE:
+            doErase(result);
+            break;
+        default:
+            _x0 = -1;
+            _y0 = -1;
+            break;
+        }
+    case osgGA::GUIEventAdapter::DRAG:
+        if (_x0 > 0 && _y0>0){
+            switch (_mode){
+            case dureu::MOUSE_EDIT:
+                doEdit(result, ea.getX(), ea.getY());
+                _x0 = ea.getX();
+                _y0 = ea.getY();
+                break;
+            case dureu::MOUSE_SKETCH:
+                doSketch(result, ea.getX(), ea.getY());
+                _x0 = ea.getX();
+                _y0 = ea.getY();
+                break;
+            default:
+                _x0 = ea.getX();
+                _y0 = ea.getY();
+                break;
+            }
+        }
         break;
     default:
-        std::cerr << "doOperation(): unrecognized event handler, not processed" << std::endl;
+        // scrolling, doubleclick, move, keydown, keyup, resize
+        // frame, pen_pressure, pen_..., ...
         break;
     }
 }
@@ -95,9 +121,14 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
     std::cout << "doErase(): success is " << success << std::endl;
 }
 
-void EventHandler::doSketch(const osgUtil::LineSegmentIntersector::Intersection &result)
+void EventHandler::doSketch(const osgUtil::LineSegmentIntersector::Intersection &result, double x, double y)
 {
-    std::cout << "  doSketch()" << std::endl;
+    std::cout << "doSketch()" << std::endl;
+}
+
+void EventHandler::doEdit(const osgUtil::LineSegmentIntersector::Intersection &result, double x, double y)
+{
+    std::cout << "doEdit()" << std::endl;
 }
 
 Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
