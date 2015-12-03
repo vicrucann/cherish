@@ -25,8 +25,6 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     if (ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
         return false;
 
-    std::cout << "handle(): Processing mouse event..." << std::endl;
-
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (viewer){
         std::cout <<  "handle(): Viewer is read" << std::endl;
@@ -37,10 +35,10 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         osg::Camera* camera = viewer->getCamera();
         if (!camera)
             return false;
-        std::cout <<  "handle(): Camera is read" << std::endl;
+        //std::cout <<  "handle(): Camera is read" << std::endl;
         camera->accept(iv);
         if (intersector->containsIntersections()){
-            std::cout << "handle(): # of intersections: " << (intersector->getIntersections()).size() << std::endl;
+            //std::cout << "handle(): # of intersections: " << (intersector->getIntersections()).size() << std::endl;
             const osgUtil::LineSegmentIntersector::Intersection& result = *(intersector->getIntersections().begin());
             doOperation(ea, aa, result);
         }
@@ -124,6 +122,7 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
 void EventHandler::doSketch(const osgUtil::LineSegmentIntersector::Intersection &result, double x, double y)
 {
     std::cout << "doSketch()" << std::endl;
+
 }
 
 void EventHandler::doEdit(const osgUtil::LineSegmentIntersector::Intersection &result, double x, double y)
