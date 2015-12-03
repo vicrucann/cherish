@@ -35,6 +35,10 @@
  * - or plane and centroid
  * Then update info on 3d coordinates based on the newly obtained local coordinate
  * system x' and y'.
+ *
+ * Canvas has the next branch structure:
+ * Canvas -> Switch -> Transform -> Geometry -> Canvas drawables
+ *                                           |-> User drawables (strokes)
  */
 
 #include "settings.h"
@@ -51,8 +55,6 @@ class Canvas : public osg::Group {
 public:
     Canvas(osg::MatrixTransform *transform, const std::string& name);
     ~Canvas(){}
-
-    void testWidthPlus();
 
     void setColor(osg::Vec4f color);
     osg::Vec4f getColor() const;
@@ -72,18 +74,25 @@ public:
     std::string getTransformName() const;
     std::string getGeometryName() const;
     std::string getGeodeName() const;
+protected:
 private:
-    void addCanvasDrawables();
-    osg::Vec3f _center;
-    osg::Vec3f _normal;
-    osg::Vec4f _color;
-    osg::Vec3Array* _vertices;
-    osg::Vec3Array* _corner; // quad to be used for picking a canvas by mouse
-    osg::ref_ptr<osg::Geode> _geode;
-    osg::ref_ptr<osg::Geometry> _geometry;
-    osg::ref_ptr<osg::Geometry> _pickable;
-    osg::ref_ptr<osg::MatrixTransform> _transform;
-    osg::ref_ptr<osg::Switch> _switch;
+    osg::ref_ptr<osg::Geometry> _frame; // frame drawables
+    osg::ref_ptr<osg::Geometry> _pickable; // to select canvas by mouse
+    osg::ref_ptr<osg::Geometry> _axis; // local coordinate axis
+    osg::ref_ptr<osg::Switch> _swFrame; // frame and pickable visibility
+    osg::ref_ptr<osg::Switch> _swAxis; // axis visibility
+
+    osg::ref_ptr<osg::Geode> _geode; // keeps all canvas drawables: frame and user data
+    osg::ref_ptr<osg::MatrixTransform> _transform; // matrix transform in 3D space
+    osg::ref_ptr<osg::MatrixTransform> _transformUD; // matrix transform for user data on 2D plane
+    osg::ref_ptr<osg::Switch> _switch; // inisible or not, the whole canvas data
+
+    osg::Vec3f _center; // centrod of the canvas
+    osg::Vec3f _normal; // normal vector to define plane
+    osg::Plane _plane; // only to use for math and keep plane params
+    osg::Vec3f _x, _y; // plane's 2D local coordinate system, cross(x,y)=n
+
+    osg::Vec4f _color; // display color for canvas drawables
 };
 
 #endif // CANVAS

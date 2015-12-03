@@ -14,36 +14,53 @@
 #include <osg/BlendFunc>
 
 Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
+    _frame(new osg::Geometry),
+    _pickable(new osg::Geometry),
+    _axis(new osg::Geometry),
+    _swFrame(new osg::Switch),
+    _swAxis(new osg::Switch),
+    _geode(new osg::Geode),
+    _transform(transform),
+    _transformUD(new osg::MatrixTransform),
+    _switch(new osg::Switch),
+
     _center(osg::Vec3f(0.0f, 0.0f, 0.0f)),
     _normal(osg::Vec3f(0.0f, -1.0f, 0.0f)),
-    _color(dureu::CANVAS_CLR_REST),
-    _vertices(new osg::Vec3Array(4)),
-    _corner(new osg::Vec3Array(4)),
-    _geode(new osg::Geode),
-    _geometry(new osg::Geometry),
-    _pickable(new osg::Geometry),
-    _transform(transform),
-    _switch(new osg::Switch)
+    _plane(osg::Plane(_normal, _center)),
+    _x(osg::Vec3f(1.f,0.f,0.f)),
+    _y(osg::Vec3f(0.f,1.f,0.f)),
+    _color(dureu::CANVAS_CLR_REST)
+
 {
     this->setName(name);
-    (*_vertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
-    (*_vertices)[1] = osg::Vec3f(-dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
-    (*_vertices)[2] = osg::Vec3f(-dureu::CANVAS_MINW, -dureu::CANVAS_MINH, 0.0f);
-    (*_vertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, -dureu::CANVAS_MINH, 0.0f);
+    this->setColor(_color);
 
-    (*_corner)[0] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
-    (*_corner)[1] = osg::Vec3f(dureu::CANVAS_MINW-dureu::CANVAS_CORNER, dureu::CANVAS_MINH, 0.0f);
-    (*_corner)[2] = osg::Vec3f(dureu::CANVAS_MINW-dureu::CANVAS_CORNER, dureu::CANVAS_MINH-dureu::CANVAS_CORNER, 0.0f);
-    (*_corner)[3] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH-dureu::CANVAS_CORNER, 0.0f);
+     osg::Vec3Array* frame = new osg::Vec3Array(4);
+    (*frame)[0] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
+    (*frame)[1] = osg::Vec3f(-dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
+    (*frame)[2] = osg::Vec3f(-dureu::CANVAS_MINW, -dureu::CANVAS_MINH, 0.0f);
+    (*frame)[3] = osg::Vec3f(dureu::CANVAS_MINW, -dureu::CANVAS_MINH, 0.0f);
 
-    this->addCanvasDrawables();
+     osg::Vec3Array* pickable = new osg::Vec3Array(4);
+    (*pickable)[0] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
+    (*pickable)[1] = osg::Vec3f(dureu::CANVAS_MINW-dureu::CANVAS_CORNER, dureu::CANVAS_MINH, 0.0f);
+    (*pickable)[2] = osg::Vec3f(dureu::CANVAS_MINW-dureu::CANVAS_CORNER, dureu::CANVAS_MINH-dureu::CANVAS_CORNER, 0.0f);
+    (*pickable)[3] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH-dureu::CANVAS_CORNER, 0.0f);
+
+    _frame->setVertexArray(frame);
+    _frame->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
+    _pickable->setVertexArray(pickable);
+    _pickable->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
+
+    _geode->addDrawable(_frame);
+    _geode->addDrawable(_pickable);
 
     _transform->addChild(_geode.get());
     _transform->setName(this->getName() + "Transform");
     _switch->addChild(_transform.get(), true);
     _switch->setName(this->getName() + "Switch");
     _geode->setName(this->getName() + "Geode");
-    _geometry->setName(this->getName() + "Geometry");
+    _frame->setName(this->getName() + "Geometry");
     _pickable->setName(this->getName() + "Pickable");
     this->addChild(_switch.get());
 
@@ -58,18 +75,6 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     this->setStateSet(stateset);
-}
-
-void Canvas::testWidthPlus()
-{
-    osg::Vec2Array* test = new osg::Vec2Array(4);
-    (*test)[0].set(1.f, 1.f);
-    (*test)[1].set(0.f, 1.f);
-    (*test)[2].set(0.f, 0.f);
-    (*test)[3].set(1.f, 0.f);
-
-    //(*_vertices)[0] += osg::Vec3f(0.5f, 0.f, 0.2f);
-    _geometry->setVertexArray(test);
 }
 
 osg::Vec4f Canvas::getColor() const{
@@ -106,7 +111,7 @@ void Canvas::setTransformName(const std::string &parentName)
 
 void Canvas::setGeometryName(const std::string &parentName)
 {
-    _geometry->setName(parentName + "Geometry");
+    _frame->setName(parentName + "Geometry");
 }
 
 void Canvas::setGeodeName(const std::string &parentName)
@@ -123,24 +128,11 @@ std::string Canvas::getTransformName() const{
 }
 
 std::string Canvas::getGeometryName() const{
-    return _geometry->getName();
+    return _frame->getName();
 }
 
 std::string Canvas::getGeodeName() const{
     return _geode->getName();
-}
-
-void Canvas::addCanvasDrawables(){
-    _geometry->setVertexArray(_vertices);
-    _pickable->setVertexArray(_corner);
-
-    this->setColor(_color);
-
-    _geometry->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
-    _pickable->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
-
-    _geode->addDrawable(_geometry);
-    _geode->addDrawable(_pickable);
 }
 
 void Canvas::setColor(osg::Vec4 color){
@@ -150,6 +142,6 @@ void Canvas::setColor(osg::Vec4 color){
     (*colors)[1] = _color;
     (*colors)[2] = _color;
     (*colors)[3] = _color;
-    _geometry->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
+    _frame->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
     _pickable->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
 }

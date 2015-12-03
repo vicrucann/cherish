@@ -146,7 +146,7 @@ void MainWindow::onDeleteCow() {
 
 void MainWindow::onChangeSizeCanvas()
 {
-    _rootScene->getCanvasCurrent()->testWidthPlus();
+    //_rootScene->getCanvasCurrent()->testWidthPlus();
 }
 
 void MainWindow::onMouseRotate(){
