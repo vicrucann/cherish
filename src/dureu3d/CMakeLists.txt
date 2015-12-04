@@ -11,7 +11,8 @@ set(SOURCES
     settings.h
 )
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+qt5_add_resources(IMG_RSC_ADDED icons/image.qrc)
+add_executable(${PROJECT_NAME} ${SOURCES} ${IMG_RSC_ADDED})
 
 target_link_libraries( ${PROJECT_NAME}
     # dynamic
