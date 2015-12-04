@@ -25,7 +25,7 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 find_package(Qt5Test REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+#find_package(Qt5Widgets REQUIRED)
 find_package(OpenSceneGraph REQUIRED COMPONENTS osgDB osgGA osgUtil osgViewer)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
@@ -38,6 +38,7 @@ set(QT_LIBRARIES
     ${Qt5Gui_LIBRARIES}
 )
 set(QT_QTTEST_LIBRARY ${Qt5Test_LIBRARIES})
+set(ICONS_DIR "${CMAKE_SOURCE_DIR}/icons")
 
 enable_testing()
 
