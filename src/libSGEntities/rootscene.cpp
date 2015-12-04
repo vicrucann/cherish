@@ -398,12 +398,9 @@ unsigned int RootScene::getCanvasLevel() const{
 }
 
 void RootScene::setCanvasName(Canvas *cnv){
-    cnv->setName(getEntityName(dureu::NAME_CANVAS, _idCanvas++));
+    cnv->setCanvasName(getEntityName(dureu::NAME_CANVAS, _idCanvas++));
     std::cout << "setCanvasName(): Canvas renamed: " << cnv->getName() << std::endl;
-    cnv->setSwitchName(cnv->getName());
-    cnv->setTransformName(cnv->getName());
-    cnv->setGeodeName(cnv->getName());
-    cnv->setGeometryName(cnv->getName());
+
 }
 
 std::string RootScene::getEntityName(const std::string &name, unsigned int id) const{

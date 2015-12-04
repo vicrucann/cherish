@@ -65,27 +65,29 @@ public:
     void setTransform(osg::MatrixTransform* transform);
     osg::MatrixTransform* getTransform() const;
 
+    void setCanvasName(const std::string& name);
     void setSwitchName(const std::string& parentName);
     void setTransformName(const std::string& parentName);
-    void setGeometryName(const std::string& parentName);
-    void setGeodeName(const std::string& parentName);
+    void setSwitchFrameName(const std::string& parentName);
+    void setGeodeDataName(const std::string& parentName);
 
     std::string getSwitchName() const;
     std::string getTransformName() const;
-    std::string getGeometryName() const;
-    std::string getGeodeName() const;
+    std::string getSwitchFrameName() const;
+    std::string getGeodeDataName() const;
+
 protected:
 private:
+    osg::ref_ptr<osg::Switch> _switch; // inisible or not, the whole canvas
+    osg::ref_ptr<osg::MatrixTransform> _transform; // matrix transform in 3D space
+    osg::ref_ptr<osg::Switch> _switchFrame; // frame, pickable, axis
+    osg::ref_ptr<osg::MatrixTransform> _transformData; // matrix transform for user data on 2D plane
+    osg::ref_ptr<osg::Geode> _geodeFrame; // frame and pickable
+    osg::ref_ptr<osg::Geode> _geodeAxis;
     osg::ref_ptr<osg::Geometry> _frame; // frame drawables
     osg::ref_ptr<osg::Geometry> _pickable; // to select canvas by mouse
     osg::ref_ptr<osg::Geometry> _axis; // local coordinate axis
-    osg::ref_ptr<osg::Switch> _swFrame; // frame and pickable visibility
-    osg::ref_ptr<osg::Switch> _swAxis; // axis visibility
-
-    osg::ref_ptr<osg::Geode> _geode; // keeps all canvas drawables: frame and user data
-    osg::ref_ptr<osg::MatrixTransform> _transform; // matrix transform in 3D space
-    osg::ref_ptr<osg::MatrixTransform> _transformUD; // matrix transform for user data on 2D plane
-    osg::ref_ptr<osg::Switch> _switch; // inisible or not, the whole canvas data
+    osg::ref_ptr<osg::Geode> _geodeData; // keeps user canvas drawables such as strokes
 
     osg::Vec3f _center; // centrod of the canvas
     osg::Vec3f _normal; // normal vector to define plane
