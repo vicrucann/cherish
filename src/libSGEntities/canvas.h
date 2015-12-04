@@ -76,6 +76,8 @@ public:
     std::string getSwitchFrameName() const;
     std::string getGeodeDataName() const;
 
+    bool addStroke(double x, double y); // test function: fixed length line at fixed location
+
 protected:
 private:
     osg::ref_ptr<osg::Switch> _switch; // inisible or not, the whole canvas
@@ -90,7 +92,6 @@ private:
     osg::ref_ptr<osg::Geode> _geodeData; // keeps user canvas drawables such as strokes
 
     osg::Vec3f _center; // centrod of the canvas
-    osg::Vec3f _normal; // normal vector to define plane
     osg::Plane _plane; // only to use for math and keep plane params
     osg::Vec3f _x, _y; // plane's 2D local coordinate system, cross(x,y)=n
 

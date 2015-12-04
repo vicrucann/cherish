@@ -76,6 +76,8 @@ public:
     bool deleteNode(const std::string& name);
     bool deleteNode(osg::Node* node);
 
+    bool addStroke(double x, double y); // test: add stroke to current canvas, fized size, fixed location
+
     osg::Node *loadSceneFromFile(const std::string& fname);
 
     unsigned int getMaxCanvasId() const;

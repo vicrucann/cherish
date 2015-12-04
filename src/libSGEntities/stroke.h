@@ -1,10 +1,15 @@
 #ifndef STROKE
 #define STROKE
 
-#include <osg/Drawable>
+#include "settings.h"
+#include <osg/Geometry>
 
-class Stroke : public osg::Drawable {
+class Stroke : public osg::Geometry {
 public:
+    Stroke();
+
+    bool addPoint(float u, float v);
+    void setColor(osg::Vec4f color);
 private:
 };
 

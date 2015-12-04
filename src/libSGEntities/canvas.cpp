@@ -3,6 +3,7 @@
 
 #include "canvas.h"
 #include "settings.h"
+#include "stroke.h"
 
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -25,14 +26,16 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _axis(new osg::Geometry),
     _geodeData(new osg::Geode),
 
-    _center(osg::Vec3f(0.0f, 0.0f, 0.0f)),
-    _normal(osg::Vec3f(0.0f, -1.0f, 0.0f)),
-    _plane(osg::Plane(_normal, _center)),
-    _x(osg::Vec3f(1.f,0.f,0.f)),
-    _y(osg::Vec3f(0.f,1.f,0.f)),
-    _color(dureu::CANVAS_CLR_REST)
+    _center(_transform->getMatrix().getTrans()), // moves only when strokes are introduced so that to define it as centroid
+    // also represents local coord system center
+    _plane(osg::Plane()), // plana params; if normal is provided, not needed
+    _x(_center + osg::Vec3f(1.f,0.f,0.f)), // x and y local coordinate system vectors, for the moment they will be
+    _y(_center + osg::Vec3f(0.f,1.f,0.f)), // X and Y (global)-axis aligned
+    _color(dureu::CANVAS_CLR_REST) // frame and pickable color
 
 {
+    _plane.transform(_transform->getMatrix());
+
     this->setName(name);
     this->setColor(_color);
 
@@ -165,6 +168,12 @@ std::string Canvas::getSwitchFrameName() const
 
 std::string Canvas::getGeodeDataName() const{
     return _geodeData->getName();
+}
+
+bool Canvas::addStroke(double x, double y)
+{
+    Stroke* stroke = new Stroke;
+    return _geodeData->addChild(stroke);
 }
 
 void Canvas::setColor(osg::Vec4 color){

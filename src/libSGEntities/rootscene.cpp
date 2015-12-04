@@ -263,6 +263,11 @@ bool RootScene::deleteNode(osg::Node *node)
     return success;
 }
 
+bool RootScene::addStroke(double x, double y) // input mouse coords
+{
+    return _canvasCurrent->addStroke(x,y);
+}
+
 osg::Node* RootScene::loadSceneFromFile(const std::string& fname){
     std::cout << "loadSceneFromFile(): (string&)" << std::endl;
     osg::Node* node = osgDB::readNodeFile(fname);

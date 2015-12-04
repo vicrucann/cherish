@@ -75,6 +75,9 @@ const osg::Vec4 CANVAS_CLR_PREVIOUS = solarized::violet;
 const osg::Vec4 CANVAS_CLR_REST = solarized::base1;
 const osg::Vec4 CANVAS_CLR_SELECTED = solarized::red;
 
+const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
+const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
+
 const float CANVAS_MINW = 1.2f; // half width
 const float CANVAS_MINH = 1.0f; // half height
 const float CANVAS_MINB = 0.1f; // bound

@@ -25,6 +25,13 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     if (ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
         return false;
 
+    if (_mode == dureu::MOUSE_SKETCH){ // have to redesin this if-else
+        if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH)
+            doSketch(ea.getXnormalized(), ea.getYnormalized());
+    }
+
+    else{ // have to redesin this if-else
+
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (viewer){
         std::cout <<  "handle(): Viewer is read" << std::endl;
@@ -43,6 +50,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             doOperation(ea, aa, result);
         }
     }
+    } // have to redesin this if-else
     return false;
 }
 
@@ -64,6 +72,9 @@ void EventHandler::doOperation(const osgGA::GUIEventAdapter &ea,
         case dureu::MOUSE_ERASE:
             doErase(result);
             break;
+        case dureu::MOUSE_SKETCH: // this is only for test purposes, have to redefine behaviour
+            doSketch(ea.getX(), ea.getY());
+            break;
         default:
             _x0 = -1;
             _y0 = -1;
@@ -78,7 +89,7 @@ void EventHandler::doOperation(const osgGA::GUIEventAdapter &ea,
                 _y0 = ea.getY();
                 break;
             case dureu::MOUSE_SKETCH:
-                doSketch(result, ea.getX(), ea.getY());
+                //doSketch(result, ea.getX(), ea.getY()); // redefine
                 _x0 = ea.getX();
                 _y0 = ea.getY();
                 break;
@@ -119,10 +130,10 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
     std::cout << "doErase(): success is " << success << std::endl;
 }
 
-void EventHandler::doSketch(const osgUtil::LineSegmentIntersector::Intersection &result, double x, double y)
+void EventHandler::doSketch(double x, double y)
 {
     std::cout << "doSketch()" << std::endl;
-
+    _root->addStroke(x,y);
 }
 
 void EventHandler::doEdit(const osgUtil::LineSegmentIntersector::Intersection &result, double x, double y)
