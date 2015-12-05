@@ -14,9 +14,6 @@
 #include "viewwidget.h"
 #include "bookmarkwidget.h"
 
-class QAction;
-class QMenu;
-
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
@@ -74,6 +71,7 @@ private:
     QMenu *windowMenu;
     QMenu *helpMenu;
     QMenu *toolPalettes;
+    QMenu* _mSketchMenu;
     QMenu *lines;
     QMenu *arcs;
     QMenu *shapes;
@@ -106,19 +104,20 @@ private:
     QAction *axes;
     QAction *toolPalsandBox;
 
+    QAction* _mSketch;
     QAction *line;
     QAction *arc;
     QAction *rectangle;
 
-    QAction *orbit;
-    QAction *pan;
-    QAction *zoom;
+    QAction* _mOrbit;
+    QAction* _mPan;
+    QAction* _mZoom;
     QAction *zoomWindow;
     QAction *zoomExtents;
     QAction *previousCam;
 
-    QAction *select;
-    QAction *eraser;
+    QAction* _mSelect;
+    QAction* _mEraser;
     QAction *toolMove;
     QAction *toolRotate;
     QAction *toolScale;
