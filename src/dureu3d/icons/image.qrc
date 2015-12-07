@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
+        <file>stylus.png</file>
         <file>copy.png</file>
         <file>cut.png</file>
         <file>new.png</file>

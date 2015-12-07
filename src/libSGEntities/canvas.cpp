@@ -26,7 +26,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _axis(new osg::Geometry),
     _geodeData(new osg::Geode),
 
-    _center(_transform->getMatrix().getTrans()), // moves only when strokes are introduced so that to define it as centroid
+    _center(osg::Vec3f(0.f,0.f,0.f)), // moves only when strokes are introduced so that to define it as centroid
     // also represents local coord system center
     _plane(osg::Plane()), // plana params; if normal is provided, not needed
     _x(_center + osg::Vec3f(1.f,0.f,0.f)), // x and y local coordinate system vectors, for the moment they will be
@@ -34,8 +34,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _color(dureu::CANVAS_CLR_REST) // frame and pickable color
 
 {
-    _plane.transform(_transform->getMatrix());
-
+    this->transformVirtualMemebers();
     this->setName(name);
     this->setColor(_color);
 
@@ -174,6 +173,17 @@ bool Canvas::addStroke(double x, double y)
 {
     Stroke* stroke = new Stroke;
     return _geodeData->addChild(stroke);
+}
+
+// to transform plane, centroid and local axis
+void Canvas::transformVirtualMemebers()
+{
+    const osg::Matrix matrix = _transform->getMatrix();
+    _plane.transform(matrix); // every time canvas is transformed (rotate, offset, scale), apply it for plane params
+    _plane.makeUnitLength(); // then normalize the params
+    _center = matrix * _center;
+    _x = matrix * _x;
+    _y = matrix * _y;
 }
 
 void Canvas::setColor(osg::Vec4 color){

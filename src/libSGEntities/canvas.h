@@ -79,6 +79,7 @@ public:
     bool addStroke(double x, double y); // test function: fixed length line at fixed location
 
 protected:
+    void transformVirtualMemebers();
 private:
     osg::ref_ptr<osg::Switch> _switch; // inisible or not, the whole canvas
     osg::ref_ptr<osg::MatrixTransform> _transform; // matrix transform in 3D space

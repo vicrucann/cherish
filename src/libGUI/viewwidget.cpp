@@ -31,7 +31,7 @@ ViewWidget::ViewWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f, int 
     _deviceDown(false),
     _deviceActive(false),
     _deviceSketch(false),
-    _modeMouse(dureu::MOUSE_ROTATE),
+    _modeMouse(dureu::MOUSE_SKETCH),
     _manipulator(new Manipulator(_modeMouse)),
     _EH(new EventHandler(_root.get(), _modeMouse))
 {

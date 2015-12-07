@@ -275,7 +275,7 @@ void MainWindow::createActions()
     axes = new QAction(tr("Axes"), this);
     axes->setStatusTip(tr("Show axes"));
 
-    _mSketch = new QAction(QIcon(":/line.png"), tr("Sketch"), this);
+    _mSketch = new QAction(QIcon(":/stylus.png"), tr("Sketch"), this);
     _mSketch->setStatusTip(tr("Sketch"));
     this->connect(_mSketch, SIGNAL(triggered()), this, SLOT(onMouseSketch()));
 
@@ -370,7 +370,7 @@ void MainWindow::createMenus()
     fileMenu->addAction(saveAsAct);
     fileMenu->addAction(exitAct);
     fileMenu->addSeparator();
-    fileMenu->addAction(print);
+    //fileMenu->addAction(print);
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
     editMenu->addAction(undo);
@@ -403,18 +403,18 @@ void MainWindow::createMenus()
     cameraMenu->addAction(_mOrbit);
     cameraMenu->addAction(_mPan);
     cameraMenu->addAction(_mZoom);
-    cameraMenu->addAction(zoomWindow);
-    cameraMenu->addAction(zoomExtents);
+    //cameraMenu->addAction(zoomWindow);
+    //cameraMenu->addAction(zoomExtents);
 
 
     toolsMenu = menuBar()->addMenu(tr("&Tools"));
     toolsMenu->addAction(_mSelect);
     toolsMenu->addAction(_mEraser);
     toolsMenu->addSeparator();
-    toolsMenu->addAction(toolMove);
+    //toolsMenu->addAction(toolMove);
     toolsMenu->addAction(toolRotate);
     toolsMenu->addAction(toolScale);
-    toolsMenu->addSeparator();
+    //toolsMenu->addSeparator();
     toolsMenu->addAction(toolOffset);
 
     windowMenu = menuBar()->addMenu(tr("&Window"));
@@ -437,30 +437,30 @@ void MainWindow::createToolBars()
     editToolBar->addAction(copyAct);
     editToolBar->addAction(pasteAct);
 
-    toolsToolBar = addToolBar(tr("Tools"));
-    toolsToolBar->addAction(_mSelect);
-    toolsToolBar->addAction(_mEraser);
-    toolsToolBar->addAction(toolOffset);
-    toolsToolBar->addAction(toolMove);
-    toolsToolBar->addAction(toolRotate);
-    toolsToolBar->addAction(toolScale);
-
     drawToolBar = addToolBar(tr("Draw"));
     drawToolBar->addAction(_mSketch);
     drawToolBar->addAction(line);
-    drawToolBar->addAction(arc);
-    drawToolBar->addAction(rectangle);
+    //drawToolBar->addAction(arc);
+    //drawToolBar->addAction(rectangle);
 
     cameraToolBar = addToolBar(tr("Camera"));
     cameraToolBar->addAction(_mOrbit);
     cameraToolBar->addAction(_mPan);
     cameraToolBar->addAction(_mZoom);
-    cameraToolBar->addAction(zoomExtents);
+    //cameraToolBar->addAction(zoomExtents);
 
-    styleToolBar = addToolBar(tr("Style"));
-    styleToolBar->addAction(allStyle);
-    styleToolBar->addAction(strokesStyle);
-    styleToolBar->addAction(imagesStyle);
+    toolsToolBar = addToolBar(tr("Tools"));
+    toolsToolBar->addAction(_mSelect);
+    toolsToolBar->addAction(_mEraser);
+    toolsToolBar->addAction(toolOffset);
+    //toolsToolBar->addAction(toolMove);
+    toolsToolBar->addAction(toolRotate);
+    toolsToolBar->addAction(toolScale);
+
+    //styleToolBar = addToolBar(tr("Style"));
+    //styleToolBar->addAction(allStyle);
+    //styleToolBar->addAction(strokesStyle);
+   // styleToolBar->addAction(imagesStyle);
 
     viewToolBar = addToolBar(tr("View"));
     viewToolBar->addAction(isoView);
