@@ -263,6 +263,11 @@ bool RootScene::deleteNode(osg::Node *node)
     return success;
 }
 
+bool RootScene::addStroke(const osg::Vec3f &l0, const osg::Vec3f &l)
+{
+    return _canvasCurrent->addStroke(l0,l);
+}
+
 bool RootScene::addStroke(double x, double y) // input mouse coords
 {
     return _canvasCurrent->addStroke(x,y);

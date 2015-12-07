@@ -29,7 +29,7 @@ public:
                              const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doErase(const osgUtil::LineSegmentIntersector::Intersection& result);
-    virtual void doSketch(double x, double y);
+    virtual void doSketch(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     virtual void doEdit(const osgUtil::LineSegmentIntersector::Intersection& result,
                         double x, double y);
 

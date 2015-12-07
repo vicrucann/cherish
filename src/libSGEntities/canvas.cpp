@@ -34,7 +34,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _color(dureu::CANVAS_CLR_REST) // frame and pickable color
 
 {
-    this->transformVirtualMemebers();
+    this->transformData();
     this->setName(name);
     this->setColor(_color);
 
@@ -169,6 +169,32 @@ std::string Canvas::getGeodeDataName() const{
     return _geodeData->getName();
 }
 
+bool Canvas::addStroke(const osg::Vec3f &p1, const osg::Vec3f &p2)
+{
+    if (_plane.dotProductNormal(p2) == 0){
+        std::cerr << "line is parallel" << std::endl;
+        return false;
+    }
+    if (_plane.dotProductNormal(_center-p1)){
+        std::cerr << "plane contains the line" << std::endl;
+        return false;
+    }
+    assert(_plane.valid());
+
+    double X = _plane.dotProductNormal(_center-p1) / _plane.dotProductNormal(p2);
+    std::cout << "X: " << X << std::endl;
+    osg::Vec3f P = p2*X + p1;
+    std::cout << "P: " << P.x() << " " << P.y() << " " << P.z() << std::endl;
+
+    double u=1, v=1;
+    u = (P-_center)*_x;
+    v = (P-_center)*_y;
+    std::cout << "u and v: " << u << " " << v << std::endl;
+
+    Stroke* stroke = new Stroke(osg::Vec2f(0,0), osg::Vec2f(u,v));
+    return _geodeData->addChild(stroke);
+}
+
 bool Canvas::addStroke(double x, double y)
 {
     Stroke* stroke = new Stroke;
@@ -176,7 +202,7 @@ bool Canvas::addStroke(double x, double y)
 }
 
 // to transform plane, centroid and local axis
-void Canvas::transformVirtualMemebers()
+void Canvas::transformData()
 {
     const osg::Matrix matrix = _transform->getMatrix();
     _plane.transform(matrix); // every time canvas is transformed (rotate, offset, scale), apply it for plane params

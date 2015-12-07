@@ -11,6 +11,16 @@ Stroke::Stroke()
     this->setColor(dureu::STROKE_CLR_NORMAL);
 }
 
+Stroke::Stroke(const osg::Vec2f &p1, const osg::Vec2f &p2)
+{
+    osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array;
+    verts->push_back(osg::Vec3(p1.x(), p1.y(), 0.f));
+    verts->push_back(osg::Vec3(p2.x(),p2.y(), 0.f));
+    this->setVertexArray(verts);
+    this->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,2));
+    this->setColor(dureu::STROKE_CLR_NORMAL);
+}
+
 bool Stroke::addPoint(float u, float v)
 {
     // push_back the point to the vertex data (primitive set)
