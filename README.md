@@ -28,9 +28,9 @@ Implementation steps:
     * (done) Stylus buttons programmation: cathing tablet events in QT and passing them to OSG
 * Basic entities - display (**Nov 2015**)
     * (done) Canvas
-    * Strokes - entered by Stylus
+    * (done) Strokes - entered by Stylus
     * 2D geometric forms: polylines, rectangles, circles 
-    * Photos = textured canvases?
+    * Photos = textured quads (Drawables)
 * (done) Camera navigation: zoom, pan, rotate and different mouse modes (**Nov 2015**)
 * Building and manipulation of a scene graph (**Nov 2015**)
     * (done)Add / delete a canvas

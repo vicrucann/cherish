@@ -5,7 +5,7 @@
 #include <osg/BlendFunc>
 
 Stroke::Stroke():
-    _mDrawArrayLines(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP)),
+    _mDrawArrayLines(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP_ADJACENCY)),
     _mVertexData(new osg::Vec3Array),
     _mColors(new osg::Vec4Array)
 {
@@ -35,6 +35,7 @@ void Stroke::appendPoint(float u, float v)
     _mDrawArrayLines->setCount(_mVertexData->size());
     this->dirtyDisplayList(); // so that frame() is called to update
     this->dirtyBound();
+    // read more: http://forum.openscenegraph.org/viewtopic.php?t=2190&postdays=0&postorder=asc&start=15
 }
 
 void Stroke::setColor(osg::Vec4f color)
