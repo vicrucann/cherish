@@ -74,9 +74,12 @@ void EventHandler::doByIntersector(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
 
 void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
-    //if (ea.getEventType() != osgGA::GUIEventAdapter::RELEASE &&
-    //        ea.getButton()    != osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON )
-    //    return;
+    if ((ea.getEventType() != osgGA::GUIEventAdapter::RELEASE
+         || ea.getEventType() != osgGA::GUIEventAdapter::PUSH
+         || ea.getEventType() != osgGA::GUIEventAdapter::DRAG )
+            && ea.getButtonMask() != osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+        return;
+
 
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (!viewer){
