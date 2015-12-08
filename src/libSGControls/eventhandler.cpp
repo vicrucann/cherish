@@ -145,28 +145,11 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
         return;
     }
 
-    osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(
-                osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
-    osgUtil::IntersectionVisitor iv(intersector);
-
     osg::Camera* camera = viewer->getCamera();
     if (!camera){
         std::cout << "doSketch(): could not read camera" << std::endl;
         return;
     }
-
-    camera->accept(iv);
-    if (!intersector->containsIntersections()){
-        std::cout << "doSketch(): no intersections found" << std::endl;
-        return;
-    }
-
-    const osgUtil::LineSegmentIntersector::Intersection& result = *(intersector->getIntersections().begin());
-    // to check against the ground truth, delete later the intersector part
-    osg::Vec3f wpGT = result.getWorldIntersectPoint();
-    osg::Vec3f lpGT = result.getLocalIntersectPoint();
-    std::cout << "World point: " << wpGT.x() << " " << wpGT.y() << " " << wpGT.z() << std::endl;
-    std::cout << "Local point: " << lpGT.x() << " " << lpGT.y() << " " << lpGT.z() << std::endl;
 
     osg::Matrix VPW = camera->getViewMatrix()
             * camera->getProjectionMatrix()

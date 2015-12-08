@@ -30,7 +30,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     // also represents local coord system center
     _plane(osg::Vec3f(0.f,0.f,1.f), _center), // plane params by center and normal
     _x(_center + osg::Vec3f(1.f,0.f,0.f)), // x and y local coordinate system vectors, for the moment they will be
-    _y(_center + osg::Vec3f(0.f,-1.f,0.f)), // X and Y (global)-axis aligned
+    _y(_center + osg::Vec3f(0.f,1.f,0.f)), // X and Y (global)-axis aligned
     _color(dureu::CANVAS_CLR_REST) // frame and pickable color
 
 {
@@ -193,9 +193,17 @@ bool Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
     osg::Vec3f P = dir * x + nearPoint;
     std::cout << "Global point manual: " << P.x() << " " << P.y() << " " << P.z() << std::endl;
 
-    double u=1, v=1;
-    u = (P-_center)*_x;
-    v = (P-_center)*_y;
+    osg::Matrix mat =  this->getTransform()->getMatrix();
+    osg::Matrix invmat;
+    if (!invmat.invert(mat)){
+        std::cerr << "addStroke(): could not invert model matrix" << std::endl;
+        return false;
+    }
+    osg::Vec3f p = P * invmat;
+
+    double u=p.x(), v=p.y();
+    //u = (P-_center)*_x;
+    //v = (P-_center)*_y;
     std::cout << "u and v: " << u << " " << v << std::endl;
 
     Stroke* stroke = new Stroke(osg::Vec2f(0,0), osg::Vec2f(u,v));
