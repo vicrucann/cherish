@@ -171,8 +171,9 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
     std::cout << "Local point: " << lpGT.x() << " " << lpGT.y() << " " << lpGT.z() << std::endl;
     std::cout << "Local normal: " << lnGT.x() << " " << lnGT.y() << " " << lnGT.z() << std::endl;
 
-    osg::Matrix VPW = camera->getViewMatrix() *
-            camera->getProjectionMatrix() * camera->getViewport()->computeWindowMatrix();
+    osg::Matrix VPW = camera->getViewMatrix()
+            * camera->getProjectionMatrix()
+            * camera->getViewport()->computeWindowMatrix();
     osg::Matrix MVPW =  _root->getCanvasCurrent()->getTransform()->getMatrix() * VPW;
     osg::Matrix invMVPW;
     osg::Matrix invVPW;

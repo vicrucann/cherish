@@ -28,7 +28,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
 
     _center(osg::Vec3f(0.f,0.f,0.f)), // moves only when strokes are introduced so that to define it as centroid
     // also represents local coord system center
-    _plane(osg::Plane()), // plana params; if normal is provided, not needed
+    _plane(osg::Vec3f(0.f,0.f,1.f), _center), // plane params by center and normal
     _x(_center + osg::Vec3f(1.f,0.f,0.f)), // x and y local coordinate system vectors, for the moment they will be
     _y(_center + osg::Vec3f(0.f,1.f,0.f)), // X and Y (global)-axis aligned
     _color(dureu::CANVAS_CLR_REST) // frame and pickable color
@@ -171,6 +171,8 @@ std::string Canvas::getGeodeDataName() const{
 
 bool Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
 {
+    osg::Vec3f normPlane = _plane.getNormal();
+    std::cout << "plane normal: " << normPlane.x() << " " << normPlane.y() << " " << normPlane.z() << std::endl;
     if (_plane.dotProductNormal(farPoint) == 0){
         std::cerr << "line is parallel" << std::endl;
         return false;
