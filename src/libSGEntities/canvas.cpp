@@ -180,18 +180,17 @@ bool Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
         return false;
     }
     osg::Vec3f dir = farPoint-nearPoint;
-    if ( dir * _plane.getNormal() == 0){ // denominator
+    if (! _plane.dotProductNormal(dir)){ // denominator
         std::cerr << "addStroke(): projected line is parallel to the canvas plane" << std::endl;
         return false;
     }
-    if ((_center-nearPoint) * _plane.getNormal() == 0){
+    if (! _plane.dotProductNormal(_center-nearPoint)){
         std::cerr << "addStroke(): plane contains the line, so no single intersection can be defined" << std::endl;
         return false;
     }
 
-    double x = ((_center-nearPoint) * _plane.getNormal()) / (dir * _plane.getNormal());
+    double x = _plane.dotProductNormal(_center-nearPoint) / _plane.dotProductNormal(dir);
     osg::Vec3f P = dir * x + nearPoint;
-    std::cout << "Global point manual: " << P.x() << " " << P.y() << " " << P.z() << std::endl;
 
     osg::Matrix mat =  this->getTransform()->getMatrix();
     osg::Matrix invmat;
@@ -202,9 +201,8 @@ bool Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
     osg::Vec3f p = P * invmat;
 
     double u=p.x(), v=p.y();
-    //u = (P-_center)*_x;
-    //v = (P-_center)*_y;
-    std::cout << "u and v: " << u << " " << v << std::endl;
+    //double u = _x * (P-_center);
+    //double v = _y * (P-_center);
 
     Stroke* stroke = new Stroke(osg::Vec2f(0,0), osg::Vec2f(u,v));
     return _geodeData->addChild(stroke);

@@ -154,7 +154,6 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
     osg::Matrix VPW = camera->getViewMatrix()
             * camera->getProjectionMatrix()
             * camera->getViewport()->computeWindowMatrix();
-    //osg::Matrix MVPW =  _root->getCanvasCurrent()->getTransform()->getMatrix() * VPW;
     osg::Matrix invVPW;
     bool success = invVPW.invert(VPW);
     if (!success){
