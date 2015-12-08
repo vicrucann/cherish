@@ -76,7 +76,7 @@ public:
     std::string getSwitchFrameName() const;
     std::string getGeodeDataName() const;
 
-    bool addStroke(const osg::Vec3f& p1, const osg::Vec3f& p2);
+    bool addStroke(const osg::Vec3f& nearPoint, const osg::Vec3f& farPoint);
     bool addStroke(double x, double y); // test function: fixed length line at fixed location
 
 protected:

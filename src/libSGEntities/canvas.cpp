@@ -169,21 +169,21 @@ std::string Canvas::getGeodeDataName() const{
     return _geodeData->getName();
 }
 
-bool Canvas::addStroke(const osg::Vec3f &p1, const osg::Vec3f &p2)
+bool Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
 {
-    if (_plane.dotProductNormal(p2) == 0){
+    if (_plane.dotProductNormal(farPoint) == 0){
         std::cerr << "line is parallel" << std::endl;
         return false;
     }
-    if (_plane.dotProductNormal(_center-p1)){
+    if (_plane.dotProductNormal(_center-nearPoint)){
         std::cerr << "plane contains the line" << std::endl;
         return false;
     }
     assert(_plane.valid());
 
-    double X = _plane.dotProductNormal(_center-p1) / _plane.dotProductNormal(p2);
+    double X = _plane.dotProductNormal(_center-nearPoint) / _plane.dotProductNormal(farPoint);
     std::cout << "X: " << X << std::endl;
-    osg::Vec3f P = p2*X + p1;
+    osg::Vec3f P = farPoint*X + nearPoint;
     std::cout << "P: " << P.x() << " " << P.y() << " " << P.z() << std::endl;
 
     double u=1, v=1;

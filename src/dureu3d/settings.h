@@ -81,7 +81,7 @@ const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
 const float CANVAS_MINW = 1.2f; // half width
 const float CANVAS_MINH = 1.0f; // half height
 const float CANVAS_MINB = 0.1f; // bound
-const float CANVAS_CORNER = 0.2f; // corner size
+const float CANVAS_CORNER = 0.5f; // corner size
 const float CANVAS_AXIS = 0.5f; // loxal axis size
 
 const float AXES_SIZE = 0.3f;

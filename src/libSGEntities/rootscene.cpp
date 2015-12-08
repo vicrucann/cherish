@@ -263,9 +263,9 @@ bool RootScene::deleteNode(osg::Node *node)
     return success;
 }
 
-bool RootScene::addStroke(const osg::Vec3f &l0, const osg::Vec3f &l)
+bool RootScene::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
 {
-    return _canvasCurrent->addStroke(l0,l);
+    return _canvasCurrent->addStroke(nearPoint,farPoint);
 }
 
 bool RootScene::addStroke(double x, double y) // input mouse coords
@@ -415,7 +415,8 @@ void RootScene::setCanvasName(Canvas *cnv){
 
 std::string RootScene::getEntityName(const std::string &name, unsigned int id) const{
     char buffer[10];
-    sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
+    //sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
+    snprintf(buffer, sizeof(buffer), "%d", id);
     //itoa(id, buffer, 10);
     return name + std::string(buffer);//std::to_string(static_cast<long double>(id));
 }

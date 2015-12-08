@@ -144,52 +144,80 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
         return;
     }
 
+    osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(
+                osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
+    osgUtil::IntersectionVisitor iv(intersector);
+
     osg::Camera* camera = viewer->getCamera();
     if (!camera){
         std::cout << "doSketch(): could not read camera" << std::endl;
         return;
     }
 
+    camera->accept(iv);
+    if (!intersector->containsIntersections()){
+        std::cout << "doSketch(): no intersections found" << std::endl;
+        return;
+    }
+
+    const osgUtil::LineSegmentIntersector::Intersection& result = *(intersector->getIntersections().begin());
+    // check against the ground truth
+    osg::Vec3f wpGT = result.getWorldIntersectPoint();
+    osg::Vec3f wnGT = result.getWorldIntersectNormal();
+    osg::Vec3f lpGT = result.getLocalIntersectPoint();
+    osg::Vec3f lnGT = result.getLocalIntersectNormal();
+    std::cout << "World point: " << wpGT.x() << " " << wpGT.y() << " " << wpGT.z() << std::endl;
+    std::cout << "World normal: " << wnGT.x() << " " << wnGT.y() << " " << wnGT.z() << std::endl;
+    std::cout << "Local point: " << lpGT.x() << " " << lpGT.y() << " " << lpGT.z() << std::endl;
+    std::cout << "Local normal: " << lnGT.x() << " " << lnGT.y() << " " << lnGT.z() << std::endl;
+
     osg::Matrix VPW = camera->getViewMatrix() *
-            camera->getProjectionMatrix() *
-            camera->getViewport()->computeWindowMatrix();
+            camera->getProjectionMatrix() * camera->getViewport()->computeWindowMatrix();
+    osg::Matrix MVPW =  _root->getCanvasCurrent()->getTransform()->getMatrix() * VPW;
+    osg::Matrix invMVPW;
     osg::Matrix invVPW;
+    assert(invMVPW.invert(MVPW));
     assert(invVPW.invert(VPW));
 
     // the coords are already normalized
-    double dx = ea.getXnormalized();
-    double dy = ea.getYnormalized();
-    std::cout << "normalized coords: " << dx << " " << dy << std::endl;
+    double dx = ea.getX();
+    double dy = ea.getY();
+    std::cout << "coords: " << dx << " " << dy << std::endl;
 
     // end points of ray
-    osg::Vec3f p1 = osg::Vec3f(dx*1.f, dy*1.f, 1.f);
-    osg::Vec3f p2 = osg::Vec3f(dx*1000.f, dy*1000.f, 1000.f);
-
-    // ray to world coords
-    p1 = p1*invVPW;
-    p2 = p2*invVPW;
-    std::cout << "ray world coords p1: " << p1[0] << " " << p1[1] << " " << p1[2] << std::endl;
-    std::cout << "ray world coords p2: " << p2[0] << " " << p2[1] << " " << p2[2] << std::endl;
+    //dx = 1.1f;
+    //dy = 0.9f;
+    osg::Vec3f nearPoint = osg::Vec3f(dx, dy, 0.f)*invVPW;
+    osg::Vec3f farPoint = osg::Vec3f(dx, dy, 1.f)*invVPW;
+    osg::Vec3f norm = farPoint-nearPoint;
+    norm.normalize();
+    std::cout << "nearPoint: " << nearPoint[0] << " " << nearPoint[1] << " " << nearPoint[2] << std::endl;
+    std::cout << "farPoint: " << farPoint[0] << " " << farPoint[1] << " " << farPoint[2] << std::endl;
+    std::cout << "normal: " << norm[0] << " " << norm[1] << " " << norm[2] << std::endl;
 
     osg::Vec3f eye,center,up;
     camera->getViewMatrixAsLookAt(eye, center, up);
     std::cout << "center: " << center[0] << " " << center[1] << " " << center[2] << std::endl;
     osg::Vec3f dir = center - eye;
     dir.normalize();
+    std::cout << "dir: " << dir[0] << " " << dir[1] << " " << dir[2] << std::endl;
     osg::Vec3f side = dir^up;
     side.normalize();
+    std::cout << "side: " << side[0] << " " << side[1] << " " << side[2] << std::endl;
+    up.normalize();
+    std::cout << "up: " << up[0] << " " << up[1] << " " << up[2] << std::endl;
 
     // eye position of where the mouse is clicked
-    double distance = eye.length();
+    /*double distance = eye.length();
     std::cout << "distance: " << distance << std::endl;
     double scaleX = std::tan(dureu::PI/6)*distance; // tan(30 deg), subject to replace, depends on project matrix
     double scaleY = std::tan(dureu::PI/6)*distance;
     osg::Vec3f eye_new = eye + side * ea.getXnormalized() * scaleX + up * ea.getYnormalized() * scaleY;
     std::cout << "old eye: " << eye[0] << " " << eye[1] << " " << eye[2] << std::endl;
     std::cout << "new eye: " << eye_new[0] << " " << eye_new[1] << " " << eye_new[2] << std::endl;
-    std::cout << "direction: " << dir.x() << " " << dir.y() << " " << dir.z() << std::endl;
+    std::cout << "direction: " << dir.x() << " " << dir.y() << " " << dir.z() << std::endl;*/
 
-    _root->addStroke(p1,p2);
+    _root->addStroke(nearPoint,farPoint);
 }
 
 void EventHandler::doEdit(const osgUtil::LineSegmentIntersector::Intersection &result, double x, double y)
