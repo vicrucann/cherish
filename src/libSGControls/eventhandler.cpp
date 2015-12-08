@@ -132,8 +132,9 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
     std::cout << "doErase(): success is " << success << std::endl;
 }
 
-// see http://www.mvps.org/directx/articles/rayproj.htm
-// for algorithmnic details
+// see https://www.opengl.org/sdk/docs/man2/xhtml/gluUnProject.xml
+// and https://www.mail-archive.com/osg-users@openscenegraph.net/msg16244.html
+// for more details
 void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     std::cout << "doSketch()" << std::endl;
@@ -161,62 +162,25 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
     }
 
     const osgUtil::LineSegmentIntersector::Intersection& result = *(intersector->getIntersections().begin());
-    // check against the ground truth
+    // to check against the ground truth, delete later the intersector part
     osg::Vec3f wpGT = result.getWorldIntersectPoint();
-    osg::Vec3f wnGT = result.getWorldIntersectNormal();
     osg::Vec3f lpGT = result.getLocalIntersectPoint();
-    osg::Vec3f lnGT = result.getLocalIntersectNormal();
     std::cout << "World point: " << wpGT.x() << " " << wpGT.y() << " " << wpGT.z() << std::endl;
-    std::cout << "World normal: " << wnGT.x() << " " << wnGT.y() << " " << wnGT.z() << std::endl;
     std::cout << "Local point: " << lpGT.x() << " " << lpGT.y() << " " << lpGT.z() << std::endl;
-    std::cout << "Local normal: " << lnGT.x() << " " << lnGT.y() << " " << lnGT.z() << std::endl;
 
     osg::Matrix VPW = camera->getViewMatrix()
             * camera->getProjectionMatrix()
             * camera->getViewport()->computeWindowMatrix();
-    osg::Matrix MVPW =  _root->getCanvasCurrent()->getTransform()->getMatrix() * VPW;
-    osg::Matrix invMVPW;
+    //osg::Matrix MVPW =  _root->getCanvasCurrent()->getTransform()->getMatrix() * VPW;
     osg::Matrix invVPW;
-    assert(invMVPW.invert(MVPW));
-    assert(invVPW.invert(VPW));
+    bool success = invVPW.invert(VPW);
+    if (!success){
+        std::cerr << "doSketch(): could not invert View-projection-world matrix for ray casting" << std::endl;
+        return;
+    }
 
-    // the coords are already normalized
-    double dx = ea.getX();
-    double dy = ea.getY();
-    std::cout << "coords: " << dx << " " << dy << std::endl;
-
-    // end points of ray
-    //dx = 1.1f;
-    //dy = 0.9f;
-    osg::Vec3f nearPoint = osg::Vec3f(dx, dy, 0.f)*invVPW;
-    osg::Vec3f farPoint = osg::Vec3f(dx, dy, 1.f)*invVPW;
-    osg::Vec3f norm = farPoint-nearPoint;
-    norm.normalize();
-    std::cout << "nearPoint: " << nearPoint[0] << " " << nearPoint[1] << " " << nearPoint[2] << std::endl;
-    std::cout << "farPoint: " << farPoint[0] << " " << farPoint[1] << " " << farPoint[2] << std::endl;
-    std::cout << "normal: " << norm[0] << " " << norm[1] << " " << norm[2] << std::endl;
-
-    osg::Vec3f eye,center,up;
-    camera->getViewMatrixAsLookAt(eye, center, up);
-    std::cout << "center: " << center[0] << " " << center[1] << " " << center[2] << std::endl;
-    osg::Vec3f dir = center - eye;
-    dir.normalize();
-    std::cout << "dir: " << dir[0] << " " << dir[1] << " " << dir[2] << std::endl;
-    osg::Vec3f side = dir^up;
-    side.normalize();
-    std::cout << "side: " << side[0] << " " << side[1] << " " << side[2] << std::endl;
-    up.normalize();
-    std::cout << "up: " << up[0] << " " << up[1] << " " << up[2] << std::endl;
-
-    // eye position of where the mouse is clicked
-    /*double distance = eye.length();
-    std::cout << "distance: " << distance << std::endl;
-    double scaleX = std::tan(dureu::PI/6)*distance; // tan(30 deg), subject to replace, depends on project matrix
-    double scaleY = std::tan(dureu::PI/6)*distance;
-    osg::Vec3f eye_new = eye + side * ea.getXnormalized() * scaleX + up * ea.getYnormalized() * scaleY;
-    std::cout << "old eye: " << eye[0] << " " << eye[1] << " " << eye[2] << std::endl;
-    std::cout << "new eye: " << eye_new[0] << " " << eye_new[1] << " " << eye_new[2] << std::endl;
-    std::cout << "direction: " << dir.x() << " " << dir.y() << " " << dir.z() << std::endl;*/
+    osg::Vec3f nearPoint = osg::Vec3f(ea.getX(), ea.getY(), 0.f) * invVPW;
+    osg::Vec3f farPoint = osg::Vec3f(ea.getX(), ea.getY(), 1.f) * invVPW;
 
     _root->addStroke(nearPoint,farPoint);
 }

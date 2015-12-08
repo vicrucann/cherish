@@ -30,7 +30,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     // also represents local coord system center
     _plane(osg::Vec3f(0.f,0.f,1.f), _center), // plane params by center and normal
     _x(_center + osg::Vec3f(1.f,0.f,0.f)), // x and y local coordinate system vectors, for the moment they will be
-    _y(_center + osg::Vec3f(0.f,1.f,0.f)), // X and Y (global)-axis aligned
+    _y(_center + osg::Vec3f(0.f,-1.f,0.f)), // X and Y (global)-axis aligned
     _color(dureu::CANVAS_CLR_REST) // frame and pickable color
 
 {
@@ -171,22 +171,27 @@ std::string Canvas::getGeodeDataName() const{
 
 bool Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
 {
-    osg::Vec3f normPlane = _plane.getNormal();
-    std::cout << "plane normal: " << normPlane.x() << " " << normPlane.y() << " " << normPlane.z() << std::endl;
-    if (_plane.dotProductNormal(farPoint) == 0){
-        std::cerr << "line is parallel" << std::endl;
-        return false;
-    }
-    if (_plane.dotProductNormal(_center-nearPoint)){
-        std::cerr << "plane contains the line" << std::endl;
-        return false;
-    }
     assert(_plane.valid());
+    std::vector<osg::Vec3f> ray(2);
+    ray[0] = nearPoint;
+    ray[1] = farPoint;
+    if (_plane.intersect(ray)){ // 1 or -1: no intersection
+        std::cerr << "addStroke(): no intersection with the ray" << std::endl;
+        return false;
+    }
+    osg::Vec3f dir = farPoint-nearPoint;
+    if ( dir * _plane.getNormal() == 0){ // denominator
+        std::cerr << "addStroke(): projected line is parallel to the canvas plane" << std::endl;
+        return false;
+    }
+    if ((_center-nearPoint) * _plane.getNormal() == 0){
+        std::cerr << "addStroke(): plane contains the line, so no single intersection can be defined" << std::endl;
+        return false;
+    }
 
-    double X = _plane.dotProductNormal(_center-nearPoint) / _plane.dotProductNormal(farPoint);
-    std::cout << "X: " << X << std::endl;
-    osg::Vec3f P = farPoint*X + nearPoint;
-    std::cout << "P: " << P.x() << " " << P.y() << " " << P.z() << std::endl;
+    double x = ((_center-nearPoint) * _plane.getNormal()) / (dir * _plane.getNormal());
+    osg::Vec3f P = dir * x + nearPoint;
+    std::cout << "Global point manual: " << P.x() << " " << P.y() << " " << P.z() << std::endl;
 
     double u=1, v=1;
     u = (P-_center)*_x;
@@ -204,14 +209,18 @@ bool Canvas::addStroke(double x, double y)
 }
 
 // to transform plane, centroid and local axis
+// must be called every time when transform node is changed
 void Canvas::transformData()
 {
     const osg::Matrix matrix = _transform->getMatrix();
     _plane.transform(matrix); // every time canvas is transformed (rotate, offset, scale), apply it for plane params
     _plane.makeUnitLength(); // then normalize the params
+    assert(_plane.valid());
     _center = matrix * _center;
     _x = matrix * _x;
+    _x.normalize();
     _y = matrix * _y;
+    _y.normalize();
 }
 
 void Canvas::setColor(osg::Vec4 color){
