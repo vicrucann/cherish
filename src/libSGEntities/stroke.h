@@ -7,11 +7,13 @@
 class Stroke : public osg::Geometry {
 public:
     Stroke();
-    Stroke(const osg::Vec2f& p1, const osg::Vec2f& p2);
+    void appendPoint(float u, float v);
 
-    bool addPoint(float u, float v);
     void setColor(osg::Vec4f color);
 private:
+    osg::DrawArrays* _mDrawArrayLines;
+    osg::Vec3Array* _mVertexData;
+    osg::Vec4Array* _mColors;
 };
 
 #endif // STROKE

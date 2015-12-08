@@ -76,8 +76,7 @@ public:
     bool deleteNode(const std::string& name);
     bool deleteNode(osg::Node* node);
 
-    bool addStroke(const osg::Vec3f& nearPoint, const osg::Vec3f& farPoint);
-    bool addStroke(double x, double y); // test: add stroke to current canvas, fized size, fixed location
+    void addStroke(const osg::Vec3f& nearPoint, const osg::Vec3f& farPoint, int mouse);
 
     osg::Node *loadSceneFromFile(const std::string& fname);
 

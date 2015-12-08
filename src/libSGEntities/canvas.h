@@ -42,6 +42,7 @@
  */
 
 #include "settings.h"
+#include "stroke.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
@@ -76,8 +77,7 @@ public:
     std::string getSwitchFrameName() const;
     std::string getGeodeDataName() const;
 
-    bool addStroke(const osg::Vec3f& nearPoint, const osg::Vec3f& farPoint);
-    bool addStroke(double x, double y); // test function: fixed length line at fixed location
+    void addStroke(const osg::Vec3f& nearPoint, const osg::Vec3f& farPoint, int mouse);
 
 protected:
     void transformData();
@@ -92,6 +92,8 @@ private:
     osg::ref_ptr<osg::Geometry> _pickable; // to select canvas by mouse
     osg::ref_ptr<osg::Geometry> _axis; // local coordinate axis
     osg::ref_ptr<osg::Geode> _geodeData; // keeps user canvas drawables such as strokes
+
+    osg::observer_ptr<Stroke> _strokeCurrent;
 
     osg::Vec3f _center; // centrod of the canvas
     osg::Plane _plane; // only to use for math and keep plane params

@@ -25,6 +25,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _pickable(new osg::Geometry),
     _axis(new osg::Geometry),
     _geodeData(new osg::Geode),
+    _strokeCurrent(0),
 
     _center(osg::Vec3f(0.f,0.f,0.f)), // moves only when strokes are introduced so that to define it as centroid
     // also represents local coord system center
@@ -169,7 +170,12 @@ std::string Canvas::getGeodeDataName() const{
     return _geodeData->getName();
 }
 
-bool Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
+// Near and far are the points representing the ray which is casted by a mouse
+// screen coordinates.
+// The function takes intersection between the ray and our plane (canvas)
+// Then transforms that intersection point into an original local coordinate system.
+// The result point is appended to the current stroke.
+void Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, int mouse)
 {
     assert(_plane.valid());
     std::vector<osg::Vec3f> ray(2);
@@ -177,16 +183,16 @@ bool Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
     ray[1] = farPoint;
     if (_plane.intersect(ray)){ // 1 or -1: no intersection
         std::cerr << "addStroke(): no intersection with the ray" << std::endl;
-        return false;
+        return;
     }
     osg::Vec3f dir = farPoint-nearPoint;
     if (! _plane.dotProductNormal(dir)){ // denominator
         std::cerr << "addStroke(): projected line is parallel to the canvas plane" << std::endl;
-        return false;
+        return;
     }
     if (! _plane.dotProductNormal(_center-nearPoint)){
         std::cerr << "addStroke(): plane contains the line, so no single intersection can be defined" << std::endl;
-        return false;
+        return;
     }
 
     double x = _plane.dotProductNormal(_center-nearPoint) / _plane.dotProductNormal(dir);
@@ -196,7 +202,7 @@ bool Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
     osg::Matrix invmat;
     if (!invmat.invert(mat)){
         std::cerr << "addStroke(): could not invert model matrix" << std::endl;
-        return false;
+        return;
     }
     osg::Vec3f p = P * invmat;
 
@@ -204,14 +210,30 @@ bool Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
     //double u = _x * (P-_center);
     //double v = _y * (P-_center);
 
-    Stroke* stroke = new Stroke(osg::Vec2f(0,0), osg::Vec2f(u,v));
-    return _geodeData->addChild(stroke);
-}
-
-bool Canvas::addStroke(double x, double y)
-{
-    Stroke* stroke = new Stroke;
-    return _geodeData->addChild(stroke);
+    bool success = true;
+    if (mouse == 0){
+        //Stroke* stroke  = new Stroke(osg::Vec2f(0,0), osg::Vec2f(u,v));
+        Stroke* stroke  = new Stroke; // an empty stroke structure
+        assert(stroke);
+        _strokeCurrent = stroke;
+        if (!_strokeCurrent.valid()){
+            std::cerr << "addStroke(): _strokeCurrent is NULL after initialization" << std::endl;
+            return;
+        }
+        assert(_geodeData.get());
+        if (!_geodeData->addDrawable(stroke)){
+            std::cerr << "addStroke(): could not add stroke as a child to the current canvas" << std::endl;
+            _strokeCurrent = 0;
+            return;
+        }
+    }
+    assert(_strokeCurrent);
+    // append the (u,v) point to the stroke
+    _strokeCurrent->appendPoint(u,v);
+    if (mouse == 2){
+        _strokeCurrent = 0;
+        std::cout << "addStroke(): finished stroke, observer pointer cleared" << std::endl;
+    }
 }
 
 // to transform plane, centroid and local axis

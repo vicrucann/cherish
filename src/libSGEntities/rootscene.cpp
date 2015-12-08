@@ -263,14 +263,9 @@ bool RootScene::deleteNode(osg::Node *node)
     return success;
 }
 
-bool RootScene::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint)
+void RootScene::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, int mouse)
 {
-    return _canvasCurrent->addStroke(nearPoint,farPoint);
-}
-
-bool RootScene::addStroke(double x, double y) // input mouse coords
-{
-    return _canvasCurrent->addStroke(x,y);
+    _canvasCurrent->addStroke(nearPoint,farPoint, mouse);
 }
 
 osg::Node* RootScene::loadSceneFromFile(const std::string& fname){

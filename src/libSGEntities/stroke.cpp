@@ -1,40 +1,27 @@
 #include "stroke.h"
 
-Stroke::Stroke()
+Stroke::Stroke():
+    _mDrawArrayLines(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP)),
+    _mVertexData(new osg::Vec3Array),
+    _mColors(new osg::Vec4Array)
 {
-    osg::ref_ptr<osg::Vec2Array> verts = new osg::Vec2Array;
-    verts->push_back(osg::Vec2(0.f, 0.f));
-    verts->push_back(osg::Vec2(1.f,1.f));
-    this->setVertexArray(verts);
-    this->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,2));
-
-    this->setColor(dureu::STROKE_CLR_NORMAL);
+    this->addPrimitiveSet(_mDrawArrayLines);
+    this->setVertexArray(_mVertexData);
+    this->setColorArray(_mColors, osg::Array::BIND_PER_VERTEX);
+    std::cout << "Stroke(): ctor complete" << std::endl;
 }
 
-Stroke::Stroke(const osg::Vec2f &p1, const osg::Vec2f &p2)
+void Stroke::appendPoint(float u, float v)
 {
-    osg::ref_ptr<osg::Vec3Array> verts = new osg::Vec3Array;
-    verts->push_back(osg::Vec3(p1.x(), p1.y(), 0.f));
-    verts->push_back(osg::Vec3(p2.x(),p2.y(), 0.f));
-    this->setVertexArray(verts);
-    this->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,2));
-    this->setColor(dureu::STROKE_CLR_NORMAL);
-}
-
-bool Stroke::addPoint(float u, float v)
-{
-    // push_back the point to the vertex data (primitive set)
-    //this->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,1));
-    return false;
-
+    _mVertexData->push_back(osg::Vec3f(u,v,0.f));
+    _mColors->push_back(dureu::STROKE_CLR_NORMAL);
+    _mDrawArrayLines->setFirst(0);
+    _mDrawArrayLines->setCount(_mVertexData->size());
+    std::cout << "appendPoint(): complete" << std::endl;
 }
 
 void Stroke::setColor(osg::Vec4f color)
 {
-    osg::Vec4Array* colors = new osg::Vec4Array(4);
-    (*colors)[0] = color;
-    (*colors)[1] = color;
-    (*colors)[2] = color;
-    (*colors)[3] = color;
-    this->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
+    for (unsigned int i = 0; i<_mColors->size(); ++i)
+        (*_mColors)[i] = color;
 }

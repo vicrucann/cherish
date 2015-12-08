@@ -21,38 +21,10 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     if (_mode == dureu::MOUSE_ROTATE || _mode == dureu::MOUSE_PAN ||
             _mode == dureu::MOUSE_ZOOM || _mode == dureu::MOUSE_FIXEDVIEW)
         return false;
-
-    // process only if the event comes from left mouse button
-    // otherwise, do nothing
-    if (ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-        return false;
-
-    if (_mode == dureu::MOUSE_SKETCH){ // have to redesin this if-else
-        if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH)
-            doSketch(ea, aa);
-    }
-
-    else{ // have to redesin this if-else
-
-    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
-    if (viewer){
-        std::cout <<  "handle(): Viewer is read" << std::endl;
-        osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(
-                    osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
-        osgUtil::IntersectionVisitor iv(intersector);
-
-        osg::Camera* camera = viewer->getCamera();
-        if (!camera)
-            return false;
-        //std::cout <<  "handle(): Camera is read" << std::endl;
-        camera->accept(iv);
-        if (intersector->containsIntersections()){
-            //std::cout << "handle(): # of intersections: " << (intersector->getIntersections()).size() << std::endl;
-            const osgUtil::LineSegmentIntersector::Intersection& result = *(intersector->getIntersections().begin());
-            doOperation(ea, aa, result);
-        }
-    }
-    } // have to redesin this if-else
+    if (_mode == dureu::MOUSE_PICK || _mode == dureu::MOUSE_ERASE)
+        doByIntersector(ea, aa);
+    else
+        doByOperator(ea, aa);
     return false;
 }
 
@@ -61,49 +33,98 @@ void EventHandler::setMode(dureu::MOUSE_MODE mode)
     _mode = mode;
 }
 
-void EventHandler::doOperation(const osgGA::GUIEventAdapter &ea,
-                               osgGA::GUIActionAdapter &aa,
-                               const osgUtil::LineSegmentIntersector::Intersection &result)
+// for pick and erase when lineintersector is going to be used
+void EventHandler::doByIntersector(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
-    switch (ea.getEventType()){
-    case osgGA::GUIEventAdapter::PUSH:
-        switch (_mode){
-        case dureu::MOUSE_PICK:
-            doPick(result);
-            break;
-        case dureu::MOUSE_ERASE:
-            doErase(result);
-            break;
-        case dureu::MOUSE_SKETCH: // this is only for test purposes, have to redefine behaviour
-            //doSketch(ea.getX(), ea.getY());
-            break;
-        default:
-            _x0 = -1;
-            _y0 = -1;
-            break;
-        }
-    case osgGA::GUIEventAdapter::DRAG:
-        if (_x0 > 0 && _y0>0){
-            switch (_mode){
-            case dureu::MOUSE_EDIT:
-                doEdit(result, ea.getX(), ea.getY());
-                _x0 = ea.getX();
-                _y0 = ea.getY();
-                break;
-            case dureu::MOUSE_SKETCH:
-                //doSketch(result, ea.getX(), ea.getY()); // redefine
-                _x0 = ea.getX();
-                _y0 = ea.getY();
-                break;
-            default:
-                _x0 = ea.getX();
-                _y0 = ea.getY();
-                break;
-            }
-        }
+    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE ||
+            ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+        return;
+    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
+    if (!viewer){
+        std::cerr << "doByIntersector(): could not retrieve viewer" << std::endl;
+        return;
+    }
+    osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(
+                osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
+
+    osgUtil::IntersectionVisitor iv(intersector);
+    osg::Camera* camera = viewer->getCamera();
+    if (!camera){
+        std::cerr << "doByIntersector(): could not read camera" << std::endl;
+        return;
+    }
+    camera->accept(iv);
+    if (!intersector->containsIntersections()){
+        std::cerr << "doByIntersector(): no intersections found" << std::endl;
+        return;
+    }
+    const osgUtil::LineSegmentIntersector::Intersection& result = *(intersector->getIntersections().begin());
+
+    switch (_mode) {
+    case dureu::MOUSE_PICK:
+        doPick(result);
+        break;
+    case dureu::MOUSE_ERASE:
+        doErase(result);
         break;
     default:
-        // scrolling, doubleclick, move, keydown, keyup, resize
+        break;
+    }
+}
+
+void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    //if (ea.getEventType() != osgGA::GUIEventAdapter::RELEASE &&
+    //        ea.getButton()    != osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON )
+    //    return;
+
+    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
+    if (!viewer){
+        std::cerr << "doByOperator(): could not read viewer" << std::endl;
+        return;
+    }
+
+    osg::Camera* camera = viewer->getCamera();
+    if (!camera){
+        std::cout << "doByOperator(): could not read camera" << std::endl;
+        return;
+    }
+
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        switch(_mode){
+        case dureu::MOUSE_SKETCH:
+            doSketch(ea.getX(), ea.getY(), camera, 0);
+            break;
+        default:
+            break;
+        }
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        switch(_mode){
+        case dureu::MOUSE_SKETCH:
+            doSketch(ea.getX(), ea.getY(), camera, 2);
+            break;
+        default:
+            break;
+        }
+        break;
+    case osgGA::GUIEventAdapter::DRAG:
+        switch(_mode){
+        case dureu::MOUSE_SKETCH:
+            doSketch(ea.getX(), ea.getY(), camera, 1);
+            break;
+        default:
+            break;
+        }
+        break;
+    /*case osgGA::GUIEventAdapter::MOVE:
+        std::cout << "doByOperator(): move" << std::endl;
+        break;
+    case osgGA::GUIEventAdapter::FRAME:
+        std::cout << "doByOperator(): frame" << std::endl;
+        break;*/
+    default: // scrolling, doubleclick, move, keydown, keyup, resize
         // frame, pen_pressure, pen_..., ...
         break;
     }
@@ -135,19 +156,13 @@ void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &
 // see https://www.opengl.org/sdk/docs/man2/xhtml/gluUnProject.xml
 // and https://www.mail-archive.com/osg-users@openscenegraph.net/msg16244.html
 // for more details
-void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+// mouse is to indicate if the stroke is just created (0), in the process of drawing (1)
+// or finished drawing (2)
+void EventHandler::doSketch(int x, int y, const osg::Camera *camera, int mouse)
 {
-    std::cout << "doSketch()" << std::endl;
-
-    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
-    if (!viewer){
-        std::cout << "doSketch(): could not read viewer" << std::endl;
-        return;
-    }
-
-    osg::Camera* camera = viewer->getCamera();
-    if (!camera){
-        std::cout << "doSketch(): could not read camera" << std::endl;
+    assert(camera);
+    if (!camera->getViewport()){
+        std::cerr << "doSketch(): could not read viewport" << std::endl;
         return;
     }
 
@@ -161,10 +176,10 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
         return;
     }
 
-    osg::Vec3f nearPoint = osg::Vec3f(ea.getX(), ea.getY(), 0.f) * invVPW;
-    osg::Vec3f farPoint = osg::Vec3f(ea.getX(), ea.getY(), 1.f) * invVPW;
+    osg::Vec3f nearPoint = osg::Vec3f(x, y, 0.f) * invVPW;
+    osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
 
-    _root->addStroke(nearPoint,farPoint);
+    _root->addStroke(nearPoint,farPoint, mouse);
 }
 
 void EventHandler::doEdit(const osgUtil::LineSegmentIntersector::Intersection &result, double x, double y)
