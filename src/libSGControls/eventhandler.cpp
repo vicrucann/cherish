@@ -214,7 +214,6 @@ void EventHandler::doEditOffset(int x, int y, int mouse)
     std::cout << "doEdit()" << std::endl;
     osg::Vec3f near, far;
     _root->setTransformOffset(near, far, mouse);
-    //_root->getCanvasCurrent()
 }
 
 Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){

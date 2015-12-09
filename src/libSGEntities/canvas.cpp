@@ -34,7 +34,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _mVerticesFrame(new osg::Vec3Array(4)),
     _mVerticesPickable(new osg::Vec3Array(4)),
     _mVerticesAxis(new osg::Vec3Array(4)),
-    _mVerticesNormal(new osg::Vec3Array(5)),
+    _mVerticesNormal(new osg::Vec3Array(2)),
 
     _strokeCurrent(0),
 
@@ -89,18 +89,15 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
      (*colorAxis)[2] = solarized::base2;
      (*colorAxis)[3] = solarized::base2;
 
-     osg::Vec4Array* colorNormal = new osg::Vec4Array(5);
+     osg::Vec4Array* colorNormal = new osg::Vec4Array(2);
      (*colorNormal)[0] = dureu::CANVAS_CLR_EDIT;
      (*colorNormal)[1] = dureu::CANVAS_CLR_EDIT;
-     (*colorNormal)[2] = dureu::CANVAS_CLR_EDIT;
-     (*colorNormal)[3] = dureu::CANVAS_CLR_EDIT;
-     (*colorNormal)[4] = dureu::CANVAS_CLR_EDIT;
 
     _frame->setVertexArray(_mVerticesFrame);
     _frame->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
 
     _mGeometryNormal->setVertexArray(_mVerticesNormal);
-    _mGeometryNormal->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,5));
+    _mGeometryNormal->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,2));
     _mGeometryNormal->setColorArray(colorNormal, osg::Array::BIND_PER_VERTEX);
 
     _pickable->setVertexArray(_mVerticesPickable);
@@ -329,12 +326,8 @@ void Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float s
     _axis->dirtyBound();
 
     float szN = std::max(szX,szY);
-    float szT = 0.2*szN;
     (*_mVerticesNormal)[0] = _center;
     (*_mVerticesNormal)[1] = _center + osg::Vec3f(0.f,0.f, szN);
-    (*_mVerticesNormal)[2] = _center + osg::Vec3f(szT,0.f, szN);
-    (*_mVerticesNormal)[3] = _center + osg::Vec3f(0.f,0.f, szN+szT);
-    (*_mVerticesNormal)[4] = _center + osg::Vec3f(-szT,0.f, szN+szT);
 }
 
 void Canvas::setColor(osg::Vec4 color){
