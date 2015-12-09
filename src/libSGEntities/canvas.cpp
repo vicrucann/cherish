@@ -13,6 +13,7 @@
 #include <osg/StateSet>
 #include <osg/Plane>
 #include <osg/BlendFunc>
+#include <osg/BoundingSphere>
 
 Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _switch(new osg::Switch),
@@ -25,6 +26,11 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _pickable(new osg::Geometry),
     _axis(new osg::Geometry),
     _geodeData(new osg::Geode),
+
+    _mFrameVertices(new osg::Vec3Array(4)),
+    _mPickableVertices(new osg::Vec3Array(4)),
+    _mAxisVertices(new osg::Vec3Array(4)),
+
     _strokeCurrent(0),
 
     _center(osg::Vec3f(0.f,0.f,0.f)), // moves only when strokes are introduced so that to define it as centroid
@@ -67,23 +73,23 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
 
     _geodeAxis->addDrawable(_axis.get());
 
-     osg::Vec3Array* frameVertices = new osg::Vec3Array(4);
-    (*frameVertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
-    (*frameVertices)[1] = osg::Vec3f(-dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
-    (*frameVertices)[2] = osg::Vec3f(-dureu::CANVAS_MINW, -dureu::CANVAS_MINH, 0.0f);
-    (*frameVertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, -dureu::CANVAS_MINH, 0.0f);
+     //osg::Vec3Array* frameVertices = new osg::Vec3Array(4);
+    (*_mFrameVertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
+    (*_mFrameVertices)[1] = osg::Vec3f(-dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
+    (*_mFrameVertices)[2] = osg::Vec3f(-dureu::CANVAS_MINW, -dureu::CANVAS_MINH, 0.0f);
+    (*_mFrameVertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, -dureu::CANVAS_MINH, 0.0f);
 
-     osg::Vec3Array* pickableVertices = new osg::Vec3Array(4);
-    (*pickableVertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
-    (*pickableVertices)[1] = osg::Vec3f(dureu::CANVAS_MINW-dureu::CANVAS_CORNER, dureu::CANVAS_MINH, 0.0f);
-    (*pickableVertices)[2] = osg::Vec3f(dureu::CANVAS_MINW-dureu::CANVAS_CORNER, dureu::CANVAS_MINH-dureu::CANVAS_CORNER, 0.0f);
-    (*pickableVertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH-dureu::CANVAS_CORNER, 0.0f);
+     //osg::Vec3Array* pickableVertices = new osg::Vec3Array(4);
+    (*_mPickableVertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
+    (*_mPickableVertices)[1] = osg::Vec3f(dureu::CANVAS_MINW-dureu::CANVAS_CORNER, dureu::CANVAS_MINH, 0.0f);
+    (*_mPickableVertices)[2] = osg::Vec3f(dureu::CANVAS_MINW-dureu::CANVAS_CORNER, dureu::CANVAS_MINH-dureu::CANVAS_CORNER, 0.0f);
+    (*_mPickableVertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH-dureu::CANVAS_CORNER, 0.0f);
 
-     osg::Vec3Array* axisVertices = new osg::Vec3Array(4);
-     (*axisVertices)[0] = osg::Vec3f(0.f,0.f,0.f);
-     (*axisVertices)[1] = osg::Vec3f(dureu::CANVAS_AXIS, 0.f,0.f);
-     (*axisVertices)[2] = osg::Vec3f(0.f,0.f,0.f);
-     (*axisVertices)[3] = osg::Vec3f(0.f,dureu::CANVAS_AXIS, 0.f);
+     //osg::Vec3Array* axisVertices = new osg::Vec3Array(4);
+     (*_mAxisVertices)[0] = osg::Vec3f(0.f,0.f,0.f);
+     (*_mAxisVertices)[1] = osg::Vec3f(dureu::CANVAS_AXIS, 0.f,0.f);
+     (*_mAxisVertices)[2] = osg::Vec3f(0.f,0.f,0.f);
+     (*_mAxisVertices)[3] = osg::Vec3f(0.f,dureu::CANVAS_AXIS, 0.f);
 
      osg::Vec4Array* colorAxis = new osg::Vec4Array(4);
      (*colorAxis)[0] = solarized::base2;
@@ -91,13 +97,13 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
      (*colorAxis)[2] = solarized::base2;
      (*colorAxis)[3] = solarized::base2;
 
-    _frame->setVertexArray(frameVertices);
+    _frame->setVertexArray(_mFrameVertices);
     _frame->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
 
-    _pickable->setVertexArray(pickableVertices);
+    _pickable->setVertexArray(_mPickableVertices);
     _pickable->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
 
-    _axis->setVertexArray(axisVertices);
+    _axis->setVertexArray(_mAxisVertices);
     _axis->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,4));
     _axis->setColorArray(colorAxis, osg::Array::BIND_PER_VERTEX);
 }
@@ -234,6 +240,42 @@ void Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, 
         _strokeCurrent = 0;
         std::cout << "addStroke(): finished stroke, observer pointer cleared" << std::endl;
     }
+    this->updateFrame();
+}
+
+void Canvas::updateFrame()
+{
+    osg::BoundingBox bb = _geodeData->getBoundingBox();
+    assert(bb.valid());
+    _center = bb.center();
+    float dx = 0.5*(bb.xMax()-bb.xMin());
+    float dy = 0.5*(bb.yMax()-bb.yMin());
+    float szX = std::max(dx, dureu::CANVAS_MINW);
+    float szY = std::max(dy, dureu::CANVAS_MINW);
+
+    (*_mFrameVertices)[0] = _center + osg::Vec3(szX,szY,0.f);
+    (*_mFrameVertices)[1] = _center + osg::Vec3(-szX,szY,0.f);
+    (*_mFrameVertices)[2] = _center + osg::Vec3(-szX,-szY,0.f);
+    (*_mFrameVertices)[3] = _center + osg::Vec3(szX,-szY,0.f);
+    _frame->dirtyDisplayList();
+    _frame->dirtyBound();
+
+    osg::Vec3 p0 = (*_mFrameVertices)[0];
+    float cr = dureu::CANVAS_CORNER;
+    (*_mPickableVertices)[0] = p0;
+    (*_mPickableVertices)[1] = p0 + osg::Vec3(-cr, 0.f, 0.f);
+    (*_mPickableVertices)[2] = p0 + osg::Vec3(-cr, -cr, 0.f);
+    (*_mPickableVertices)[3] = p0 + osg::Vec3(.0f, -cr, 0.f);
+    _pickable->dirtyDisplayList();
+    _pickable->dirtyBound();
+
+    float ax = dureu::CANVAS_AXIS;
+    (*_mAxisVertices)[0] = _center;
+    (*_mAxisVertices)[1] = _center + osg::Vec3(ax,0.f,0.f);
+    (*_mAxisVertices)[2] = _center;
+    (*_mAxisVertices)[3] = _center + osg::Vec3(0.f, ax, 0.f);
+    _axis->dirtyDisplayList();
+    _axis->dirtyBound();
 }
 
 // to transform plane, centroid and local axis

@@ -79,6 +79,10 @@ public:
 
     void addStroke(const osg::Vec3f& nearPoint, const osg::Vec3f& farPoint, int mouse);
 
+    // recalculate frame's geometry based on strokes
+    // update centroid as well
+    void updateFrame();
+
 protected:
     void transformData();
 private:
@@ -92,6 +96,10 @@ private:
     osg::ref_ptr<osg::Geometry> _pickable; // to select canvas by mouse
     osg::ref_ptr<osg::Geometry> _axis; // local coordinate axis
     osg::ref_ptr<osg::Geode> _geodeData; // keeps user canvas drawables such as strokes
+
+    osg::Vec3Array* _mFrameVertices;
+    osg::Vec3Array* _mPickableVertices;
+    osg::Vec3Array* _mAxisVertices;
 
     osg::observer_ptr<Stroke> _strokeCurrent;
 
