@@ -46,6 +46,7 @@ private slots:
     void onMousePick();
     void onMouseErase();
     void onMouseSketch();
+    void onMouseOffset();
 private:
     ViewWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
 
@@ -85,6 +86,8 @@ private:
     QToolBar *viewToolBar;
     QToolBar *windowToolBar;
 
+    // ACTIONS ======================= //
+
     QAction *newAct;
     QAction *openAct;
     QAction *saveAct;
@@ -104,24 +107,24 @@ private:
     QAction *axes;
     QAction *toolPalsandBox;
 
-    QAction* _mSketch;
+    QAction* _mActionSketch;
     QAction *line;
     QAction *arc;
     QAction *rectangle;
 
-    QAction* _mOrbit;
-    QAction* _mPan;
-    QAction* _mZoom;
+    QAction* _mActionOrbit;
+    QAction* _mActionPan;
+    QAction* _mActionZoom;
     QAction *zoomWindow;
     QAction *zoomExtents;
     QAction *previousCam;
 
-    QAction* _mSelect;
-    QAction* _mEraser;
+    QAction* _mActionSelect;
+    QAction* _mActionEraser;
     QAction *toolMove;
     QAction *toolRotate;
     QAction *toolScale;
-    QAction *toolOffset;
+    QAction* _mActionOffset;
 
     QAction *layers;
 

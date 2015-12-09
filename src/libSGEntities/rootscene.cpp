@@ -402,6 +402,19 @@ unsigned int RootScene::getCanvasLevel() const{
     return 3;
 }
 
+void RootScene::setTransformOffset(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, const int mouse)
+{
+    // initialize offset mode
+    if (mouse == 0){
+        _canvasCurrent->setModeOffset(true);
+    }
+
+    // back to normal mode
+    if (mouse == 2){
+        _canvasCurrent->setModeOffset(false);
+    }
+}
+
 void RootScene::setCanvasName(Canvas *cnv){
     cnv->setCanvasName(getEntityName(dureu::NAME_CANVAS, _idCanvas++));
     std::cout << "setCanvasName(): Canvas renamed: " << cnv->getName() << std::endl;
@@ -410,8 +423,8 @@ void RootScene::setCanvasName(Canvas *cnv){
 
 std::string RootScene::getEntityName(const std::string &name, unsigned int id) const{
     char buffer[10];
-    //sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
-    snprintf(buffer, sizeof(buffer), "%d", id);
+    sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
+    //snprintf(buffer, sizeof(buffer), "%d", id);
     //itoa(id, buffer, 10);
     return name + std::string(buffer);//std::to_string(static_cast<long double>(id));
 }

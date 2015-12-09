@@ -60,6 +60,8 @@ enum MOUSE_MODE {
     MOUSE_PICK, // for selection and delete
     MOUSE_SKETCH, // to draw strokes and 2D geometric shapes
     MOUSE_EDIT, // rotate, translate, offset the selected entity
+    MOUSE_EDIT_OFFSET,
+    MOUSE_EDIT_ROTATE,
     MOUSE_BOOKMARK, // create bookmark (take a snapshot of a selected viewer)
     MOUSE_ERASE, // deletes entyties from scene
     MOUSE_ROTATE,
@@ -74,6 +76,7 @@ const osg::Vec4 CANVAS_CLR_CURRENT = solarized::magenta;
 const osg::Vec4 CANVAS_CLR_PREVIOUS = solarized::violet;
 const osg::Vec4 CANVAS_CLR_REST = solarized::base1;
 const osg::Vec4 CANVAS_CLR_SELECTED = solarized::red;
+const osg::Vec4 CANVAS_CLR_EDIT = solarized::cyan;
 
 const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
 const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;

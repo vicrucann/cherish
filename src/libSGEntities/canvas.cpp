@@ -27,9 +27,14 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _axis(new osg::Geometry),
     _geodeData(new osg::Geode),
 
-    _mFrameVertices(new osg::Vec3Array(4)),
-    _mPickableVertices(new osg::Vec3Array(4)),
-    _mAxisVertices(new osg::Vec3Array(4)),
+    _mSwitchNormal(new osg::Switch),
+    _mGeodeNormal(new osg::Geode),
+    _mGeometryNormal(new osg::Geometry),
+
+    _mVerticesFrame(new osg::Vec3Array(4)),
+    _mVerticesPickable(new osg::Vec3Array(4)),
+    _mVerticesAxis(new osg::Vec3Array(4)),
+    _mVerticesNormal(new osg::Vec3Array(5)),
 
     _strokeCurrent(0),
 
@@ -61,6 +66,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _switch->addChild(_transform.get(), true);
     _transform->addChild(_switchFrame.get());
     _transform->addChild(_transformData.get());
+    _transform->addChild(_mSwitchNormal.get());
 
     _transformData->addChild(_geodeData.get());
     // _geodeData is  empty, it is for user input: strokes
@@ -68,28 +74,14 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _switchFrame->addChild(_geodeFrame.get(), true); // child #0
     _switchFrame->addChild(_geodeAxis.get(), true); // child #1
 
+    _mSwitchNormal->addChild(_mGeodeNormal.get(), false);
+
     _geodeFrame->addDrawable(_frame.get());
     _geodeFrame->addDrawable(_pickable.get());
-
+    _mGeodeNormal->addDrawable(_mGeometryNormal.get());
     _geodeAxis->addDrawable(_axis.get());
 
-     //osg::Vec3Array* frameVertices = new osg::Vec3Array(4);
-    (*_mFrameVertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
-    (*_mFrameVertices)[1] = osg::Vec3f(-dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
-    (*_mFrameVertices)[2] = osg::Vec3f(-dureu::CANVAS_MINW, -dureu::CANVAS_MINH, 0.0f);
-    (*_mFrameVertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, -dureu::CANVAS_MINH, 0.0f);
-
-     //osg::Vec3Array* pickableVertices = new osg::Vec3Array(4);
-    (*_mPickableVertices)[0] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0.0f);
-    (*_mPickableVertices)[1] = osg::Vec3f(dureu::CANVAS_MINW-dureu::CANVAS_CORNER, dureu::CANVAS_MINH, 0.0f);
-    (*_mPickableVertices)[2] = osg::Vec3f(dureu::CANVAS_MINW-dureu::CANVAS_CORNER, dureu::CANVAS_MINH-dureu::CANVAS_CORNER, 0.0f);
-    (*_mPickableVertices)[3] = osg::Vec3f(dureu::CANVAS_MINW, dureu::CANVAS_MINH-dureu::CANVAS_CORNER, 0.0f);
-
-     //osg::Vec3Array* axisVertices = new osg::Vec3Array(4);
-     (*_mAxisVertices)[0] = osg::Vec3f(0.f,0.f,0.f);
-     (*_mAxisVertices)[1] = osg::Vec3f(dureu::CANVAS_AXIS, 0.f,0.f);
-     (*_mAxisVertices)[2] = osg::Vec3f(0.f,0.f,0.f);
-     (*_mAxisVertices)[3] = osg::Vec3f(0.f,dureu::CANVAS_AXIS, 0.f);
+    this->setVertices(_center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
 
      osg::Vec4Array* colorAxis = new osg::Vec4Array(4);
      (*colorAxis)[0] = solarized::base2;
@@ -97,13 +89,24 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
      (*colorAxis)[2] = solarized::base2;
      (*colorAxis)[3] = solarized::base2;
 
-    _frame->setVertexArray(_mFrameVertices);
+     osg::Vec4Array* colorNormal = new osg::Vec4Array(5);
+     (*colorNormal)[0] = dureu::CANVAS_CLR_EDIT;
+     (*colorNormal)[1] = dureu::CANVAS_CLR_EDIT;
+     (*colorNormal)[2] = dureu::CANVAS_CLR_EDIT;
+     (*colorNormal)[3] = dureu::CANVAS_CLR_EDIT;
+     (*colorNormal)[4] = dureu::CANVAS_CLR_EDIT;
+
+    _frame->setVertexArray(_mVerticesFrame);
     _frame->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
 
-    _pickable->setVertexArray(_mPickableVertices);
+    _mGeometryNormal->setVertexArray(_mVerticesNormal);
+    _mGeometryNormal->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,5));
+    _mGeometryNormal->setColorArray(colorNormal, osg::Array::BIND_PER_VERTEX);
+
+    _pickable->setVertexArray(_mVerticesPickable);
     _pickable->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
 
-    _axis->setVertexArray(_mAxisVertices);
+    _axis->setVertexArray(_mVerticesAxis);
     _axis->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,4));
     _axis->setColorArray(colorAxis, osg::Array::BIND_PER_VERTEX);
 }
@@ -119,6 +122,16 @@ void Canvas::setVisibility(bool vis)
 
 bool Canvas::getVisibility() const{
     return _switch->getChildValue(_switch->getChild(0));
+}
+
+void Canvas::setVisibilityLocalAxis(bool vis)
+{
+    _switchFrame->setChildValue(_geodeAxis, vis);
+}
+
+bool Canvas::getVisibilityLocalAxis() const
+{
+    return _switchFrame->getChildValue(_geodeAxis);
 }
 
 void Canvas::setTransform(osg::MatrixTransform *transform){
@@ -218,6 +231,7 @@ void Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, 
 
     bool success = true;
     if (mouse == 0){
+        assert(_strokeCurrent.get() == 0);
         //Stroke* stroke  = new Stroke(osg::Vec2f(0,0), osg::Vec2f(u,v));
         Stroke* stroke  = new Stroke; // an empty stroke structure
         assert(stroke);
@@ -247,35 +261,27 @@ void Canvas::updateFrame()
 {
     osg::BoundingBox bb = _geodeData->getBoundingBox();
     assert(bb.valid());
-    _center = bb.center();
     float dx = 0.5*(bb.xMax()-bb.xMin());
     float dy = 0.5*(bb.yMax()-bb.yMin());
     float szX = std::max(dx, dureu::CANVAS_MINW);
     float szY = std::max(dy, dureu::CANVAS_MINW);
 
-    (*_mFrameVertices)[0] = _center + osg::Vec3(szX,szY,0.f);
-    (*_mFrameVertices)[1] = _center + osg::Vec3(-szX,szY,0.f);
-    (*_mFrameVertices)[2] = _center + osg::Vec3(-szX,-szY,0.f);
-    (*_mFrameVertices)[3] = _center + osg::Vec3(szX,-szY,0.f);
-    _frame->dirtyDisplayList();
-    _frame->dirtyBound();
+    this->setVertices(bb.center(), szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+}
 
-    osg::Vec3 p0 = (*_mFrameVertices)[0];
-    float cr = dureu::CANVAS_CORNER;
-    (*_mPickableVertices)[0] = p0;
-    (*_mPickableVertices)[1] = p0 + osg::Vec3(-cr, 0.f, 0.f);
-    (*_mPickableVertices)[2] = p0 + osg::Vec3(-cr, -cr, 0.f);
-    (*_mPickableVertices)[3] = p0 + osg::Vec3(.0f, -cr, 0.f);
-    _pickable->dirtyDisplayList();
-    _pickable->dirtyBound();
-
-    float ax = dureu::CANVAS_AXIS;
-    (*_mAxisVertices)[0] = _center;
-    (*_mAxisVertices)[1] = _center + osg::Vec3(ax,0.f,0.f);
-    (*_mAxisVertices)[2] = _center;
-    (*_mAxisVertices)[3] = _center + osg::Vec3(0.f, ax, 0.f);
-    _axis->dirtyDisplayList();
-    _axis->dirtyBound();
+void Canvas::setModeOffset(bool on)
+{
+    if (on){
+        std::cout << "setModeOffset(): ON - " << on << std::endl;
+        this->setColor(dureu::CANVAS_CLR_EDIT);
+        this->setVisibilityLocalAxis(false);
+    }
+    else{
+        std::cout << "setModeOffset(): OFF - " << on << std::endl;
+        this->setColor(dureu::CANVAS_CLR_CURRENT);
+        this->setVisibilityLocalAxis(true); // could be bug here, when originally local axis is off by user
+    }
+    _mSwitchNormal->setChildValue(_mGeodeNormal, on);
 }
 
 // to transform plane, centroid and local axis
@@ -291,6 +297,44 @@ void Canvas::transformData()
     _x.normalize();
     _y = matrix * _y;
     _y.normalize();
+}
+
+void Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
+{
+    _center = center;
+    assert(szX>=dureu::CANVAS_MINW && szY>=dureu::CANVAS_MINH);
+
+    (*_mVerticesFrame)[0] = _center + osg::Vec3(szX,szY,0.f);
+    (*_mVerticesFrame)[1] = _center + osg::Vec3(-szX,szY,0.f);
+    (*_mVerticesFrame)[2] = _center + osg::Vec3(-szX,-szY,0.f);
+    (*_mVerticesFrame)[3] = _center + osg::Vec3(szX,-szY,0.f);
+    _frame->dirtyDisplayList();
+    _frame->dirtyBound();
+
+    assert(szCr >= dureu::CANVAS_CORNER);
+    osg::Vec3 p0 = (*_mVerticesFrame)[0];
+    (*_mVerticesPickable)[0] = p0;
+    (*_mVerticesPickable)[1] = p0 + osg::Vec3(-szCr, 0.f, 0.f);
+    (*_mVerticesPickable)[2] = p0 + osg::Vec3(-szCr, -szCr, 0.f);
+    (*_mVerticesPickable)[3] = p0 + osg::Vec3(.0f, -szCr, 0.f);
+    _pickable->dirtyDisplayList();
+    _pickable->dirtyBound();
+
+    assert(szAx>=dureu::CANVAS_AXIS);
+    (*_mVerticesAxis)[0] = _center;
+    (*_mVerticesAxis)[1] = _center + osg::Vec3(szAx,0.f,0.f);
+    (*_mVerticesAxis)[2] = _center;
+    (*_mVerticesAxis)[3] = _center + osg::Vec3(0.f, szAx, 0.f);
+    _axis->dirtyDisplayList();
+    _axis->dirtyBound();
+
+    float szN = std::max(szX,szY);
+    float szT = 0.2*szN;
+    (*_mVerticesNormal)[0] = _center;
+    (*_mVerticesNormal)[1] = _center + osg::Vec3f(0.f,0.f, szN);
+    (*_mVerticesNormal)[2] = _center + osg::Vec3f(szT,0.f, szN);
+    (*_mVerticesNormal)[3] = _center + osg::Vec3f(0.f,0.f, szN+szT);
+    (*_mVerticesNormal)[4] = _center + osg::Vec3f(-szT,0.f, szN+szT);
 }
 
 void Canvas::setColor(osg::Vec4 color){

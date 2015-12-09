@@ -98,6 +98,9 @@ public:
     Canvas* getCanvasPrevious() const;
 
     unsigned int getCanvasLevel() const;
+
+    void setTransformOffset(const osg::Vec3f& nearPoint, const osg::Vec3f& farPoint, const int mouse);
+
 protected:
     void setCanvasName(Canvas* cnv);
     std::string getEntityName(const std::string& name, unsigned int id) const;

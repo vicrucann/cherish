@@ -32,8 +32,7 @@ public:
     virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doErase(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doSketch(int x, int y, const osg::Camera* camera, int mouse = 1);
-    virtual void doEdit(const osgUtil::LineSegmentIntersector::Intersection& result,
-                        double x, double y);
+    virtual void doEditOffset(int x, int y, int mouse = 1);
 
 protected:
     Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);

@@ -184,6 +184,11 @@ void MainWindow::onMouseSketch()
     emit sendMouseMode(dureu::MOUSE_SKETCH);
 }
 
+void MainWindow::onMouseOffset()
+{
+    emit sendMouseMode(dureu::MOUSE_EDIT_OFFSET);
+}
+
 ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
 {
     ViewWidget* vwid = new ViewWidget(_rootScene.get(), this, f, viewmode);
@@ -275,9 +280,9 @@ void MainWindow::createActions()
     axes = new QAction(tr("Axes"), this);
     axes->setStatusTip(tr("Show axes"));
 
-    _mSketch = new QAction(QIcon(":/stylus.png"), tr("Sketch"), this);
-    _mSketch->setStatusTip(tr("Sketch"));
-    this->connect(_mSketch, SIGNAL(triggered()), this, SLOT(onMouseSketch()));
+    _mActionSketch = new QAction(QIcon(":/stylus.png"), tr("Sketch"), this);
+    _mActionSketch->setStatusTip(tr("Sketch"));
+    this->connect(_mActionSketch, SIGNAL(triggered()), this, SLOT(onMouseSketch()));
 
     line = new QAction(QIcon(":/line.png"),tr("Line"), this);
     line->setStatusTip(tr("Line"));
@@ -291,17 +296,17 @@ void MainWindow::createActions()
     previousCam = new QAction(tr("Previous"), this);
     previousCam->setStatusTip(tr("Go back to previous cam position"));
 
-    _mOrbit = new QAction(QIcon(":/orbit.png"),tr("&orbit"), this);
-    _mOrbit->setStatusTip(tr("orbit"));
-    this->connect(_mOrbit, SIGNAL(triggered()), this, SLOT(onMouseRotate()));
+    _mActionOrbit = new QAction(QIcon(":/orbit.png"),tr("&orbit"), this);
+    _mActionOrbit->setStatusTip(tr("orbit"));
+    this->connect(_mActionOrbit, SIGNAL(triggered()), this, SLOT(onMouseRotate()));
 
-    _mPan = new QAction(QIcon(":/pan.png"),tr("&Pan"), this);
-    _mPan->setStatusTip(tr("Pan"));
-    this->connect(_mPan, SIGNAL(triggered()), this, SLOT(onMousePan()));
+    _mActionPan = new QAction(QIcon(":/pan.png"),tr("&Pan"), this);
+    _mActionPan->setStatusTip(tr("Pan"));
+    this->connect(_mActionPan, SIGNAL(triggered()), this, SLOT(onMousePan()));
 
-    _mZoom = new QAction(QIcon(":/zoom.png"),tr("&Zoom"), this);
-    _mZoom->setStatusTip(tr("Zoom"));
-    this->connect(_mZoom, SIGNAL(triggered()), this, SLOT(onMouseZoom()));
+    _mActionZoom = new QAction(QIcon(":/zoom.png"),tr("&Zoom"), this);
+    _mActionZoom->setStatusTip(tr("Zoom"));
+    this->connect(_mActionZoom, SIGNAL(triggered()), this, SLOT(onMouseZoom()));
 
     zoomWindow = new QAction(tr("&Zoom Window"), this);
     zoomWindow->setStatusTip(tr("Zoom Window"));
@@ -309,13 +314,13 @@ void MainWindow::createActions()
     zoomExtents = new QAction(QIcon(":/zoomExtents.png"),tr("&Zoom Extents"), this);
     zoomExtents->setStatusTip(tr("Zoom Extents"));
 
-    _mSelect = new QAction(QIcon(":/select.png"),tr("&Select"), this);
-    _mSelect->setStatusTip(tr("Select"));
-    this->connect(_mSelect, SIGNAL(triggered()), this, SLOT(onMousePick()));
+    _mActionSelect = new QAction(QIcon(":/select.png"),tr("&Select"), this);
+    _mActionSelect->setStatusTip(tr("Select"));
+    this->connect(_mActionSelect, SIGNAL(triggered()), this, SLOT(onMousePick()));
 
-    _mEraser = new QAction(QIcon(":/eraser.png"),tr("Eraser"), this);
-    _mEraser->setStatusTip(tr("Eraser"));
-    this->connect(_mEraser, SIGNAL(triggered(bool)), this, SLOT(onMouseErase()));
+    _mActionEraser = new QAction(QIcon(":/eraser.png"),tr("Eraser"), this);
+    _mActionEraser->setStatusTip(tr("Eraser"));
+    this->connect(_mActionEraser, SIGNAL(triggered(bool)), this, SLOT(onMouseErase()));
 
     toolMove = new QAction(QIcon(":/move.png"),tr("&Move"), this);
     toolMove->setStatusTip(tr("Move"));
@@ -326,8 +331,9 @@ void MainWindow::createActions()
     toolScale = new QAction(QIcon(":/scale.png"),tr("&Scale"), this);
     toolScale->setStatusTip(tr("Scale"));
 
-    toolOffset = new QAction(QIcon(":/offset.png"),tr("&Offset"), this);
-    toolOffset->setStatusTip(tr("Offset"));
+    _mActionOffset = new QAction(QIcon(":/move.png"),tr("&Offset"), this);
+    _mActionOffset->setStatusTip(tr("Offset"));
+    this->connect(_mActionOffset, SIGNAL(triggered(bool)), this, SLOT(onMouseOffset()));
 
     layers = new QAction(QIcon(":/layersb.png"),tr("Layers"), this);
     layers->setStatusTip(tr("Layers"));
@@ -389,7 +395,7 @@ void MainWindow::createMenus()
 
     drawMenu = menuBar()->addMenu(tr("&Draw"));
     _mSketchMenu = drawMenu->addMenu(tr("Sketching"));
-    _mSketchMenu->addAction(_mSketch);
+    _mSketchMenu->addAction(_mActionSketch);
     lines = drawMenu->addMenu(tr("Lines"));
     lines->addAction(line);
     arcs = drawMenu->addMenu(tr("Arcs"));
@@ -400,22 +406,22 @@ void MainWindow::createMenus()
     cameraMenu = menuBar()->addMenu(tr("&Camera"));
     cameraMenu->addAction(previousCam);
     cameraMenu->addSeparator();
-    cameraMenu->addAction(_mOrbit);
-    cameraMenu->addAction(_mPan);
-    cameraMenu->addAction(_mZoom);
+    cameraMenu->addAction(_mActionOrbit);
+    cameraMenu->addAction(_mActionPan);
+    cameraMenu->addAction(_mActionZoom);
     //cameraMenu->addAction(zoomWindow);
     //cameraMenu->addAction(zoomExtents);
 
 
     toolsMenu = menuBar()->addMenu(tr("&Tools"));
-    toolsMenu->addAction(_mSelect);
-    toolsMenu->addAction(_mEraser);
+    toolsMenu->addAction(_mActionSelect);
+    toolsMenu->addAction(_mActionEraser);
     toolsMenu->addSeparator();
     //toolsMenu->addAction(toolMove);
     toolsMenu->addAction(toolRotate);
     toolsMenu->addAction(toolScale);
     //toolsMenu->addSeparator();
-    toolsMenu->addAction(toolOffset);
+    toolsMenu->addAction(_mActionOffset);
 
     windowMenu = menuBar()->addMenu(tr("&Window"));
     windowMenu->addAction(layers);
@@ -438,21 +444,21 @@ void MainWindow::createToolBars()
     editToolBar->addAction(pasteAct);
 
     drawToolBar = addToolBar(tr("Draw"));
-    drawToolBar->addAction(_mSketch);
+    drawToolBar->addAction(_mActionSketch);
     drawToolBar->addAction(line);
     //drawToolBar->addAction(arc);
     //drawToolBar->addAction(rectangle);
 
     cameraToolBar = addToolBar(tr("Camera"));
-    cameraToolBar->addAction(_mOrbit);
-    cameraToolBar->addAction(_mPan);
-    cameraToolBar->addAction(_mZoom);
+    cameraToolBar->addAction(_mActionOrbit);
+    cameraToolBar->addAction(_mActionPan);
+    cameraToolBar->addAction(_mActionZoom);
     //cameraToolBar->addAction(zoomExtents);
 
     toolsToolBar = addToolBar(tr("Tools"));
-    toolsToolBar->addAction(_mSelect);
-    toolsToolBar->addAction(_mEraser);
-    toolsToolBar->addAction(toolOffset);
+    toolsToolBar->addAction(_mActionSelect);
+    toolsToolBar->addAction(_mActionEraser);
+    toolsToolBar->addAction(_mActionOffset);
     //toolsToolBar->addAction(toolMove);
     toolsToolBar->addAction(toolRotate);
     toolsToolBar->addAction(toolScale);

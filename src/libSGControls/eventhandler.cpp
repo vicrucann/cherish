@@ -16,6 +16,19 @@ EventHandler::EventHandler(RootScene *root, dureu::MOUSE_MODE mode):
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    /*if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH){
+        std::cout << "OSG getButton(): " << ea.getButton() << std::endl;
+        std::cout << "OSG push button mask: " << ea.getButtonMask() << std::endl;
+    }
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE){
+        std::cout << "OSG getButton(): " << ea.getButton() << std::endl;
+        std::cout << "OSG release button mask: " << ea.getButtonMask() << std::endl;
+    }
+    if (ea.getEventType() == osgGA::GUIEventAdapter::DRAG){
+        std::cout << "OSG getButton(): " << ea.getButton() << std::endl;
+        std::cout << "OSG drag button mask: " << ea.getButtonMask() << std::endl;
+    }*/
+
     // if it's mouse navigation mode, don't process event
     // it will be processed by mouse navigator
     if (_mode == dureu::MOUSE_ROTATE || _mode == dureu::MOUSE_PAN ||
@@ -74,12 +87,11 @@ void EventHandler::doByIntersector(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
 
 void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
-    if ((ea.getEventType() != osgGA::GUIEventAdapter::RELEASE
-         || ea.getEventType() != osgGA::GUIEventAdapter::PUSH
-         || ea.getEventType() != osgGA::GUIEventAdapter::DRAG )
-            && ea.getButtonMask() != osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+            ))
         return;
-
 
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (!viewer){
@@ -95,18 +107,26 @@ void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
+        std::cout << "doByOperator(): push button" << std::endl;
         switch(_mode){
         case dureu::MOUSE_SKETCH:
             doSketch(ea.getX(), ea.getY(), camera, 0);
+            break;
+        case dureu::MOUSE_EDIT_OFFSET:
+            doEditOffset(ea.getX(), ea.getY(), 0);
             break;
         default:
             break;
         }
         break;
     case osgGA::GUIEventAdapter::RELEASE:
+        std::cout << "doByOperator(): release button" << std::endl;
         switch(_mode){
         case dureu::MOUSE_SKETCH:
             doSketch(ea.getX(), ea.getY(), camera, 2);
+            break;
+        case dureu::MOUSE_EDIT_OFFSET:
+            doEditOffset(ea.getX(), ea.getY(), 2);
             break;
         default:
             break;
@@ -116,6 +136,9 @@ void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         switch(_mode){
         case dureu::MOUSE_SKETCH:
             doSketch(ea.getX(), ea.getY(), camera, 1);
+            break;
+        case dureu::MOUSE_EDIT_OFFSET:
+            doEditOffset(ea.getX(), ea.getY(), 1);
             break;
         default:
             break;
@@ -185,9 +208,13 @@ void EventHandler::doSketch(int x, int y, const osg::Camera *camera, int mouse)
     _root->addStroke(nearPoint,farPoint, mouse);
 }
 
-void EventHandler::doEdit(const osgUtil::LineSegmentIntersector::Intersection &result, double x, double y)
+// performs offset of the current canvas along its normal
+void EventHandler::doEditOffset(int x, int y, int mouse)
 {
     std::cout << "doEdit()" << std::endl;
+    osg::Vec3f near, far;
+    _root->setTransformOffset(near, far, mouse);
+    //_root->getCanvasCurrent()
 }
 
 Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){

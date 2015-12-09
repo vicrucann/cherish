@@ -62,6 +62,8 @@ public:
 
     void setVisibility(bool vis);
     bool getVisibility() const;
+    void setVisibilityLocalAxis(bool vis);
+    bool getVisibilityLocalAxis() const;
 
     void setTransform(osg::MatrixTransform* transform);
     osg::MatrixTransform* getTransform() const;
@@ -83,8 +85,11 @@ public:
     // update centroid as well
     void updateFrame();
 
+    void setModeOffset(bool on); // changes certain colors, shows or hides normal
+
 protected:
     void transformData();
+    void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
 private:
     osg::ref_ptr<osg::Switch> _switch; // inisible or not, the whole canvas
     osg::ref_ptr<osg::MatrixTransform> _transform; // matrix transform in 3D space
@@ -97,9 +102,14 @@ private:
     osg::ref_ptr<osg::Geometry> _axis; // local coordinate axis
     osg::ref_ptr<osg::Geode> _geodeData; // keeps user canvas drawables such as strokes
 
-    osg::Vec3Array* _mFrameVertices;
-    osg::Vec3Array* _mPickableVertices;
-    osg::Vec3Array* _mAxisVertices;
+    osg::ref_ptr<osg::Switch> _mSwitchNormal; // normal's data
+    osg::ref_ptr<osg::Geode> _mGeodeNormal;
+    osg::ref_ptr<osg::Geometry> _mGeometryNormal; // the length is always 0.25*max(framewidth, frameheight)
+
+    osg::Vec3Array* _mVerticesFrame;
+    osg::Vec3Array* _mVerticesPickable;
+    osg::Vec3Array* _mVerticesAxis;
+    osg::Vec3Array* _mVerticesNormal;
 
     osg::observer_ptr<Stroke> _strokeCurrent;
 
@@ -108,6 +118,7 @@ private:
     osg::Vec3f _x, _y; // plane's 2D local coordinate system, cross(x,y)=n
 
     osg::Vec4f _color; // display color for canvas drawables
+
 };
 
 #endif // CANVAS
