@@ -227,7 +227,7 @@ void Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, 
             return;
         }
     }
-    assert(_strokeCurrent);
+    assert(_strokeCurrent.get());
     // append the (u,v) point to the stroke
     _strokeCurrent->appendPoint(u,v);
     if (mouse == 2){
