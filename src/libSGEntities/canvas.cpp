@@ -133,8 +133,6 @@ bool Canvas::getVisibilityLocalAxis() const
 
 void Canvas::setTransform(osg::MatrixTransform *t){
     _transform->postMult(t->getMatrix());
-    //_transform->setMatrix(_transform->getMatrix() * t->getMatrix());
-    //_transform->setMatrix(t->getMatrix());
     this->transformData();
 }
 
@@ -308,7 +306,7 @@ void Canvas::transformData()
     _plane.transform(matrix); // every time canvas is transformed (rotate, offset, scale), apply it for plane params
     _plane.makeUnitLength(); // then normalize the params
     assert(_plane.valid());
-    _center =  osg::Vec3f(0.f,0.f,0.f) * matrix;
+    _center = _center * matrix; //osg::Vec3f(0.f,0.f,0.f) * matrix;
     //_x = matrix * _x;
     //_x.normalize();
     //_y = matrix * _y;
