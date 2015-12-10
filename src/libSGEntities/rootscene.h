@@ -99,7 +99,7 @@ public:
 
     unsigned int getCanvasLevel() const;
 
-    void setTransformOffset(const osg::Vec3f& nearPoint, const osg::Vec3f& farPoint, const int mouse);
+    void setTransformOffset(const osg::Vec3f& translate, const int mouse);
 
 protected:
     void setCanvasName(Canvas* cnv);

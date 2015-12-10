@@ -65,7 +65,7 @@ public:
     void setVisibilityLocalAxis(bool vis);
     bool getVisibilityLocalAxis() const;
 
-    void setTransform(osg::MatrixTransform* transform);
+    void setTransform(osg::MatrixTransform* t);
     osg::MatrixTransform* getTransform() const;
 
     void setCanvasName(const std::string& name);
@@ -86,6 +86,10 @@ public:
     void updateFrame();
 
     void setModeOffset(bool on); // changes certain colors, shows or hides normal
+
+    osg::Vec3f getCenter() const;
+    osg::Plane getPlane() const;
+    osg::Vec3f getNormal() const;
 
 protected:
     void transformData();

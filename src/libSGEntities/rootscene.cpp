@@ -402,7 +402,7 @@ unsigned int RootScene::getCanvasLevel() const{
     return 3;
 }
 
-void RootScene::setTransformOffset(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, const int mouse)
+void RootScene::setTransformOffset(const osg::Vec3f &translate, const int mouse)
 {
     // initialize offset mode
     if (mouse == 0){
@@ -410,8 +410,20 @@ void RootScene::setTransformOffset(const osg::Vec3f &nearPoint, const osg::Vec3f
     }
 
     // back to normal mode
-    if (mouse == 2){
+    else if (mouse == 2){
         _canvasCurrent->setModeOffset(false);
+    }
+    else {
+        //test case: assume we calculated the distance
+        std::cout << "test offset" << std::endl;
+        osg::Vec3f t = _canvasCurrent->getCenter() + osg::Vec3f(0.0f, 0.5f, 0.f);
+        osg::ref_ptr<osg::MatrixTransform> T = new osg::MatrixTransform;
+        T->setMatrix(osg::Matrix::translate(t.x(), t.y(), t.z()));
+        std::cout << "old center: " << _canvasCurrent->getCenter().x() << " " << _canvasCurrent->getCenter().y() << " " <<
+                     _canvasCurrent->getCenter().z() << std::endl;
+        _canvasCurrent->setTransform(T.get());
+        std::cout << "new center: " << _canvasCurrent->getCenter().x() << " " << _canvasCurrent->getCenter().y() << " " <<
+                     _canvasCurrent->getCenter().z() << std::endl;
     }
 }
 

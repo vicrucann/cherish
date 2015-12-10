@@ -131,8 +131,11 @@ bool Canvas::getVisibilityLocalAxis() const
     return _switchFrame->getChildValue(_geodeAxis);
 }
 
-void Canvas::setTransform(osg::MatrixTransform *transform){
-    _transform = transform;
+void Canvas::setTransform(osg::MatrixTransform *t){
+    _transform->postMult(t->getMatrix());
+    //_transform->setMatrix(_transform->getMatrix() * t->getMatrix());
+    //_transform->setMatrix(t->getMatrix());
+    this->transformData();
 }
 
 osg::MatrixTransform *Canvas::getTransform() const
@@ -281,19 +284,35 @@ void Canvas::setModeOffset(bool on)
     _mSwitchNormal->setChildValue(_mGeodeNormal, on);
 }
 
+osg::Vec3f Canvas::getCenter() const
+{
+    return _center;
+}
+
+osg::Plane Canvas::getPlane() const
+{
+    return _plane;
+}
+
+osg::Vec3f Canvas::getNormal() const
+{
+    return _plane.getNormal();
+}
+
 // to transform plane, centroid and local axis
 // must be called every time when transform node is changed
 void Canvas::transformData()
 {
     const osg::Matrix matrix = _transform->getMatrix();
+    //_plane.set(osg::Vec3f(0.f,0.f,1.f), osg::Vec3f(0.f,0.f,0.f));
     _plane.transform(matrix); // every time canvas is transformed (rotate, offset, scale), apply it for plane params
     _plane.makeUnitLength(); // then normalize the params
     assert(_plane.valid());
-    _center = matrix * _center;
-    _x = matrix * _x;
-    _x.normalize();
-    _y = matrix * _y;
-    _y.normalize();
+    _center =  osg::Vec3f(0.f,0.f,0.f) * matrix;
+    //_x = matrix * _x;
+    //_x.normalize();
+    //_y = matrix * _y;
+    //_y.normalize();
 }
 
 void Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)

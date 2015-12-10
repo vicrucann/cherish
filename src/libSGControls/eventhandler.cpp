@@ -113,7 +113,7 @@ void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
             doSketch(ea.getX(), ea.getY(), camera, 0);
             break;
         case dureu::MOUSE_EDIT_OFFSET:
-            doEditOffset(ea.getX(), ea.getY(), 0);
+            doEditOffset(ea.getX(), ea.getY(), camera, 0);
             break;
         default:
             break;
@@ -126,7 +126,7 @@ void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
             doSketch(ea.getX(), ea.getY(), camera, 2);
             break;
         case dureu::MOUSE_EDIT_OFFSET:
-            doEditOffset(ea.getX(), ea.getY(), 2);
+            doEditOffset(ea.getX(), ea.getY(), camera, 2);
             break;
         default:
             break;
@@ -138,7 +138,7 @@ void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
             doSketch(ea.getX(), ea.getY(), camera, 1);
             break;
         case dureu::MOUSE_EDIT_OFFSET:
-            doEditOffset(ea.getX(), ea.getY(), 1);
+            doEditOffset(ea.getX(), ea.getY(), camera, 1);
             break;
         default:
             break;
@@ -202,6 +202,12 @@ void EventHandler::doSketch(int x, int y, const osg::Camera *camera, int mouse)
         return;
     }
 
+    // Algorithm:
+    // use ray-tracking techinique
+    // calcualte near and far point in global 3D
+    // intersect that segment with plane of canvas - 3D intersection point
+    // extract local 3D coords so that to create a stroke (or apprent that point to a current stroke)
+
     osg::Vec3f nearPoint = osg::Vec3f(x, y, 0.f) * invVPW;
     osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
 
@@ -209,11 +215,73 @@ void EventHandler::doSketch(int x, int y, const osg::Camera *camera, int mouse)
 }
 
 // performs offset of the current canvas along its normal
-void EventHandler::doEditOffset(int x, int y, int mouse)
+void EventHandler::doEditOffset(int x, int y, const osg::Camera *camera, int mouse)
 {
-    std::cout << "doEdit()" << std::endl;
-    osg::Vec3f near, far;
-    _root->setTransformOffset(near, far, mouse);
+    assert(camera);
+    if (!camera->getViewport()){
+        std::cerr << "doEditOffset(): could not read viewport" << std::endl;
+        return;
+    }
+
+    osg::Matrix VPW = camera->getViewMatrix()
+            * camera->getProjectionMatrix()
+            * camera->getViewport()->computeWindowMatrix();
+    osg::Matrix VPWM = VPW * _root->getCanvasCurrent()->getTransform()->getMatrix();
+    osg::Matrix invVPW;
+    osg::Matrix invVPWM;
+    bool success = invVPW.invert(VPW);
+    bool success2 = invVPWM.invert(VPWM);
+    if (!success || !success2){
+        std::cerr << "doEditOffset(): could not invert View-projection-world matrix for ray casting" << std::endl;
+        return;
+    }
+
+    // Algorithm:
+    // project canvas center (3D local) to the screen
+    // how to deal with out of screen projection
+    // project normal (3D local) to the screen
+    // project mouse coords onto screen normal - get the distance along the normal
+    // unproject the obtained distance back to 3D local so that the transform of the canvas changes
+
+    osg::Vec3f C = _root->getCanvasCurrent()->getCenter();
+    osg::Vec3f c = C * VPW; // center in screen coords
+
+    //osg::Vec3f N = _root->getCanvasCurrent()->getNormal();
+    //osg::Vec3f n = N * invVPW;
+    osg::Vec3f NP = C + _root->getCanvasCurrent()->getNormal(); // turn it into a point
+    osg::Vec3f np = NP * VPW; // because it's now a point, we don't need to use inverse
+
+    //std::cout << "global center: " << C.x() << " " << C.y() << " " << C.z() << std::endl;
+    //std::cout << "screen center: " << c.x() << " " << c.y() << " " << c.z() << std::endl;
+    //std::cout << "global point: " << NP.x() << " " << NP.y() << " " << NP.z() << std::endl;
+    //std::cout << "screen point: " << np.x() << " " << np.y() << " " << np.z() << std::endl;
+
+    osg::Vec3f ns = np - c; // screen normal in screen coords
+    //std::cout << "screen normal: " << ns.x() << " " << ns.y() << " " << ns.z() << std::endl;
+    assert(ns.z()!=0);
+    if (std::abs(ns.x())<=2.0 && std::abs(ns.y()) <= 2.0){
+        std::cerr << "The normal is almost perpendicular to the screen, difficult to define the offset from the mouse movements. " <<
+                     "To resolve, change the camera position so that to see the normal direction. " << std::endl;
+        return;
+    }
+
+    osg::Vec2f n2d = osg::Vec2f(ns.x(), ns.y());
+    osg::Vec2f uv = osg::Vec2f(x-c.x(),y-c.y());
+    float distance = 0;
+    if (n2d.length()!=0)
+        distance = (uv * n2d) / n2d.length();
+    //std::cout << "distance: " << distance << std::endl;
+
+    osg::Vec3f p = c + ns * distance; // final screen point which is located on screen normal
+    osg::Vec3f P = p*invVPW; // final 3D global point, must be located on the normal
+
+    //std::cout << "final 3d global point: " << P.x() << " " << P.y() << " " << P.z() << std::endl;
+    double Distance; // distance in global 3D space where the canvas center will be moved
+    Distance = (P - _root->getCanvasCurrent()->getCenter()).length();
+    std::cout << "global Distance: " << Distance << std::endl;
+    osg::Vec3f CNew = C + _root->getCanvasCurrent()->getNormal() * Distance;
+
+    _root->setTransformOffset(CNew, mouse);
 }
 
 Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
