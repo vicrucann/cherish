@@ -79,7 +79,7 @@ public:
     std::string getSwitchFrameName() const;
     std::string getGeodeDataName() const;
 
-    void addStroke(const osg::Vec3f& nearPoint, const osg::Vec3f& farPoint, int mouse);
+    void addStroke(const double u, const double v, int mouse);
 
     // recalculate frame's geometry based on strokes
     // update centroid as well
@@ -92,7 +92,7 @@ public:
     osg::Vec3f getNormal() const;
 
 protected:
-    void transformData();
+    void transformData(const osg::Matrix& matrix);
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
 private:
     osg::ref_ptr<osg::Switch> _switch; // inisible or not, the whole canvas

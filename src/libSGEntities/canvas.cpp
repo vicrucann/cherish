@@ -46,7 +46,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _color(dureu::CANVAS_CLR_REST) // frame and pickable color
 
 {
-    this->transformData();
+    this->transformData(_transform->getMatrix());
     this->setName(name);
     this->setColor(_color);
 
@@ -132,8 +132,9 @@ bool Canvas::getVisibilityLocalAxis() const
 }
 
 void Canvas::setTransform(osg::MatrixTransform *t){
-    _transform->postMult(t->getMatrix());
-    this->transformData();
+    osg::Matrix matrix = t->getMatrix();
+    _transform->postMult(matrix);
+    this->transformData(matrix);
 }
 
 osg::MatrixTransform *Canvas::getTransform() const
@@ -192,41 +193,8 @@ std::string Canvas::getGeodeDataName() const{
 // The function takes intersection between the ray and our plane (canvas)
 // Then transforms that intersection point into an original local coordinate system.
 // The result point is appended to the current stroke.
-void Canvas::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, int mouse)
+void Canvas::addStroke(const double u, const double v, int mouse)
 {
-    assert(_plane.valid());
-    std::vector<osg::Vec3f> ray(2);
-    ray[0] = nearPoint;
-    ray[1] = farPoint;
-    if (_plane.intersect(ray)){ // 1 or -1: no intersection
-        std::cerr << "addStroke(): no intersection with the ray" << std::endl;
-        return;
-    }
-    osg::Vec3f dir = farPoint-nearPoint;
-    if (! _plane.dotProductNormal(dir)){ // denominator
-        std::cerr << "addStroke(): projected line is parallel to the canvas plane" << std::endl;
-        return;
-    }
-    if (! _plane.dotProductNormal(_center-nearPoint)){
-        std::cerr << "addStroke(): plane contains the line, so no single intersection can be defined" << std::endl;
-        return;
-    }
-
-    double x = _plane.dotProductNormal(_center-nearPoint) / _plane.dotProductNormal(dir);
-    osg::Vec3f P = dir * x + nearPoint;
-
-    osg::Matrix mat =  this->getTransform()->getMatrix();
-    osg::Matrix invmat;
-    if (!invmat.invert(mat)){
-        std::cerr << "addStroke(): could not invert model matrix" << std::endl;
-        return;
-    }
-    osg::Vec3f p = P * invmat;
-
-    double u=p.x(), v=p.y();
-    //double u = _x * (P-_center);
-    //double v = _y * (P-_center);
-
     bool success = true;
     if (mouse == 0){
         assert(_strokeCurrent.get() == 0);
@@ -299,29 +267,24 @@ osg::Vec3f Canvas::getNormal() const
 
 // to transform plane, centroid and local axis
 // must be called every time when transform node is changed
-void Canvas::transformData()
+void Canvas::transformData(const osg::Matrix &matrix)
 {
-    const osg::Matrix matrix = _transform->getMatrix();
-    //_plane.set(osg::Vec3f(0.f,0.f,1.f), osg::Vec3f(0.f,0.f,0.f));
-    _plane.transform(matrix); // every time canvas is transformed (rotate, offset, scale), apply it for plane params
-    _plane.makeUnitLength(); // then normalize the params
+    _center = _center * matrix;
+    _plane.transform(matrix);
+    debugLogVec("transformData(): Canvas center", _center.x(),_center.y(),_center.z());
+    debugLogVec("transformData(): Canvas plane", _plane.getNormal().x(), _plane.getNormal().y(), _plane.getNormal().z());
     assert(_plane.valid());
-    _center = _center * matrix; //osg::Vec3f(0.f,0.f,0.f) * matrix;
-    //_x = matrix * _x;
-    //_x.normalize();
-    //_y = matrix * _y;
-    //_y.normalize();
 }
 
 void Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
 {
-    _center = center;
+    //_center = center;
     assert(szX>=dureu::CANVAS_MINW && szY>=dureu::CANVAS_MINH);
 
-    (*_mVerticesFrame)[0] = _center + osg::Vec3(szX,szY,0.f);
-    (*_mVerticesFrame)[1] = _center + osg::Vec3(-szX,szY,0.f);
-    (*_mVerticesFrame)[2] = _center + osg::Vec3(-szX,-szY,0.f);
-    (*_mVerticesFrame)[3] = _center + osg::Vec3(szX,-szY,0.f);
+    (*_mVerticesFrame)[0] = center + osg::Vec3(szX,szY,0.f);
+    (*_mVerticesFrame)[1] = center + osg::Vec3(-szX,szY,0.f);
+    (*_mVerticesFrame)[2] = center + osg::Vec3(-szX,-szY,0.f);
+    (*_mVerticesFrame)[3] = center + osg::Vec3(szX,-szY,0.f);
     _frame->dirtyDisplayList();
     _frame->dirtyBound();
 
@@ -335,16 +298,16 @@ void Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float s
     _pickable->dirtyBound();
 
     assert(szAx>=dureu::CANVAS_AXIS);
-    (*_mVerticesAxis)[0] = _center;
-    (*_mVerticesAxis)[1] = _center + osg::Vec3(szAx,0.f,0.f);
-    (*_mVerticesAxis)[2] = _center;
-    (*_mVerticesAxis)[3] = _center + osg::Vec3(0.f, szAx, 0.f);
+    (*_mVerticesAxis)[0] = center;
+    (*_mVerticesAxis)[1] = center + osg::Vec3(szAx,0.f,0.f);
+    (*_mVerticesAxis)[2] = center;
+    (*_mVerticesAxis)[3] = center + osg::Vec3(0.f, szAx, 0.f);
     _axis->dirtyDisplayList();
     _axis->dirtyBound();
 
     float szN = std::max(szX,szY);
-    (*_mVerticesNormal)[0] = _center;
-    (*_mVerticesNormal)[1] = _center + osg::Vec3f(0.f,0.f, szN);
+    (*_mVerticesNormal)[0] = center;
+    (*_mVerticesNormal)[1] = center + osg::Vec3f(0.f,0.f, szN);
 }
 
 void Canvas::setColor(osg::Vec4 color){

@@ -28,13 +28,13 @@ RootScene::RootScene():
     _idNode(0)
 {
     osg::ref_ptr<osg::MatrixTransform> trans_i = new osg::MatrixTransform;
-    trans_i->setMatrix(osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f) );
+    trans_i->setMatrix(osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f) );
     //Canvas* cnv0 = this->addCanvas(trans_xz);
     Canvas* cnv0 = this->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0),
                                    osg::Matrix::translate(0.f, 0.f, 0.f));
 
     Canvas* cnv1 = this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 1, 0),
-                    osg::Matrix::translate(0.f, dureu::CANVAS_MINW, 0.f));
+                    osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
 
     this->addCanvas(trans_i);
 
@@ -263,11 +263,6 @@ bool RootScene::deleteNode(osg::Node *node)
     return success;
 }
 
-void RootScene::addStroke(const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, int mouse)
-{
-    _canvasCurrent->addStroke(nearPoint,farPoint, mouse);
-}
-
 osg::Node* RootScene::loadSceneFromFile(const std::string& fname){
     std::cout << "loadSceneFromFile(): (string&)" << std::endl;
     osg::Node* node = osgDB::readNodeFile(fname);
@@ -414,8 +409,8 @@ void RootScene::setTransformOffset(const osg::Vec3f &translate, const int mouse)
         _canvasCurrent->setModeOffset(false);
     }
     else {
-        //test case: assume we calculated the distance
-        std::cout << "test offset" << std::endl;
+        //test case: assume we calculated the translation vector
+        // from the current position to the new
         osg::Vec3f t = osg::Vec3f(0.0f, 0.5f, 0.f);
         osg::ref_ptr<osg::MatrixTransform> T = new osg::MatrixTransform;
         T->setMatrix(osg::Matrix::translate(t.x(), t.y(), t.z()));

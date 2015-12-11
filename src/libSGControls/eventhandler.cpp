@@ -211,7 +211,46 @@ void EventHandler::doSketch(int x, int y, const osg::Camera *camera, int mouse)
     osg::Vec3f nearPoint = osg::Vec3f(x, y, 0.f) * invVPW;
     osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
 
-    _root->addStroke(nearPoint,farPoint, mouse);
+    const osg::Plane plane = _root->getCanvasCurrent()->getPlane();
+    const osg::Vec3f center = _root->getCanvasCurrent()->getCenter();
+    debugLogVec("doSkech: plane", plane.getNormal().x(), plane.getNormal().y(),plane.getNormal().z());
+    debugLogVec("doSketch: center", center.x(), center.y(), center.z());
+
+    assert(plane.valid());
+    std::vector<osg::Vec3f> ray(2);
+    ray[0] = nearPoint;
+    ray[1] = farPoint;
+    if (plane.intersect(ray)){ // 1 or -1: no intersection
+        std::cerr << "doSketch(): no intersection with the ray" << std::endl;
+        return;
+    }
+    osg::Vec3f dir = farPoint-nearPoint;
+    if (! plane.dotProductNormal(dir)){ // denominator
+        std::cerr << "doSketch(): projected line is parallel to the canvas plane" << std::endl;
+        return;
+    }
+    if (! plane.dotProductNormal(center-nearPoint)){
+        std::cerr << "doSketch(): plane contains the line, so no single intersection can be defined" << std::endl;
+        return;
+    }
+
+    double len = plane.dotProductNormal(center-nearPoint) / plane.dotProductNormal(dir);
+    osg::Vec3f P = dir * len + nearPoint;
+    debugLogVec("doSkecth(): intersect point global 3D", P.x(), P.y(), P.z());
+
+    osg::Matrix mat =  _root->getCanvasCurrent()->getTransform()->getMatrix();
+    osg::Matrix invmat;
+    if (!invmat.invert(mat)){
+        std::cerr << "doSketch(): could not invert model matrix" << std::endl;
+        return;
+    }
+    osg::Vec3f p = P * invmat;
+    debugLogVec("doSketch(): intersect point local 3D", p.x(), p.y(), p.z());
+    assert(std::fabs(p.z())<=dureu::EPSILON);
+
+    double u=p.x(), v=p.y();
+
+    _root->getCanvasCurrent()->addStroke(u,v, mouse);
 }
 
 // performs offset of the current canvas along its normal

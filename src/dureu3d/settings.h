@@ -16,6 +16,10 @@
  * Victoria Rudakova 2015 <victoria.rudakova@yale.edu>
 */
 
+/* Debug macros */
+
+#define debugLogVec(msg, x, y, z) std::cout << msg << ": " << x << " " << y << " " << z << std::endl;
+
 /* The color scheme settings are based on
  * colorscehem solarized
  * For more info see <http://ethanschoonover.com/solarized>
@@ -47,6 +51,12 @@ const osg::Vec4 green = osg::Vec4(float(133)/255.0f, float(153)/255.0f, float(0)
 namespace dureu{
 
 const double PI = 3.14159265359;
+const double EPSILON = 0.00001;
+
+/*bool isApproximatelyZero(float a){
+    return std::fabs(a) <= EPSILON;
+    //return fabs(a-b) <= ((fabs(a)<fabs(b) ? fabs(b) : fabs(a)) * EPSILON );
+}*/
 
 enum APPMODE{
     SCREEN_MAX = 0,
