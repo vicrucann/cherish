@@ -93,6 +93,7 @@ void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) 
         std::cerr << "Application mode not recognized, closing application" << std::endl;
         exit(1);
     }
+    std::cout << "Widget width and height: " << this->width() << " " << this->height() << std::endl;
 }
 
 void MainWindow::getTabletActivity(bool active){

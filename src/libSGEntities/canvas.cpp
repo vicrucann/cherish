@@ -278,7 +278,6 @@ void Canvas::transformData(const osg::Matrix &matrix)
 
 void Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
 {
-    //_center = center;
     assert(szX>=dureu::CANVAS_MINW && szY>=dureu::CANVAS_MINH);
 
     (*_mVerticesFrame)[0] = center + osg::Vec3(szX,szY,0.f);

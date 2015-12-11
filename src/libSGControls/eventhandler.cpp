@@ -238,13 +238,13 @@ void EventHandler::doSketch(int x, int y, const osg::Camera *camera, int mouse)
     osg::Vec3f P = dir * len + nearPoint;
     debugLogVec("doSkecth(): intersect point global 3D", P.x(), P.y(), P.z());
 
-    osg::Matrix mat =  _root->getCanvasCurrent()->getTransform()->getMatrix();
-    osg::Matrix invmat;
-    if (!invmat.invert(mat)){
+    osg::Matrix M =  _root->getCanvasCurrent()->getTransform()->getMatrix();
+    osg::Matrix invM;
+    if (!invM.invert(M)){
         std::cerr << "doSketch(): could not invert model matrix" << std::endl;
         return;
     }
-    osg::Vec3f p = P * invmat;
+    osg::Vec3f p = P * invM;
     debugLogVec("doSketch(): intersect point local 3D", p.x(), p.y(), p.z());
     assert(std::fabs(p.z())<=dureu::EPSILON);
 
@@ -265,12 +265,13 @@ void EventHandler::doEditOffset(int x, int y, const osg::Camera *camera, int mou
     osg::Matrix VPW = camera->getViewMatrix()
             * camera->getProjectionMatrix()
             * camera->getViewport()->computeWindowMatrix();
-    osg::Matrix VPWM = VPW * _root->getCanvasCurrent()->getTransform()->getMatrix();
     osg::Matrix invVPW;
-    osg::Matrix invVPWM;
     bool success = invVPW.invert(VPW);
-    bool success2 = invVPWM.invert(VPWM);
-    if (!success || !success2){
+    osg::Matrix VPWM = VPW * _root->getCanvasCurrent()->getTransform()->getMatrix();
+    osg::Matrix invVPWM;
+    assert(invVPWM.invert(VPWM));
+
+    if (!success){
         std::cerr << "doEditOffset(): could not invert View-projection-world matrix for ray casting" << std::endl;
         return;
     }
@@ -283,44 +284,54 @@ void EventHandler::doEditOffset(int x, int y, const osg::Camera *camera, int mou
     // unproject the obtained distance back to 3D local so that the transform of the canvas changes
 
     osg::Vec3f C = _root->getCanvasCurrent()->getCenter();
-    osg::Vec3f c = C * VPW; // center in screen coords
+    osg::Vec3f c = C * VPW; // center in screen coords; screen beginning of coord axes: low left corner
+    debugLogVec("Center Global", C.x(), C.y(),C.z());
+    debugLogVec("Center Screen", c.x(), c.y(), c.z());
+    debugLogVec("Center Screen Norm", c.x()/c.z(), c.y()/c.z(), 1);
 
-    //osg::Vec3f N = _root->getCanvasCurrent()->getNormal();
-    //osg::Vec3f n = N * invVPW;
-    osg::Vec3f NP = C + _root->getCanvasCurrent()->getNormal(); // turn it into a point
-    osg::Vec3f np = NP * VPW; // because it's now a point, we don't need to use inverse
+    osg::Vec3f N = _root->getCanvasCurrent()->getNormal();
+    osg::Vec3f Np = C+N;
+    osg::Vec3f n = N * VPW;
+    osg::Vec3f np = Np * VPW;
+    debugLogVec("Normal Global", N.x(), N.y(),N.z());
+    debugLogVec("Normal Screen", n.x(), n.y(),n.z());
+    debugLogVec("NPoint Screen", np.x(), np.y(),np.z());
 
-    //std::cout << "global center: " << C.x() << " " << C.y() << " " << C.z() << std::endl;
-    //std::cout << "screen center: " << c.x() << " " << c.y() << " " << c.z() << std::endl;
-    //std::cout << "global point: " << NP.x() << " " << NP.y() << " " << NP.z() << std::endl;
-    //std::cout << "screen point: " << np.x() << " " << np.y() << " " << np.z() << std::endl;
+    osg::Plane pl = _root->getCanvasCurrent()->getPlane();
+    pl.transformProvidingInverse(invVPW);
+    debugLogVec("Plane Screen", pl[0], pl[1], pl[2]);
+    std::cout << "plane Screen d: " << pl[3] << std::endl;
 
-    osg::Vec3f ns = np - c; // screen normal in screen coords
-    //std::cout << "screen normal: " << ns.x() << " " << ns.y() << " " << ns.z() << std::endl;
-    assert(ns.z()!=0);
-    if (std::abs(ns.x())<=2.0 && std::abs(ns.y()) <= 2.0){
+    if (std::fabs(n.x()) + std::fabs(n.y())<=4.0){
         std::cerr << "The normal is almost perpendicular to the screen, difficult to define the offset from the mouse movements. " <<
                      "To resolve, change the camera position so that to see the normal direction. " << std::endl;
         return;
     }
 
-    osg::Vec2f n2d = osg::Vec2f(ns.x(), ns.y());
-    osg::Vec2f uv = osg::Vec2f(x-c.x(),y-c.y());
-    float distance = 0;
-    if (n2d.length()!=0)
-        distance = (uv * n2d) / n2d.length();
-    //std::cout << "distance: " << distance << std::endl;
+    double aa=pl[0], bb=pl[1], cc=pl[2], dd=pl[3];
+    if (cc == 0){
+        std::cerr << "doEditOffset(): Unhandled error: Impossible to obtain z-distance of the screen mouse point." << std::endl;
+        return;
+    }
+    double dz = (-aa*x -bb*y -dd)/cc;
+    std::cout << "Z of mouse: " << dz << std::endl;
+    osg::Vec3f xyz = osg::Vec3f(x-c.x(), y-c.y(), dz-c.z());
+    debugLogVec("xyz vector screen", xyz.x(), xyz.y(), xyz.z());
 
-    osg::Vec3f p = c + ns * distance; // final screen point which is located on screen normal
-    osg::Vec3f P = p*invVPW; // final 3D global point, must be located on the normal
+    //osg::Vec3f xyz = osg::Vec3f(x-c.x(), y-c.y(), c.z());
+    float lenS = 0;
+    if (n.length()!=0)
+        lenS = (xyz * n) / n.length();
 
-    //std::cout << "final 3d global point: " << P.x() << " " << P.y() << " " << P.z() << std::endl;
-    double Distance; // distance in global 3D space where the canvas center will be moved
-    Distance = (P - _root->getCanvasCurrent()->getCenter()).length();
-    std::cout << "global Distance: " << Distance << std::endl;
-    osg::Vec3f CNew = C + _root->getCanvasCurrent()->getNormal() * Distance;
+    osg::Vec3f p = c + n * lenS; // final screen point which is located on screen normal
+    osg::Vec3f P = p * invVPW; // final 3D global point, must be located along the normal
 
-    _root->setTransformOffset(CNew, mouse);
+    double len3d = (P-C).length(); // distance in global 3D space where the canvas center will be moved
+    std::cout << "global Distance: " << len3d << std::endl;
+    osg::Vec3f t = N * len3d; // the translation vector
+    debugLogVec("doEditOffset: final translation", t.x(), t.y(), t.z());
+
+    _root->setTransformOffset(t, mouse);
 }
 
 Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){

@@ -411,14 +411,14 @@ void RootScene::setTransformOffset(const osg::Vec3f &translate, const int mouse)
     else {
         //test case: assume we calculated the translation vector
         // from the current position to the new
-        osg::Vec3f t = osg::Vec3f(0.0f, 0.5f, 0.f);
+        osg::Vec3f t = osg::Vec3f(0.0f, -0.5f, 0.f);
         osg::ref_ptr<osg::MatrixTransform> T = new osg::MatrixTransform;
         T->setMatrix(osg::Matrix::translate(t.x(), t.y(), t.z()));
-        std::cout << "old center: " << _canvasCurrent->getCenter().x() << " " << _canvasCurrent->getCenter().y() << " " <<
-                     _canvasCurrent->getCenter().z() << std::endl;
-        _canvasCurrent->setTransform(T.get());
-        std::cout << "new center: " << _canvasCurrent->getCenter().x() << " " << _canvasCurrent->getCenter().y() << " " <<
-                     _canvasCurrent->getCenter().z() << std::endl;
+        debugLogVec("setTransformOffset(): old center",_canvasCurrent->getCenter().x(),
+                    _canvasCurrent->getCenter().y(), _canvasCurrent->getCenter().z());
+        //_canvasCurrent->setTransform(T.get());
+        debugLogVec("setTransformOffset(): new center",_canvasCurrent->getCenter().x(),
+                    _canvasCurrent->getCenter().y(), _canvasCurrent->getCenter().z());
     }
 }
 
