@@ -13,6 +13,7 @@
 #include "settings.h"
 #include "viewwidget.h"
 #include "bookmarkwidget.h"
+#include "listwidget.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -62,6 +63,7 @@ private:
     void loadFile(const QString &fileName);
     bool saveFile(const QString &fileName);
     void createLayerManager();
+    void createBookMark();
 
     QMenu *fileMenu;
     QMenu *editMenu;
@@ -145,6 +147,7 @@ private:
     osg::ref_ptr<RootScene> _rootScene; // main scene graph
 
     QMenuBar* _menuBar;
+    ListWidget* m_lw;
 };
 
 #endif // MAINWINDOW

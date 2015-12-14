@@ -13,6 +13,7 @@
 #include "viewwidget.h"
 #include "settings.h"
 #include "bookmarkwidget.h"
+#include "listwidget.h"
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     QMainWindow(parent, flags),
@@ -56,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     createToolBars();
     createStatusBar();
     createLayerManager();
+    createBookMark();
 
     this->setCentralWidget(_mdiArea);
 }
@@ -161,33 +163,49 @@ void MainWindow::onChangeSizeCanvas()
 
 void MainWindow::onMouseRotate(){
     emit sendMouseMode(dureu::MOUSE_ROTATE);
+    QCursor *myCursor=new QCursor(QPixmap(":/orbit_icon.png"),-1,-1);
+    setCursor(*myCursor);
 }
 
 void MainWindow::onMouseZoom(){
     emit sendMouseMode(dureu::MOUSE_ZOOM);
+    QCursor *myCursor=new QCursor(QPixmap(":/zoom_icon.png"),-1,-1);
+    setCursor(*myCursor);
 }
 
 void MainWindow::onMousePan(){
     emit sendMouseMode(dureu::MOUSE_PAN);
+    QCursor *myCursor=new QCursor(QPixmap(":/pan_icon.png"),-1,-1);
+    setCursor(*myCursor);
 }
 
 void MainWindow::onMousePick(){
     emit sendMouseMode(dureu::MOUSE_PICK);
+    QCursor *myCursor=new QCursor(QPixmap(":/select_icon.png"),-1,-1);
+    setCursor(*myCursor);
 }
 
 void MainWindow::onMouseErase()
 {
     emit sendMouseMode(dureu::MOUSE_ERASE);
+    QCursor *myCursor=new QCursor(QPixmap(":/eraser_icon.png"),-1,-1);
+    setCursor(*myCursor);
 }
 
 void MainWindow::onMouseSketch()
 {
     emit sendMouseMode(dureu::MOUSE_SKETCH);
+    // We recommend using 32 x 32 cursors, because this size is supported on all platforms.
+    QCursor *myCursor=new QCursor(QPixmap(":/stylus_icon.png"),-1,-1);
+    setCursor(*myCursor);
+    //don't forget to put setCursor(Qt::ArrowCursor); in offMouseSketch()
 }
 
 void MainWindow::onMouseOffset()
 {
     emit sendMouseMode(dureu::MOUSE_EDIT_OFFSET);
+    QCursor *myCursor=new QCursor(QPixmap(":/offset_icon.png"),-1,-1);
+    setCursor(*myCursor);
 }
 
 ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
@@ -545,4 +563,14 @@ void MainWindow::createLayerManager()
     //connect(m_pTableWidget, SIGNAL(cellClicked(int, int)), this, SLOT(myCellClicked(int, int)));//row,col
     dock->setWidget(m_pTableWidget);
     addDockWidget(Qt::RightDockWidgetArea, dock);
+}
+
+
+void MainWindow::createBookMark()
+{
+    QDockWidget *dock = new QDockWidget(tr("Bookmarks"), this);
+    dock->setAllowedAreas(Qt::BottomDockWidgetArea);
+    m_lw = new ListWidget(dock);
+    dock->setWidget(m_lw);
+    addDockWidget(Qt::BottomDockWidgetArea, dock);
 }

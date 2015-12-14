@@ -21,6 +21,8 @@ set(SOURCES_GUI
     bookmarkwidget.h
     bookmarkwidget.cpp
     hudcamera.h
+    listwidget.h
+    listwidget.cpp
 )
 
 add_library(libGUI ${SOURCES_GUI})

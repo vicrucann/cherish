@@ -1,28 +1,44 @@
 <RCC>
     <qresource prefix="/">
-        <file>stylus.png</file>
+        <file>arc_icon.png</file>
+        <file>arc.png</file>
         <file>copy.png</file>
         <file>cut.png</file>
-        <file>new.png</file>
-        <file>open.png</file>
-        <file>paste.png</file>
-        <file>save.png</file>
-        <file>undo.png</file>
-        <file>redo.png</file>
-        <file>select.png</file>
+        <file>eraser_icon.png</file>
         <file>eraser.png</file>
-        <file>pencil.png</file>
-        <file>arc.png</file>
-        <file>rectangle.png</file>
-        <file>line.png</file>
-        <file>scale.png</file>
-        <file>move.png</file>
-        <file>rotate.png</file>
-        <file>orbit.png</file>
-        <file>pan.png</file>
-        <file>zoom.png</file>
+        <file>image.qrc</file>
         <file>layers.png</file>
-        <file>zoomExtents.png</file>
+        <file>line_icon.png</file>
+        <file>line.png</file>
+        <file>move_icon.png</file>
+        <file>move.png</file>
+        <file>new.png</file>
+        <file>offset_icon.png</file>
         <file>offset.png</file>
+        <file>open.png</file>
+        <file>orbit_icon.png</file>
+        <file>orbit.png</file>
+        <file>pan_icon.png</file>
+        <file>pan.png</file>
+        <file>paste.png</file>
+        <file>pencil.png</file>
+        <file>rectangle.png</file>
+        <file>redo.png</file>
+        <file>rotate_icon.png</file>
+        <file>rotate.png</file>
+        <file>save.png</file>
+        <file>scale_icon.png</file>
+        <file>scale.png</file>
+        <file>scene.png</file>
+        <file>select_icon.png</file>
+        <file>select.png</file>
+        <file>stylus_icon.png</file>
+        <file>stylus.png</file>
+        <file>undo.ico</file>
+        <file>undo.png</file>
+        <file>zoom_icon.png</file>
+        <file>zoom.png</file>
+        <file>zoomExtents_icon.png</file>
+        <file>zoomExtents.png</file>
     </qresource>
 </RCC>
