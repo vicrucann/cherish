@@ -290,7 +290,9 @@ void EventHandler::doEditOffset(int x, int y, const osg::Camera *camera, int mou
     osg::Vec3f N = _root->getCanvasCurrent()->getNormal();
 
     osg::Vec3f n = N * VPW;
-    if (n.x() + n.y() <= 3.5f){
+    osg::Vec3f c = C * VPW;
+    osg::Vec3f n2d = n-c;
+    if (std::fabs(n2d.x()) + std::fabs(n2d.y()) <= 5.0f){
         std::cerr << "doEditOffset(): the normal is almost perpendicular to the camera view plane. To resolve, change the camera view." << std::endl;
         return;
     }
@@ -313,8 +315,6 @@ void EventHandler::doEditOffset(int x, int y, const osg::Camera *camera, int mou
         std::cerr << "doEditOffset(): cast ray and normal are almost parallel. To resolve, change the camera view." << std::endl;
         return;
     }
-    // distance between skew lines - project d onto u3
-    double k = (d*u3)/u3.length();
 
     // X1 and X2 are the closest points on lines
     // we want to find X1 (u1 corresponds to normal)
