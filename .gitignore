@@ -38,3 +38,4 @@
 #*.ilk
 #*.pdb
 #moc_*
+.DS_Store
