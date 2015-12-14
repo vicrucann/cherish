@@ -118,8 +118,7 @@ private:
     osg::observer_ptr<Stroke> _strokeCurrent;
 
     osg::Vec3f _center; // centrod of the canvas
-    osg::Plane _plane; // only to use for math and keep plane params
-    osg::Vec3f _x, _y; // plane's 2D local coordinate system, cross(x,y)=n
+    osg::Vec3f _normal;
 
     osg::Vec4f _color; // display color for canvas drawables
 

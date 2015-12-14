@@ -39,10 +39,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _strokeCurrent(0),
 
     _center(osg::Vec3f(0.f,0.f,0.f)), // moves only when strokes are introduced so that to define it as centroid
-    // also represents local coord system center
-    _plane(osg::Vec3f(0.f,0.f,1.f), _center), // plane params by center and normal
-    _x(_center + osg::Vec3f(1.f,0.f,0.f)), // x and y local coordinate system vectors, for the moment they will be
-    _y(_center + osg::Vec3f(0.f,1.f,0.f)), // X and Y (global)-axis aligned
+    _normal(osg::Vec3f(0.f,0.f,1.f)),
     _color(dureu::CANVAS_CLR_REST) // frame and pickable color
 
 {
@@ -257,23 +254,26 @@ osg::Vec3f Canvas::getCenter() const
 
 osg::Plane Canvas::getPlane() const
 {
-    return _plane;
+    osg::Plane plane(_normal, _center);
+    return plane;
 }
 
 osg::Vec3f Canvas::getNormal() const
 {
-    return _plane.getNormal();
+    return _normal;
 }
 
 // to transform plane, centroid and local axis
 // must be called every time when transform node is changed
 void Canvas::transformData(const osg::Matrix &matrix)
 {
+    osg::Plane plane(_normal, _center);
     _center = _center * matrix;
-    _plane.transform(matrix);
+    plane.transform(matrix);
+    _normal = plane.getNormal();
     debugLogVec("transformData(): Canvas center", _center.x(),_center.y(),_center.z());
-    debugLogVec("transformData(): Canvas plane", _plane.getNormal().x(), _plane.getNormal().y(), _plane.getNormal().z());
-    assert(_plane.valid());
+    debugLogVec("transformData(): Canvas normal", _normal.x(), _normal.y(), _normal.z());
+    assert(plane.valid());
 }
 
 void Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
