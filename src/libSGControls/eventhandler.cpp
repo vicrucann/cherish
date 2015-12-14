@@ -277,61 +277,57 @@ void EventHandler::doEditOffset(int x, int y, const osg::Camera *camera, int mou
     }
 
     // Algorithm:
-    // project canvas center (3D local) to the screen
-    // how to deal with out of screen projection
-    // project normal (3D local) to the screen
-    // project mouse coords onto screen normal - get the distance along the normal
-    // unproject the obtained distance back to 3D local so that the transform of the canvas changes
+    // Cast the ray into 3D space
+    // Make sure the ray is not parallel to the normal
+    // The new offset point will be located on the projected point
+    // between the ray and canvas normal.
+    // Ray and normal are skew lines in 3d space, so we only need
+    // to extract the projection point of the ray into the normal.
 
+    osg::Vec3f nearPoint = osg::Vec3f(x, y, 0.f) * invVPW;
+    osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
     osg::Vec3f C = _root->getCanvasCurrent()->getCenter();
-    osg::Vec3f c = C * VPW; // center in screen coords; screen beginning of coord axes: low left corner
-    debugLogVec("Center Global", C.x(), C.y(),C.z());
-    debugLogVec("Center Screen", c.x(), c.y(), c.z());
-    debugLogVec("Center Screen Norm", c.x()/c.z(), c.y()/c.z(), 1);
-
     osg::Vec3f N = _root->getCanvasCurrent()->getNormal();
-    osg::Vec3f Np = C+N;
+
     osg::Vec3f n = N * VPW;
-    osg::Vec3f np = Np * VPW;
-    debugLogVec("Normal Global", N.x(), N.y(),N.z());
-    debugLogVec("Normal Screen", n.x(), n.y(),n.z());
-    debugLogVec("NPoint Screen", np.x(), np.y(),np.z());
-
-    osg::Plane pl = _root->getCanvasCurrent()->getPlane();
-    pl.transformProvidingInverse(invVPW);
-    debugLogVec("Plane Screen", pl[0], pl[1], pl[2]);
-    std::cout << "plane Screen d: " << pl[3] << std::endl;
-
-    if (std::fabs(n.x()) + std::fabs(n.y())<=4.0){
-        std::cerr << "The normal is almost perpendicular to the screen, difficult to define the offset from the mouse movements. " <<
-                     "To resolve, change the camera position so that to see the normal direction. " << std::endl;
+    if (n.x() + n.y() <= 3.5f){
+        std::cerr << "doEditOffset(): the normal is almost perpendicular to the camera view plane. To resolve, change the camera view." << std::endl;
         return;
     }
 
-    double aa=pl[0], bb=pl[1], cc=pl[2], dd=pl[3];
-    if (cc == 0){
-        std::cerr << "doEditOffset(): Unhandled error: Impossible to obtain z-distance of the screen mouse point." << std::endl;
+    // algorithm for distance between skew lines:
+    //http://www2.washjeff.edu/users/mwoltermann/Dorrie/69.pdf
+    // For two points P1 and P2 on skew lines;
+    // and d - the direction vector from P1 to P2;
+    // u1 and u2 - unit direction vectors for the lines
+    osg::Vec3f P1 = C;
+    osg::Vec3f P2 = nearPoint;
+    osg::Vec3f d = P2 - P1;
+    osg::Vec3f u1 = N;
+    u1.normalize();
+    osg::Vec3f u2 = farPoint - nearPoint;
+    u2.normalize();
+    osg::Vec3f u3 = u1^u2;
+
+    if (std::fabs(u3.x())<=dureu::EPSILON && std::fabs(u3.y())<=dureu::EPSILON && std::fabs(u3.z())<=dureu::EPSILON){
+        std::cerr << "doEditOffset(): cast ray and normal are almost parallel. To resolve, change the camera view." << std::endl;
         return;
     }
-    double dz = (-aa*x -bb*y -dd)/cc;
-    std::cout << "Z of mouse: " << dz << std::endl;
-    osg::Vec3f xyz = osg::Vec3f(x-c.x(), y-c.y(), dz-c.z());
-    debugLogVec("xyz vector screen", xyz.x(), xyz.y(), xyz.z());
+    // distance between skew lines - project d onto u3
+    double k = (d*u3)/u3.length();
 
-    //osg::Vec3f xyz = osg::Vec3f(x-c.x(), y-c.y(), c.z());
-    float lenS = 0;
-    if (n.length()!=0)
-        lenS = (xyz * n) / n.length();
+    // X1 and X2 are the closest points on lines
+    // we want to find X1 (u1 corresponds to normal)
+    // solving the linear equation in r1 and r2: Xi = Pi + ri*ui
+    // we are only interested in X1 so we only solve for r1.
+    float a1 = u1*u1, b1 = u1*u2, c1 = u1*d;
+    float a2 = u1*u2, b2 = u2*u2, c2 = u2*d;
+    assert((std::fabs(b1) > dureu::EPSILON)); // denominator
+    assert(a2!=-1 && a2!=1); // lines are not parallel and we already checked for that
+    double r1 = (c2 - b2*c1/b1)/(a2-b2*a1/b1);
+    osg::Vec3f X1 = P1 + u1*r1;
 
-    osg::Vec3f p = c + n * lenS; // final screen point which is located on screen normal
-    osg::Vec3f P = p * invVPW; // final 3D global point, must be located along the normal
-
-    double len3d = (P-C).length(); // distance in global 3D space where the canvas center will be moved
-    std::cout << "global Distance: " << len3d << std::endl;
-    osg::Vec3f t = N * len3d; // the translation vector
-    debugLogVec("doEditOffset: final translation", t.x(), t.y(), t.z());
-
-    _root->setTransformOffset(t, mouse);
+    _root->setTransformOffset(X1-C, mouse);
 }
 
 Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){

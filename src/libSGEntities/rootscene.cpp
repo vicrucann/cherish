@@ -409,16 +409,9 @@ void RootScene::setTransformOffset(const osg::Vec3f &translate, const int mouse)
         _canvasCurrent->setModeOffset(false);
     }
     else {
-        //test case: assume we calculated the translation vector
-        // from the current position to the new
-        osg::Vec3f t = osg::Vec3f(0.0f, -0.5f, 0.f);
         osg::ref_ptr<osg::MatrixTransform> T = new osg::MatrixTransform;
-        T->setMatrix(osg::Matrix::translate(t.x(), t.y(), t.z()));
-        debugLogVec("setTransformOffset(): old center",_canvasCurrent->getCenter().x(),
-                    _canvasCurrent->getCenter().y(), _canvasCurrent->getCenter().z());
-        //_canvasCurrent->setTransform(T.get());
-        debugLogVec("setTransformOffset(): new center",_canvasCurrent->getCenter().x(),
-                    _canvasCurrent->getCenter().y(), _canvasCurrent->getCenter().z());
+        T->setMatrix(osg::Matrix::translate(translate.x(), translate.y(), translate.z()));
+        _canvasCurrent->setTransform(T.get());
     }
 }
 
@@ -430,8 +423,8 @@ void RootScene::setCanvasName(Canvas *cnv){
 
 std::string RootScene::getEntityName(const std::string &name, unsigned int id) const{
     char buffer[10];
-    //sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
-    snprintf(buffer, sizeof(buffer), "%d", id);
+    sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
+    //snprintf(buffer, sizeof(buffer), "%d", id);
     //itoa(id, buffer, 10);
     return name + std::string(buffer);//std::to_string(static_cast<long double>(id));
 }
