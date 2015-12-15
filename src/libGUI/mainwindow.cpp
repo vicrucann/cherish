@@ -181,8 +181,8 @@ void MainWindow::onMousePan(){
 
 void MainWindow::onMousePick(){
     emit sendMouseMode(dureu::MOUSE_PICK);
-    QCursor *myCursor=new QCursor(QPixmap(":/select_icon.png"),-1,-1);
-    setCursor(*myCursor);
+    //QCursor *myCursor=new QCursor(QPixmap(":/select_icon.png"),-1,-1);
+    //setCursor(*myCursor);
 }
 
 void MainWindow::onMouseErase()
@@ -196,8 +196,8 @@ void MainWindow::onMouseSketch()
 {
     emit sendMouseMode(dureu::MOUSE_SKETCH);
     // We recommend using 32 x 32 cursors, because this size is supported on all platforms.
-    QCursor *myCursor=new QCursor(QPixmap(":/stylus_icon.png"),-1,-1);
-    setCursor(*myCursor);
+    //QCursor *myCursor=new QCursor(QPixmap(":/stylus_icon.png"),-1,-1);
+    //setCursor(*myCursor);
     //don't forget to put setCursor(Qt::ArrowCursor); in offMouseSketch()
 }
 
