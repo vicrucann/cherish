@@ -213,15 +213,18 @@ void EventHandler::doSketch(int x, int y, const osg::Camera *camera, int mouse)
 
     const osg::Plane plane = _root->getCanvasCurrent()->getPlane();
     const osg::Vec3f center = _root->getCanvasCurrent()->getCenter();
-    debugLogVec("doSkech: plane", plane.getNormal().x(), plane.getNormal().y(),plane.getNormal().z());
-    debugLogVec("doSketch: center", center.x(), center.y(), center.z());
 
     assert(plane.valid());
     std::vector<osg::Vec3f> ray(2);
     ray[0] = nearPoint;
     ray[1] = farPoint;
     if (plane.intersect(ray)){ // 1 or -1: no intersection
-        std::cerr << "doSketch(): no intersection with the ray" << std::endl;
+        std::cerr << "doSketch(): no intersection with the ray." << std::endl;
+        // finish the stroke if it was started
+        if (_root->getCanvasCurrent()->getStrokeCurrent()){
+            std::cout << "doSketch(): finishing the current stroke." << std::endl;
+            _root->getCanvasCurrent()->finishStrokeCurrent();
+        }
         return;
     }
     osg::Vec3f dir = farPoint-nearPoint;
@@ -236,7 +239,7 @@ void EventHandler::doSketch(int x, int y, const osg::Camera *camera, int mouse)
 
     double len = plane.dotProductNormal(center-nearPoint) / plane.dotProductNormal(dir);
     osg::Vec3f P = dir * len + nearPoint;
-    debugLogVec("doSkecth(): intersect point global 3D", P.x(), P.y(), P.z());
+    //debugLogVec("doSkecth(): intersect point global 3D", P.x(), P.y(), P.z());
 
     osg::Matrix M =  _root->getCanvasCurrent()->getTransform()->getMatrix();
     osg::Matrix invM;
@@ -245,7 +248,7 @@ void EventHandler::doSketch(int x, int y, const osg::Camera *camera, int mouse)
         return;
     }
     osg::Vec3f p = P * invM;
-    debugLogVec("doSketch(): intersect point local 3D", p.x(), p.y(), p.z());
+    //debugLogVec("doSketch(): intersect point local 3D", p.x(), p.y(), p.z());
     assert(std::fabs(p.z())<=dureu::EPSILON);
 
     double u=p.x(), v=p.y();

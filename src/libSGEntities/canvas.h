@@ -91,6 +91,9 @@ public:
     osg::Plane getPlane() const;
     osg::Vec3f getNormal() const;
 
+    Stroke* getStrokeCurrent() const;
+    void finishStrokeCurrent();
+
 protected:
     void transformData(const osg::Matrix& matrix);
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);

@@ -193,9 +193,9 @@ std::string Canvas::getGeodeDataName() const{
 void Canvas::addStroke(const double u, const double v, int mouse)
 {
     bool success = true;
-    if (mouse == 0){
+    if (mouse == 0 || (mouse==1 && !_strokeCurrent.get())){
+        debugLogMsg("addStroke(): initialization");
         assert(_strokeCurrent.get() == 0);
-        //Stroke* stroke  = new Stroke(osg::Vec2f(0,0), osg::Vec2f(u,v));
         Stroke* stroke  = new Stroke; // an empty stroke structure
         assert(stroke);
         _strokeCurrent = stroke;
@@ -261,6 +261,19 @@ osg::Plane Canvas::getPlane() const
 osg::Vec3f Canvas::getNormal() const
 {
     return _normal;
+}
+
+Stroke *Canvas::getStrokeCurrent() const
+{
+    return _strokeCurrent.get();
+}
+
+void Canvas::finishStrokeCurrent()
+{
+    assert(_strokeCurrent.get());
+    _strokeCurrent = 0;
+    std::cout << "finishStrokeCurrent(): finished stroke, observer pointer cleared" << std::endl;
+    this->updateFrame();
 }
 
 // to transform plane, centroid and local axis
