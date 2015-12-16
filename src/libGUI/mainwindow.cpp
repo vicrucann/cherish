@@ -209,7 +209,7 @@ void MainWindow::onMouseSketch()
 void MainWindow::onMouseOffset()
 {
     emit sendMouseMode(dureu::MOUSE_EDIT_OFFSET);
-    QCursor *myCursor=new QCursor(QPixmap(":/move_icon.png"),-1,-1);
+    QCursor *myCursor=new QCursor(QPixmap(":/offset_icon.png"),-1,-1);
     setCursor(*myCursor);
 }
 
@@ -218,6 +218,13 @@ void MainWindow::onMouseRotate()
     emit sendMouseMode(dureu::MOUSE_EDIT_ROTATE);
     QCursor* cursorRot = new QCursor(QPixmap(":/rotate_icon.png"), -1, -1);
     this->setCursor(*cursorRot);
+}
+
+void MainWindow::onMouseMove()
+{
+    emit sendMouseMode(dureu::MOUSE_EDIT_MOVE);
+    QCursor* cursorMov = new QCursor(QPixmap(":/move_icon.png"), -1, -1);
+    this->setCursor(*cursorMov);
 }
 
 ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
@@ -353,8 +360,9 @@ void MainWindow::createActions()
     _mActionEraser->setStatusTip(tr("Eraser"));
     this->connect(_mActionEraser, SIGNAL(triggered(bool)), this, SLOT(onMouseErase()));
 
-    toolMove = new QAction(QIcon(":/move.png"),tr("&Move"), this);
-    toolMove->setStatusTip(tr("Move"));
+    _mActionMove = new QAction(QIcon(":/move.png"),tr("&Move"), this);
+    _mActionMove->setStatusTip(tr("Move"));
+    this->connect(_mActionMove, SIGNAL(triggered(bool)), this, SLOT(onMouseMove()));
 
     _mActionRotate = new QAction(QIcon(":/rotate.png"),tr("&Rotate"), this);
     _mActionRotate->setStatusTip(tr("Rotate"));
@@ -363,7 +371,7 @@ void MainWindow::createActions()
     toolScale = new QAction(QIcon(":/scale.png"),tr("&Scale"), this);
     toolScale->setStatusTip(tr("Scale"));
 
-    _mActionOffset = new QAction(QIcon(":/move.png"),tr("&Offset"), this);
+    _mActionOffset = new QAction(QIcon(":/offset.png"),tr("&Offset"), this);
     _mActionOffset->setStatusTip(tr("Offset"));
     this->connect(_mActionOffset, SIGNAL(triggered(bool)), this, SLOT(onMouseOffset()));
 
@@ -491,7 +499,7 @@ void MainWindow::createToolBars()
     toolsToolBar->addAction(_mActionSelect);
     toolsToolBar->addAction(_mActionEraser);
     toolsToolBar->addAction(_mActionOffset);
-    //toolsToolBar->addAction(toolMove);
+    toolsToolBar->addAction(_mActionMove);
     toolsToolBar->addAction(_mActionRotate);
     toolsToolBar->addAction(toolScale);
 

@@ -49,6 +49,7 @@ private slots:
     void onMouseSketch();
     void onMouseOffset();
     void onMouseRotate();
+    void onMouseMove();
 private:
     ViewWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
 
@@ -124,10 +125,10 @@ private:
 
     QAction* _mActionSelect;
     QAction* _mActionEraser;
-    QAction *toolMove;
+    QAction* _mActionMove; //toolMove; // move current photo within current canvas
     QAction* _mActionRotate;// toolRotate;
     QAction *toolScale;
-    QAction* _mActionOffset;
+    QAction* _mActionOffset; // offset current canvas along its normal
 
     QAction *layers;
 

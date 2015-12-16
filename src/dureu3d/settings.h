@@ -70,6 +70,7 @@ enum MOUSE_MODE {
     MOUSE_EDIT, // rotate, translate, offset the selected entity
     MOUSE_EDIT_OFFSET,
     MOUSE_EDIT_ROTATE,
+    MOUSE_EDIT_MOVE,
     MOUSE_BOOKMARK, // create bookmark (take a snapshot of a selected viewer)
     MOUSE_ERASE, // deletes entyties from scene
     MOUSE_ROTATE,
