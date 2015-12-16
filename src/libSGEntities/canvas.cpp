@@ -153,6 +153,7 @@ void Canvas::setCanvasName(const std::string &name)
     this->setTransformName(name);
     this->setSwitchFrameName(name);
     this->setGeodeDataName(name);
+    this->setPhotoNames(name);
 }
 
 void Canvas::setSwitchName(const std::string &parentName)
@@ -173,6 +174,12 @@ void Canvas::setSwitchFrameName(const std::string &parentName)
 void Canvas::setGeodeDataName(const std::string &parentName)
 {
     _geodeData->setName(parentName + "GeodeData");
+}
+
+void Canvas::setPhotoNames(const std::string &parentName)
+{
+    // for all the photos within canvas
+    // set name of each based on parent name
 }
 
 std::string Canvas::getSwitchName() const{
@@ -225,6 +232,23 @@ void Canvas::addStroke(const double u, const double v, int mouse)
         std::cout << "addStroke(): finished stroke, observer pointer cleared" << std::endl;
     }
     this->updateFrame();
+}
+
+void Canvas::addPhoto(Photo *photo, const double u, const double v)
+{
+    if (!photo){
+        debugErrMsg("addPhoto(): photo pointer is NULL");
+        return;
+    }
+    if (!_geodeData.get()){
+        debugErrMsg("addPhoto(): _geodeData pointer is NULL");
+        return;
+    }
+    if (!_geodeData->addDrawable(photo)){
+        debugErrMsg("addPhoto: could not add photo as a child to the _geodeData of current canvas");
+        return;
+    }
+    _geodeData->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTexture());
 }
 
 void Canvas::updateFrame()

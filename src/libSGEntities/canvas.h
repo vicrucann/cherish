@@ -43,6 +43,7 @@
 
 #include "settings.h"
 #include "stroke.h"
+#include "photo.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
@@ -74,6 +75,7 @@ public:
     void setTransformName(const std::string& parentName);
     void setSwitchFrameName(const std::string& parentName);
     void setGeodeDataName(const std::string& parentName);
+    void setPhotoNames(const std::string& parentName);
 
     std::string getSwitchName() const;
     std::string getTransformName() const;
@@ -81,6 +83,7 @@ public:
     std::string getGeodeDataName() const;
 
     void addStroke(const double u, const double v, int mouse);
+    void addPhoto(Photo* photo, const double u = 0, const double v = 0);
 
     // recalculate frame's geometry based on strokes
     // update centroid as well

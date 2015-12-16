@@ -18,6 +18,8 @@ set (SOURCES_SGEntities
     rootscene.cpp
     stroke.h
     stroke.cpp
+    photo.h
+    photo.cpp
 )
 
 add_library(libSGEntities

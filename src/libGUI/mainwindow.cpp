@@ -60,6 +60,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     createBookMark();
 
     this->setCentralWidget(_mdiArea);
+
+    // it is to show how to add a photo to a current canvas
+    // start with extenstions *.bmp and *.rgb
+    // for other file formats, OSG would need corresponding plugins
+    _rootScene->loadPhotoFromFile("../../samples/ds-32.bmp");
 }
 
 MainWindow::~MainWindow(){

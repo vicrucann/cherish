@@ -275,6 +275,23 @@ osg::Node* RootScene::loadSceneFromFile(const std::string& fname){
     return node;
 }
 
+Photo *RootScene::loadPhotoFromFile(const std::string &fname)
+{
+    debugLogMsg("loadPhotoFromFile()");
+    Photo* photo = new Photo(fname);
+    if (!photo){
+        debugErrMsg("loadPhotoFromFile(): File could not be loaded");
+        debugLogVal("file name", fname);
+        return 0;
+    }
+    if (!_canvasCurrent.get()){
+        debugErrMsg("There is not active canvas to load the photo to. Create new canvas first");
+        return 0;
+    }
+    _canvasCurrent->addPhoto(photo);
+    return photo;
+}
+
 unsigned int RootScene::getMaxCanvasId() const {
     return _idCanvas;
 }

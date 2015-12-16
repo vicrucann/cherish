@@ -36,6 +36,7 @@
 
 #include "axes.h"
 #include "canvas.h"
+#include "photo.h"
 #include "settings.h"
 #include "../libSGUtils/observescenecallback.h"
 #include "../libGUI/hudcamera.h"
@@ -77,6 +78,7 @@ public:
     bool deleteNode(osg::Node* node);
 
     osg::Node *loadSceneFromFile(const std::string& fname);
+    Photo* loadPhotoFromFile(const std::string& fname);
 
     unsigned int getMaxCanvasId() const;
     unsigned int getMaxNodeId() const;
