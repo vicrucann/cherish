@@ -98,6 +98,7 @@ public:
     unsigned int getCanvasLevel() const;
 
     void setTransformOffset(const osg::Vec3f& translate, const int mouse);
+    void setTransformRotate(const osg::Vec3f& normal, const int mouse);
 
 protected:
     void setCanvasName(Canvas* cnv);

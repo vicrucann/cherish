@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
     menuTC->addAction("Increase size of current canvas", this, SLOT(onChangeSizeCanvas()));
 
     QMenu* menuTM = _menuBar->addMenu("TestMouse");
-    menuTM->addAction("Naviagation: rotate", this, SLOT(onMouseRotate()));
+    menuTM->addAction("Naviagation: rotate", this, SLOT(onMouseOrbit()));
     menuTM->addAction("Navigation: zoom", this, SLOT(onMouseZoom()));
     menuTM->addAction("Naviagation: pan", this, SLOT(onMousePan()));
     menuTM->addAction("Mouse: pick", this, SLOT(onMousePick()));
@@ -161,7 +161,7 @@ void MainWindow::onChangeSizeCanvas()
     //_rootScene->getCanvasCurrent()->testWidthPlus();
 }
 
-void MainWindow::onMouseRotate(){
+void MainWindow::onMouseOrbit(){
     emit sendMouseMode(dureu::MOUSE_ROTATE);
     QCursor *myCursor=new QCursor(QPixmap(":/orbit_icon.png"),-1,-1);
     setCursor(*myCursor);
@@ -204,8 +204,15 @@ void MainWindow::onMouseSketch()
 void MainWindow::onMouseOffset()
 {
     emit sendMouseMode(dureu::MOUSE_EDIT_OFFSET);
-    QCursor *myCursor=new QCursor(QPixmap(":/offset_icon.png"),-1,-1);
+    QCursor *myCursor=new QCursor(QPixmap(":/move_icon.png"),-1,-1);
     setCursor(*myCursor);
+}
+
+void MainWindow::onMouseRotate()
+{
+    emit sendMouseMode(dureu::MOUSE_EDIT_ROTATE);
+    QCursor* cursorRot = new QCursor(QPixmap(":/rotate_icon.png"), -1, -1);
+    this->setCursor(*cursorRot);
 }
 
 ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
@@ -317,7 +324,7 @@ void MainWindow::createActions()
 
     _mActionOrbit = new QAction(QIcon(":/orbit.png"),tr("&orbit"), this);
     _mActionOrbit->setStatusTip(tr("orbit"));
-    this->connect(_mActionOrbit, SIGNAL(triggered()), this, SLOT(onMouseRotate()));
+    this->connect(_mActionOrbit, SIGNAL(triggered()), this, SLOT(onMouseOrbit()));
 
     _mActionPan = new QAction(QIcon(":/pan.png"),tr("&Pan"), this);
     _mActionPan->setStatusTip(tr("Pan"));
@@ -344,8 +351,9 @@ void MainWindow::createActions()
     toolMove = new QAction(QIcon(":/move.png"),tr("&Move"), this);
     toolMove->setStatusTip(tr("Move"));
 
-    toolRotate = new QAction(QIcon(":/rotate.png"),tr("&Rotate"), this);
-    toolRotate->setStatusTip(tr("Rotate"));
+    _mActionRotate = new QAction(QIcon(":/rotate.png"),tr("&Rotate"), this);
+    _mActionRotate->setStatusTip(tr("Rotate"));
+    this->connect(_mActionRotate, SIGNAL(triggered(bool)), this, SLOT(onMouseRotate()));
 
     toolScale = new QAction(QIcon(":/scale.png"),tr("&Scale"), this);
     toolScale->setStatusTip(tr("Scale"));
@@ -437,7 +445,7 @@ void MainWindow::createMenus()
     toolsMenu->addAction(_mActionEraser);
     toolsMenu->addSeparator();
     //toolsMenu->addAction(toolMove);
-    toolsMenu->addAction(toolRotate);
+    toolsMenu->addAction(_mActionRotate);
     toolsMenu->addAction(toolScale);
     //toolsMenu->addSeparator();
     toolsMenu->addAction(_mActionOffset);
@@ -479,7 +487,7 @@ void MainWindow::createToolBars()
     toolsToolBar->addAction(_mActionEraser);
     toolsToolBar->addAction(_mActionOffset);
     //toolsToolBar->addAction(toolMove);
-    toolsToolBar->addAction(toolRotate);
+    toolsToolBar->addAction(_mActionRotate);
     toolsToolBar->addAction(toolScale);
 
     //styleToolBar = addToolBar(tr("Style"));

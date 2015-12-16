@@ -415,6 +415,24 @@ void RootScene::setTransformOffset(const osg::Vec3f &translate, const int mouse)
     }
 }
 
+void RootScene::setTransformRotate(const osg::Vec3f &normal, const int mouse)
+{
+    // initialize offset mode
+    if (mouse == 0){
+        _canvasCurrent->setModeOffset(true);
+    }
+
+    // back to normal mode
+    else if (mouse == 2){
+        _canvasCurrent->setModeOffset(false);
+    }
+    else {
+        osg::ref_ptr<osg::MatrixTransform> R = new osg::MatrixTransform;
+        R->setMatrix(osg::Matrix::rotate(dureu::PI/24, osg::Vec3f(0,0,1)));
+        _canvasCurrent->setTransform(R.get());
+    }
+}
+
 void RootScene::setCanvasName(Canvas *cnv){
     cnv->setCanvasName(getEntityName(dureu::NAME_CANVAS, _idCanvas++));
     std::cout << "setCanvasName(): Canvas renamed: " << cnv->getName() << std::endl;

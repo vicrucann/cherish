@@ -41,13 +41,14 @@ private slots:
     void onDeleteCow();
     void onChangeSizeCanvas();
 
-    void onMouseRotate();
+    void onMouseOrbit();
     void onMouseZoom();
     void onMousePan();
     void onMousePick();
     void onMouseErase();
     void onMouseSketch();
     void onMouseOffset();
+    void onMouseRotate();
 private:
     ViewWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
 
@@ -124,7 +125,7 @@ private:
     QAction* _mActionSelect;
     QAction* _mActionEraser;
     QAction *toolMove;
-    QAction *toolRotate;
+    QAction* _mActionRotate;// toolRotate;
     QAction *toolScale;
     QAction* _mActionOffset;
 

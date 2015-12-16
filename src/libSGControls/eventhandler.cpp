@@ -115,6 +115,9 @@ void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_EDIT_OFFSET:
             doEditOffset(ea.getX(), ea.getY(), camera, 0);
             break;
+        case dureu::MOUSE_EDIT_ROTATE:
+            doEditRotate(ea.getX(), ea.getY(), camera, 0);
+            break;
         default:
             break;
         }
@@ -128,6 +131,9 @@ void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_EDIT_OFFSET:
             doEditOffset(ea.getX(), ea.getY(), camera, 2);
             break;
+        case dureu::MOUSE_EDIT_ROTATE:
+            doEditRotate(ea.getX(), ea.getY(), camera, 2);
+            break;
         default:
             break;
         }
@@ -140,16 +146,13 @@ void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_EDIT_OFFSET:
             doEditOffset(ea.getX(), ea.getY(), camera, 1);
             break;
+        case dureu::MOUSE_EDIT_ROTATE:
+            doEditRotate(ea.getX(), ea.getY(), camera, 1);
+            break;
         default:
             break;
         }
         break;
-    /*case osgGA::GUIEventAdapter::MOVE:
-        std::cout << "doByOperator(): move" << std::endl;
-        break;
-    case osgGA::GUIEventAdapter::FRAME:
-        std::cout << "doByOperator(): frame" << std::endl;
-        break;*/
     default: // scrolling, doubleclick, move, keydown, keyup, resize
         // frame, pen_pressure, pen_..., ...
         break;
@@ -270,9 +273,9 @@ void EventHandler::doEditOffset(int x, int y, const osg::Camera *camera, int mou
             * camera->getViewport()->computeWindowMatrix();
     osg::Matrix invVPW;
     bool success = invVPW.invert(VPW);
-    osg::Matrix VPWM = VPW * _root->getCanvasCurrent()->getTransform()->getMatrix();
+    /*osg::Matrix VPWM = VPW * _root->getCanvasCurrent()->getTransform()->getMatrix();
     osg::Matrix invVPWM;
-    assert(invVPWM.invert(VPWM));
+    assert(invVPWM.invert(VPWM));*/
 
     if (!success){
         std::cerr << "doEditOffset(): could not invert View-projection-world matrix for ray casting" << std::endl;
@@ -291,14 +294,6 @@ void EventHandler::doEditOffset(int x, int y, const osg::Camera *camera, int mou
     osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
     osg::Vec3f C = _root->getCanvasCurrent()->getCenter();
     osg::Vec3f N = _root->getCanvasCurrent()->getNormal();
-
-    osg::Vec3f n = N * VPW;
-    osg::Vec3f c = C * VPW;
-    osg::Vec3f n2d = n-c;
-    if (std::fabs(n2d.x()) + std::fabs(n2d.y()) <= 5.0f){
-        std::cerr << "doEditOffset(): the normal is almost perpendicular to the camera view plane. To resolve, change the camera view." << std::endl;
-        return;
-    }
 
     // algorithm for distance between skew lines:
     //http://www2.washjeff.edu/users/mwoltermann/Dorrie/69.pdf
@@ -331,6 +326,41 @@ void EventHandler::doEditOffset(int x, int y, const osg::Camera *camera, int mou
     osg::Vec3f X1 = P1 + u1*r1;
 
     _root->setTransformOffset(X1-C, mouse);
+}
+
+void EventHandler::doEditRotate(int x, int y, const osg::Camera *camera, int mouse)
+{
+    assert(camera);
+    if (!camera->getViewport()){
+        std::cerr << "doEditOffset(): could not read viewport" << std::endl;
+        return;
+    }
+
+    osg::Matrix VPW = camera->getViewMatrix()
+            * camera->getProjectionMatrix()
+            * camera->getViewport()->computeWindowMatrix();
+    osg::Matrix invVPW;
+    bool success = invVPW.invert(VPW);
+    if (!success){
+        std::cerr << "doEditRotate(): could not invert View-projection-world matrix for ray casting" << std::endl;
+        return;
+    }
+
+    // Algorithm:
+    // Project mouse ray into 3D;
+    // Find closest point X2 like in doEditOffset() (we will have to calculate r2 instead);
+    // Project vector CX1 so that it is parallel to global X-axis:
+    // The projected vector CX1' is a new normal for the canvas.
+
+    osg::Vec3f nearPoint = osg::Vec3f(x, y, 0.f) * invVPW;
+    osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
+    osg::Vec3f C = _root->getCanvasCurrent()->getCenter();
+    osg::Vec3f N = _root->getCanvasCurrent()->getNormal();
+
+    osg::Vec3f nearC = nearPoint - C;
+    debugLogVec("near-C", nearC.x(), nearC.y(), nearC.z());
+
+    _root->setTransformRotate(N, mouse);
 }
 
 Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
