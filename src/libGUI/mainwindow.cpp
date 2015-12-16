@@ -181,8 +181,8 @@ void MainWindow::onMousePan(){
 
 void MainWindow::onMousePick(){
     emit sendMouseMode(dureu::MOUSE_PICK);
-    //QCursor *myCursor=new QCursor(QPixmap(":/select_icon.png"),-1,-1);
-    //setCursor(*myCursor);
+    QCursor *myCursor=new QCursor(QPixmap(":/select_icon.png"),-1,-1);
+    setCursor(*myCursor);
 }
 
 void MainWindow::onMouseErase()
@@ -196,8 +196,8 @@ void MainWindow::onMouseSketch()
 {
     emit sendMouseMode(dureu::MOUSE_SKETCH);
     // We recommend using 32 x 32 cursors, because this size is supported on all platforms.
-    //QCursor *myCursor=new QCursor(QPixmap(":/stylus_icon.png"),-1,-1);
-    //setCursor(*myCursor);
+    QCursor *myCursor=new QCursor(QPixmap(":/stylus_icon.png"),-1,-1);
+    setCursor(*myCursor);
     //don't forget to put setCursor(Qt::ArrowCursor); in offMouseSketch()
 }
 
@@ -306,7 +306,7 @@ void MainWindow::createActions()
     axes = new QAction(tr("Axes"), this);
     axes->setStatusTip(tr("Show axes"));
 
-    _mActionSketch = new QAction(QIcon(":/stylus.png"), tr("Sketch"), this);
+    _mActionSketch = new QAction(QIcon(":/pencil.png"), tr("Sketch"), this);
     _mActionSketch->setStatusTip(tr("Sketch"));
     this->connect(_mActionSketch, SIGNAL(triggered()), this, SLOT(onMouseSketch()));
 
