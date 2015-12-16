@@ -251,8 +251,11 @@ void EventHandler::doSketch(int x, int y, const osg::Camera *camera, int mouse)
         return;
     }
     osg::Vec3f p = P * invM;
-    //debugLogVec("doSketch(): intersect point local 3D", p.x(), p.y(), p.z());
-    assert(std::fabs(p.z())<=dureu::EPSILON);
+    if (std::fabs(p.z())>dureu::EPSILON){
+        std::cerr << "doSketch(): error while projecting point from global 3D to local 3D, z-coordinate is not zero" << std::endl;
+        debugLogVec("doSketch: p", p.x(), p.y(), p.z());
+        return;
+    }
 
     double u=p.x(), v=p.y();
 

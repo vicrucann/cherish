@@ -128,9 +128,16 @@ bool Canvas::getVisibilityLocalAxis() const
     return _switchFrame->getChildValue(_geodeAxis);
 }
 
-void Canvas::setTransform(osg::MatrixTransform *t){
+void Canvas::setTransformPost(osg::MatrixTransform *t){
     osg::Matrix matrix = t->getMatrix();
     _transform->postMult(matrix);
+    this->transformData(matrix);
+}
+
+void Canvas::setTransformPre(osg::MatrixTransform *r)
+{
+    osg::Matrix matrix = r->getMatrix();
+    _transform->preMult(matrix);
     this->transformData(matrix);
 }
 

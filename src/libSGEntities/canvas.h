@@ -65,7 +65,8 @@ public:
     void setVisibilityLocalAxis(bool vis);
     bool getVisibilityLocalAxis() const;
 
-    void setTransform(osg::MatrixTransform* t);
+    void setTransformPost(osg::MatrixTransform* t);
+    void setTransformPre(osg::MatrixTransform* r);
     osg::MatrixTransform* getTransform() const;
 
     void setCanvasName(const std::string& name);
