@@ -84,6 +84,8 @@ public:
 
     void addStroke(const double u, const double v, int mouse);
     void addPhoto(Photo* photo, const double u = 0, const double v = 0);
+    void setPhotoCurrent(Photo* photo);
+    void setPhotoCurrent(bool current);
 
     // recalculate frame's geometry based on strokes
     // update centroid as well
@@ -97,6 +99,8 @@ public:
 
     Stroke* getStrokeCurrent() const;
     void finishStrokeCurrent();
+
+    Photo* getPhotoCurrent() const;
 
 protected:
     void transformData(const osg::Matrix& matrix);
@@ -123,6 +127,7 @@ private:
     osg::Vec3Array* _mVerticesNormal;
 
     osg::observer_ptr<Stroke> _strokeCurrent;
+    osg::observer_ptr<Photo> _photoCurrent;
 
     osg::Vec3f _center; // centrod of the canvas
     osg::Vec3f _normal;

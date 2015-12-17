@@ -37,9 +37,10 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _mVerticesNormal(new osg::Vec3Array(2)),
 
     _strokeCurrent(0),
+    _photoCurrent(0),
 
     _center(osg::Vec3f(0.f,0.f,0.f)), // moves only when strokes are introduced so that to define it as centroid
-    _normal(osg::Vec3f(0.f,0.f,1.f)),
+    _normal(dureu::NORMAL),
     _color(dureu::CANVAS_CLR_REST) // frame and pickable color
 
 {
@@ -249,6 +250,26 @@ void Canvas::addPhoto(Photo *photo, const double u, const double v)
         return;
     }
     _geodeData->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTexture());
+    this->setPhotoCurrent(photo);
+}
+
+void Canvas::setPhotoCurrent(Photo *photo)
+{
+    if (_photoCurrent.get() == photo)
+        return;
+    if (_photoCurrent.get()!=0)
+        this->setPhotoCurrent(false);
+    _photoCurrent = photo;
+    this->setPhotoCurrent(true);
+}
+
+// changes photo frame color based on bool varialbe
+void Canvas::setPhotoCurrent(bool current)
+{
+    /*if (!current)
+        _photoCurrent->setFrameColor(dureu::PHOTO_CLR_REST);
+    else
+        _photoCurrent->setFrameColor(dureu::PHOTO_CLR_SELECTED);*/
 }
 
 void Canvas::updateFrame()
@@ -305,6 +326,11 @@ void Canvas::finishStrokeCurrent()
     _strokeCurrent = 0;
     std::cout << "finishStrokeCurrent(): finished stroke, observer pointer cleared" << std::endl;
     this->updateFrame();
+}
+
+Photo *Canvas::getPhotoCurrent() const
+{
+    return _photoCurrent.get();
 }
 
 // to transform plane, centroid and local axis

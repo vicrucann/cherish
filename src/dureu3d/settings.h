@@ -81,6 +81,8 @@ enum MOUSE_MODE {
 
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;
 
+const osg::Vec3f NORMAL = osg::Vec3f(0.f,0.f,1.f);
+
 const osg::Vec4 CANVAS_CLR_CURRENT = solarized::magenta;
 const osg::Vec4 CANVAS_CLR_PREVIOUS = solarized::violet;
 const osg::Vec4 CANVAS_CLR_REST = solarized::base1;
@@ -90,11 +92,17 @@ const osg::Vec4 CANVAS_CLR_EDIT = solarized::cyan;
 const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
 const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
 
+const osg::Vec4 PHOTO_CLR_SELECTED = osg::Vec4(solarized::red[0], solarized::red[1], solarized::red[2], 0.2f);
+const osg::Vec4 PHOTO_CLR_REST = osg::Vec4(0.f,0.f,0.f,0.f); // transparent color
+
 const float CANVAS_MINW = 1.2f; // half width
 const float CANVAS_MINH = 1.0f; // half height
 const float CANVAS_MINB = 0.1f; // bound
 const float CANVAS_CORNER = 0.3f; // corner size
 const float CANVAS_AXIS = 0.5f; // loxal axis size
+
+const float PHOTO_MINW = 0.5; // half width
+const float PHOTO_MINH = 0.5; // half height
 
 const float AXES_SIZE = 0.3f;
 const osg::Vec4 AXES_CLR_X = solarized::blue;

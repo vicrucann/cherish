@@ -15,6 +15,7 @@
 #include "axes.h"
 #include "settings.h"
 #include "canvas.h"
+#include "photo.h"
 #include "findnodevisitor.h"
 
 RootScene::RootScene():
@@ -371,6 +372,10 @@ bool RootScene::setCanvasCurrent(Canvas *cnv)
             _canvasPrevious = NULL;
         }
         _canvasCurrent->setColor(dureu::CANVAS_CLR_PREVIOUS);
+        Photo* photo = _canvasCurrent->getPhotoCurrent();
+        if (photo){
+            _canvasCurrent->setPhotoCurrent(false);
+        }
         _canvasPrevious = _canvasCurrent;
         _canvasCurrent = NULL;
     }

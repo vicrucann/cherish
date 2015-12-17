@@ -36,6 +36,8 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         return false;
     if (_mode == dureu::MOUSE_PICK || _mode == dureu::MOUSE_ERASE)
         doByIntersector(ea, aa);
+    else if (_mode == dureu::MOUSE_EDIT_MOVE)
+        doByHybrid(ea, aa);
     else
         doByOperator(ea, aa);
     return false;
@@ -157,6 +159,40 @@ void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         // frame, pen_pressure, pen_..., ...
         break;
     }
+}
+
+// First it uses intersector to select a drawable, if there is
+// no current drawable already (no drawable selected already);
+// Then it uses operator to find intersection with canvas plane manually;
+// For intersector, we can set a mask so that it only selects within current canvas,
+// or we may switch the current canvas where the selected drawable belongs to;
+void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE ||
+            ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+        return;
+    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
+    if (!viewer){
+        std::cerr << "doByIntersector(): could not retrieve viewer" << std::endl;
+        return;
+    }
+    osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(
+                osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
+
+    osgUtil::IntersectionVisitor iv(intersector);
+    osg::Camera* camera = viewer->getCamera();
+    if (!camera){
+        std::cerr << "doByIntersector(): could not read camera" << std::endl;
+        return;
+    }
+    camera->accept(iv);
+    if (!intersector->containsIntersections()){
+        std::cerr << "doByIntersector(): no intersections found" << std::endl;
+        return;
+    }
+    const osgUtil::LineSegmentIntersector::Intersection& result = *(intersector->getIntersections().begin());
+
+
 }
 
 void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &result){

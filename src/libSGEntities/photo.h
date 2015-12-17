@@ -14,6 +14,7 @@ class Photo: public osg::Geometry{
 public:
     Photo(const std::string& fname);
     osg::Texture2D* getTexture() const;
+    void setFrameColor(const osg::Vec4 color);
 private:
     osg::ref_ptr<osg::Vec3Array> _vertices;
     osg::ref_ptr<osg::Vec3Array> _normals;

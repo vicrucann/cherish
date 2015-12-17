@@ -27,6 +27,7 @@ public:
 
     virtual void doByIntersector(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     virtual void doByOperator(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    virtual void doByHybrid(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     //virtual void doOperation(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
     //                         const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& result);
