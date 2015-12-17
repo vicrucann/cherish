@@ -419,6 +419,12 @@ unsigned int RootScene::getCanvasLevel() const{
     return 3;
 }
 
+// levelCanvas -> Switch -> Transform -> TransformData -> GeodeData -> Photo
+unsigned int RootScene::getPhotoLevel() const
+{
+    return this->getCanvasLevel() + 5;
+}
+
 void RootScene::setTransformOffset(const osg::Vec3f &translate, const int mouse)
 {
     // initialize offset mode

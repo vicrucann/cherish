@@ -84,6 +84,7 @@ public:
 
     void addStroke(const double u, const double v, int mouse);
     void addPhoto(Photo* photo, const double u = 0, const double v = 0);
+    void movePhoto(Photo* photo, const double u, const double v, int mouse);
     void setPhotoCurrent(Photo* photo);
     void setPhotoCurrent(bool current);
 
@@ -133,6 +134,8 @@ private:
     osg::Vec3f _normal;
 
     osg::Vec4f _color; // display color for canvas drawables
+
+    int _idPhoto; // so that to give unique names to photo entities
 
 };
 

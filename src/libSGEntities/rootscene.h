@@ -98,6 +98,7 @@ public:
     Canvas* getCanvasPrevious() const;
 
     unsigned int getCanvasLevel() const;
+    unsigned int getPhotoLevel() const;
 
     void setTransformOffset(const osg::Vec3f& translate, const int mouse);
     void setTransformRotate(const osg::Vec3f& normal, const int mouse);

@@ -51,9 +51,11 @@ void EventHandler::setMode(dureu::MOUSE_MODE mode)
 // for pick and erase when lineintersector is going to be used
 void EventHandler::doByIntersector(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    // proceed only if it is release of left mouse button
     if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE ||
             ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
         return;
+
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (!viewer){
         std::cerr << "doByIntersector(): could not retrieve viewer" << std::endl;
@@ -168,12 +170,15 @@ void EventHandler::doByOperator(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
 // or we may switch the current canvas where the selected drawable belongs to;
 void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
-    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE ||
-            ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+            ))
         return;
+
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (!viewer){
-        std::cerr << "doByIntersector(): could not retrieve viewer" << std::endl;
+        std::cerr << "doByHybrid(): could not retrieve viewer" << std::endl;
         return;
     }
     osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(
@@ -182,17 +187,32 @@ void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
     osgUtil::IntersectionVisitor iv(intersector);
     osg::Camera* camera = viewer->getCamera();
     if (!camera){
-        std::cerr << "doByIntersector(): could not read camera" << std::endl;
+        std::cerr << "doByHybrid(): could not read camera" << std::endl;
         return;
     }
     camera->accept(iv);
     if (!intersector->containsIntersections()){
-        std::cerr << "doByIntersector(): no intersections found" << std::endl;
+        std::cerr << "doByHybrid(): no intersections found" << std::endl;
         return;
     }
     const osgUtil::LineSegmentIntersector::Intersection& result = *(intersector->getIntersections().begin());
 
-
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        std::cout << "doByHybrid(): push button" << std::endl;
+        doEditMove(result, ea.getX(), ea.getY(), camera, 0);
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        std::cout << "doByHybrid(): release button" << std::endl;
+        doEditMove(result, ea.getX(), ea.getY(), camera, 2);
+        break;
+    case osgGA::GUIEventAdapter::DRAG:
+        doEditMove(result, ea.getX(), ea.getY(), camera, 1);
+        break;
+    default: // scrolling, doubleclick, move, keydown, keyup, resize
+        // frame, pen_pressure, pen_..., ...
+        break;
+    }
 }
 
 void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &result){
@@ -402,6 +422,97 @@ void EventHandler::doEditRotate(int x, int y, const osg::Camera *camera, int mou
     _root->setTransformRotate(N, mouse);
 }
 
+// Pick photo
+// Obtain canvas that contains that photo
+// Make that canvas current
+// Change photo coordinates to [x, y]
+// Change photo colors when pushed (edit color) and released (no color)
+void EventHandler::doEditMove(const osgUtil::LineSegmentIntersector::Intersection &result, int x, int y, const osg::Camera *camera, int mouse)
+{
+    Photo* photo = getPhoto(result);
+    if (!photo){
+        std::cerr << "doEditMove(): could not dynamic_cast<Photo*>" << std::endl;
+        return;
+    }
+    Canvas* cnv = getCanvas(result);
+    if (!cnv){
+        std::cerr << "doEditMove(): could not dynamic_cast<Canvas*>" << std::endl;
+        return;
+    }
+    _root->setCanvasCurrent(cnv);
+
+    assert(camera);
+    if (!camera->getViewport()){
+        std::cerr << "doEditMove(): could not read viewport" << std::endl;
+        return;
+    }
+
+    osg::Matrix VPW = camera->getViewMatrix()
+            * camera->getProjectionMatrix()
+            * camera->getViewport()->computeWindowMatrix();
+    osg::Matrix invVPW;
+    bool success = invVPW.invert(VPW);
+    if (!success){
+        std::cerr << "doEditMove(): could not invert View-projection-world matrix for ray casting" << std::endl;
+        return;
+    }
+
+    osg::Vec3f nearPoint = osg::Vec3f(x, y, 0.f) * invVPW;
+    osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
+
+    const osg::Plane plane = _root->getCanvasCurrent()->getPlane();
+    const osg::Vec3f center = _root->getCanvasCurrent()->getCenter();
+
+    assert(plane.valid());
+    std::vector<osg::Vec3f> ray(2);
+    ray[0] = nearPoint;
+    ray[1] = farPoint;
+    if (plane.intersect(ray)){ // 1 or -1: no intersection
+        std::cerr << "doEditMove(): no intersection with the ray." << std::endl;
+        // finish the stroke if it was started
+        if (_root->getCanvasCurrent()->getStrokeCurrent()){
+            std::cout << "doSketch(): finishing the current stroke." << std::endl;
+            _root->getCanvasCurrent()->finishStrokeCurrent();
+        }
+        return;
+    }
+    osg::Vec3f dir = farPoint-nearPoint;
+    if (! plane.dotProductNormal(dir)){ // denominator
+        std::cerr << "doEditMove(): projected line is parallel to the canvas plane" << std::endl;
+        return;
+    }
+    if (! plane.dotProductNormal(center-nearPoint)){
+        std::cerr << "doEditMove(): plane contains the line, so no single intersection can be defined" << std::endl;
+        return;
+    }
+
+    double len = plane.dotProductNormal(center-nearPoint) / plane.dotProductNormal(dir);
+    osg::Vec3f P = dir * len + nearPoint;
+    //debugLogVec("doEditMove(): intersect point global 3D", P.x(), P.y(), P.z());
+
+    osg::Matrix M =  _root->getCanvasCurrent()->getTransform()->getMatrix();
+    osg::Matrix invM;
+    if (!invM.invert(M)){
+        std::cerr << "doEditMove(): could not invert model matrix" << std::endl;
+        return;
+    }
+    osg::Vec3f p = P * invM;
+    if (std::fabs(p.z())>dureu::EPSILON){
+        std::cerr << "doEditMove(): error while projecting point from global 3D to local 3D, z-coordinate is not zero" << std::endl;
+        debugLogVec("doEditMove(): p", p.x(), p.y(), p.z());
+        return;
+    }
+
+    double u=p.x(), v=p.y();
+
+    _root->getCanvasCurrent()->movePhoto(photo, u, v, mouse);
+}
+
 Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
     return dynamic_cast<Canvas*>(result.nodePath.at(_root->getCanvasLevel()));
+}
+
+Photo *EventHandler::getPhoto(const osgUtil::LineSegmentIntersector::Intersection &result)
+{
+    return dynamic_cast<Photo*>(result.drawable.get());
 }

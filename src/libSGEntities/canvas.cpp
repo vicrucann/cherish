@@ -42,6 +42,7 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _center(osg::Vec3f(0.f,0.f,0.f)), // moves only when strokes are introduced so that to define it as centroid
     _normal(dureu::NORMAL),
     _color(dureu::CANVAS_CLR_REST) // frame and pickable color
+  , _idPhoto(0)
 
 {
     this->transformData(_transform->getMatrix());
@@ -267,7 +268,23 @@ void Canvas::addPhoto(Photo *photo, const double u, const double v)
         return;
     }
     _geodeData->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTexture());
-    this->setPhotoCurrent(photo);
+    //this->setPhotoCurrent(photo);
+}
+
+void Canvas::movePhoto(Photo *photo, const double u, const double v, int mouse)
+{
+    if (!photo){
+        debugErrMsg("movePhoto(): photo pointer is NULL");
+        return;
+    }
+    if (mouse == 0){
+        photo->setModeEdit(true);
+    }
+    if (mouse == 2){
+        photo->setModeEdit(false);
+    }
+    photo->move(u,v);
+    this->updateFrame();
 }
 
 void Canvas::setPhotoCurrent(Photo *photo)

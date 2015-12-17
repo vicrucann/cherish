@@ -10,6 +10,8 @@ Photo::Photo(const std::string &fname)
     , _normals(new osg::Vec3Array)
     , _texcoords(new osg::Vec2Array)
     , _texture(new osg::Texture2D)
+    , _width(dureu::PHOTO_MINW)
+    , _height(dureu::PHOTO_MINH)
 {
     osg::Image* image = osgDB::readImageFile(fname);
     float aspectRatio = static_cast<float>(image->s()) / static_cast<float>(image->t());
@@ -17,22 +19,22 @@ Photo::Photo(const std::string &fname)
     debugLogVal("Image width", image->s());
 
     // half sizes based on aspect ratio
-    float W = 2.f * (dureu::PHOTO_MINH);
-    float H = W * aspectRatio;
-    debugLogVal("Photo(): width", W);
-    debugLogVal("Photo(): height", H);
-    _vertices->push_back( osg::Vec3(W/2.f, H/2.f, 0.f) );
-    _vertices->push_back( osg::Vec3(-W/2.f, H/2.f, 0.f) );
-    _vertices->push_back( osg::Vec3(-W/2.f, -H/2.f, 0.f) );
-    _vertices->push_back( osg::Vec3(W/2.f, -H/2.f, 0.f) );
+    _width = 2.f * (dureu::PHOTO_MINW);
+    _height = _width * aspectRatio;
+    debugLogVal("Photo(): width", _width);
+    debugLogVal("Photo(): height", _height);
+    _vertices->push_back( osg::Vec3(_width/2.f, _height/2.f, 0.f) );
+    _vertices->push_back( osg::Vec3(-_width/2.f, _height/2.f, 0.f) );
+    _vertices->push_back( osg::Vec3(-_width/2.f, -_height/2.f, 0.f) );
+    _vertices->push_back( osg::Vec3(_width/2.f, -_height/2.f, 0.f) );
 
     _normals->push_back( dureu::NORMAL );
 
     // we use W because the image was scaled to be normalized
-    _texcoords->push_back( osg::Vec2(W, W) );
-    _texcoords->push_back( osg::Vec2(W, 0.0f) );
+    _texcoords->push_back( osg::Vec2(_width, _width) );
+    _texcoords->push_back( osg::Vec2(_width, 0.0f) );
     _texcoords->push_back( osg::Vec2(0.0f, 0.0f) );
-    _texcoords->push_back( osg::Vec2(0.0f, W) );
+    _texcoords->push_back( osg::Vec2(0.0f, _width) );
 
     this->setVertexArray(_vertices.get());
     this->setNormalArray(_normals.get());
@@ -58,4 +60,23 @@ void Photo::setFrameColor(const osg::Vec4 color)
     (*colors)[2] = color;
     (*colors)[3] = color;
     this->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
+}
+
+void Photo::setModeEdit(bool edit)
+{
+    if (edit)
+        this->setFrameColor(dureu::CANVAS_CLR_EDIT);
+    else
+        this->setFrameColor(dureu::PHOTO_CLR_REST);
+}
+
+void Photo::move(const double u, const double v)
+{
+    osg::Vec3f center = osg::Vec3f(u,v,0.f);
+    (*_vertices)[0] = center + osg::Vec3(_width/2.f, _height/2.f, 0.f);
+    (*_vertices)[1] = center + osg::Vec3(-_width/2.f, _height/2.f, 0.f);
+    (*_vertices)[2] = center + osg::Vec3(-_width/2.f, -_height/2.f, 0.f);
+    (*_vertices)[3] = center + osg::Vec3(_width/2.f, -_height/2.f, 0.f);
+    this->dirtyDisplayList();
+    this->dirtyBound();
 }

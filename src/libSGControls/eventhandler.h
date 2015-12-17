@@ -17,6 +17,7 @@
 
 #include "settings.h"
 #include "canvas.h"
+#include "photo.h"
 #include "rootscene.h"
 
 class EventHandler : public osgGA::GUIEventHandler {
@@ -35,9 +36,12 @@ public:
     virtual void doSketch(int x, int y, const osg::Camera* camera, int mouse = 1);
     virtual void doEditOffset(int x, int y, const osg::Camera* camera, int mouse = 1);
     virtual void doEditRotate(int x, int y, const osg::Camera* camera, int mouse = 1);
+    virtual void doEditMove(const osgUtil::LineSegmentIntersector::Intersection& result,
+                            int x, int y, const osg::Camera* camera, int mouse = 1);
 
 protected:
     Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
+    Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
 
     dureu::MOUSE_MODE _mode;
     osg::observer_ptr<RootScene> _root;
