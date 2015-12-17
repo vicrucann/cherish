@@ -106,6 +106,23 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
     _axis->setColorArray(colorAxis, osg::Array::BIND_PER_VERTEX);
 }
 
+void Canvas::setColor(osg::Vec4f color)
+{
+    if (color == dureu::CANVAS_CLR_CURRENT) // hide the axis for "rest" canvases
+        _switchFrame->setChildValue(_geodeAxis, true);
+    else
+        _switchFrame->setChildValue(_geodeAxis, false);
+
+    _color = color;
+    osg::Vec4Array* colors = new osg::Vec4Array(4);
+    (*colors)[0] = _color;
+    (*colors)[1] = _color;
+    (*colors)[2] = _color;
+    (*colors)[3] = _color;
+    _frame->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
+    _pickable->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
+}
+
 osg::Vec4f Canvas::getColor() const{
     return _color;
 }
@@ -266,10 +283,10 @@ void Canvas::setPhotoCurrent(Photo *photo)
 // changes photo frame color based on bool varialbe
 void Canvas::setPhotoCurrent(bool current)
 {
-    /*if (!current)
+    if (!current)
         _photoCurrent->setFrameColor(dureu::PHOTO_CLR_REST);
     else
-        _photoCurrent->setFrameColor(dureu::PHOTO_CLR_SELECTED);*/
+        _photoCurrent->setFrameColor(dureu::PHOTO_CLR_SELECTED);
 }
 
 void Canvas::updateFrame()
@@ -379,18 +396,4 @@ void Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float s
     (*_mVerticesNormal)[1] = center + osg::Vec3f(0.f,0.f, szN);
 }
 
-void Canvas::setColor(osg::Vec4 color){
-    if (color == dureu::CANVAS_CLR_CURRENT) // hide the axis for "rest" canvases
-        _switchFrame->setChildValue(_geodeAxis, true);
-    else
-        _switchFrame->setChildValue(_geodeAxis, false);
 
-    _color = color;
-    osg::Vec4Array* colors = new osg::Vec4Array(4);
-    (*colors)[0] = _color;
-    (*colors)[1] = _color;
-    (*colors)[2] = _color;
-    (*colors)[3] = _color;
-    _frame->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
-    _pickable->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
-}

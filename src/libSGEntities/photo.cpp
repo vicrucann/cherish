@@ -39,9 +39,10 @@ Photo::Photo(const std::string &fname)
     this->setNormalBinding(osg::Geometry::BIND_OVERALL);
     this->setTexCoordArray(0, _texcoords.get());
     this->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
-    //this->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
 
     _texture->setImage(image);
+    osg::Vec4f color = osg::Vec4f(1.f,1.f,1.f,1.0f);
+    this->setFrameColor(dureu::PHOTO_CLR_REST);
 }
 
 osg::Texture2D *Photo::getTexture() const

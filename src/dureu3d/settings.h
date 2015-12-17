@@ -92,8 +92,8 @@ const osg::Vec4 CANVAS_CLR_EDIT = solarized::cyan;
 const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
 const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
 
-const osg::Vec4 PHOTO_CLR_SELECTED = osg::Vec4(solarized::red[0], solarized::red[1], solarized::red[2], 0.2f);
-const osg::Vec4 PHOTO_CLR_REST = osg::Vec4(0.f,0.f,0.f,0.f); // transparent color
+const osg::Vec4 PHOTO_CLR_SELECTED = solarized::red; // texture frame colors
+const osg::Vec4f PHOTO_CLR_REST = osg::Vec4f(1.f,1.f,1.f,1.0f); // white filter
 
 const float CANVAS_MINW = 1.2f; // half width
 const float CANVAS_MINH = 1.0f; // half height
