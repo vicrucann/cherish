@@ -77,7 +77,8 @@ public:
     bool deleteNode(const std::string& name);
     bool deleteNode(osg::Node* node);
 
-    osg::Node *loadSceneFromFile(const std::string& fname);
+    bool loadSceneFromFile(const std::string& fname);
+    bool writeSceneToFile(const std::string& fname) const;
     Photo* loadPhotoFromFile(const std::string& fname);
 
     unsigned int getMaxCanvasId() const;
@@ -104,6 +105,7 @@ public:
     void setTransformRotate(const osg::Vec3f& normal, const int mouse);
 
 protected:
+    bool clearUserData();
     void setCanvasName(Canvas* cnv);
     std::string getEntityName(const std::string& name, unsigned int id) const;
     bool setSceneObserver();

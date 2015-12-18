@@ -6,6 +6,7 @@
 #include <osg/Group>
 #include <osg/Node>
 #include <osgDB/ReadFile>
+#include <osgDB/WriteFile>
 #include "osg/MatrixTransform"
 #include <osgUtil/SceneView>
 #include <osg/ValueObject>
@@ -264,16 +265,36 @@ bool RootScene::deleteNode(osg::Node *node)
     return success;
 }
 
-osg::Node* RootScene::loadSceneFromFile(const std::string& fname){
-    std::cout << "loadSceneFromFile(): (string&)" << std::endl;
-    osg::Node* node = osgDB::readNodeFile(fname);
-    if (!node){
-        std::cerr << "loadSceneFromFile(): File could not be loaded: " << fname << std::endl;
-        return 0;
+bool RootScene::loadSceneFromFile(const std::string& fname){
+    debugLogVal("loadSceneFromFile", fname);
+    osg::ref_ptr<osg::Group> userScene = dynamic_cast<osg::Group*>(osgDB::readNodeFile(fname));
+    // check the pointer is not empty
+    if (!userScene.get()){
+        debugErrMsg("loadSceneFromFile: could not load from file, or could not perform the dynamic_cast<osg::Group*>");
+        return false;
     }
-    std::cout << "loadSceneFromFile(): Trying to load node with ptr: " << node << std::endl;
-    this->addNode(node);
-    return node;
+    // clean the current scene data
+    if (_userScene->getNumChildren() > 0){
+        debugLogMsg("loadSceneFromFile(): the current _userScene will be replaced by a scene from file");
+        if (!this->clearUserData()){
+            debugErrMsg("loadSceneFromFile(): could not clear the current user scene data");
+            userScene = 0;
+            return false;
+        }
+    }
+    // assign the loaded scene to the internal user data
+    _userScene = userScene.get();
+    return true;
+}
+
+bool RootScene::writeSceneToFile(const std::string &fname) const
+{
+    debugLogVal("writeSceneToFile", fname);
+    osg::Node* node = dynamic_cast<osg::Node*>(_userScene.get());
+    bool written = osgDB::writeNodeFile(*node, fname);
+    if (!written)
+        debugErrMsg("writeSceneToFile(): Could not write scene to the specified file");
+    return written;
 }
 
 Photo *RootScene::loadPhotoFromFile(const std::string &fname)
@@ -469,6 +490,11 @@ void RootScene::setTransformRotate(const osg::Vec3f &normal, const int mouse)
         // when we do translate, we can simply post multiply:
         // M = Mr*Mt*T; Mt = Mt*T;
     }
+}
+
+bool RootScene::clearUserData()
+{
+    return _userScene->removeChildren(0, _userScene->getNumChildren());
 }
 
 void RootScene::setCanvasName(Canvas *cnv){
