@@ -67,6 +67,7 @@ public:
     bool getVisibilityLocalAxis() const;
 
     void setTransformPost(osg::MatrixTransform* t);
+    void setTransformPost(const osg::Matrix& m);
     void setTransformPre(osg::MatrixTransform* r);
     osg::MatrixTransform* getTransform() const;
 

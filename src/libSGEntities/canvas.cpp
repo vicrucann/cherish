@@ -153,6 +153,12 @@ void Canvas::setTransformPost(osg::MatrixTransform *t){
     this->transformData(matrix);
 }
 
+void Canvas::setTransformPost(const osg::Matrix &m)
+{
+    _transform->postMult(m);
+    this->transformData(m);
+}
+
 void Canvas::setTransformPre(osg::MatrixTransform *r)
 {
     osg::Matrix matrix = r->getMatrix();
@@ -316,6 +322,9 @@ void Canvas::updateFrame()
     float szY = std::max(dy, dureu::CANVAS_MINW);
 
     this->setVertices(bb.center(), szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+    osg::Matrix mat;
+    mat.makeTranslate(bb.center() - _center);
+    this->setTransformPost(mat);
 }
 
 void Canvas::setModeOffset(bool on)
