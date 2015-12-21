@@ -197,6 +197,13 @@ void MainWindow::onMouseErase()
     setCursor(*myCursor);
 }
 
+void MainWindow::onMouseDelete()
+{
+    emit sendMouseMode(dureu::MOUSE_DELETE);
+    QCursor *myCursor=new QCursor(QPixmap(":/eraser_icon.png"),-1,-1);
+    setCursor(*myCursor);
+}
+
 void MainWindow::onMouseSketch()
 {
     emit sendMouseMode(dureu::MOUSE_SKETCH);

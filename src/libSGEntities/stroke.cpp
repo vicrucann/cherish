@@ -38,6 +38,18 @@ void Stroke::appendPoint(float u, float v)
     // read more: http://forum.openscenegraph.org/viewtopic.php?t=2190&postdays=0&postorder=asc&start=15
 }
 
+float Stroke::getLength() const
+{
+    osg::BoundingBox bb = this->getBoundingBox();
+    if (std::fabs(bb.zMax()-bb.zMin()) > dureu::EPSILON ){
+        debugErrMsg("getLength: z coordinates of a stroke are unexpected values");
+        debugLogVal("zMax", bb.zMax());
+        debugLogVal("zMin", bb.zMin());
+        return 0;
+    }
+    return std::max(bb.xMax() - bb.xMin(), bb.yMax() - bb.yMin());
+}
+
 void Stroke::setColor(osg::Vec4f color)
 {
     for (unsigned int i = 0; i<_mColors->size(); ++i)

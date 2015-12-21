@@ -46,6 +46,7 @@ private slots:
     void onMousePan();
     void onMousePick();
     void onMouseErase();
+    void onMouseDelete();
     void onMouseSketch();
     void onMouseOffset();
     void onMouseRotate();

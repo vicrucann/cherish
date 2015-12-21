@@ -73,6 +73,7 @@ enum MOUSE_MODE {
     MOUSE_EDIT_MOVE,
     MOUSE_BOOKMARK, // create bookmark (take a snapshot of a selected viewer)
     MOUSE_ERASE, // deletes entyties from scene
+    MOUSE_DELETE, // remove the selected element completely (photo or canvas)
     MOUSE_ROTATE,
     MOUSE_ZOOM,
     MOUSE_PAN,
@@ -91,6 +92,7 @@ const osg::Vec4 CANVAS_CLR_EDIT = solarized::cyan;
 
 const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
 const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
+const float STROKE_MINL = 0.05f;
 
 const osg::Vec4 PHOTO_CLR_SELECTED = solarized::red; // texture frame colors
 const osg::Vec4f PHOTO_CLR_REST = osg::Vec4f(1.f,1.f,1.f,1.0f); // white filter
