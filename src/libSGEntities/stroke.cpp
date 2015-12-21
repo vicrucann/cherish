@@ -25,9 +25,9 @@ Stroke::Stroke():
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     this->setStateSet(stateset);
 
-    /*this->setDataVariance(osg::Object::DYNAMIC);
+    this->setDataVariance(osg::Object::DYNAMIC);
     this->setUseDisplayList(false);
-    this->setUseVertexBufferObjects(true);*/
+    this->setUseVertexBufferObjects(true);
 
     std::cout << "Stroke(): ctor complete" << std::endl;
 }
@@ -38,7 +38,11 @@ void Stroke::appendPoint(float u, float v)
     _mColors->push_back(dureu::STROKE_CLR_NORMAL);
     _mDrawArrayLines->setFirst(0);
     _mDrawArrayLines->setCount(_mVertexData->size());
-    this->dirtyDisplayList(); // so that frame() is called to update
+
+    _mVertexData->dirty();
+    _mColors->dirty();
+
+    //this->dirtyDisplayList(); // so that frame() is called to update
     this->dirtyBound();
     // read more: http://forum.openscenegraph.org/viewtopic.php?t=2190&postdays=0&postorder=asc&start=15
 }
