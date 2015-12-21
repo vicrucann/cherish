@@ -24,6 +24,11 @@ Stroke::Stroke():
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     this->setStateSet(stateset);
+
+    /*this->setDataVariance(osg::Object::DYNAMIC);
+    this->setUseDisplayList(false);
+    this->setUseVertexBufferObjects(true);*/
+
     std::cout << "Stroke(): ctor complete" << std::endl;
 }
 
@@ -52,6 +57,8 @@ float Stroke::getLength() const
 
 void Stroke::setColor(osg::Vec4f color)
 {
-    for (unsigned int i = 0; i<_mColors->size(); ++i)
-        (*_mColors)[i] = color;
+    _mColors->front() = color;
+    _mColors->dirty();
+    /*for (unsigned int i = 0; i<_mColors->size(); ++i)
+        (*_mColors)[i] = color;*/
 }

@@ -52,8 +52,8 @@ void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::
     case dureu::MOUSE_PICK:
         doPick(*result);
         break;
-    case dureu::MOUSE_ERASE:
-        doErase(*result);
+    case dureu::MOUSE_DELETE:
+        doDelete(*result);
         break;
     default:
         break;
@@ -88,6 +88,11 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_EDIT_ROTATE:
             doEditRotate(ea.getX(), ea.getY(), 0);
             break;
+        case dureu::MOUSE_ERASE:
+            if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+                return;
+            doErase(u,v,0);
+            break;
         default:
             break;
         }
@@ -108,6 +113,11 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_EDIT_ROTATE:
             doEditRotate(ea.getX(), ea.getY(), 2);
             break;
+        case dureu::MOUSE_ERASE:
+            if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+                return;
+            doErase(u,v,2);
+            break;
         default:
             break;
         }
@@ -126,6 +136,11 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
             break;
         case dureu::MOUSE_EDIT_ROTATE:
             doEditRotate(ea.getX(), ea.getY(), 1);
+            break;
+        case dureu::MOUSE_ERASE:
+            if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+                return;
+            doErase(u,v,1);
             break;
         default:
             break;
@@ -190,16 +205,25 @@ void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &r
 }
 
 // check nodepath to see how to go far enough so that to get canvas type
-void EventHandler::doErase(const osgUtil::LineSegmentIntersector::Intersection &result)
+void EventHandler::doDelete(const osgUtil::LineSegmentIntersector::Intersection &result)
 {
     Canvas* cnv = getCanvas(result);
     if (!cnv){
-        std::cerr << "doErase(): could not dynamic_cast<Canvas*>" << std::endl;
+        std::cerr << "doDelete(): could not dynamic_cast<Canvas*>" << std::endl;
         return;
     }
-    std::cout << "doErase(): assumed canvas with name: " << cnv->getName() << std::endl;
+    std::cout << "doDelete(): assumed canvas with name: " << cnv->getName() << std::endl;
     bool success = _root->deleteCanvas(cnv);
-    std::cout << "doErase(): success is " << success << std::endl;
+    std::cout << "doDelete(): success is " << success << std::endl;
+}
+
+void EventHandler::doErase(double u, double v, int mouse)
+{
+    // Algorithm. For a center with 3d local [u,v,0],
+    // check if there are any strokes whose points are from the center
+    // within radius of ERASER_MIN;
+    // If yes, mark those points and pass their coords into splitStroke
+    // remove those points from each of the strokes, split strokes if needed
 }
 
 // see https://www.opengl.org/sdk/docs/man2/xhtml/gluUnProject.xml

@@ -111,12 +111,16 @@ const osg::Vec4 AXES_CLR_X = solarized::blue;
 const osg::Vec4 AXES_CLR_Y = solarized::cyan;
 const osg::Vec4 AXES_CLR_Z = solarized::red;
 
+const float ERASER_MIN = 0.05f; // eraser diameter
+const float ERASER_MID = 0.2f;
+const float ERASER_MAX = 0.4f;
+
 // entity "names"
 const std::string NAME_CANVAS = "Canvas";
 const std::string NAME_ENTITY = "Entity";
 const std::string NAME_STROKE = "Stroke";
 const std::string NAME_GEOMETRY = "Geometry";
-const std::string NAME_IMAGE = "Image";
+const std::string NAME_PHOTO = "Photo";
 
 const float HUD_LEFT = -60.f;
 const float HUD_RIGHT = 60.f;
