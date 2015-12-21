@@ -254,10 +254,24 @@ void Canvas::addStroke(const double u, const double v, int mouse)
     this->updateFrame();
 
     if (mouse == 2){
+        float len = _strokeCurrent->getLength();
+        if (len < dureu::STROKE_MINL){
+            if (!this->deleteStroke(_strokeCurrent.get()))
+                debugErrMsg("addStroke(): as the stroke was short, it was attempted to delete it, but failed");
+        }
         _strokeCurrent = 0;
         //this->updateData();
         std::cout << "addStroke(): finished stroke, observer pointer cleared" << std::endl;
     }
+}
+
+bool Canvas::deleteStroke(Stroke *stroke)
+{
+    if (!stroke){
+        debugErrMsg("deleteStroke(): pointer is NULL");
+        return false;
+    }
+    return _geodeData->removeChild(stroke);
 }
 
 void Canvas::addPhoto(Photo *photo, const double u, const double v)

@@ -8,6 +8,7 @@ class Stroke : public osg::Geometry {
 public:
     Stroke();
     void appendPoint(float u, float v);
+    float getLength() const;
 
     void setColor(osg::Vec4f color);
 private:
