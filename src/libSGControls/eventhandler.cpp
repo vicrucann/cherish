@@ -21,7 +21,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     if (_mode == dureu::MOUSE_ROTATE || _mode == dureu::MOUSE_PAN ||
             _mode == dureu::MOUSE_ZOOM || _mode == dureu::MOUSE_FIXEDVIEW)
         return false;
-    if (_mode == dureu::MOUSE_PICK || _mode == dureu::MOUSE_ERASE)
+    if (_mode == dureu::MOUSE_PICK || _mode == dureu::MOUSE_DELETE)
         doByLineIntersector(ea, aa);
     else if (_mode == dureu::MOUSE_EDIT_MOVE)
         doByHybrid(ea, aa);
