@@ -231,7 +231,6 @@ std::string Canvas::getGeodeDataName() const{
 // The result point is appended to the current stroke.
 void Canvas::addStroke(const double u, const double v, int mouse)
 {
-    bool success = true;
     if (mouse == 0 || (mouse==1 && !_strokeCurrent.get())){
         debugLogMsg("addStroke(): initialization");
         assert(_strokeCurrent.get() == 0);
@@ -250,13 +249,15 @@ void Canvas::addStroke(const double u, const double v, int mouse)
         }
     }
     assert(_strokeCurrent.get());
-    // append the (u,v) point to the stroke
     _strokeCurrent->appendPoint(u,v);
+
+    this->updateFrame();
+
     if (mouse == 2){
         _strokeCurrent = 0;
+        //this->updateData();
         std::cout << "addStroke(): finished stroke, observer pointer cleared" << std::endl;
     }
-    this->updateFrame();
 }
 
 void Canvas::addPhoto(Photo *photo, const double u, const double v)
@@ -286,11 +287,14 @@ void Canvas::movePhoto(Photo *photo, const double u, const double v, int mouse)
     if (mouse == 0){
         photo->setModeEdit(true);
     }
-    if (mouse == 2){
-        photo->setModeEdit(false);
-    }
+
     photo->move(u,v);
     this->updateFrame();
+
+    if (mouse == 2){
+        photo->setModeEdit(false);
+        //this->updateData();
+    }
 }
 
 void Canvas::setPhotoCurrent(Photo *photo)
@@ -322,9 +326,22 @@ void Canvas::updateFrame()
     float szY = std::max(dy, dureu::CANVAS_MINW);
 
     this->setVertices(bb.center(), szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+}
+
+// we have to separate updateData() from updateFrame because:
+// we do not want to update data during certain operations, such as
+// moving photo within the canvas, or adding a stroke to a canvas
+// updateData is called on release button for the mentioned cases
+void Canvas::updateData()
+{
+    osg::BoundingBox bb = _geodeData->getBoundingBox();
+    assert(bb.valid());
+
+    debugLogVec("_center", _center.x(), _center.y(), _center.z());
+    debugLogVec("bb.center", bb.center().x(), bb.center().y(), bb.center().z());
     osg::Matrix mat;
     mat.makeTranslate(bb.center() - _center);
-    this->setTransformPost(mat);
+    this->transformData(mat);
 }
 
 void Canvas::setModeOffset(bool on)
@@ -369,6 +386,7 @@ void Canvas::finishStrokeCurrent()
     _strokeCurrent = 0;
     std::cout << "finishStrokeCurrent(): finished stroke, observer pointer cleared" << std::endl;
     this->updateFrame();
+    //this->updateData();
 }
 
 Photo *Canvas::getPhotoCurrent() const

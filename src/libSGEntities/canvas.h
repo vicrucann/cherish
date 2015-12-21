@@ -90,8 +90,8 @@ public:
     void setPhotoCurrent(bool current);
 
     // recalculate frame's geometry based on strokes
-    // update centroid as well
     void updateFrame();
+    void updateData(); // update centroid as well
 
     void setModeOffset(bool on); // changes certain colors, shows or hides normal
 

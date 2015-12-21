@@ -86,7 +86,7 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
             doEditOffset(XC, 0);
             break;
         case dureu::MOUSE_EDIT_ROTATE:
-            //doEditRotate(ea.getX(), ea.getY(), camera, 0);
+            doEditRotate(ea.getX(), ea.getY(), 0);
             break;
         default:
             break;
@@ -106,7 +106,7 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
             doEditOffset(XC, 2);
             break;
         case dureu::MOUSE_EDIT_ROTATE:
-            //doEditRotate(ea.getX(), ea.getY(), camera, 2);
+            doEditRotate(ea.getX(), ea.getY(), 2);
             break;
         default:
             break;
@@ -125,7 +125,7 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
             doEditOffset(XC, 1);
             break;
         case dureu::MOUSE_EDIT_ROTATE:
-            //doEditRotate(ea.getX(), ea.getY(), camera, 1);
+            doEditRotate(ea.getX(), ea.getY(), 1);
             break;
         default:
             break;
@@ -162,10 +162,12 @@ void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         std::cout << "doByHybrid(): push button" << std::endl;
+        debugLogVec("u v", u, v, 0);
         doEditMove(*result, u, v, 0);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         std::cout << "doByHybrid(): release button" << std::endl;
+        debugLogVec("u v", u, v, 0);
         doEditMove(*result, u, v, 2);
         break;
     case osgGA::GUIEventAdapter::DRAG:
@@ -216,39 +218,9 @@ void EventHandler::doEditOffset(osg::Vec3f XC, int mouse)
     _root->setTransformOffset(XC, mouse);
 }
 
-void EventHandler::doEditRotate(int x, int y, const osg::Camera *camera, int mouse)
+void EventHandler::doEditRotate(int x, int y, int mouse)
 {
-    assert(camera);
-    if (!camera->getViewport()){
-        std::cerr << "doEditOffset(): could not read viewport" << std::endl;
-        return;
-    }
-
-    osg::Matrix VPW = camera->getViewMatrix()
-            * camera->getProjectionMatrix()
-            * camera->getViewport()->computeWindowMatrix();
-    osg::Matrix invVPW;
-    bool success = invVPW.invert(VPW);
-    if (!success){
-        std::cerr << "doEditRotate(): could not invert View-projection-world matrix for ray casting" << std::endl;
-        return;
-    }
-
-    // Algorithm:
-    // Project mouse ray into 3D;
-    // Find closest point X2 like in doEditOffset() (we will have to calculate r2 instead);
-    // Project vector CX1 so that it is parallel to global X-axis:
-    // The projected vector CX1' is a new normal for the canvas.
-
-    osg::Vec3f nearPoint = osg::Vec3f(x, y, 0.f) * invVPW;
-    osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
-    osg::Vec3f C = _root->getCanvasCurrent()->getCenter();
-    osg::Vec3f N = _root->getCanvasCurrent()->getNormal();
-
-    osg::Vec3f nearC = nearPoint - C;
-    debugLogVec("near-C", nearC.x(), nearC.y(), nearC.z());
-
-    _root->setTransformRotate(N, mouse);
+    _root->setTransformRotate(osg::Vec3f(0,0,0), mouse);
 }
 
 // Pick photo
@@ -358,6 +330,9 @@ bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& e
     if (plane.intersect(ray)){ // 1 or -1: no intersection
         std::cerr << "getRaytraceIntersection(): no intersection with the ray." << std::endl;
         // finish the stroke if it was started
+        // this should be replaced by a function finishAll()
+        // which checks what are the current modes (sketch, photo move, etc) that are not finished
+        // and finishes each which is current
         if (_root->getCanvasCurrent()->getStrokeCurrent()){
             std::cout << "getRaytraceIntersection(): finishing the current stroke." << std::endl;
             _root->getCanvasCurrent()->finishStrokeCurrent();
@@ -387,7 +362,10 @@ bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& e
     osg::Vec3f p = P * invM;
     if (std::fabs(p.z())>dureu::EPSILON){
         std::cerr << "getRaytraceIntersection(): error while projecting point from global 3D to local 3D, z-coordinate is not zero" << std::endl;
-        debugLogVec("getRaytraceIntersection(): p", p.x(), p.y(), p.z());
+        debugLogVec("p", p.x(), p.y(), p.z());
+        debugLogVec("P", P.x(), P.y(), P.z());
+        debugLogVec("Normal", plane.getNormal().x(), plane.getNormal().y(), plane.getNormal().z());
+        debugLogVec("Center", center.x(), center.y(), center.z());
         return false;
     }
 
