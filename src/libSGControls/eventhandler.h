@@ -32,7 +32,8 @@ public:
     //virtual void doOperation(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
     //                         const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& result);
-    virtual void doErase(const osgUtil::LineSegmentIntersector::Intersection& result);
+    virtual void doDelete(const osgUtil::LineSegmentIntersector::Intersection& result);
+    virtual void doErase(double u, double v, int mouse = 1);
     virtual void doSketch(double u, double v, int mouse = 1);
     virtual void doEditOffset(osg::Vec3f XC, int mouse = 1);
     virtual void doEditRotate(int x, int y, int mouse = 1);
