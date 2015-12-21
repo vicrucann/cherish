@@ -47,7 +47,6 @@ __________________________________________
     * `Selected`
     * `All`
 * `Make group`
- 
 
 ### View
  
@@ -62,61 +61,55 @@ __________________________________________
 
 ### Help
 
-## Toolbars
- 
-### Camera
-* Orbit
-* Pan
-* Zoom
-* Zoom Window
-* Zoom Extents
-* Previous (to go to previous camera position)
 
-### Drawing
-* Stylus 
-* Polyline 
+## Toolbars
+
+### File
+* New
+* Open
+* Save
 
 ### Edit
-* Move
-* Rotate
-* Scale
-* Offset
-
-### Canvases
-* Looks like drop-down list which allows to select a canvas by its id name
-
-### Principal
-* Select
-* Eraser
-
-### Standard
-* --
-    * New
-    * Open
-    * Save
-* --
-    * Cut
-    * Copy
-    * Paste
-    * Erase
 * --
     * Undo
     * Redo
 * --
-    * Print
+    * Cut
+    * Copy
+    * Paste
+ 
+### Camera navigation
+* --
+    * Orbit
+    * Pan
+    * Zoom
+* --
+    * Previous view
+    * Next view
+* --
+    * Custom view: home, iso, left, right, front, top, back
+* Camera filter
+    * View only strokes and photos (hide contruction tools)
 
-### Styles
-* All (view all entities)
-* Strokes (view strokes only)
-* Images (view images only)
+### Modify scene
+* --
+    * Sketch, polyline, rectangle(?), arc(?)
+    * Eraser
+    * Delete
+* --
+    * Push strokes from current canvas to another
+* Canvas modification
+    * Rotate
+    * Offset
+* Photo modification
+    * Rotate
+    * Scale
+    * Move
+    * Flip
 
-### Views
-* Iso
-* Top
-* Front
-* Right
-* Back
-* Left
+### Selector
+* Select canvas (or photo within the current canvas)
+* Select by plane intersection (select a set of strokes, or a set of strokes and photos) within the current canvas
 
 ### Viewers
 * Virtual screen mode
@@ -129,7 +122,7 @@ __________________________________________
 
 ## Other panels: other tools
 
-### Scene structure
+### Canvas manager
 
 The scene structure tool can be called from `Window -> Scene structure`.
 
