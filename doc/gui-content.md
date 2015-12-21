@@ -97,7 +97,9 @@ __________________________________________
     * Eraser
     * Delete
 * --
-    * Push strokes from current canvas to another
+    * Push a set of strokes from current canvas to another
+    * Move a photo from current canvas to another
+    * Move en entity (any 3D object) from current canvas to another
 * Canvas modification
     * Rotate
     * Offset
