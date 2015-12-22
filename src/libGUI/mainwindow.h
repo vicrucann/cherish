@@ -11,7 +11,8 @@
 
 #include "rootscene.h"
 #include "settings.h"
-#include "viewwidget.h"
+//#include "viewwidget.h"
+#include "glwidget.h"
 #include "bookmarkwidget.h"
 #include "listwidget.h"
 
@@ -52,7 +53,7 @@ private slots:
     void onMouseRotate();
     void onMouseMove();
 private:
-    ViewWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
+    GLWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
 
     QDesktopWidget* _desktop;
     QMdiArea* _mdiArea;
