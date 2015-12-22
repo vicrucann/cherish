@@ -16,13 +16,15 @@ set(SOURCES_GUI
     dureuapplication.h
     mainwindow.cpp
     mainwindow.h
-    viewwidget.cpp
-    viewwidget.h
+    #viewwidget.cpp
+    #viewwidget.h
     bookmarkwidget.h
     bookmarkwidget.cpp
     hudcamera.h
     listwidget.h
     listwidget.cpp
+    glwidget.h
+    glwidget.cpp
 )
 
 add_library(libGUI ${SOURCES_GUI})

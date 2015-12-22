@@ -10,7 +10,8 @@
 #include <QSize>
 
 #include "mainwindow.h"
-#include "viewwidget.h"
+//#include "viewwidget.h"
+#include "glwidget.h"
 #include "settings.h"
 #include "bookmarkwidget.h"
 #include "listwidget.h"
@@ -109,8 +110,9 @@ void MainWindow::getTabletActivity(bool active){
 }
 
 /* Create an ordinary single view window on the scene _root */
-void MainWindow::onCreateViewer(){    
-    ViewWidget* vwid = createViewer();
+void MainWindow::onCreateViewer(){
+    GLWidget* vwid = createViewer();
+    //ViewWidget* vwid = createViewer();
     QMdiSubWindow* subwin = _mdiArea->addSubWindow(vwid);
     subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     vwid->showMaximized();
@@ -118,13 +120,13 @@ void MainWindow::onCreateViewer(){
 }
 
 void MainWindow::onCreateDoubleViewer(){
-    ViewWidget* vwid = createViewer(Qt::Widget, 2);
+    GLWidget* vwid = createViewer(Qt::Widget, 2);
     QMdiSubWindow* subwin = _mdiArea->addSubWindow(vwid);
     subwin->show();
 }
 
 void MainWindow::onCreateOutsideViewer(){
-    ViewWidget* vwid = createViewer(Qt::Window);
+    GLWidget* vwid = createViewer(Qt::Window);
     vwid->show();
 }
 
@@ -234,9 +236,9 @@ void MainWindow::onMouseMove()
     this->setCursor(*cursorMov);
 }
 
-ViewWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
+GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
 {
-    ViewWidget* vwid = new ViewWidget(_rootScene.get(), this, f, viewmode);
+    GLWidget* vwid = new GLWidget(_rootScene.get(), this, f);
     QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
                      vwid, SLOT(getTabletActivity(bool)));
     QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),
