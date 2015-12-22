@@ -224,6 +224,8 @@ void EventHandler::doErase(double u, double v, int mouse)
     // within radius of ERASER_MIN;
     // If yes, mark those points and pass their coords into splitStroke
     // remove those points from each of the strokes, split strokes if needed
+    // read more on point selection in OSG cookbook, Chapter 3 "Selection a point
+    // of the model".
 }
 
 // see https://www.opengl.org/sdk/docs/man2/xhtml/gluUnProject.xml

@@ -13,6 +13,7 @@ public:
     void setColor(osg::Vec4f color);
 private:
     osg::DrawArrays* _mDrawArrayLines;
+    osg::DrawArrays* _mDrawArrayPoints;
     osg::Vec3Array* _mVertexData;
     osg::Vec4Array* _mColors;
 };

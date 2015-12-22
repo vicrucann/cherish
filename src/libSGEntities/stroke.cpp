@@ -3,23 +3,28 @@
 #include <osg/LineWidth>
 #include <osg/StateSet>
 #include <osg/BlendFunc>
+#include <osg/Point>
 
 Stroke::Stroke():
-    _mDrawArrayLines(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP_ADJACENCY)),
+    _mDrawArrayLines(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP)),
+    _mDrawArrayPoints(new osg::DrawArrays(osg::PrimitiveSet::POINTS)),
     _mVertexData(new osg::Vec3Array),
     _mColors(new osg::Vec4Array)
 {
     this->addPrimitiveSet(_mDrawArrayLines);
+    this->addPrimitiveSet(_mDrawArrayPoints);
     this->setVertexArray(_mVertexData);
-    this->setColorArray(_mColors, osg::Array::BIND_PER_VERTEX);
+    this->setColorArray(_mColors);
+    this->setColorBinding(osg::Geometry::BIND_OVERALL);
 
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
-    linewidth->setWidth(2.0);
+    linewidth->setWidth(dureu::STROKE_LINE_WIDTH);
     osg::BlendFunc* blendfunc = new osg::BlendFunc();
     //blendfunc->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ANTIALIAS);
     stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
     stateset->setAttributeAndModes(blendfunc, osg::StateAttribute::ON);
+    stateset->setAttributeAndModes(new osg::Point(dureu::STROKE_LINE_WIDTH));
     stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
@@ -36,8 +41,12 @@ void Stroke::appendPoint(float u, float v)
 {
     _mVertexData->push_back(osg::Vec3f(u,v,0.f));
     _mColors->push_back(dureu::STROKE_CLR_NORMAL);
+    unsigned int sz = _mVertexData->size();
     _mDrawArrayLines->setFirst(0);
-    _mDrawArrayLines->setCount(_mVertexData->size());
+    _mDrawArrayLines->setCount(sz);
+
+    _mDrawArrayPoints->setFirst(0);
+    _mDrawArrayPoints->setCount(sz);
 
     _mVertexData->dirty();
     _mColors->dirty();
