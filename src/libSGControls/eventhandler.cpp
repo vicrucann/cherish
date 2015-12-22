@@ -16,11 +16,55 @@ EventHandler::EventHandler(RootScene *root, dureu::MOUSE_MODE mode):
 
 bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    /*switch(ea.getEventType()){
+    case osgGA::GUIEventAdapter::PEN_PRESSURE:
+        debugLogMsg("OSG pressure");
+        break;
+    case osgGA::GUIEventAdapter::PEN_PROXIMITY_ENTER:
+        debugLogMsg("OSG enter");
+        break;
+    case osgGA::GUIEventAdapter::PEN_PROXIMITY_LEAVE:
+        debugLogMsg("OSG leave");
+        break;
+    case osgGA::GUIEventAdapter::PUSH:
+        debugLogMsg("OSG push");
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        debugLogMsg("OSG release");
+        break;
+    default:
+        break;
+    }*/
+
+    /*switch (ea.getButtonMask()){
+    case osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON:
+        debugLogMsg("OSG left button");
+        break;
+    case osgGA::GUIEventAdapter::MIDDLE_MOUSE_BUTTON:
+        debugLogMsg("OSG mid button");
+        break;
+    case osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON:
+        debugLogMsg("OSG right button");
+        break;
+    default:
+        break;
+    }*/
+
+    /*switch (ea.getTabletPointerType()){
+    case osgGA::GUIEventAdapter::PEN:
+        debugLogMsg("OSG pen");
+        break;
+    case osgGA::GUIEventAdapter::ERASER:
+        debugLogMsg("OSG eraser");
+        break;
+    }*/
+
     // if it's mouse navigation mode, don't process event
     // it will be processed by mouse navigator
     if (_mode == dureu::MOUSE_ROTATE || _mode == dureu::MOUSE_PAN ||
             _mode == dureu::MOUSE_ZOOM || _mode == dureu::MOUSE_FIXEDVIEW)
         return false;
+
     if (_mode == dureu::MOUSE_PICK || _mode == dureu::MOUSE_DELETE)
         doByLineIntersector(ea, aa);
     else if (_mode == dureu::MOUSE_EDIT_MOVE)
