@@ -131,14 +131,14 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if (!m_DeviceDown || !m_DeviceActive) {
+    if (!m_DeviceDown && !m_DeviceActive) {
         this->getEventQueue()->mouseMotion(static_cast<float>(event->x()), static_cast<float>(event->y()));
     }
 }
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
-    if (!m_DeviceDown || !m_DeviceActive) {
+    if (!m_DeviceDown && !m_DeviceActive) {
         unsigned int button = 0;
         switch( event->button() ) {
         case Qt::LeftButton:
@@ -159,7 +159,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
 {
-    if (!m_DeviceDown || !m_DeviceActive) {
+    if (!m_DeviceDown && !m_DeviceActive) {
         unsigned int button = 0;
         switch( event->button() ) {
         case Qt::LeftButton:
@@ -190,18 +190,45 @@ void GLWidget::wheelEvent(QWheelEvent *event)
 void GLWidget::tabletEvent(QTabletEvent *event)
 {
     event->accept();
+    this->getEventQueue()->penPressure(static_cast<float>(event->pressure()));
+    this->getEventQueue()->penOrientation(static_cast<float>(event->xTilt()), static_cast<float>(event->yTilt()),
+                                          static_cast<float>(event->rotation()));
+
+    switch (event->pointerType()){
+    case QTabletEvent::Pen:
+        this->getEventQueue()->penProximity(osgGA::GUIEventAdapter::PEN, m_DeviceActive);
+        break;
+    case QTabletEvent::Eraser:
+        this->getEventQueue()->penProximity(osgGA::GUIEventAdapter::ERASER, m_DeviceActive);
+        break;
+    case QTabletEvent::Cursor:
+        this->getEventQueue()->penProximity(osgGA::GUIEventAdapter::PUCK, m_DeviceActive);
+        break;
+    default:
+        this->getEventQueue()->penProximity(osgGA::GUIEventAdapter::UNKNOWN, m_DeviceActive);
+        break;
+    }
+
+    // for more on buttons(), see http://doc.qt.io/qt-5/qtabletevent.html#buttons
     switch (event->type()){
     case QEvent::TabletPress:
-        this->getEventQueue()->touchBegan(0, osgGA::GUIEventAdapter::TOUCH_BEGAN,
-                                          static_cast<float>(event->x()), static_cast<float>(event->y()));
+        // do not process PRESS if the device was already pressed
+        // it means we will ignore any buttons pressed on stylus
+        if (m_DeviceDown)
+            return;
+        m_DeviceDown = true;
+        this->getEventQueue()->mouseButtonPress(static_cast<float>(event->x()), static_cast<float>(event->y()), 1);
         break;
     case QEvent::TabletRelease:
-        this->getEventQueue()->touchEnded(0, osgGA::GUIEventAdapter::TOUCH_ENDED,
-                                          static_cast<float>(event->x()), static_cast<float>(event->y()), 1);
+        // do not process RELEASE if the device was already released
+        // it means we will ignore any buttons pressed on stylus
+        if (!m_DeviceDown)
+            return;
+        m_DeviceDown = false;
+        this->getEventQueue()->mouseButtonRelease(static_cast<float>(event->x()), static_cast<float>(event->y()), 1);
         break;
     case QEvent::TabletMove:
-        this->getEventQueue()->touchMoved(0, osgGA::GUIEventAdapter::TOUCH_MOVED,
-                                          static_cast<float>(event->x()), static_cast<float>(event->y()));
+        this->getEventQueue()->mouseMotion(static_cast<float>(event->x()), static_cast<float>(event->y()));
         break;
     default:
         break;
@@ -212,17 +239,9 @@ bool GLWidget::event(QEvent *event)
 {
     bool handled = QOpenGLWidget::event(event);
     switch(event->type()){
-    case QEvent::TabletMove:
-        this->update();
-        break;
+   case QEvent::TabletMove:
     case QEvent::TabletPress:
-        m_DeviceDown = true;
-        this->update();
-        break;
     case QEvent::TabletRelease:
-        this->update();
-        m_DeviceDown = false;
-        break;
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
     case QEvent::MouseButtonDblClick:

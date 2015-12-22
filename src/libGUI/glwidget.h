@@ -60,7 +60,7 @@ private:
     int m_ModeView; // number of views per CompositeViewer
     bool m_DeviceDown; // pen touches the device?
     bool m_DeviceActive; // pen is in device approximation?
-    bool m_DeviceSketch;
+    bool m_DeviceSketch; // may be obsolete variable
 
     dureu::MOUSE_MODE m_ModeMouse;
     osg::ref_ptr<Manipulator> m_Manipulator;
