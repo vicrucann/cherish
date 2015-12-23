@@ -16,17 +16,24 @@
 #include "bookmarkwidget.h"
 #include "listwidget.h"
 
-MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags) :
-    QMainWindow(parent, flags),
-    _desktop(0),
-    _mdiArea(new QMdiArea(this)),
-    _bookmarks(new BookmarkWidget(this)),
-    _tabletActive(false),
-    _rootScene(new RootScene()),
-    _menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
+MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
+    : QMainWindow(parent, flags)
+    , _desktop(0)
+    , _mdiArea(new QMdiArea(this))
+    , _bookmarks(new BookmarkWidget(this))
+    , _tabletActive(false)
+    , m_UndoStack(new QUndoStack(this))
+    , m_UndoView(new QUndoView(m_UndoStack))
+    , _rootScene(new RootScene())
+    , _menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
 {
     this->setMenuBar(_menuBar);
     this->onCreateViewer();
+
+    m_UndoView->setWindowTitle(tr("Command List"));
+    m_UndoView->show();
+    m_UndoView->setAttribute(Qt::WA_QuitOnClose, false);
+
     //this->addDockWidget(Qt::LeftDockWidgetArea, _bookmarks);
 
     //QMenuBar* menuBar = this->menuBar();
@@ -279,13 +286,17 @@ void MainWindow::createActions()
     print->setShortcuts(QKeySequence::Print);
     print->setStatusTip(tr("Print..."));
 
-    undo = new QAction(QIcon(":/undo.png"), tr("&Undo"), this);
-    undo->setShortcuts(QKeySequence::Undo);
-    undo->setStatusTip(tr("Undo"));
+    //m_ActionUndo = new QAction(QIcon(":/undo.png"), tr("&Undo"), this);
+    m_ActionUndo = m_UndoStack->createUndoAction(this, tr("&Undo"));
+    m_ActionUndo->setIcon(QIcon(":/undo.png"));
+    m_ActionUndo->setShortcuts(QKeySequence::Undo);
+    m_ActionUndo->setStatusTip(tr("Undo"));
 
-    redo = new QAction(QIcon(":/redo.png"), tr("&Redo"), this);
-    redo->setShortcuts(QKeySequence::Redo);
-    redo->setStatusTip(tr("Redo"));
+    //m_ActionRedo = new QAction(QIcon(":/redo.png"), tr("&Redo"), this);
+    m_ActionRedo = m_UndoStack->createRedoAction(this, tr("&Redo"));
+    m_ActionRedo->setIcon(QIcon(":/redo.png"));
+    m_ActionRedo->setShortcuts(QKeySequence::Redo);
+    m_ActionRedo->setStatusTip(tr("Redo"));
 
     cutAct = new QAction(QIcon(":/cut.png"), tr("Cu&t"), this);
     cutAct->setShortcuts(QKeySequence::Cut);
@@ -428,8 +439,8 @@ void MainWindow::createMenus()
     //fileMenu->addAction(print);
 
     editMenu = menuBar()->addMenu(tr("&Edit"));
-    editMenu->addAction(undo);
-    editMenu->addAction(redo);
+    editMenu->addAction(m_ActionUndo);
+    editMenu->addAction(m_ActionRedo);
     editMenu->addSeparator();
     editMenu->addAction(cutAct);
     editMenu->addAction(copyAct);

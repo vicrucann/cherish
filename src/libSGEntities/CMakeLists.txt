@@ -4,8 +4,8 @@ find_package(OpenSceneGraph REQUIRED COMPONENTS osgDB osgGA osgUtil osgViewer)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/libGUI
     ${CMAKE_SOURCE_DIR}/dureu3d
+    ${CMAKE_SOURCE_DIR}/libGUI
     ${CMAKE_SOURCE_DIR}/libSGUtils
 )
 

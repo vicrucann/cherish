@@ -6,6 +6,8 @@
 #include <QDesktopWidget>
 #include <QTableWidget>
 #include <QMenuBar>
+#include <QUndoStack>
+#include <QUndoView>
 
 #include <osg/ref_ptr>
 
@@ -60,6 +62,9 @@ private:
     BookmarkWidget* _bookmarks;
     bool _tabletActive;
 
+    QUndoStack * m_UndoStack; // http://doc.qt.io/qt-5/qtwidgets-tools-undoframework-example.html
+    QUndoView * m_UndoView;
+
     void createActions();
     void createMenus();
     void createToolBars();
@@ -101,8 +106,8 @@ private:
     QAction *exitAct;
     QAction *print;
 
-    QAction *undo;
-    QAction *redo;
+    QAction* m_ActionUndo;
+    QAction* m_ActionRedo;
     QAction *cutAct;
     QAction *copyAct;
     QAction *pasteAct;

@@ -19,15 +19,16 @@
 #include "photo.h"
 #include "findnodevisitor.h"
 
-RootScene::RootScene():
-    _userScene(new osg::Group),
-    _axes(new Axes),
-    _observer(new ObserveSceneCallback),
-    _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP)),
-    _canvasCurrent(0),
-    _canvasPrevious(0),
-    _idCanvas(0),
-    _idNode(0)
+RootScene::RootScene()
+    : _userScene(new osg::Group)
+    , _axes(new Axes)
+    , _observer(new ObserveSceneCallback)
+    , _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
+    , _canvasCurrent(0)
+    , _canvasPrevious(0)
+    , _idCanvas(0)
+    , _idNode(0)
+    //, _undoStack(0)
 {
     osg::ref_ptr<osg::MatrixTransform> trans_i = new osg::MatrixTransform;
     trans_i->setMatrix(osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f) );

@@ -118,6 +118,8 @@ private:
     osg::observer_ptr<Canvas> _canvasPrevious;
     unsigned int _idCanvas;
     unsigned int _idNode; // for misc entities
+
+    //QUndoStack* _undoStack;
 };
 
 #endif // SCENE
