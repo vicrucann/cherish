@@ -1,7 +1,6 @@
-cmake_minimum_required(VERSION 2.8.11)
-
-find_package(OpenSceneGraph REQUIRED COMPONENTS osgDB osgGA osgUtil osgViewer)
-include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
+if(POLICY CMP0020)
+    CMAKE_POLICY(SET CMP0020 NEW)
+endif()
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/dureu3d
@@ -9,7 +8,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/libSGUtils
 )
 
-set (SOURCES_SGEntities
+set (libSGEntities_SRCS
     canvas.h
     canvas.cpp
     axes.h
@@ -23,7 +22,7 @@ set (SOURCES_SGEntities
 )
 
 add_library(libSGEntities
-    ${SOURCES_SGEntities}
+    STATIC ${libSGEntities_SRCS}
 )
 
 target_link_libraries( libSGEntities

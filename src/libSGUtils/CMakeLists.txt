@@ -1,13 +1,13 @@
-cmake_minimum_required(VERSION 2.8.11)
+if(POLICY CMP0020)
+    CMAKE_POLICY(SET CMP0020 NEW)
+endif()
 
-find_package(OpenSceneGraph REQUIRED COMPONENTS osgText)
 include_directories(
-    ${OPENSCENEGRAPH_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/dureu3d
     ${CMAKE_SOURCE_DIR}/libSGEntities
 )
 
-set (SOURCES_SGUtils
+set (libSGUtils_SRCS
     logfilehandler.h
     observescenecallback.h
     observescenecallback.cpp
@@ -15,8 +15,10 @@ set (SOURCES_SGUtils
     findnodevisitor.cpp
 )
 
-add_library(libSGUtils ${SOURCES_SGUtils})
+add_library(libSGUtils
+    STATIC ${libSGUtils_SRCS}
+)
 
 target_link_libraries( libSGUtils
-	${OPENSCENEGRAPH_LIBRARIES}
+    ${OPENSCENEGRAPH_LIBRARIES}
 )

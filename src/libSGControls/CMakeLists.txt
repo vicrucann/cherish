@@ -1,22 +1,23 @@
-cmake_minimum_required(VERSION 2.8.11)
+if(POLICY CMP0020)
+    CMAKE_POLICY(SET CMP0020 NEW)
+endif()
 
-find_package(OpenSceneGraph REQUIRED COMPONENTS osgGA osgUtil osgViewer)
 include_directories(
-    ${OPENSCENEGRAPH_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/dureu3d
     ${CMAKE_SOURCE_DIR}/libSGEntities
 )
 
-
-set (SOURCES_SGControls
+set (libSGControls_SRCS
     eventhandler.h
     eventhandler.cpp
     manipulator.h
     manipulator.cpp
 )
 
-add_library(libSGControls ${SOURCES_SGControls})
+add_library(libSGControls
+    STATIC ${libSGControls_SRCS}
+)
 
 target_link_libraries( libSGControls
-	${OPENSCENEGRAPH_LIBRARIES}
+    ${OPENSCENEGRAPH_LIBRARIES}
 )

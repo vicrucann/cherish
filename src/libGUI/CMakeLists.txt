@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.8.11)
+if(POLICY CMP0020)
+    CMAKE_POLICY(SET CMP0020 NEW)
+endif()
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/dureu3d
@@ -7,17 +9,11 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/libSGUtils
 )
 
-find_package(Qt5Core)
-find_package(Qt5Gui)
-find_package(Qt5OpenGL)
-
-set(SOURCES_GUI
+set(libGUI_SRCS
     dureuapplication.cpp
     dureuapplication.h
     mainwindow.cpp
     mainwindow.h
-    #viewwidget.cpp
-    #viewwidget.h
     bookmarkwidget.h
     bookmarkwidget.cpp
     hudcamera.h
@@ -27,10 +23,10 @@ set(SOURCES_GUI
     glwidget.cpp
 )
 
-add_library(libGUI ${SOURCES_GUI})
+add_library(libGUI
+    STATIC ${libGUI_SRCS}
+)
 
 target_link_libraries( libGUI
-    Qt5::Core
-    Qt5::Gui
-    Qt5::OpenGL
+    ${QT_LIBRARIES}
 )
