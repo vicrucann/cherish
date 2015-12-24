@@ -41,6 +41,8 @@
 #include "../libSGUtils/observescenecallback.h"
 #include "../libGUI/hudcamera.h"
 
+#include <QUndoStack>
+
 class RootScene : public osg::Group {
 public:
     RootScene();

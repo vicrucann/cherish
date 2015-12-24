@@ -84,7 +84,7 @@ void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) 
     _desktop = desktop;
     QRect availS = _desktop->availableGeometry();
     QRect fullS = _desktop->geometry();
-    int nscreen = _desktop->screenCount();
+    //int nscreen = _desktop->screenCount();
     double scale = 0.9;
     double scale_inv = 1-scale;
     switch (mode) {

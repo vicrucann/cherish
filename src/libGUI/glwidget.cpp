@@ -271,7 +271,7 @@ void GLWidget::onResize(int w, int h)
 {
     std::vector<osg::Camera*> cameras;
     this->m_Viewer->getCameras(cameras);
-    if (cameras.size() != this->m_ModeView) {
+    if (cameras.size() != static_cast<unsigned int>(this->m_ModeView)) {
         debugErrMsg("onResize(): the cameras number does not correspond to view mode");
         debugLogVal("Camera size", cameras.size());
         debugLogVal("View mode", this->m_ModeView);

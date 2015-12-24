@@ -26,5 +26,6 @@ add_library(libSGEntities
 )
 
 target_link_libraries( libSGEntities
-  ${OPENSCENEGRAPH_LIBRARIES}
+    ${QT_LIBRARIES}
+    ${OPENSCENEGRAPH_LIBRARIES}
 )
