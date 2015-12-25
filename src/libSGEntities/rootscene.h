@@ -45,7 +45,7 @@
 
 class RootScene : public osg::Group {
 public:
-    RootScene();
+    RootScene(QUndoStack* undoStack = 0);
     ~RootScene();
 
     bool addUserScene();
@@ -70,7 +70,7 @@ public:
     Canvas* addCanvas();
     Canvas* addCanvas(const osg::Matrix& R, const osg::Matrix& T);
     Canvas* addCanvas(osg::MatrixTransform* transform);
-    Canvas* addCanvas(Canvas* canvasCopy);
+    bool addCanvas(Canvas* cnv);
     bool deleteCanvas(const std::string& name);
     bool deleteCanvas(const int id);
     bool deleteCanvas(Canvas* cnv);
@@ -82,6 +82,7 @@ public:
     bool loadSceneFromFile(const std::string& fname);
     bool writeSceneToFile(const std::string& fname) const;
     Photo* loadPhotoFromFile(const std::string& fname);
+    bool addPhoto(Photo *photo);
 
     unsigned int getMaxCanvasId() const;
     unsigned int getMaxNodeId() const;
@@ -106,6 +107,9 @@ public:
     void setTransformOffset(const osg::Vec3f& translate, const int mouse);
     void setTransformRotate(const osg::Vec3f& normal, const int mouse);
 
+    void setUndoStack(QUndoStack* stack);
+    QUndoStack* getUndoStack() const;
+
 protected:
     bool clearUserData();
     void setCanvasName(Canvas* cnv);
@@ -121,7 +125,7 @@ private:
     unsigned int _idCanvas;
     unsigned int _idNode; // for misc entities
 
-    //QUndoStack* _undoStack;
+    QUndoStack* _undoStack;
 };
 
 #endif // SCENE

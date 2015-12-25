@@ -13,6 +13,8 @@ set (libSGUtils_SRCS
     observescenecallback.cpp
     findnodevisitor.h
     findnodevisitor.cpp
+    AddGroupCommand.h
+    AddGroupCommand.cpp
 )
 
 add_library(libSGUtils
@@ -20,5 +22,6 @@ add_library(libSGUtils
 )
 
 target_link_libraries( libSGUtils
+    ${QT_LIBRARIES}
     ${OPENSCENEGRAPH_LIBRARIES}
 )

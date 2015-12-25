@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , _tabletActive(false)
     , m_UndoStack(new QUndoStack(this))
     , m_UndoView(new QUndoView(m_UndoStack))
-    , _rootScene(new RootScene())
+    , _rootScene(new RootScene(m_UndoStack))
     , _menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
 {
     this->setMenuBar(_menuBar);
@@ -33,6 +33,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     m_UndoView->setWindowTitle(tr("Command List"));
     m_UndoView->show();
     m_UndoView->setAttribute(Qt::WA_QuitOnClose, false);
+
+    //_rootScene->setUndoStack(m_UndoStack);
 
     //this->addDockWidget(Qt::LeftDockWidgetArea, _bookmarks);
 

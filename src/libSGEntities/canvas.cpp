@@ -274,22 +274,24 @@ bool Canvas::deleteStroke(Stroke *stroke)
     return _geodeData->removeChild(stroke);
 }
 
-void Canvas::addPhoto(Photo *photo, const double u, const double v)
+bool Canvas::addPhoto(Photo *photo, const double u, const double v)
 {
     if (!photo){
         debugErrMsg("addPhoto(): photo pointer is NULL");
-        return;
+        return false;
     }
     if (!_geodeData.get()){
         debugErrMsg("addPhoto(): _geodeData pointer is NULL");
-        return;
+        return false;
     }
-    if (!_geodeData->addDrawable(photo)){
+    bool added = _geodeData->addDrawable(photo);
+    if (!added){
         debugErrMsg("addPhoto: could not add photo as a child to the _geodeData of current canvas");
-        return;
+        return false;
     }
     _geodeData->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTexture());
     //this->setPhotoCurrent(photo);
+    return added;
 }
 
 void Canvas::movePhoto(Photo *photo, const double u, const double v, int mouse)

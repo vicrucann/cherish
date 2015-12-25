@@ -18,8 +18,9 @@
 #include "canvas.h"
 #include "photo.h"
 #include "findnodevisitor.h"
+#include "AddGroupCommand.h"
 
-RootScene::RootScene()
+RootScene::RootScene(QUndoStack *undoStack)
     : _userScene(new osg::Group)
     , _axes(new Axes)
     , _observer(new ObserveSceneCallback)
@@ -28,7 +29,7 @@ RootScene::RootScene()
     , _canvasPrevious(0)
     , _idCanvas(0)
     , _idNode(0)
-    //, _undoStack(0)
+    , _undoStack(undoStack)
 {
     osg::ref_ptr<osg::MatrixTransform> trans_i = new osg::MatrixTransform;
     trans_i->setMatrix(osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f) );
@@ -162,29 +163,43 @@ Canvas *RootScene::addCanvas(){
 }
 
 Canvas *RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T){
-    std::cout << "addCanvas(): (R,T, color)" << std::endl;
     osg::MatrixTransform* transform = new osg::MatrixTransform;
     transform->setMatrix(R*T); // left hand coordinate system, see OSG docs
     return this->addCanvas(transform);
 }
 
+// base addCanvas which calls for AddGroupCommand()
 Canvas* RootScene::addCanvas(osg::MatrixTransform* transform){
-    std::cout << "addCanvas(): (transform)" << std::endl;
+    debugLogMsg("addCanvas(*transform)");
     Canvas* cnv = new Canvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
-    this->setCanvasCurrent(cnv);
+    QUndoCommand* cmd = new AddGroupCommand(this, cnv);
+    if (!_undoStack){
+        debugErrMsg("undo stack is not initalized");
+        return cnv;
+    }
+    _undoStack->push(cmd);
+    /*this->setCanvasCurrent(cnv);
     bool success = _userScene->addChild(cnv);
     if (!success){
         std::cerr << "addCanvas(): Could not add a canvas as a child of _userScene" << std::endl;
         cnv = 0;
-    }
+    }*/
     return cnv;
 }
 
-Canvas *RootScene::addCanvas(Canvas *canvasCopy){
-    std::cout << "addCanvas(): (Canvas*)" << std::endl;
-    osg::MatrixTransform* transform = canvasCopy->getTransform();
-    // make offset along the normal
-    return this->addCanvas(transform);
+// this is a debug version of addCanvas, and it is not supposed
+// to be called from anywhere, but from addGroupCommand()
+// later this should be removed at all and the inside code moved to
+// addGroupCommand() class
+bool RootScene::addCanvas(Canvas *cnv){
+    debugLogMsg("addCanvas(): Canvas*");
+    if (!cnv){
+        debugErrMsg("Canvas pointer is NULL");
+        return false;
+    }
+    debugLogVal("Trying to add canvas with name", cnv->getName());
+    this->setCanvasCurrent(cnv);
+    return _userScene->addChild(cnv);
 }
 
 bool RootScene::deleteCanvas(const std::string &name){
@@ -311,8 +326,17 @@ Photo *RootScene::loadPhotoFromFile(const std::string &fname)
         debugErrMsg("There is not active canvas to load the photo to. Create new canvas first");
         return 0;
     }
-    _canvasCurrent->addPhoto(photo);
+    this->addPhoto(photo);
     return photo;
+}
+
+bool RootScene::addPhoto(Photo* photo)
+{
+    if (!photo){
+        debugErrMsg("addPhoto(): photo pointer is null, photo is not added to RootScene");
+        return false;
+    }
+    return _canvasCurrent->addPhoto(photo);
 }
 
 unsigned int RootScene::getMaxCanvasId() const {
@@ -491,6 +515,24 @@ void RootScene::setTransformRotate(const osg::Vec3f &normal, const int mouse)
         // when we do translate, we can simply post multiply:
         // M = Mr*Mt*T; Mt = Mt*T;
     }
+}
+
+void RootScene::setUndoStack(QUndoStack *stack)
+{
+    if (!stack){
+        debugErrMsg("UndoStack pointer is empty, it is not set for the RootScene");
+        return;
+    }
+    if (_undoStack){
+        debugErrMsg("UndoStack is already initialized");
+        return;
+    }
+    _undoStack = stack;
+}
+
+QUndoStack *RootScene::getUndoStack() const
+{
+    return _undoStack;
 }
 
 bool RootScene::clearUserData()
