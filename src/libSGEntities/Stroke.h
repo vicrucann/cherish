@@ -21,6 +21,7 @@
 class Stroke : public osg::Geometry {
 public:
     Stroke();
+    Stroke(const Stroke& copy, const osg::CopyOp& copyop = osg::CopyOp::DEEP_COPY_ALL);
     void appendPoint(const float u, const float v);
     float getLength() const;
 

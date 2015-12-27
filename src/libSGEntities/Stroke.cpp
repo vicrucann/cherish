@@ -38,6 +38,11 @@ Stroke::Stroke():
     noticeMsg("New stroke ctor complete");
 }
 
+Stroke::Stroke(const Stroke &copy, const osg::CopyOp &copyop)
+    : osg::Geometry(copy, copyop)
+{
+}
+
 void Stroke::appendPoint(const float u, const float v)
 {
     mVertexData->push_back(osg::Vec3f(u,v,0.f));

@@ -105,6 +105,8 @@ public:
 
     Photo* getPhotoCurrent() const;
 
+    osg::Geode* getGeodeData() const;
+
 protected:
     void transformData(const osg::Matrix& matrix);
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);

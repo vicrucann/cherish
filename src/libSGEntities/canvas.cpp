@@ -410,6 +410,11 @@ Photo *Canvas::getPhotoCurrent() const
     return _photoCurrent.get();
 }
 
+osg::Geode *Canvas::getGeodeData() const
+{
+    return _geodeData.get();
+}
+
 // to transform plane, centroid and local axis
 // must be called every time when transform node is changed
 void Canvas::transformData(const osg::Matrix &matrix)
