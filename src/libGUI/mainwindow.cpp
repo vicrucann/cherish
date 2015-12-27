@@ -179,70 +179,71 @@ void MainWindow::onChangeSizeCanvas()
 
 void MainWindow::onMouseOrbit(){
     emit sendMouseMode(dureu::MOUSE_ROTATE);
-    QCursor *myCursor=new QCursor(QPixmap(":/orbit_icon.png"),-1,-1);
-    setCursor(*myCursor);
+    m_currentCursor = new QCursor(QPixmap(":/orbit_icon.png"),-1,-1);
+    setCursor(*m_currentCursor);
 }
 
 void MainWindow::onMouseZoom(){
     emit sendMouseMode(dureu::MOUSE_ZOOM);
-    QCursor *myCursor=new QCursor(QPixmap(":/zoom_icon.png"),-1,-1);
-    setCursor(*myCursor);
+    m_currentCursor = new QCursor(QPixmap(":/zoom_icon.png"),-1,-1);
+    setCursor(*m_currentCursor);
 }
 
 void MainWindow::onMousePan(){
     emit sendMouseMode(dureu::MOUSE_PAN);
-    QCursor *myCursor=new QCursor(QPixmap(":/pan_icon.png"),-1,-1);
-    setCursor(*myCursor);
+    m_currentCursor = new QCursor(QPixmap(":/pan_icon.png"),-1,-1);
+    setCursor(*m_currentCursor);
 }
 
 void MainWindow::onMousePick(){
     emit sendMouseMode(dureu::MOUSE_PICK);
-    QCursor *myCursor=new QCursor(QPixmap(":/select_icon.png"),-1,-1);
-    setCursor(*myCursor);
+    m_currentCursor = new QCursor(QPixmap(":/select_icon.png"),-1,-1);
+    setCursor(*m_currentCursor);
 }
 
 void MainWindow::onMouseErase()
 {
     emit sendMouseMode(dureu::MOUSE_ERASE);
-    QCursor *myCursor=new QCursor(QPixmap(":/eraser_icon.png"),-1,-1);
-    setCursor(*myCursor);
+    m_currentCursor = new QCursor(QPixmap(":/eraser_icon.png"),-1,-1);
+    setCursor(*m_currentCursor);
 }
 
 void MainWindow::onMouseDelete()
 {
     emit sendMouseMode(dureu::MOUSE_DELETE);
-    QCursor *myCursor=new QCursor(QPixmap(":/eraser_icon.png"),-1,-1);
-    setCursor(*myCursor);
+    m_currentCursor = new QCursor(QPixmap(":/delete_icon.png"),-1,-1);
+    setCursor(*m_currentCursor);
 }
 
 void MainWindow::onMouseSketch()
 {
     emit sendMouseMode(dureu::MOUSE_SKETCH);
     // We recommend using 32 x 32 cursors, because this size is supported on all platforms.
-    QCursor *myCursor=new QCursor(QPixmap(":/stylus_icon.png"),-1,-1);
-    setCursor(*myCursor);
-    //don't forget to put setCursor(Qt::ArrowCursor); in offMouseSketch()
+    m_currentCursor = new QCursor(QPixmap(":/stylus_icon.png"),-1,-1);
+    setCursor(*m_currentCursor);
+    //setCursor(*myCursor);
+    //don't forget to change m_currentCursor to (Qt::ArrowCursor) in offMouseSketch()
 }
 
 void MainWindow::onMouseOffset()
 {
     emit sendMouseMode(dureu::MOUSE_EDIT_OFFSET);
-    QCursor *myCursor=new QCursor(QPixmap(":/offset_icon.png"),-1,-1);
-    setCursor(*myCursor);
+    m_currentCursor = new QCursor(QPixmap(":/offset_icon.png"),-1,-1);
+    setCursor(*m_currentCursor);
 }
 
 void MainWindow::onMouseRotate()
 {
     emit sendMouseMode(dureu::MOUSE_EDIT_ROTATE);
-    QCursor* cursorRot = new QCursor(QPixmap(":/rotate_icon.png"), -1, -1);
-    this->setCursor(*cursorRot);
+    m_currentCursor = new QCursor(QPixmap(":/rotate_icon.png"), -1, -1);
+    setCursor(*m_currentCursor);
 }
 
 void MainWindow::onMouseMove()
 {
     emit sendMouseMode(dureu::MOUSE_EDIT_MOVE);
-    QCursor* cursorMov = new QCursor(QPixmap(":/move_icon.png"), -1, -1);
-    this->setCursor(*cursorMov);
+    m_currentCursor = new QCursor(QPixmap(":/move_icon.png"), -1, -1);
+    setCursor(*m_currentCursor);
 }
 
 GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
@@ -378,17 +379,36 @@ void MainWindow::createActions()
     _mActionSelect->setStatusTip(tr("Select"));
     this->connect(_mActionSelect, SIGNAL(triggered()), this, SLOT(onMousePick()));
 
+    _mActionSelectPlane = new QAction(tr("&SelectPlane"), this);
+    _mActionSelectPlane->setStatusTip(tr("SelectPlane"));
+    this->connect(_mActionSelectPlane, SIGNAL(triggered()), this, SLOT(onMouseSelectPlane()));
+
     _mActionEraser = new QAction(QIcon(":/eraser.png"),tr("Eraser"), this);
     _mActionEraser->setStatusTip(tr("Eraser"));
     this->connect(_mActionEraser, SIGNAL(triggered(bool)), this, SLOT(onMouseErase()));
+
+    _mActionDelete = new QAction(QIcon(":/delete.png"),tr("Delete"), this);
+    _mActionDelete->setStatusTip(tr("Delete"));
+    this->connect(_mActionDelete, SIGNAL(triggered(bool)), this, SLOT(onMouseDelete()));
+
 
     _mActionMove = new QAction(QIcon(":/move.png"),tr("&Move"), this);
     _mActionMove->setStatusTip(tr("Move"));
     this->connect(_mActionMove, SIGNAL(triggered(bool)), this, SLOT(onMouseMove()));
 
+    _mActionPushStrokes = new QAction(tr("&Push Strokes"), this);
+    _mActionPushStrokes->setStatusTip(tr("Push Strokes"));
+    this->connect(_mActionPushStrokes, SIGNAL(triggered(bool)), this, SLOT(onMousePushStrokes()));
+
+
     _mActionRotate = new QAction(QIcon(":/rotate.png"),tr("&Rotate"), this);
     _mActionRotate->setStatusTip(tr("Rotate"));
     this->connect(_mActionRotate, SIGNAL(triggered(bool)), this, SLOT(onMouseRotate()));
+
+    _mActionRotateImage = new QAction(tr("&Rotate Image"), this);
+    _mActionRotateImage->setStatusTip(tr("Rotate Image"));
+    this->connect(_mActionRotateImage, SIGNAL(triggered(bool)), this, SLOT(onMouseRotateImage()));
+
 
     toolScale = new QAction(QIcon(":/scale.png"),tr("&Scale"), this);
     toolScale->setStatusTip(tr("Scale"));
@@ -426,6 +446,24 @@ void MainWindow::createActions()
 
     leftView = new QAction(tr("leftView"), this);
     leftView->setStatusTip(tr("leftView"));
+
+    _mActionStack = new QAction(tr("Stack"), this);
+    _mActionStack->setStatusTip(tr("Stack"));
+
+    _mActionCircle = new QAction(tr("Circle"), this);
+    _mActionCircle->setStatusTip(tr("Circle"));
+
+    _mActionClone = new QAction(tr("Clone"), this);
+    _mActionClone->setStatusTip(tr("Clone"));
+
+    _mActionXY = new QAction(tr("XY"), this);
+    _mActionXY->setStatusTip(tr("XY"));
+
+    _mActionXZ = new QAction(tr("XZ"), this);
+    _mActionXZ->setStatusTip(tr("XZ"));
+
+    _mActionYZ = new QAction(tr("YZ"), this);
+    _mActionYZ->setStatusTip(tr("YZ"));
 }
 
 void MainWindow::createMenus()
@@ -518,11 +556,40 @@ void MainWindow::createToolBars()
     //cameraToolBar->addAction(zoomExtents);
 
     toolsToolBar = addToolBar(tr("Tools"));
-    toolsToolBar->addAction(_mActionSelect);
+
+    newCanvasMenu = new QMenu();
+    newCanvasMenu->addAction(_mActionStack);
+    newCanvasMenu->addAction(_mActionCircle);
+    newCanvasMenu->addAction(_mActionClone);
+    newCanvasMenu->addAction(_mActionXY);
+    newCanvasMenu->addAction(_mActionXZ);
+    newCanvasMenu->addAction(_mActionYZ);
+    newCanvas = new QToolButton();
+    newCanvas->setIcon(QIcon(":/new_canvas.png"));
+    newCanvas->setMenu(newCanvasMenu);
+    newCanvas->setPopupMode(QToolButton::InstantPopup);
+    newCanvasAction = new QWidgetAction(this);
+    newCanvasAction->setDefaultWidget(newCanvas);
+    toolsToolBar->addAction(newCanvasAction);
+
+    selectMenu = new QMenu();
+    selectMenu->addAction(_mActionSelect);
+    selectMenu->addAction(_mActionSelectPlane);
+    select = new QToolButton();
+    select->setIcon(QIcon(":/select.png"));
+    select->setMenu(selectMenu);
+    select->setPopupMode(QToolButton::InstantPopup);
+    selectAction = new QWidgetAction(this);
+    selectAction->setDefaultWidget(select);
+    toolsToolBar->addAction(selectAction);
+
     toolsToolBar->addAction(_mActionEraser);
+    toolsToolBar->addAction(_mActionDelete);
     toolsToolBar->addAction(_mActionOffset);
     toolsToolBar->addAction(_mActionMove);
+    toolsToolBar->addAction(_mActionPushStrokes);
     toolsToolBar->addAction(_mActionRotate);
+    toolsToolBar->addAction(_mActionRotateImage);
     toolsToolBar->addAction(toolScale);
 
     //styleToolBar = addToolBar(tr("Style"));
@@ -616,4 +683,17 @@ void MainWindow::createBookMark()
     m_lw = new ListWidget(dock);
     dock->setWidget(m_lw);
     addDockWidget(Qt::BottomDockWidgetArea, dock);
+}
+
+bool MainWindow::eventFilter(QObject *object, QEvent *event)
+{
+    if(object==_mdiArea && (event->type()==QEvent::Enter || event->type()==QEvent::Leave)){
+        if(event->type()==QEvent::Enter){
+            this->setCursor(*m_currentCursor);
+        }
+        else
+        {
+            this->setCursor(Qt::ArrowCursor);
+        }
+    }
 }

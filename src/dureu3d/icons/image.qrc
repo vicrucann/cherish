@@ -40,5 +40,8 @@
         <file>zoom.png</file>
         <file>zoomExtents_icon.png</file>
         <file>zoomExtents.png</file>
+        <file>delete.png</file>
+        <file>delete_icon.png</file>
+        <file>new_canvas.png</file>
     </qresource>
 </RCC>
