@@ -8,8 +8,8 @@
 int main(int argc, char** argv)
 {
     osg::setNotifyLevel(osg::NOTICE);
-    osg::notify(osg::NOTICE) << "Dura-Europus In Situ: 3D reconstruction of historical sites." << std::endl;
-    osg::notify(osg::NOTICE) << "Starting application..." << std::endl;
+    noticeMsg("Dura-Europus In Situ: 3D reconstruction of historical sites.");
+    noticeMsg("Starting application...");
 
     DureuApplication dura_app(argc, argv);
     QDesktopWidget* desktop = dura_app.desktop();

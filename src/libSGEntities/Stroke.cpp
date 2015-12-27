@@ -6,15 +6,16 @@
 #include <osg/Point>
 
 Stroke::Stroke():
-    _mDrawArrayLines(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP)),
-    _mDrawArrayPoints(new osg::DrawArrays(osg::PrimitiveSet::POINTS)),
-    _mVertexData(new osg::Vec3Array),
-    _mColors(new osg::Vec4Array)
+    mDrawArrayLines(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP)),
+    mDrawArrayPoints(new osg::DrawArrays(osg::PrimitiveSet::POINTS)),
+    mVertexData(new osg::Vec3Array),
+    mColors(new osg::Vec4Array)
 {
-    this->addPrimitiveSet(_mDrawArrayLines);
-    this->addPrimitiveSet(_mDrawArrayPoints);
-    this->setVertexArray(_mVertexData);
-    this->setColorArray(_mColors);
+    noticeMsg("New stroke started");
+    this->addPrimitiveSet(mDrawArrayLines);
+    this->addPrimitiveSet(mDrawArrayPoints);
+    this->setVertexArray(mVertexData);
+    this->setColorArray(mColors);
     this->setColorBinding(osg::Geometry::BIND_OVERALL);
 
     osg::StateSet* stateset = new osg::StateSet;
@@ -34,22 +35,22 @@ Stroke::Stroke():
     this->setUseDisplayList(false);
     this->setUseVertexBufferObjects(true);
 
-    std::cout << "Stroke(): ctor complete" << std::endl;
+    noticeMsg("New stroke ctor complete");
 }
 
-void Stroke::appendPoint(float u, float v)
+void Stroke::appendPoint(const float u, const float v)
 {
-    _mVertexData->push_back(osg::Vec3f(u,v,0.f));
-    _mColors->push_back(dureu::STROKE_CLR_NORMAL);
-    unsigned int sz = _mVertexData->size();
-    _mDrawArrayLines->setFirst(0);
-    _mDrawArrayLines->setCount(sz);
+    mVertexData->push_back(osg::Vec3f(u,v,0.f));
+    mColors->push_back(dureu::STROKE_CLR_NORMAL);
+    unsigned int sz = mVertexData->size();
+    mDrawArrayLines->setFirst(0);
+    mDrawArrayLines->setCount(sz);
 
-    _mDrawArrayPoints->setFirst(0);
-    _mDrawArrayPoints->setCount(sz);
+    mDrawArrayPoints->setFirst(0);
+    mDrawArrayPoints->setCount(sz);
 
-    _mVertexData->dirty();
-    _mColors->dirty();
+    mVertexData->dirty();
+    mColors->dirty();
 
     //this->dirtyDisplayList(); // so that frame() is called to update
     this->dirtyBound();
@@ -60,18 +61,18 @@ float Stroke::getLength() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
     if (std::fabs(bb.zMax()-bb.zMin()) > dureu::EPSILON ){
-        outErrMsg("getLength: z coordinates of a stroke are unexpected values");
-        outLogVal("zMax", bb.zMax());
-        outLogVal("zMin", bb.zMin());
+        warningMsg("Stroke->getLength(): z coordinates of a stroke are unexpected values");
+        warningVal("zMax", bb.zMax());
+        warningVal("zMin", bb.zMin());
         return 0;
     }
     return std::max(bb.xMax() - bb.xMin(), bb.yMax() - bb.yMin());
 }
 
-void Stroke::setColor(osg::Vec4f color)
+void Stroke::setColor(const osg::Vec4f &color)
 {
-    _mColors->front() = color;
-    _mColors->dirty();
-    /*for (unsigned int i = 0; i<_mColors->size(); ++i)
-        (*_mColors)[i] = color;*/
+    mColors->front() = color;
+    mColors->dirty();
+    /*for (unsigned int i = 0; i<mColors->size(); ++i)
+        (*mColors)[i] = color;*/
 }

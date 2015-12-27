@@ -23,6 +23,12 @@
 //#define debugLogMsg(msg) std::cout << msg << std::endl;
 //#define debugErrMsg(msg) std::cerr << msg << std::endl;
 
+#define noticeMsg(msg) osg::notify(osg::NOTICE) << msg << std::endl;
+#define noticeVal(msg, a) osg::notify(osg::NOTICE) << msg << ": " << a << std::endl;
+#define warningMsg(msg) osg::notify(osg::WARN) << msg << std::endl;
+#define warningVal(msg, a) osg::notify(osg::WARN) << msg << ": " << a << std::endl;
+#define fatalMsg(msg) osg::notify(osg::FATAL) << msg << std::endl;
+
 #define outLogMsg(msg) std::cout << msg << std::endl;
 #define outLogVal(msg, a) std::cout << msg << ": " << a << std::endl;
 #define outLogVec(msg, x, y, z) std::cout << msg << ": " << x << " " << y << " " << z << std::endl;
