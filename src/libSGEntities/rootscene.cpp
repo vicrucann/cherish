@@ -170,11 +170,11 @@ Canvas *RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T){
 
 // base addCanvas which calls for AddGroupCommand()
 Canvas* RootScene::addCanvas(osg::MatrixTransform* transform){
-    debugLogMsg("addCanvas(*transform)");
+    outLogMsg("addCanvas(*transform)");
     Canvas* cnv = new Canvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
     QUndoCommand* cmd = new AddGroupCommand(this, cnv);
     if (!_undoStack){
-        debugErrMsg("undo stack is not initalized");
+        outErrMsg("undo stack is not initalized");
         return cnv;
     }
     _undoStack->push(cmd);
@@ -192,12 +192,12 @@ Canvas* RootScene::addCanvas(osg::MatrixTransform* transform){
 // later this should be removed at all and the inside code moved to
 // addGroupCommand() class
 bool RootScene::addCanvas(Canvas *cnv){
-    debugLogMsg("addCanvas(): Canvas*");
+    outLogMsg("addCanvas(): Canvas*");
     if (!cnv){
-        debugErrMsg("Canvas pointer is NULL");
+        outErrMsg("Canvas pointer is NULL");
         return false;
     }
-    debugLogVal("Trying to add canvas with name", cnv->getName());
+    outLogVal("Trying to add canvas with name", cnv->getName());
     this->setCanvasCurrent(cnv);
     return _userScene->addChild(cnv);
 }
@@ -282,18 +282,18 @@ bool RootScene::deleteNode(osg::Node *node)
 }
 
 bool RootScene::loadSceneFromFile(const std::string& fname){
-    debugLogVal("loadSceneFromFile", fname);
+    outLogVal("loadSceneFromFile", fname);
     osg::ref_ptr<osg::Group> userScene = dynamic_cast<osg::Group*>(osgDB::readNodeFile(fname));
     // check the pointer is not empty
     if (!userScene.get()){
-        debugErrMsg("loadSceneFromFile: could not load from file, or could not perform the dynamic_cast<osg::Group*>");
+        outErrMsg("loadSceneFromFile: could not load from file, or could not perform the dynamic_cast<osg::Group*>");
         return false;
     }
     // clean the current scene data
     if (_userScene->getNumChildren() > 0){
-        debugLogMsg("loadSceneFromFile(): the current _userScene will be replaced by a scene from file");
+        outLogMsg("loadSceneFromFile(): the current _userScene will be replaced by a scene from file");
         if (!this->clearUserData()){
-            debugErrMsg("loadSceneFromFile(): could not clear the current user scene data");
+            outErrMsg("loadSceneFromFile(): could not clear the current user scene data");
             userScene = 0;
             return false;
         }
@@ -305,25 +305,25 @@ bool RootScene::loadSceneFromFile(const std::string& fname){
 
 bool RootScene::writeSceneToFile(const std::string &fname) const
 {
-    debugLogVal("writeSceneToFile", fname);
+    outLogVal("writeSceneToFile", fname);
     osg::Node* node = dynamic_cast<osg::Node*>(_userScene.get());
     bool written = osgDB::writeNodeFile(*node, fname);
     if (!written)
-        debugErrMsg("writeSceneToFile(): Could not write scene to the specified file");
+        outErrMsg("writeSceneToFile(): Could not write scene to the specified file");
     return written;
 }
 
 Photo *RootScene::loadPhotoFromFile(const std::string &fname)
 {
-    debugLogMsg("loadPhotoFromFile()");
+    outLogMsg("loadPhotoFromFile()");
     Photo* photo = new Photo(fname);
     if (!photo){
-        debugErrMsg("loadPhotoFromFile(): File could not be loaded");
-        debugLogVal("file name", fname);
+        outErrMsg("loadPhotoFromFile(): File could not be loaded");
+        outLogVal("file name", fname);
         return 0;
     }
     if (!_canvasCurrent.get()){
-        debugErrMsg("There is not active canvas to load the photo to. Create new canvas first");
+        outErrMsg("There is not active canvas to load the photo to. Create new canvas first");
         return 0;
     }
     this->addPhoto(photo);
@@ -333,7 +333,7 @@ Photo *RootScene::loadPhotoFromFile(const std::string &fname)
 bool RootScene::addPhoto(Photo* photo)
 {
     if (!photo){
-        debugErrMsg("addPhoto(): photo pointer is null, photo is not added to RootScene");
+        outErrMsg("addPhoto(): photo pointer is null, photo is not added to RootScene");
         return false;
     }
     return _canvasCurrent->addPhoto(photo);
@@ -520,11 +520,11 @@ void RootScene::setTransformRotate(const osg::Vec3f &normal, const int mouse)
 void RootScene::setUndoStack(QUndoStack *stack)
 {
     if (!stack){
-        debugErrMsg("UndoStack pointer is empty, it is not set for the RootScene");
+        outErrMsg("UndoStack pointer is empty, it is not set for the RootScene");
         return;
     }
     if (_undoStack){
-        debugErrMsg("UndoStack is already initialized");
+        outErrMsg("UndoStack is already initialized");
         return;
     }
     _undoStack = stack;

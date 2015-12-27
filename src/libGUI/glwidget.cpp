@@ -81,7 +81,7 @@ void GLWidget::getStylusSketchStatus(bool sketch)
 
 void GLWidget::recieveMouseMode(dureu::MOUSE_MODE mode)
 {
-    debugLogVal("Changing mouse mode to", mode);
+    outLogVal("Changing mouse mode to", mode);
     m_ModeMouse = mode;
     m_Manipulator->setMode(m_ModeMouse);
     m_EH->setMode(m_ModeMouse);
@@ -272,9 +272,9 @@ void GLWidget::onResize(int w, int h)
     std::vector<osg::Camera*> cameras;
     this->m_Viewer->getCameras(cameras);
     if (cameras.size() != static_cast<unsigned int>(this->m_ModeView)) {
-        debugErrMsg("onResize(): the cameras number does not correspond to view mode");
-        debugLogVal("Camera size", cameras.size());
-        debugLogVal("View mode", this->m_ModeView);
+        outErrMsg("onResize(): the cameras number does not correspond to view mode");
+        outLogVal("Camera size", cameras.size());
+        outLogVal("View mode", this->m_ModeView);
         return;
     }
     if (this->m_ModeView == 1)
@@ -289,8 +289,8 @@ void GLWidget::onResize(int w, int h)
         cameras[2]->setViewport( this->width() * 2 / 3, 0, this->width()/ 3, this->height() );
     }
     else{
-        debugErrMsg("onResize(): unsupported view mode");
-        debugLogVal("Cameras number", cameras.size());
+        outErrMsg("onResize(): unsupported view mode");
+        outLogVal("Cameras number", cameras.size());
         return;
     }
 }

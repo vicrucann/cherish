@@ -3,7 +3,7 @@
 
 #include "canvas.h"
 #include "settings.h"
-#include "stroke.h"
+#include "Stroke.h"
 
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -232,7 +232,7 @@ std::string Canvas::getGeodeDataName() const{
 void Canvas::addStroke(const double u, const double v, int mouse)
 {
     if (mouse == 0 || (mouse==1 && !_strokeCurrent.get())){
-        debugLogMsg("addStroke(): initialization");
+        outLogMsg("addStroke(): initialization");
         assert(_strokeCurrent.get() == 0);
         Stroke* stroke  = new Stroke; // an empty stroke structure
         assert(stroke);
@@ -257,7 +257,7 @@ void Canvas::addStroke(const double u, const double v, int mouse)
         float len = _strokeCurrent->getLength();
         if (len < dureu::STROKE_MINL){
             if (!this->deleteStroke(_strokeCurrent.get()))
-                debugErrMsg("addStroke(): as the stroke was short, it was attempted to delete it, but failed");
+                outErrMsg("addStroke(): as the stroke was short, it was attempted to delete it, but failed");
         }
         _strokeCurrent = 0;
         //this->updateData();
@@ -268,7 +268,7 @@ void Canvas::addStroke(const double u, const double v, int mouse)
 bool Canvas::deleteStroke(Stroke *stroke)
 {
     if (!stroke){
-        debugErrMsg("deleteStroke(): pointer is NULL");
+        outErrMsg("deleteStroke(): pointer is NULL");
         return false;
     }
     return _geodeData->removeChild(stroke);
@@ -277,16 +277,16 @@ bool Canvas::deleteStroke(Stroke *stroke)
 bool Canvas::addPhoto(Photo *photo, const double u, const double v)
 {
     if (!photo){
-        debugErrMsg("addPhoto(): photo pointer is NULL");
+        outErrMsg("addPhoto(): photo pointer is NULL");
         return false;
     }
     if (!_geodeData.get()){
-        debugErrMsg("addPhoto(): _geodeData pointer is NULL");
+        outErrMsg("addPhoto(): _geodeData pointer is NULL");
         return false;
     }
     bool added = _geodeData->addDrawable(photo);
     if (!added){
-        debugErrMsg("addPhoto: could not add photo as a child to the _geodeData of current canvas");
+        outErrMsg("addPhoto: could not add photo as a child to the _geodeData of current canvas");
         return false;
     }
     _geodeData->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTexture());
@@ -297,7 +297,7 @@ bool Canvas::addPhoto(Photo *photo, const double u, const double v)
 void Canvas::movePhoto(Photo *photo, const double u, const double v, int mouse)
 {
     if (!photo){
-        debugErrMsg("movePhoto(): photo pointer is NULL");
+        outErrMsg("movePhoto(): photo pointer is NULL");
         return;
     }
     if (mouse == 0){
@@ -353,8 +353,8 @@ void Canvas::updateData()
     osg::BoundingBox bb = _geodeData->getBoundingBox();
     assert(bb.valid());
 
-    debugLogVec("_center", _center.x(), _center.y(), _center.z());
-    debugLogVec("bb.center", bb.center().x(), bb.center().y(), bb.center().z());
+    outLogVec("_center", _center.x(), _center.y(), _center.z());
+    outLogVec("bb.center", bb.center().x(), bb.center().y(), bb.center().z());
     osg::Matrix mat;
     mat.makeTranslate(bb.center() - _center);
     this->transformData(mat);
@@ -418,8 +418,8 @@ void Canvas::transformData(const osg::Matrix &matrix)
     _center = _center * matrix;
     plane.transform(matrix);
     _normal = plane.getNormal();
-    debugLogVec("transformData(): Canvas center", _center.x(),_center.y(),_center.z());
-    debugLogVec("transformData(): Canvas normal", _normal.x(), _normal.y(), _normal.z());
+    outLogVec("transformData(): Canvas center", _center.x(),_center.y(),_center.z());
+    outLogVec("transformData(): Canvas normal", _normal.x(), _normal.y(), _normal.z());
     assert(plane.valid());
 }
 

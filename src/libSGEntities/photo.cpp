@@ -15,14 +15,14 @@ Photo::Photo(const std::string &fname)
 {
     osg::Image* image = osgDB::readImageFile(fname);
     float aspectRatio = static_cast<float>(image->s()) / static_cast<float>(image->t());
-    debugLogVal("Image height", image->t());
-    debugLogVal("Image width", image->s());
+    outLogVal("Image height", image->t());
+    outLogVal("Image width", image->s());
 
     // half sizes based on aspect ratio
     _width = 2.f * (dureu::PHOTO_MINW);
     _height = _width * aspectRatio;
-    debugLogVal("Photo(): width", _width);
-    debugLogVal("Photo(): height", _height);
+    outLogVal("Photo(): width", _width);
+    outLogVal("Photo(): height", _height);
     _vertices->push_back( osg::Vec3(_width/2.f, _height/2.f, 0.f) );
     _vertices->push_back( osg::Vec3(-_width/2.f, _height/2.f, 0.f) );
     _vertices->push_back( osg::Vec3(-_width/2.f, -_height/2.f, 0.f) );

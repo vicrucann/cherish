@@ -1,4 +1,4 @@
-#include "stroke.h"
+#include "Stroke.h"
 
 #include <osg/LineWidth>
 #include <osg/StateSet>
@@ -60,9 +60,9 @@ float Stroke::getLength() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
     if (std::fabs(bb.zMax()-bb.zMin()) > dureu::EPSILON ){
-        debugErrMsg("getLength: z coordinates of a stroke are unexpected values");
-        debugLogVal("zMax", bb.zMax());
-        debugLogVal("zMin", bb.zMin());
+        outErrMsg("getLength: z coordinates of a stroke are unexpected values");
+        outLogVal("zMax", bb.zMax());
+        outLogVal("zMin", bb.zMin());
         return 0;
     }
     return std::max(bb.xMax() - bb.xMin(), bb.yMax() - bb.yMin());

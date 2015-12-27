@@ -42,7 +42,7 @@
  */
 
 #include "settings.h"
-#include "stroke.h"
+#include "Stroke.h"
 #include "photo.h"
 
 #include <osg/ref_ptr>

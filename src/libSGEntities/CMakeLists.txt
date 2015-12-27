@@ -15,8 +15,8 @@ set (libSGEntities_SRCS
     axes.cpp
     rootscene.h
     rootscene.cpp
-    stroke.h
-    stroke.cpp
+    Stroke.h
+    Stroke.cpp
     photo.h
     photo.cpp
 )

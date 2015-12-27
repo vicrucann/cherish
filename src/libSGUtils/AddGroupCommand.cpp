@@ -23,8 +23,8 @@ void AddGroupCommand::undo()
 
 void AddGroupCommand::redo()
 {
-    debugLogMsg("AddGroupCommand(): redo");
+    outLogMsg("AddGroupCommand(): redo");
     _scene->addCanvas(_canvas.get());
-    debugLogMsg("AddGroupCommand(): complete");
+    outLogMsg("AddGroupCommand(): complete");
 }
 

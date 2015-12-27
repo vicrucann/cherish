@@ -18,19 +18,19 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 {
     /*switch(ea.getEventType()){
     case osgGA::GUIEventAdapter::PEN_PRESSURE:
-        debugLogMsg("OSG pressure");
+        outLogMsg("OSG pressure");
         break;
     case osgGA::GUIEventAdapter::PEN_PROXIMITY_ENTER:
-        debugLogMsg("OSG enter");
+        outLogMsg("OSG enter");
         break;
     case osgGA::GUIEventAdapter::PEN_PROXIMITY_LEAVE:
-        debugLogMsg("OSG leave");
+        outLogMsg("OSG leave");
         break;
     case osgGA::GUIEventAdapter::PUSH:
-        debugLogMsg("OSG push");
+        outLogMsg("OSG push");
         break;
     case osgGA::GUIEventAdapter::RELEASE:
-        debugLogMsg("OSG release");
+        outLogMsg("OSG release");
         break;
     default:
         break;
@@ -38,13 +38,13 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 
     /*switch (ea.getButtonMask()){
     case osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON:
-        debugLogMsg("OSG left button");
+        outLogMsg("OSG left button");
         break;
     case osgGA::GUIEventAdapter::MIDDLE_MOUSE_BUTTON:
-        debugLogMsg("OSG mid button");
+        outLogMsg("OSG mid button");
         break;
     case osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON:
-        debugLogMsg("OSG right button");
+        outLogMsg("OSG right button");
         break;
     default:
         break;
@@ -52,10 +52,10 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 
     /*switch (ea.getTabletPointerType()){
     case osgGA::GUIEventAdapter::PEN:
-        debugLogMsg("OSG pen");
+        outLogMsg("OSG pen");
         break;
     case osgGA::GUIEventAdapter::ERASER:
-        debugLogMsg("OSG eraser");
+        outLogMsg("OSG eraser");
         break;
     }*/
 
@@ -221,12 +221,12 @@ void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         std::cout << "doByHybrid(): push button" << std::endl;
-        debugLogVec("u v", u, v, 0);
+        outLogVec("u v", u, v, 0);
         doEditMove(*result, u, v, 0);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         std::cout << "doByHybrid(): release button" << std::endl;
-        debugLogVec("u v", u, v, 0);
+        outLogVec("u v", u, v, 0);
         doEditMove(*result, u, v, 2);
         break;
     case osgGA::GUIEventAdapter::DRAG:
@@ -329,7 +329,7 @@ bool EventHandler::getLineIntersections(const osgGA::GUIEventAdapter &ea,
 {
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (!viewer){
-        debugErrMsg("getLineIntersections(): could not retrieve viewer");
+        outErrMsg("getLineIntersections(): could not retrieve viewer");
         return false;
     }
     osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(
@@ -343,7 +343,7 @@ bool EventHandler::getLineIntersections(const osgGA::GUIEventAdapter &ea,
     }
     cam->accept(iv);
     if (!intersector->containsIntersections()){
-        debugLogMsg("getLineIntersections(): no intersections found");
+        outLogMsg("getLineIntersections(): no intersections found");
         return false;
     }
     result = *(intersector->getIntersections().begin());
@@ -421,7 +421,7 @@ bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& e
 
     double len = plane.dotProductNormal(center-nearPoint) / plane.dotProductNormal(dir);
     osg::Vec3f P = dir * len + nearPoint;
-    //debugLogVec("getRaytraceIntersection(): intersect point global 3D", P.x(), P.y(), P.z());
+    //outLogVec("getRaytraceIntersection(): intersect point global 3D", P.x(), P.y(), P.z());
 
     osg::Matrix M =  _root->getCanvasCurrent()->getTransform()->getMatrix();
     osg::Matrix invM;
@@ -432,10 +432,10 @@ bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& e
     osg::Vec3f p = P * invM;
     if (std::fabs(p.z())>dureu::EPSILON){
         std::cerr << "getRaytraceIntersection(): error while projecting point from global 3D to local 3D, z-coordinate is not zero" << std::endl;
-        debugLogVec("p", p.x(), p.y(), p.z());
-        debugLogVec("P", P.x(), P.y(), P.z());
-        debugLogVec("Normal", plane.getNormal().x(), plane.getNormal().y(), plane.getNormal().z());
-        debugLogVec("Center", center.x(), center.y(), center.z());
+        outLogVec("p", p.x(), p.y(), p.z());
+        outLogVec("P", P.x(), P.y(), P.z());
+        outLogVec("Normal", plane.getNormal().x(), plane.getNormal().y(), plane.getNormal().z());
+        outLogVec("Center", center.x(), center.y(), center.z());
         return false;
     }
 

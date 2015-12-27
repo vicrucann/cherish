@@ -18,10 +18,15 @@
 
 /* Debug macros */
 
-#define debugLogVec(msg, x, y, z) std::cout << msg << ": " << x << " " << y << " " << z << std::endl;
-#define debugLogVal(msg, a) std::cout << msg << ": " << a << std::endl;
-#define debugLogMsg(msg) std::cout << msg << std::endl;
-#define debugErrMsg(msg) std::cerr << msg << std::endl;
+//#define debugLogVec(msg, x, y, z) std::cout << msg << ": " << x << " " << y << " " << z << std::endl;
+//#define debugLogVal(msg, a) std::cout << msg << ": " << a << std::endl;
+//#define debugLogMsg(msg) std::cout << msg << std::endl;
+//#define debugErrMsg(msg) std::cerr << msg << std::endl;
+
+#define outLogMsg(msg) std::cout << msg << std::endl;
+#define outLogVal(msg, a) std::cout << msg << ": " << a << std::endl;
+#define outLogVec(msg, x, y, z) std::cout << msg << ": " << x << " " << y << " " << z << std::endl;
+#define outErrMsg(msg) std::cerr << msg << std::endl;
 
 /* The color scheme settings are based on
  * colorscehem solarized
