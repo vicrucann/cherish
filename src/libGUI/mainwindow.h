@@ -8,6 +8,8 @@
 #include <QMenuBar>
 #include <QUndoStack>
 #include <QUndoView>
+#include <QToolButton>
+#include <QWidgetAction>
 
 #include <osg/ref_ptr>
 
@@ -130,10 +132,12 @@ private:
     QAction *zoomExtents;
     QAction *previousCam;
 
-    QAction* _mActionSelect;
     QAction* _mActionEraser;
+    QAction* _mActionDelete;
     QAction* _mActionMove; //toolMove; // move current photo within current canvas
+    QAction* _mActionPushStrokes;
     QAction* _mActionRotate;// toolRotate;
+    QAction* _mActionRotateImage;
     QAction *toolScale;
     QAction* _mActionOffset; // offset current canvas along its normal
 
@@ -150,6 +154,25 @@ private:
     QAction *backView;
     QAction *leftView;
 
+    QAction* _mActionStack;
+    QAction* _mActionCircle;
+    QAction* _mActionClone;
+    QAction* _mActionXY;
+    QAction* _mActionXZ;
+    QAction* _mActionYZ;
+    QWidgetAction* newCanvasAction;
+    QMenu *newCanvasMenu;
+    QToolButton *newCanvas;
+
+    QAction* _mActionSelect;
+    QAction* _mActionSelectPlane;
+    QWidgetAction* selectAction;
+    QMenu *selectMenu;
+    QToolButton *select;
+
+
+    QCursor *m_currentCursor;
+
     QTableWidget* m_pTableWidget;
     QStringList m_TableHeader;
 
@@ -157,6 +180,9 @@ private:
 
     QMenuBar* _menuBar;
     ListWidget* m_lw;
+
+protected:
+    bool eventFilter(QObject *object, QEvent *event);
 };
 
 #endif // MAINWINDOW
