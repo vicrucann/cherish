@@ -6,6 +6,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dureu3d
     ${CMAKE_SOURCE_DIR}/libGUI
     ${CMAKE_SOURCE_DIR}/libSGUtils
+    ${CMAKE_SOURCE_DIR}/libSGControls
 )
 
 set (libSGEntities_SRCS

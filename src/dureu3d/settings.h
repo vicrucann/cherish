@@ -91,6 +91,13 @@ enum MOUSE_MODE {
     MOUSE_FIXEDVIEW
 };
 
+enum EVENT {
+    EVENT_OFF,
+    EVENT_PRESSED,
+    EVENT_DRAGGED,
+    EVENT_RELEASED
+};
+
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;
 
 const osg::Vec3f NORMAL = osg::Vec3f(0.f,0.f,1.f);

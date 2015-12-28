@@ -18,6 +18,7 @@
 #include "canvas.h"
 #include "photo.h"
 #include "findnodevisitor.h"
+#include "AddStrokeCommand.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
     : _userScene(new osg::Group)
@@ -153,6 +154,42 @@ void RootScene::setHudCameraVisibility(bool vis){
 
 bool RootScene::getHudCameraVisibility() const{
     return _hud->getVisibility();
+}
+
+// use QUndoStack framework
+// more on Qt smart pointers:
+// http://blog.qt.io/blog/2009/08/25/count-with-me-how-many-smart-pointer-classes-does-qt-have/
+// we chose QWeakPointer to track QUndoCommand
+void RootScene::addStroke(float u, float v, dureu::EVENT event)
+{
+    if (!_undoStack){
+        fatalMsg("addStroke(): undo stack is NULL, it is not initialized. "
+                 "Sketching is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
+    }
+    switch (event){
+    case dureu::EVENT_OFF:
+        this->strokeFinish();
+        break;
+    case dureu::EVENT_PRESSED:
+        this->strokeStart();
+        this->strokeAppend(u, v);
+        break;
+    case dureu::EVENT_DRAGGED:
+        if (!this->strokeValid())
+            this->strokeStart();
+        this->strokeAppend(u, v);
+        break;
+    case dureu::EVENT_RELEASED:
+        if (!this->strokeValid())
+            this->strokeStart();
+        this->strokeAppend(u, v);
+        this->strokeFinish();
+        break;
+    default:
+        break;
+    }
 }
 
 Canvas *RootScene::addCanvas(){
@@ -561,5 +598,31 @@ bool RootScene::setSceneObserver() {
     _observer->setScenePointer(_userScene.get());
     _userScene->addUpdateCallback(_observer.get());
     return true;
+}
+
+void RootScene::strokeStart()
+{
+    // create new command-add-stroke
+    // QUndoCommand* cmd = new AddStrokeCommand(this);
+    // noticeMsg("addStroke(): initialization");
+}
+
+void RootScene::strokeAppend(float u, float v)
+{
+// append point to the current stroke
+}
+
+void RootScene::strokeFinish()
+{
+    // if command is still a valid pointer,
+    // push it to stack, if stroke's length is OK
+    // set the pointer to zero and return
+    // _undoStack->push(cmd);
+}
+
+// checks if command pointer is NULL or not
+bool RootScene::strokeValid() const
+{
+    return false;
 }
 

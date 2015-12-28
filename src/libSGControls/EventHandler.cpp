@@ -6,14 +6,16 @@
 #include <osgUtil/IntersectionVisitor>
 #include <osg/Viewport>
 
-EventHandler::EventHandler(RootScene *root, dureu::MOUSE_MODE mode):
-    _mode(mode),
-    _root(root),
-    _x0(-1),
-    _y0(-1)
+EventHandler::EventHandler(RootScene *scene, dureu::MOUSE_MODE mode)
+    : mMode(mode)
+    , mScene(scene)
 {
 }
 
+// handle() has to be re-defined, for more info, check
+// OpenSceneGraph beginner's guide or
+// OpenSceneGraph 3.0 Cookbook
+// and search for custom event handler examples
 bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     /*switch(ea.getEventType()){
@@ -61,13 +63,13 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 
     // if it's mouse navigation mode, don't process event
     // it will be processed by mouse navigator
-    if (_mode == dureu::MOUSE_ROTATE || _mode == dureu::MOUSE_PAN ||
-            _mode == dureu::MOUSE_ZOOM || _mode == dureu::MOUSE_FIXEDVIEW)
+    if (mMode == dureu::MOUSE_ROTATE || mMode == dureu::MOUSE_PAN ||
+            mMode == dureu::MOUSE_ZOOM || mMode == dureu::MOUSE_FIXEDVIEW)
         return false;
 
-    if (_mode == dureu::MOUSE_PICK || _mode == dureu::MOUSE_DELETE)
+    if (mMode == dureu::MOUSE_PICK || mMode == dureu::MOUSE_DELETE)
         doByLineIntersector(ea, aa);
-    else if (_mode == dureu::MOUSE_EDIT_MOVE)
+    else if (mMode == dureu::MOUSE_EDIT_MOVE)
         doByHybrid(ea, aa);
     else
         doByRaytrace(ea, aa);
@@ -76,10 +78,13 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 
 void EventHandler::setMode(dureu::MOUSE_MODE mode)
 {
-    _mode = mode;
+    mMode = mode;
 }
 
 // for pick and erase when lineintersector is going to be used
+// line intersector is already implemented within OSG
+// so we only need to return the intersection results which is
+// already sorted from closest to farthest
 void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     // proceed only if it is release of left mouse button
@@ -92,7 +97,7 @@ void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::
     if (!intersected)
         return;
 
-    switch (_mode) {
+    switch (mMode) {
     case dureu::MOUSE_PICK:
         doPick(*result);
         break;
@@ -118,11 +123,11 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         std::cout << "doByOperator(): push button" << std::endl;
-        switch(_mode){
+        switch(mMode){
         case dureu::MOUSE_SKETCH:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
                 return;
-            doSketch(u,v,0);
+            doSketch(u, v, dureu::EVENT_PRESSED);
             break;
         case dureu::MOUSE_EDIT_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
@@ -143,11 +148,11 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         std::cout << "doByOperator(): release button" << std::endl;
-        switch(_mode){
+        switch(mMode){
         case dureu::MOUSE_SKETCH:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
                 return;
-            doSketch(u, v, 2);
+            doSketch(u, v, dureu::EVENT_RELEASED);
             break;
         case dureu::MOUSE_EDIT_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
@@ -167,11 +172,11 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         }
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        switch(_mode){
+        switch(mMode){
         case dureu::MOUSE_SKETCH:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
                 return;
-            doSketch(u, v, 1);
+            doSketch(u, v, dureu::EVENT_DRAGGED);
             break;
         case dureu::MOUSE_EDIT_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
@@ -245,7 +250,7 @@ void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &r
         return;
     }
     std::cout << "doPick(): assumed canvas with name: " << cnv->getName() << std::endl;
-    _root->setCanvasCurrent(cnv);
+    mScene->setCanvasCurrent(cnv);
 }
 
 // check nodepath to see how to go far enough so that to get canvas type
@@ -257,7 +262,7 @@ void EventHandler::doDelete(const osgUtil::LineSegmentIntersector::Intersection 
         return;
     }
     std::cout << "doDelete(): assumed canvas with name: " << cnv->getName() << std::endl;
-    bool success = _root->deleteCanvas(cnv);
+    bool success = mScene->deleteCanvas(cnv);
     std::cout << "doDelete(): success is " << success << std::endl;
 }
 
@@ -277,20 +282,21 @@ void EventHandler::doErase(double u, double v, int mouse)
 // for more details
 // mouse is to indicate if the stroke is just created (0), in the process of drawing (1)
 // or finished drawing (2)
-void EventHandler::doSketch(double u, double v, int mouse)
+void EventHandler::doSketch(double u, double v, dureu::EVENT event)
 {
-    _root->getCanvasCurrent()->addStroke(u,v, mouse);
+    mScene->addStroke(u, v, event);
+    //mScene->getCanvasCurrent()->addStroke(u,v, event);
 }
 
 // performs offset of the current canvas along its normal
 void EventHandler::doEditOffset(osg::Vec3f XC, int mouse)
 {
-    _root->setTransformOffset(XC, mouse);
+    mScene->setTransformOffset(XC, mouse);
 }
 
 void EventHandler::doEditRotate(int x, int y, int mouse)
 {
-    _root->setTransformRotate(osg::Vec3f(0,0,0), mouse);
+    mScene->setTransformRotate(osg::Vec3f(0,0,0), mouse);
 }
 
 // Pick photo
@@ -310,12 +316,12 @@ void EventHandler::doEditMove(const osgUtil::LineSegmentIntersector::Intersectio
         std::cerr << "doEditMove(): could not dynamic_cast<Canvas*>" << std::endl;
         return;
     }
-    _root->setCanvasCurrent(cnv);
-    _root->getCanvasCurrent()->movePhoto(photo, u, v, mouse);
+    mScene->setCanvasCurrent(cnv);
+    mScene->getCanvasCurrent()->movePhoto(photo, u, v, mouse);
 }
 
 Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
-    return dynamic_cast<Canvas*>(result.nodePath.at(_root->getCanvasLevel()));
+    return dynamic_cast<Canvas*>(result.nodePath.at(mScene->getCanvasLevel()));
 }
 
 Photo *EventHandler::getPhoto(const osgUtil::LineSegmentIntersector::Intersection &result)
@@ -390,8 +396,8 @@ bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& e
     osg::Vec3f nearPoint = osg::Vec3f(x, y, 0.f) * invVPW;
     osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
 
-    const osg::Plane plane = _root->getCanvasCurrent()->getPlane();
-    const osg::Vec3f center = _root->getCanvasCurrent()->getCenter();
+    const osg::Plane plane = mScene->getCanvasCurrent()->getPlane();
+    const osg::Vec3f center = mScene->getCanvasCurrent()->getCenter();
 
     assert(plane.valid());
     std::vector<osg::Vec3f> ray(2);
@@ -403,9 +409,10 @@ bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& e
         // this should be replaced by a function finishAll()
         // which checks what are the current modes (sketch, photo move, etc) that are not finished
         // and finishes each which is current
-        if (_root->getCanvasCurrent()->getStrokeCurrent()){
+        if (mScene->getCanvasCurrent()->getStrokeCurrent()){
             std::cout << "getRaytraceIntersection(): finishing the current stroke." << std::endl;
-            _root->getCanvasCurrent()->finishStrokeCurrent();
+            //mScene->getCanvasCurrent()->finishStrokeCurrent();
+            mScene->addStroke(0,0, dureu::EVENT_OFF);
         }
         return false;
     }
@@ -423,7 +430,7 @@ bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& e
     osg::Vec3f P = dir * len + nearPoint;
     //outLogVec("getRaytraceIntersection(): intersect point global 3D", P.x(), P.y(), P.z());
 
-    osg::Matrix M =  _root->getCanvasCurrent()->getTransform()->getMatrix();
+    osg::Matrix M =  mScene->getCanvasCurrent()->getTransform()->getMatrix();
     osg::Matrix invM;
     if (!invM.invert(M)){
         std::cerr << "getRaytraceIntersection(): could not invert model matrix" << std::endl;
@@ -485,8 +492,8 @@ bool EventHandler::getRaytraceNormalProjection(const osgGA::GUIEventAdapter &ea,
 
     osg::Vec3f nearPoint = osg::Vec3f(x, y, 0.f) * invVPW;
     osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
-    osg::Vec3f C = _root->getCanvasCurrent()->getCenter();
-    osg::Vec3f N = _root->getCanvasCurrent()->getNormal();
+    osg::Vec3f C = mScene->getCanvasCurrent()->getCenter();
+    osg::Vec3f N = mScene->getCanvasCurrent()->getNormal();
 
     // algorithm for distance between skew lines:
     //http://www2.washjeff.edu/users/mwoltermann/Dorrie/69.pdf

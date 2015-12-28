@@ -3,8 +3,9 @@
 #include <QObject>
 
 // allocate memory
-AddStrokeCommand::AddStrokeCommand(RootScene *scene)
-    : mScene(scene)
+AddStrokeCommand::AddStrokeCommand(RootScene *scene,  QUndoCommand *parent = 0)
+    : QUndoCommand(parent)
+    , mScene(scene)
     , mStroke(new Stroke)
     , mValid(this->checkPointers())
 {

@@ -37,11 +37,13 @@
 #include "axes.h"
 #include "canvas.h"
 #include "photo.h"
+#include "Stroke.h"
 #include "settings.h"
 #include "../libSGUtils/observescenecallback.h"
 #include "../libGUI/hudcamera.h"
 
 #include <QUndoStack>
+#include <QWeakPointer>
 
 class RootScene : public osg::Group {
 public:
@@ -66,6 +68,8 @@ public:
     bool setHudCameraObserve();
     void setHudCameraVisibility(bool vis);
     bool getHudCameraVisibility() const;
+
+    void addStroke(float u, float v, dureu::EVENT event);
 
     Canvas* addCanvas();
     Canvas* addCanvas(const osg::Matrix& R, const osg::Matrix& T);
@@ -115,6 +119,12 @@ protected:
     void setCanvasName(Canvas* cnv);
     std::string getEntityName(const std::string& name, unsigned int id) const;
     bool setSceneObserver();
+
+    void strokeStart();
+    void strokeAppend(float u, float v);
+    void strokeFinish();
+    bool strokeValid() const;
+
 private:
     osg::ref_ptr<osg::Group> _userScene;
     osg::ref_ptr<Axes> _axes;
@@ -126,6 +136,8 @@ private:
     unsigned int _idNode; // for misc entities
 
     QUndoStack* _undoStack;
+    //QWeakPointer
+
 };
 
 #endif // SCENE

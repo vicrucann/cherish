@@ -28,7 +28,7 @@
 class AddStrokeCommand : public QUndoCommand
 {
 public:
-    AddStrokeCommand(RootScene* scene);
+    AddStrokeCommand(RootScene* scene, QUndoCommand *parent);
     ~AddStrokeCommand();
 
     void appendPoint(const float u, const float v);

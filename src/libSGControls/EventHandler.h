@@ -22,19 +22,18 @@
 
 class EventHandler : public osgGA::GUIEventHandler {
 public:
-    EventHandler(RootScene* root, dureu::MOUSE_MODE mode = dureu::MOUSE_PICK);
+    EventHandler(RootScene* scene, dureu::MOUSE_MODE mode = dureu::MOUSE_PICK);
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void setMode(dureu::MOUSE_MODE mode);
 
     virtual void doByLineIntersector(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     virtual void doByRaytrace(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     virtual void doByHybrid(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-    //virtual void doOperation(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
-    //                         const osgUtil::LineSegmentIntersector::Intersection& result);
+
     virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doDelete(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doErase(double u, double v, int mouse = 1);
-    virtual void doSketch(double u, double v, int mouse = 1);
+    virtual void doSketch(double u, double v, dureu::EVENT event);
     virtual void doEditOffset(osg::Vec3f XC, int mouse = 1);
     virtual void doEditRotate(int x, int y, int mouse = 1);
     virtual void doEditMove(const osgUtil::LineSegmentIntersector::Intersection& result,
@@ -51,10 +50,8 @@ protected:
     bool getRaytraceNormalProjection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                                      osg::Vec3f &XC);
 
-    dureu::MOUSE_MODE _mode;
-    osg::observer_ptr<RootScene> _root;
-private:
-    double _x0,_y0; // used for edit and sketch modes
+    dureu::MOUSE_MODE mMode;
+    osg::observer_ptr<RootScene> mScene;
 };
 
 #endif // EVENTHANDLER
