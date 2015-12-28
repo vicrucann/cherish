@@ -4,9 +4,9 @@
 
 // allocate memory
 // assign geometry and color data through deep copy operator
-AddStrokeCommand::AddStrokeCommand(RootScene *scene, Stroke *stroke)
+AddStrokeCommand::AddStrokeCommand(RootScene *scene)
     : mScene(scene)
-    , mStroke(new Stroke(*stroke, osg::CopyOp::DEEP_COPY_ALL))
+    , mStroke(new Stroke)
     , mValid(this->checkPointers())
 {
     // update scene first
@@ -16,6 +16,11 @@ AddStrokeCommand::AddStrokeCommand(RootScene *scene, Stroke *stroke)
 
 AddStrokeCommand::~AddStrokeCommand()
 {
+}
+
+void AddStrokeCommand::appendPoint(const float u, const float v)
+{
+    mStroke->appendPoint(u, v);
 }
 
 void AddStrokeCommand::undo()
