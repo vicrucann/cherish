@@ -13,7 +13,7 @@
 #include "rootscene.h"
 #include "settings.h"
 #include "../libSGControls/manipulator.h"
-#include "../libSGControls/eventhandler.h"
+#include "../libSGControls/EventHandler.h"
 
 class GLWidget : public QOpenGLWidget {
     Q_OBJECT

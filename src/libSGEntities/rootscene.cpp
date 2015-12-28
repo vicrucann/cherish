@@ -18,7 +18,6 @@
 #include "canvas.h"
 #include "photo.h"
 #include "findnodevisitor.h"
-#include "AddGroupCommand.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
     : _userScene(new osg::Group)
@@ -172,18 +171,18 @@ Canvas *RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T){
 Canvas* RootScene::addCanvas(osg::MatrixTransform* transform){
     outLogMsg("addCanvas(*transform)");
     Canvas* cnv = new Canvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
-    QUndoCommand* cmd = new AddGroupCommand(this, cnv);
+    /*QUndoCommand* cmd = new AddGroupCommand(this, cnv);
     if (!_undoStack){
         outErrMsg("undo stack is not initalized");
         return cnv;
     }
-    _undoStack->push(cmd);
-    /*this->setCanvasCurrent(cnv);
+    _undoStack->push(cmd);*/
+    this->setCanvasCurrent(cnv);
     bool success = _userScene->addChild(cnv);
     if (!success){
         std::cerr << "addCanvas(): Could not add a canvas as a child of _userScene" << std::endl;
         cnv = 0;
-    }*/
+    }
     return cnv;
 }
 

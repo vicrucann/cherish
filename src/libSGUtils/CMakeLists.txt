@@ -13,8 +13,6 @@ set (libSGUtils_SRCS
     observescenecallback.cpp
     findnodevisitor.h
     findnodevisitor.cpp
-    AddGroupCommand.h
-    AddGroupCommand.cpp
 )
 
 add_library(libSGUtils

@@ -1,4 +1,4 @@
-#include "eventhandler.h"
+#include "EventHandler.h"
 #include <iostream>
 #include <assert.h>
 #include <osgViewer/View>
