@@ -56,6 +56,9 @@ private slots:
     void onMouseOffset();
     void onMouseRotate();
     void onMouseMove();
+
+    void loadImage();
+
 private:
     GLWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
 
@@ -169,6 +172,8 @@ private:
     QWidgetAction* selectAction;
     QMenu *selectMenu;
     QToolButton *select;
+
+    QAction *loadImageAction;
 
 
     QCursor *m_currentCursor;

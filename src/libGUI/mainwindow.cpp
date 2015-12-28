@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     createBookMark();
 
     this->setCentralWidget(_mdiArea);
-
+    //this->centralWidget()->setMouseTracking(true);
     // it is to show how to add a photo to a current canvas
     // start with extenstions *.bmp and *.rgb
     // for other file formats, OSG would need corresponding plugins
@@ -260,7 +260,7 @@ GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
 
 void MainWindow::createActions()
 {
-    newAct = new QAction(QIcon(":new.png"), tr("&New"), this);
+    newAct = new QAction(QIcon(":/new.png"), tr("&New"), this);
     newAct->setShortcuts(QKeySequence::New);
     newAct->setStatusTip(tr("Create a new file"));
     connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
@@ -269,6 +269,10 @@ void MainWindow::createActions()
     openAct->setShortcuts(QKeySequence::Open);
     openAct->setStatusTip(tr("Open an existing file"));
     connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
+
+    loadImageAction = new QAction(QIcon(":/load_image.png"), tr("Load Image"), this);
+    loadImageAction->setStatusTip(tr("Load an image"));
+    connect(loadImageAction, SIGNAL(triggered()), this, SLOT(loadImage()));
 
     saveAct = new QAction(QIcon(":/save.png"), tr("&Save"), this);
     saveAct->setShortcuts(QKeySequence::Save);
@@ -536,6 +540,7 @@ void MainWindow::createToolBars()
     fileToolBar = addToolBar(tr("File"));
     fileToolBar->addAction(newAct);
     fileToolBar->addAction(openAct);
+    fileToolBar->addAction(loadImageAction);
     fileToolBar->addAction(saveAct);
 
     editToolBar = addToolBar(tr("Edit"));
@@ -696,4 +701,19 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             this->setCursor(Qt::ArrowCursor);
         }
     }
+}
+
+void MainWindow::loadImage()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load an Image File"), QString(),
+            tr("Image Files (*.bmp)"));
+
+    if (!fileName.isEmpty()) {
+        _rootScene->loadPhotoFromFile(fileName.toStdString());
+        /*if (something wrong) {
+            QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
+            return;
+        }*/
+    }
+
 }

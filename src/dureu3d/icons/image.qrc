@@ -43,5 +43,6 @@
         <file>delete.png</file>
         <file>delete_icon.png</file>
         <file>new_canvas.png</file>
+        <file>load_image.png</file>
     </qresource>
 </RCC>
