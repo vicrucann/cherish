@@ -3,7 +3,6 @@
 #include <QObject>
 
 // allocate memory
-// assign geometry and color data through deep copy operator
 AddStrokeCommand::AddStrokeCommand(RootScene *scene)
     : mScene(scene)
     , mStroke(new Stroke)
@@ -18,6 +17,7 @@ AddStrokeCommand::~AddStrokeCommand()
 {
 }
 
+// change stroke's geometry dynamically
 void AddStrokeCommand::appendPoint(const float u, const float v)
 {
     mStroke->appendPoint(u, v);
@@ -41,6 +41,7 @@ void AddStrokeCommand::redo()
     }
 }
 
+// to make sure there is no NULL pointers
 bool AddStrokeCommand::checkPointers() const
 {
     if (!mStroke){
