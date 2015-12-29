@@ -15,6 +15,8 @@
 #include "settings.h"
 #include "bookmarkwidget.h"
 #include "listwidget.h"
+#include "canvasinfomodel.h"
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
@@ -38,30 +40,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     //this->addDockWidget(Qt::LeftDockWidgetArea, _bookmarks);
 
-    //QMenuBar* menuBar = this->menuBar();
-    /*QMenu* menuTest = _menuBar->addMenu("Test");
-
-    menuTest->addAction("Add scene double viewer", this, SLOT(onCreateDoubleViewer()));
-    menuTest->addAction("Add outisde viewer", this, SLOT(onCreateOutsideViewer()));
-    menuTest->addAction("Load cow to the scene",  this, SLOT(onLoadCow()));
-    menuTest->addAction("Stylus draw ON", this, SLOT(onSetStylusSketchON()));
-    menuTest->addAction("Stylus draw OFF", this, SLOT(onSetStylusSketchOFF()));
-    menuTest->addAction("Global axes ON", this, SLOT(onSetGloAxesON()));
-    menuTest->addAction("Global axes OFF", this, SLOT(onSetGloAxesOFF()));
-
-    QMenu* menuTC = _menuBar->addMenu("TestModels");
-    menuTC->addAction("Delete canvas 3", this, SLOT(onDeleteCanvas()));
-    menuTC->addAction("Delete cow.osg", this, SLOT(onDeleteCow()));
-    menuTC->addAction("Increase size of current canvas", this, SLOT(onChangeSizeCanvas()));
-
-    QMenu* menuTM = _menuBar->addMenu("TestMouse");
-    menuTM->addAction("Naviagation: rotate", this, SLOT(onMouseOrbit()));
-    menuTM->addAction("Navigation: zoom", this, SLOT(onMouseZoom()));
-    menuTM->addAction("Naviagation: pan", this, SLOT(onMousePan()));
-    menuTM->addAction("Mouse: pick", this, SLOT(onMousePick()));
-    menuTM->addAction("Mouse: erase", this, SLOT(onMouseErase()));
-    menuTM->addAction("Mouse: draw", this, SLOT(onMouseSketch()));*/
-
     createActions();
     createMenus();
     createToolBars();
@@ -74,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     // it is to show how to add a photo to a current canvas
     // start with extenstions *.bmp and *.rgb
     // for other file formats, OSG would need corresponding plugins
-    _rootScene->loadPhotoFromFile("../../samples/ds-32.bmp");
+    //_rootScene->loadPhotoFromFile("../../samples/ds-32.bmp");
 }
 
 MainWindow::~MainWindow(){
@@ -621,63 +599,28 @@ void MainWindow::createStatusBar()
 
 void MainWindow::createLayerManager()
 {
+    tableView = new QTableView();
+    tableView->setShowGrid(false);
+    tableView->verticalHeader()->hide();
+    tableView->setFrameShape(QFrame::NoFrame);
+    tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    tableView->horizontalHeader()->setStretchLastSection(true);
+
+    /*
+    CanvasInfoModel *myModel = new CanvasInfoModel(2,1,this);   //total column 2
+    tableView->setModel(myModel); //set QTableView'model to bestudentInfoModel
+    CanvasInfo cInfo;
+    cInfo.SetCanName("Canvas 1");
+    //add four cans
+    myModel->AddCanvasInfo(cInfo);
+    myModel->AddCanvasInfo(cInfo);
+    myModel->AddCanvasInfo(cInfo);
+    myModel->AddCanvasInfo(cInfo); */
     QDockWidget *dock = new QDockWidget(tr("Layers"), this);
     dock->setAllowedAreas(Qt::RightDockWidgetArea);
-
-    m_TableHeader<<"Name"<<"Visible"<<"Color";
-
-    m_pTableWidget = new QTableWidget(dock);
-    m_pTableWidget->setColumnCount(3);
-    m_pTableWidget->setRowCount(2);
-    m_pTableWidget->horizontalHeader()->setSectionsClickable(false);
-    m_pTableWidget->setHorizontalHeaderLabels(m_TableHeader);
-    m_pTableWidget->horizontalHeader()->setStretchLastSection(true); //extend to the full width
-    m_pTableWidget->horizontalHeader()->setFixedHeight(30);
-
-    m_pTableWidget->verticalHeader()->setDefaultSectionSize(30); //height of each line
-    m_pTableWidget->setFrameShape(QFrame::NoFrame); //no frame
-    m_pTableWidget->setShowGrid(false); //no grid
-    m_pTableWidget->verticalHeader()->setVisible(false);
-
-
-    m_pTableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    m_pTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_pTableWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-    m_pTableWidget->setStyleSheet("QTableView {selection-background-color: lightgrey;}");
-    m_pTableWidget->setGeometry(QApplication::desktop()->screenGeometry());
-
-
-
-    //replace this part with a loop using parameters passed in
-    //insert data
-    //use it in a loop to insert new rows
-    //int row_count = m_pTableWidget->rowCount(); //get the number of rows
-    //m_pTableWidget->insertRow(row_count); //insert a new row
-    QTableWidgetItem* item0 = new QTableWidgetItem("canvas 1");
-    item0->setTextAlignment( Qt::AlignCenter );
-    m_pTableWidget->setItem(0, 0, item0);//row,column,item
-    QTableWidgetItem* item2 = new QTableWidgetItem("Red");
-    item2->setTextAlignment( Qt::AlignCenter );
-    m_pTableWidget->setItem(0, 2, item2);
-
-    //checkBox  signals:   stateChanged()  isChecked()
-    //http://doc.qt.io/qt-5/qcheckbox.html
-    QWidget *item1 = new QWidget();
-    QCheckBox *pCheckBox = new QCheckBox();
-    QHBoxLayout *pLayout = new QHBoxLayout(item1);
-    pLayout->addWidget(pCheckBox);
-    pLayout->setAlignment(Qt::AlignCenter);
-    pLayout->setContentsMargins(0,0,0,0);
-    item1->setLayout(pLayout);
-    m_pTableWidget->setCellWidget(0,1,item1);//row,col,item
-    //connect(pCheckBox, SIGNAL(isChecked()), this, SLOT(myChecked(int 1)));//row1
-
-    m_pTableWidget->resizeColumnsToContents();
-    m_pTableWidget->resizeRowsToContents();
-    //single click signal
-    //connect(m_pTableWidget, SIGNAL(cellClicked(int, int)), this, SLOT(myCellClicked(int, int)));//row,col
-    dock->setWidget(m_pTableWidget);
+    dock->setWidget(tableView);
     addDockWidget(Qt::RightDockWidgetArea, dock);
+
 }
 
 
@@ -695,12 +638,15 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
     if(object==_mdiArea && (event->type()==QEvent::Enter || event->type()==QEvent::Leave)){
         if(event->type()==QEvent::Enter){
             this->setCursor(*m_currentCursor);
+            qDebug()<<"enter"<<this->mapFromGlobal(QCursor::pos());
         }
         else
         {
             this->setCursor(Qt::ArrowCursor);
+            qDebug()<<"leave"<<this->mapFromGlobal(QCursor::pos());
         }
     }
+    return true;
 }
 
 void MainWindow::loadImage()
@@ -710,7 +656,8 @@ void MainWindow::loadImage()
 
     if (!fileName.isEmpty()) {
         _rootScene->loadPhotoFromFile(fileName.toStdString());
-        /*if (something wrong) {
+        /*recommend change loadPhotoFromFile into a bool function
+          if (something wrong) {
             QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
             return;
         }*/
