@@ -178,8 +178,7 @@ private:
 
     QCursor *m_currentCursor;
 
-    QTableWidget* m_pTableWidget;
-    QStringList m_TableHeader;
+    QTableView *tableView;
 
     osg::ref_ptr<RootScene> _rootScene; // main scene graph
 

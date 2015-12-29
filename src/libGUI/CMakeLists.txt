@@ -21,6 +21,8 @@ set(libGUI_SRCS
     listwidget.cpp
     glwidget.h
     glwidget.cpp
+    canvasinfomodel.h
+    canvasinfomodel.cpp
 )
 
 add_library(libGUI
