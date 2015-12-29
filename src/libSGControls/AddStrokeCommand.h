@@ -25,13 +25,16 @@
 #include "canvas.h"
 #include "Stroke.h"
 
+class RootScene;
+
 class AddStrokeCommand : public QUndoCommand
 {
 public:
-    AddStrokeCommand(RootScene* scene, QUndoCommand *parent);
+    AddStrokeCommand(RootScene* scene, QUndoCommand *parent = 0);
     ~AddStrokeCommand();
 
     void appendPoint(const float u, const float v);
+    bool isLengthy() const;
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;

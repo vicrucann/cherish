@@ -122,7 +122,7 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
-        std::cout << "doByOperator(): push button" << std::endl;
+        std::cout << "doByRayTrace(): push button" << std::endl;
         switch(mMode){
         case dureu::MOUSE_SKETCH:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
@@ -147,7 +147,7 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         }
         break;
     case osgGA::GUIEventAdapter::RELEASE:
-        std::cout << "doByOperator(): release button" << std::endl;
+        std::cout << "doByRayTrace(): release button" << std::endl;
         switch(mMode){
         case dureu::MOUSE_SKETCH:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))

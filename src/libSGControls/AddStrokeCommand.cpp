@@ -2,14 +2,19 @@
 
 #include <QObject>
 
+#include "settings.h"
+
 // allocate memory
-AddStrokeCommand::AddStrokeCommand(RootScene *scene,  QUndoCommand *parent = 0)
+AddStrokeCommand::AddStrokeCommand(RootScene *scene, QUndoCommand *parent)
     : QUndoCommand(parent)
     , mScene(scene)
     , mStroke(new Stroke)
     , mValid(this->checkPointers())
 {
-    // update scene first
+    if (!mValid){
+        fatalMsg("AddStrokeCommand ctor: pointer were not initialized correctly");
+        return;
+    }
     this->setText(QObject::tr("Add new stroke to canvas %1")
                   .arg(QString( mScene->getCanvasCurrent()->getName().c_str() ) ) );
 }
@@ -21,14 +26,24 @@ AddStrokeCommand::~AddStrokeCommand()
 // change stroke's geometry dynamically
 void AddStrokeCommand::appendPoint(const float u, const float v)
 {
+    if (!mStroke.get()){
+        outErrMsg("stroke pointer is NULL");
+        return;
+    }
     mStroke->appendPoint(u, v);
+}
+
+// is the stroke long enough to keep it?
+bool AddStrokeCommand::isLengthy() const
+{
+    return mStroke->isLengthy();
 }
 
 void AddStrokeCommand::undo()
 {
     if (mValid){
         if (!mScene->getCanvasCurrent()->getGeodeData()->removeChild(mStroke))
-            warningMsg("undo(): problem while removing stroke from a canvas");
+            outErrMsg("undo(): problem while removing stroke from a canvas");
         // update GLWidgets or set canvas' geometry dirty
     }
 }
@@ -37,7 +52,7 @@ void AddStrokeCommand::redo()
 {
     if (mValid){
         if (!mScene->getCanvasCurrent()->getGeodeData()->addDrawable(mStroke))
-            warningMsg("redo(): problem while adding stroke to a canvas");
+            outErrMsg("redo(): problem while adding stroke to a canvas");
         // update GLWidgets or set canvas' geometry dirty
     }
 }

@@ -23,6 +23,7 @@ public:
     Stroke();
     void appendPoint(const float u, const float v);
     float getLength() const;
+    bool isLengthy() const;
 
     void setColor(const osg::Vec4f &color);
 private:

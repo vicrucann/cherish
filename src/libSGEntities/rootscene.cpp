@@ -30,6 +30,7 @@ RootScene::RootScene(QUndoStack *undoStack)
     , _idCanvas(0)
     , _idNode(0)
     , _undoStack(undoStack)
+//    , _strokeAddWeak(NULL)
 {
     osg::ref_ptr<osg::MatrixTransform> trans_i = new osg::MatrixTransform;
     trans_i->setMatrix(osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f) );
@@ -159,7 +160,8 @@ bool RootScene::getHudCameraVisibility() const{
 // use QUndoStack framework
 // more on Qt smart pointers:
 // http://blog.qt.io/blog/2009/08/25/count-with-me-how-many-smart-pointer-classes-does-qt-have/
-// we chose QWeakPointer to track QUndoCommand
+// we chose QPointer to track QUndoCommand
+// see why: http://www.macieira.org/blog/2012/07/continue-using-qpointer/
 void RootScene::addStroke(float u, float v, dureu::EVENT event)
 {
     if (!_undoStack){
@@ -170,9 +172,11 @@ void RootScene::addStroke(float u, float v, dureu::EVENT event)
     }
     switch (event){
     case dureu::EVENT_OFF:
+        outLogMsg("EVENT_OFF");
         this->strokeFinish();
         break;
     case dureu::EVENT_PRESSED:
+        outLogMsg("EVENT_PRESSED");
         this->strokeStart();
         this->strokeAppend(u, v);
         break;
@@ -182,6 +186,7 @@ void RootScene::addStroke(float u, float v, dureu::EVENT event)
         this->strokeAppend(u, v);
         break;
     case dureu::EVENT_RELEASED:
+        outLogMsg("EVENT_RELEASED");
         if (!this->strokeValid())
             this->strokeStart();
         this->strokeAppend(u, v);
@@ -602,27 +607,46 @@ bool RootScene::setSceneObserver() {
 
 void RootScene::strokeStart()
 {
-    // create new command-add-stroke
-    // QUndoCommand* cmd = new AddStrokeCommand(this);
-    // noticeMsg("addStroke(): initialization");
+    outLogMsg("strokeStart()");
+    shared_cmd = QSharedPointer<AddStrokeCommand>(new AddStrokeCommand(this));
+    //weak_cmd = QWeakPointer<AddStrokeCommand>(new AddStrokeCommand(this));
+    //QPointer<AddStrokeCommand> ptr_cmd;
+    //AddStrokeCommand* cmd = new AddStrokeCommand(this);
+    //ptr_cmd.operator =(cmd);
 }
 
+// append point to the current stroke
 void RootScene::strokeAppend(float u, float v)
 {
-// append point to the current stroke
+    outLogMsg("strokeAppend()");
+    if (!shared_cmd.isNull())
+        shared_cmd->appendPoint(u,v);
+    else
+        outErrMsg("strokeAppend: pointer is NULL");
 }
 
+// if command is still a valid pointer,
+// push it to stack, if stroke's length is OK
+// set the pointer to zero and return
 void RootScene::strokeFinish()
 {
-    // if command is still a valid pointer,
-    // push it to stack, if stroke's length is OK
-    // set the pointer to zero and return
-    // _undoStack->push(cmd);
+    if (this->strokeValid()){
+        if (shared_cmd->isLengthy()) {
+            _undoStack->push(shared_cmd.data());
+        }
+        else {
+            shared_cmd.clear();
+        }
+    }
+    else
+        outErrMsg("strokeFinish(): stroke pointer is NULL, impossible to finish the stroke");
+    shared_cmd.clear();
+    outLogMsg("strokeFinish()");
 }
 
 // checks if command pointer is NULL or not
 bool RootScene::strokeValid() const
 {
-    return false;
+    return !shared_cmd.isNull();
 }
 

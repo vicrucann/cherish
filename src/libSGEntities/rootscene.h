@@ -41,9 +41,14 @@
 #include "settings.h"
 #include "../libSGUtils/observescenecallback.h"
 #include "../libGUI/hudcamera.h"
+#include "../libSGControls/AddStrokeCommand.h"
 
 #include <QUndoStack>
+#include <QSharedPointer>
 #include <QWeakPointer>
+#include <QPointer>
+
+class AddStrokeCommand;
 
 class RootScene : public osg::Group {
 public:
@@ -136,7 +141,9 @@ private:
     unsigned int _idNode; // for misc entities
 
     QUndoStack* _undoStack;
-    //QWeakPointer
+    QSharedPointer<AddStrokeCommand> shared_cmd;
+    QWeakPointer<AddStrokeCommand> weak_cmd;
+    //QPointer<AddStrokeCommand> ptr_cmd;
 
 };
 

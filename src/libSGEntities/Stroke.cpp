@@ -11,7 +11,6 @@ Stroke::Stroke():
     mVertexData(new osg::Vec3Array),
     mColors(new osg::Vec4Array)
 {
-    noticeMsg("New stroke started");
     this->addPrimitiveSet(mDrawArrayLines);
     this->addPrimitiveSet(mDrawArrayPoints);
     this->setVertexArray(mVertexData);
@@ -67,6 +66,11 @@ float Stroke::getLength() const
         return 0;
     }
     return std::max(bb.xMax() - bb.xMin(), bb.yMax() - bb.yMin());
+}
+
+bool Stroke::isLengthy() const
+{
+    return this->getLength()>dureu::STROKE_MINL;
 }
 
 void Stroke::setColor(const osg::Vec4f &color)
