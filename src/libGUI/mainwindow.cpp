@@ -40,30 +40,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     //this->addDockWidget(Qt::LeftDockWidgetArea, _bookmarks);
 
-    //QMenuBar* menuBar = this->menuBar();
-    /*QMenu* menuTest = _menuBar->addMenu("Test");
-
-    menuTest->addAction("Add scene double viewer", this, SLOT(onCreateDoubleViewer()));
-    menuTest->addAction("Add outisde viewer", this, SLOT(onCreateOutsideViewer()));
-    menuTest->addAction("Load cow to the scene",  this, SLOT(onLoadCow()));
-    menuTest->addAction("Stylus draw ON", this, SLOT(onSetStylusSketchON()));
-    menuTest->addAction("Stylus draw OFF", this, SLOT(onSetStylusSketchOFF()));
-    menuTest->addAction("Global axes ON", this, SLOT(onSetGloAxesON()));
-    menuTest->addAction("Global axes OFF", this, SLOT(onSetGloAxesOFF()));
-
-    QMenu* menuTC = _menuBar->addMenu("TestModels");
-    menuTC->addAction("Delete canvas 3", this, SLOT(onDeleteCanvas()));
-    menuTC->addAction("Delete cow.osg", this, SLOT(onDeleteCow()));
-    menuTC->addAction("Increase size of current canvas", this, SLOT(onChangeSizeCanvas()));
-
-    QMenu* menuTM = _menuBar->addMenu("TestMouse");
-    menuTM->addAction("Naviagation: rotate", this, SLOT(onMouseOrbit()));
-    menuTM->addAction("Navigation: zoom", this, SLOT(onMouseZoom()));
-    menuTM->addAction("Naviagation: pan", this, SLOT(onMousePan()));
-    menuTM->addAction("Mouse: pick", this, SLOT(onMousePick()));
-    menuTM->addAction("Mouse: erase", this, SLOT(onMouseErase()));
-    menuTM->addAction("Mouse: draw", this, SLOT(onMouseSketch()));*/
-
     createActions();
     createMenus();
     createToolBars();
@@ -76,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     // it is to show how to add a photo to a current canvas
     // start with extenstions *.bmp and *.rgb
     // for other file formats, OSG would need corresponding plugins
-    _rootScene->loadPhotoFromFile("../../samples/ds-32.bmp");
+    //_rootScene->loadPhotoFromFile("../../samples/ds-32.bmp");
 }
 
 MainWindow::~MainWindow(){
@@ -630,6 +606,7 @@ void MainWindow::createLayerManager()
     tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     tableView->horizontalHeader()->setStretchLastSection(true);
 
+    /*
     CanvasInfoModel *myModel = new CanvasInfoModel(2,1,this);   //total column 2
     tableView->setModel(myModel); //set QTableView'model to bestudentInfoModel
     CanvasInfo cInfo;
@@ -638,11 +615,12 @@ void MainWindow::createLayerManager()
     myModel->AddCanvasInfo(cInfo);
     myModel->AddCanvasInfo(cInfo);
     myModel->AddCanvasInfo(cInfo);
-    myModel->AddCanvasInfo(cInfo);
+    myModel->AddCanvasInfo(cInfo); */
     QDockWidget *dock = new QDockWidget(tr("Layers"), this);
     dock->setAllowedAreas(Qt::RightDockWidgetArea);
     dock->setWidget(tableView);
     addDockWidget(Qt::RightDockWidgetArea, dock);
+
 }
 
 
@@ -668,6 +646,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
             qDebug()<<"leave"<<this->mapFromGlobal(QCursor::pos());
         }
     }
+    return true;
 }
 
 void MainWindow::loadImage()
