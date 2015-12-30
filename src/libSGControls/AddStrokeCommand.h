@@ -33,9 +33,6 @@ public:
     AddStrokeCommand(RootScene* scene, Stroke* stroke, QUndoCommand *parent = 0);
     ~AddStrokeCommand();
 
-    void appendPoint(const float u, const float v);
-    bool isLengthy() const;
-
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
 

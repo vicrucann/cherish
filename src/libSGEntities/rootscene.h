@@ -138,8 +138,7 @@ private:
     unsigned int _idNode; // for misc entities
 
     QUndoStack* _undoStack;
-    Stroke* current_stroke;
-    //AddStrokeCommand* raw_ptr;
+    osg::ref_ptr<Stroke> current_stroke;
 
 };
 

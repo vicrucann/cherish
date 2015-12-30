@@ -35,7 +35,6 @@ RootScene::RootScene(QUndoStack *undoStack)
 {
     osg::ref_ptr<osg::MatrixTransform> trans_i = new osg::MatrixTransform;
     trans_i->setMatrix(osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f) );
-    //Canvas* cnv0 = this->addCanvas(trans_xz);
     Canvas* cnv0 = this->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0),
                                    osg::Matrix::translate(0.f, 0.f, 0.f));
 
@@ -609,30 +608,30 @@ bool RootScene::setSceneObserver() {
 void RootScene::strokeStart()
 {
     outLogMsg("strokeStart()");
-    assert(!this->strokeValid());
+    if (this->strokeValid()){
+        outErrMsg("strokeStart(): Cannot start new stroke since the pointer is not NULL");
+        return;
+    }
     current_stroke = new Stroke();
     this->getCanvasCurrent()->getGeodeData()->addDrawable(current_stroke);
-    assert(this->strokeValid());
 }
 
-// append point to the current stroke
 void RootScene::strokeAppend(float u, float v)
 {
-    outLogMsg("strokeAppend()");
-    assert(this->strokeValid());
-    if (this->strokeValid())
+    if (this->strokeValid()){
         current_stroke->appendPoint(u, v);
+        this->getCanvasCurrent()->updateFrame();
+    }
     else
         outErrMsg("strokeAppend: pointer is NULL");
 }
 
-// if command is still a valid pointer,
-// if stroke is long enough to be kept,
-// clone the AddStrokeCommand and push the cloned instance to stack
-// set the shared pointer to zero and return
+/* if command is still a valid pointer,
+   if stroke is long enough to be kept,
+   clone the AddStrokeCommand and push the cloned instance to stack
+   set the shared pointer to zero and return*/
 void RootScene::strokeFinish()
 {
-    assert(this->strokeValid());
     if (this->strokeValid()){
         if (current_stroke->isLengthy()){
             Stroke* stroke = new Stroke;
@@ -641,18 +640,18 @@ void RootScene::strokeFinish()
             _undoStack->push(cmd);
         }
     }
-    else
+    else{
         outErrMsg("strokeFinish(): stroke pointer is NULL, impossible to finish the stroke");
-    //delete current_stroke;
-    this->getCanvasCurrent()->getGeodeData()->removeChild(current_stroke); // remove the "current" copy
-    current_stroke = 0;
+        return;
+    }
+    this->getCanvasCurrent()->getGeodeData()->removeChild(current_stroke.get()); // remove the "current" copy
+    current_stroke.release();
     outLogMsg("strokeFinish()");
 }
 
 // checks if command pointer is NULL or not
 bool RootScene::strokeValid() const
 {
-    return current_stroke;
-    //return raw_ptr;
+    return current_stroke.get();
 }
 

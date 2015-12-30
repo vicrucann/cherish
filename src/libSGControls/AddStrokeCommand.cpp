@@ -23,22 +23,6 @@ AddStrokeCommand::~AddStrokeCommand()
 {
 }
 
-// change stroke's geometry dynamically
-void AddStrokeCommand::appendPoint(const float u, const float v)
-{
-    if (!mStroke.get()){
-        outErrMsg("stroke pointer is NULL");
-        return;
-    }
-    mStroke->appendPoint(u, v);
-}
-
-// is the stroke long enough to keep it?
-bool AddStrokeCommand::isLengthy() const
-{
-    return mStroke->isLengthy();
-}
-
 void AddStrokeCommand::undo()
 {
     if (mValid){
