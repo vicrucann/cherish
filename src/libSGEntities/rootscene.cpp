@@ -1,6 +1,7 @@
 #include "iostream"
 #include <sstream>
 #include <stdlib.h>
+#include <assert.h>
 
 #include <osg/ref_ptr>
 #include <osg/Group>
@@ -30,7 +31,6 @@ RootScene::RootScene(QUndoStack *undoStack)
     , _idCanvas(0)
     , _idNode(0)
     , _undoStack(undoStack)
-//    , _strokeAddWeak(NULL)
 {
     osg::ref_ptr<osg::MatrixTransform> trans_i = new osg::MatrixTransform;
     trans_i->setMatrix(osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f) );
@@ -52,6 +52,8 @@ RootScene::RootScene(QUndoStack *undoStack)
     this->addHudCamera();
     this->setHudCameraObserve(); // child #2
     this->setName("RootScene");
+
+    raw_ptr = 0;
 }
 
 RootScene::~RootScene(){}
@@ -608,45 +610,45 @@ bool RootScene::setSceneObserver() {
 void RootScene::strokeStart()
 {
     outLogMsg("strokeStart()");
-    shared_cmd = QSharedPointer<AddStrokeCommand>(new AddStrokeCommand(this));
-    //weak_cmd = QWeakPointer<AddStrokeCommand>(new AddStrokeCommand(this));
-    //QPointer<AddStrokeCommand> ptr_cmd;
-    //AddStrokeCommand* cmd = new AddStrokeCommand(this);
-    //ptr_cmd.operator =(cmd);
+    AddStrokeCommand* cmd = new AddStrokeCommand(this);
+    raw_ptr = cmd;
+    assert(this->strokeValid());
 }
 
 // append point to the current stroke
 void RootScene::strokeAppend(float u, float v)
 {
     outLogMsg("strokeAppend()");
-    if (!shared_cmd.isNull())
-        shared_cmd->appendPoint(u,v);
+    assert(this->strokeValid());
+    if (this->strokeValid())
+        raw_ptr->appendPoint(u,v);
     else
         outErrMsg("strokeAppend: pointer is NULL");
 }
 
 // if command is still a valid pointer,
-// push it to stack, if stroke's length is OK
-// set the pointer to zero and return
+// if stroke is long enough to be kept,
+// clone the AddStrokeCommand and push the cloned instance to stack
+// set the shared pointer to zero and return
 void RootScene::strokeFinish()
 {
+    assert(this->strokeValid());
     if (this->strokeValid()){
-        if (shared_cmd->isLengthy()) {
-            _undoStack->push(shared_cmd.data());
+        if (raw_ptr->isLengthy()){
+            _undoStack->push(raw_ptr);
         }
-        else {
-            shared_cmd.clear();
-        }
+        else
+            delete raw_ptr;
     }
     else
         outErrMsg("strokeFinish(): stroke pointer is NULL, impossible to finish the stroke");
-    shared_cmd.clear();
+    raw_ptr = 0;
     outLogMsg("strokeFinish()");
 }
 
 // checks if command pointer is NULL or not
 bool RootScene::strokeValid() const
 {
-    return !shared_cmd.isNull();
+    return raw_ptr;
 }
 

@@ -44,9 +44,6 @@
 #include "../libSGControls/AddStrokeCommand.h"
 
 #include <QUndoStack>
-#include <QSharedPointer>
-#include <QWeakPointer>
-#include <QPointer>
 
 class AddStrokeCommand;
 
@@ -141,9 +138,7 @@ private:
     unsigned int _idNode; // for misc entities
 
     QUndoStack* _undoStack;
-    QSharedPointer<AddStrokeCommand> shared_cmd;
-    QWeakPointer<AddStrokeCommand> weak_cmd;
-    //QPointer<AddStrokeCommand> ptr_cmd;
+    AddStrokeCommand* raw_ptr;
 
 };
 
