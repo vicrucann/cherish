@@ -15,7 +15,7 @@
 #include "settings.h"
 #include "bookmarkwidget.h"
 #include "listwidget.h"
-#include "canvasinfomodel.h"
+//#include "canvasinfomodel.h"
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
