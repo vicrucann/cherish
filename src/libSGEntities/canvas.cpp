@@ -224,56 +224,6 @@ std::string Canvas::getGeodeDataName() const{
     return _geodeData->getName();
 }
 
-// Near and far are the points representing the ray which is casted by a mouse
-// screen coordinates.
-// The function takes intersection between the ray and our plane (canvas)
-// Then transforms that intersection point into an original local coordinate system.
-// The result point is appended to the current stroke.
-void Canvas::addStroke(const double u, const double v, int mouse)
-{
-    if (mouse == 0 || (mouse==1 && !_strokeCurrent.get())){
-        outLogMsg("addStroke(): initialization");
-        assert(_strokeCurrent.get() == 0);
-        Stroke* stroke  = new Stroke; // an empty stroke structure
-        assert(stroke);
-        _strokeCurrent = stroke;
-        if (!_strokeCurrent.valid()){
-            std::cerr << "addStroke(): _strokeCurrent is NULL after initialization" << std::endl;
-            return;
-        }
-        assert(_geodeData.get());
-        if (!_geodeData->addDrawable(stroke)){
-            std::cerr << "addStroke(): could not add stroke as a child to the current canvas" << std::endl;
-            _strokeCurrent = 0;
-            return;
-        }
-    }
-    assert(_strokeCurrent.get());
-    _strokeCurrent->appendPoint(u,v);
-
-    this->updateFrame();
-
-    if (mouse == 2){
-        float len = _strokeCurrent->getLength();
-        if (len < dureu::STROKE_MINL){
-            if (!this->deleteStroke(_strokeCurrent.get()))
-                outErrMsg("addStroke(): as the stroke was short, it was attempted to delete it, but failed");
-        }
-        _strokeCurrent = 0;
-        //this->updateData();
-        std::cout << "addStroke(): finished stroke, observer pointer cleared" << std::endl;
-    }
-}
-
-bool Canvas::deleteStroke(Stroke *stroke)
-{
-    if (!stroke){
-        outErrMsg("deleteStroke(): pointer is NULL");
-        return false;
-    }
-    return _geodeData->removeChild(stroke);
-}
-
 bool Canvas::addPhoto(Photo *photo, const double u, const double v)
 {
     if (!photo){

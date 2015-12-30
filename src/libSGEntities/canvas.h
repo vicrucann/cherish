@@ -83,8 +83,6 @@ public:
     std::string getSwitchFrameName() const;
     std::string getGeodeDataName() const;
 
-    void addStroke(const double u, const double v, int mouse);
-    bool deleteStroke(Stroke* stroke);
     bool addPhoto(Photo* photo, const double u = 0, const double v = 0);
     void movePhoto(Photo* photo, const double u, const double v, int mouse);
     void setPhotoCurrent(Photo* photo);
