@@ -31,6 +31,7 @@ RootScene::RootScene(QUndoStack *undoStack)
     , _idCanvas(0)
     , _idNode(0)
     , _undoStack(undoStack)
+    , current_stroke(0)
 {
     osg::ref_ptr<osg::MatrixTransform> trans_i = new osg::MatrixTransform;
     trans_i->setMatrix(osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f) );
@@ -52,8 +53,6 @@ RootScene::RootScene(QUndoStack *undoStack)
     this->addHudCamera();
     this->setHudCameraObserve(); // child #2
     this->setName("RootScene");
-
-    raw_ptr = 0;
 }
 
 RootScene::~RootScene(){}
@@ -610,8 +609,9 @@ bool RootScene::setSceneObserver() {
 void RootScene::strokeStart()
 {
     outLogMsg("strokeStart()");
-    AddStrokeCommand* cmd = new AddStrokeCommand(this);
-    raw_ptr = cmd;
+    assert(!this->strokeValid());
+    current_stroke = new Stroke();
+    this->getCanvasCurrent()->getGeodeData()->addDrawable(current_stroke);
     assert(this->strokeValid());
 }
 
@@ -621,7 +621,7 @@ void RootScene::strokeAppend(float u, float v)
     outLogMsg("strokeAppend()");
     assert(this->strokeValid());
     if (this->strokeValid())
-        raw_ptr->appendPoint(u,v);
+        current_stroke->appendPoint(u, v);
     else
         outErrMsg("strokeAppend: pointer is NULL");
 }
@@ -634,21 +634,25 @@ void RootScene::strokeFinish()
 {
     assert(this->strokeValid());
     if (this->strokeValid()){
-        if (raw_ptr->isLengthy()){
-            _undoStack->push(raw_ptr);
+        if (current_stroke->isLengthy()){
+            Stroke* stroke = new Stroke;
+            stroke->setVertexData(current_stroke->getVertexData());
+            AddStrokeCommand* cmd = new AddStrokeCommand(this, stroke);
+            _undoStack->push(cmd);
         }
-        else
-            delete raw_ptr;
     }
     else
         outErrMsg("strokeFinish(): stroke pointer is NULL, impossible to finish the stroke");
-    raw_ptr = 0;
+    //delete current_stroke;
+    this->getCanvasCurrent()->getGeodeData()->removeChild(current_stroke); // remove the "current" copy
+    current_stroke = 0;
     outLogMsg("strokeFinish()");
 }
 
 // checks if command pointer is NULL or not
 bool RootScene::strokeValid() const
 {
-    return raw_ptr;
+    return current_stroke;
+    //return raw_ptr;
 }
 

@@ -73,6 +73,30 @@ bool Stroke::isLengthy() const
     return this->getLength()>dureu::STROKE_MINL;
 }
 
+void Stroke::setVertexData(osg::Vec3Array *vertices)
+{
+    for (unsigned int i=0; i<vertices->size(); ++i){
+        mVertexData->push_back(vertices->at(i));
+        mColors->push_back(dureu::STROKE_CLR_NORMAL);
+    }
+    unsigned int sz = mVertexData->size();
+    mDrawArrayLines->setFirst(0);
+    mDrawArrayLines->setCount(sz);
+
+    mDrawArrayPoints->setFirst(0);
+    mDrawArrayPoints->setCount(sz);
+
+    mVertexData->dirty();
+    mColors->dirty();
+
+    this->dirtyBound();
+}
+
+osg::Vec3Array *Stroke::getVertexData() const
+{
+    return mVertexData;
+}
+
 void Stroke::setColor(const osg::Vec4f &color)
 {
     mColors->front() = color;

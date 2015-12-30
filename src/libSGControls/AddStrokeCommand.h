@@ -30,7 +30,7 @@ class RootScene;
 class AddStrokeCommand : public QUndoCommand
 {
 public:
-    AddStrokeCommand(RootScene* scene, QUndoCommand *parent = 0);
+    AddStrokeCommand(RootScene* scene, Stroke* stroke, QUndoCommand *parent = 0);
     ~AddStrokeCommand();
 
     void appendPoint(const float u, const float v);

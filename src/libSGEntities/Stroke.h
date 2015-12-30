@@ -25,6 +25,9 @@ public:
     float getLength() const;
     bool isLengthy() const;
 
+    void setVertexData(osg::Vec3Array* vertices);
+    osg::Vec3Array* getVertexData() const;
+
     void setColor(const osg::Vec4f &color);
 private:
     osg::DrawArrays* mDrawArrayLines;

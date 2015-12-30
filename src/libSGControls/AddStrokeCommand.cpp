@@ -5,10 +5,10 @@
 #include "settings.h"
 
 // allocate memory
-AddStrokeCommand::AddStrokeCommand(RootScene *scene, QUndoCommand *parent)
+AddStrokeCommand::AddStrokeCommand(RootScene *scene, Stroke *stroke, QUndoCommand *parent)
     : QUndoCommand(parent)
     , mScene(scene)
-    , mStroke(new Stroke)
+    , mStroke(stroke)
     , mValid(this->checkPointers())
 {
     if (!mValid){
@@ -50,6 +50,7 @@ void AddStrokeCommand::undo()
 
 void AddStrokeCommand::redo()
 {
+    outLogMsg("AddStrokeCommand::redo()");
     if (mValid){
         if (!mScene->getCanvasCurrent()->getGeodeData()->addDrawable(mStroke))
             outErrMsg("redo(): problem while adding stroke to a canvas");

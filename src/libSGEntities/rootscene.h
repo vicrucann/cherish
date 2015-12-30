@@ -138,7 +138,8 @@ private:
     unsigned int _idNode; // for misc entities
 
     QUndoStack* _undoStack;
-    AddStrokeCommand* raw_ptr;
+    Stroke* current_stroke;
+    //AddStrokeCommand* raw_ptr;
 
 };
 
