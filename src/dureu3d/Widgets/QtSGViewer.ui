@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>589</width>
+    <height>586</height>
+   </rect>
+  </property>
+  <property name="cursor">
+   <cursorShape>ArrowCursor</cursorShape>
+  </property>
+  <property name="windowTitle">
+   <string>Viewer Window</string>
+  </property>
+  <property name="iconSize">
+   <size>
+    <width>8</width>
+    <height>8</height>
+   </size>
+  </property>
+  <property name="animated">
+   <bool>true</bool>
+  </property>
+  <property name="documentMode">
+   <bool>false</bool>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>false</bool>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QToolBar" name="m_toolbarViewsLeft">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="contextMenuPolicy">
+    <enum>Qt::DefaultContextMenu</enum>
+   </property>
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>8</width>
+     <height>8</height>
+    </size>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>true</bool>
+   </attribute>
+   <addaction name="m_actionViewPrevious"/>
+   <addaction name="m_actionViewNext"/>
+   <addaction name="separator"/>
+   <addaction name="m_actionViewBookmark"/>
+   <addaction name="separator"/>
+   <addaction name="m_actionViewIso"/>
+   <addaction name="m_actionViewHome"/>
+   <addaction name="m_actionViewBottom"/>
+   <addaction name="m_actionViewTop"/>
+   <addaction name="m_actionViewLeft"/>
+   <addaction name="m_actionViewRight"/>
+  </widget>
+  <widget class="QToolBar" name="m_toolbarViewsRight">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::RightToLeft</enum>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>8</width>
+     <height>8</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="m_actionViewClose"/>
+   <addaction name="actionViewFull"/>
+   <addaction name="m_actionViewNormal"/>
+   <addaction name="m_actionViewVirtual"/>
+  </widget>
+  <action name="m_actionViewPrevious">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/arrow-circle-left.png</normaloff>:/arrow-circle-left.png</iconset>
+   </property>
+   <property name="text">
+    <string>Previous View</string>
+   </property>
+  </action>
+  <action name="m_actionViewNext">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/arrow-circle-right.png</normaloff>:/arrow-circle-right.png</iconset>
+   </property>
+   <property name="text">
+    <string>Next View</string>
+   </property>
+  </action>
+  <action name="m_actionViewBookmark">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/camera-slr.png</normaloff>:/camera-slr.png</iconset>
+   </property>
+   <property name="text">
+    <string>Bookmark View</string>
+   </property>
+  </action>
+  <action name="m_actionViewIso">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/command.png</normaloff>:/command.png</iconset>
+   </property>
+   <property name="text">
+    <string>Iso</string>
+   </property>
+  </action>
+  <action name="m_actionViewHome">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/home.png</normaloff>:/home.png</iconset>
+   </property>
+   <property name="text">
+    <string>Home View</string>
+   </property>
+  </action>
+  <action name="m_actionViewTop">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/caret-top.png</normaloff>:/caret-top.png</iconset>
+   </property>
+   <property name="text">
+    <string>Top View</string>
+   </property>
+  </action>
+  <action name="m_actionViewBottom">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/caret-bottom.png</normaloff>:/caret-bottom.png</iconset>
+   </property>
+   <property name="text">
+    <string>Bottom View</string>
+   </property>
+  </action>
+  <action name="m_actionViewLeft">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/caret-left.png</normaloff>:/caret-left.png</iconset>
+   </property>
+   <property name="text">
+    <string>Left View</string>
+   </property>
+  </action>
+  <action name="m_actionViewRight">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/caret-right.png</normaloff>:/caret-right.png</iconset>
+   </property>
+   <property name="text">
+    <string>Right View</string>
+   </property>
+  </action>
+  <action name="m_actionViewClose">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/circle-x.png</normaloff>:/circle-x.png</iconset>
+   </property>
+   <property name="text">
+    <string>Close Viewer</string>
+   </property>
+  </action>
+  <action name="m_actionViewVirtual">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/external-link.png</normaloff>:/external-link.png</iconset>
+   </property>
+   <property name="text">
+    <string>Virtual Screen</string>
+   </property>
+  </action>
+  <action name="actionViewFull">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/fullscreen-enter.png</normaloff>:/fullscreen-enter.png</iconset>
+   </property>
+   <property name="text">
+    <string>Full Screen</string>
+   </property>
+  </action>
+  <action name="m_actionViewNormal">
+   <property name="icon">
+    <iconset resource="../Icons/Icons-2x.qrc">
+     <normaloff>:/fullscreen-exit.png</normaloff>:/fullscreen-exit.png</iconset>
+   </property>
+   <property name="text">
+    <string>Normal View Screen</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../Icons/Icons-2x.qrc"/>
+ </resources>
+ <connections/>
+</ui>

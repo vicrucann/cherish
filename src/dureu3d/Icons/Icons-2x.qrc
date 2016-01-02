@@ -1,0 +1,18 @@
+<RCC>
+  <qresource prefix="/">
+    <file>fullscreen-exit.png</file>
+    <file>fullscreen-enter.png</file>
+    <file>external-link.png</file>
+    <file>circle-x.png</file>
+    <file>home.png</file>
+    <file>command.png</file>
+    <file>caret-top.png</file>
+    <file>caret-right.png</file>
+    <file>caret-left.png</file>
+    <file>caret-bottom.png</file>
+    <file>Icons-2x.qrc</file>
+    <file>arrow-circle-right.png</file>
+    <file>arrow-circle-left.png</file>
+    <file>camera-slr.png</file>
+  </qresource>
+</RCC>
