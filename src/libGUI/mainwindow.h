@@ -15,36 +15,26 @@
 
 #include "rootscene.h"
 #include "settings.h"
-//#include "viewwidget.h"
 #include "glwidget.h"
-#include "bookmarkwidget.h"
 #include "listwidget.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
+
 public:
-    MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+    explicit MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
     ~MainWindow();
     void SetDesktopWidget(QDesktopWidget* desktop, dureu::APPMODE mode = dureu::SCREEN_MIN);
+
 public slots:
     void getTabletActivity(bool active);
+
 signals:
     void sendTabletActivity(bool active);
-    void sendStylusSketchStatus(bool sketch);
     void sendMouseMode(dureu::MOUSE_MODE mode);
+
 private slots:
     void onCreateViewer();
-    void onCreateDoubleViewer();
-    void onCreateOutsideViewer();
-    void onLoadCow();
-    void onSetStylusSketchON();
-    void onSetStylusSketchOFF();
-    void onSetGloAxesON();
-    void onSetGloAxesOFF();
-
-    void onDeleteCanvas();
-    void onDeleteCow();
-    void onChangeSizeCanvas();
 
     void onMouseOrbit();
     void onMouseZoom();
@@ -57,18 +47,20 @@ private slots:
     void onMouseRotate();
     void onMouseMove();
 
-    void loadImage();
+    void onFileImage();
 
 private:
-    GLWidget *createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
+    GLWidget* createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
 
-    QDesktopWidget* _desktop;
-    QMdiArea* _mdiArea;
-    BookmarkWidget* _bookmarks;
-    bool _tabletActive;
+    QDesktopWidget* m_desktop;
+    QMdiArea*       m_mdiArea;
 
-    QUndoStack * m_UndoStack; // http://doc.qt.io/qt-5/qtwidgets-tools-undoframework-example.html
-    QUndoView * m_UndoView;
+    // http://doc.qt.io/qt-5/qtwidgets-tools-undoframework-example.html
+    QUndoStack*     m_undoStack;
+    QUndoView*      m_undoView;
+
+    QMenuBar*       m_menuBar;
+    osg::ref_ptr<RootScene> m_rootScene; // main scene graph
 
     void createActions();
     void createMenus();
@@ -180,9 +172,6 @@ private:
 
     QTableView *tableView;
 
-    osg::ref_ptr<RootScene> _rootScene; // main scene graph
-
-    QMenuBar* _menuBar;
     ListWidget* m_lw;
 
 protected:

@@ -10,35 +10,26 @@
 #include <QSize>
 
 #include "mainwindow.h"
-//#include "viewwidget.h"
 #include "glwidget.h"
 #include "settings.h"
-#include "bookmarkwidget.h"
 #include "listwidget.h"
-//#include "canvasinfomodel.h"
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
-    , _desktop(0)
-    , _mdiArea(new QMdiArea(this))
-    , _bookmarks(new BookmarkWidget(this))
-    , _tabletActive(false)
-    , m_UndoStack(new QUndoStack(this))
-    , m_UndoView(new QUndoView(m_UndoStack))
-    , _rootScene(new RootScene(m_UndoStack))
-    , _menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
+    , m_desktop(0)
+    , m_mdiArea(new QMdiArea(this))
+    , m_undoStack(new QUndoStack(this))
+    , m_undoView(new QUndoView(m_undoStack))
+    , m_menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
+    , m_rootScene(new RootScene(m_undoStack))
 {
-    this->setMenuBar(_menuBar);
+    this->setMenuBar(m_menuBar);
     this->onCreateViewer();
 
-    m_UndoView->setWindowTitle(tr("Command List"));
-    m_UndoView->show();
-    m_UndoView->setAttribute(Qt::WA_QuitOnClose, false);
-
-    //_rootScene->setUndoStack(m_UndoStack);
-
-    //this->addDockWidget(Qt::LeftDockWidgetArea, _bookmarks);
+    m_undoView->setWindowTitle(tr("Command List"));
+    m_undoView->show();
+    m_undoView->setAttribute(Qt::WA_QuitOnClose, false);
 
     createActions();
     createMenus();
@@ -47,24 +38,19 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     createLayerManager();
     createBookMark();
 
-    this->setCentralWidget(_mdiArea);
-    //this->centralWidget()->setMouseTracking(true);
-    // it is to show how to add a photo to a current canvas
-    // start with extenstions *.bmp and *.rgb
-    // for other file formats, OSG would need corresponding plugins
-    //_rootScene->loadPhotoFromFile("../../samples/ds-32.bmp");
+    this->setCentralWidget(m_mdiArea);
 }
 
 MainWindow::~MainWindow(){
-    if (_menuBar)
-        delete _menuBar;
+    if (m_menuBar)
+        delete m_menuBar;
 }
 
 void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) {
-    _desktop = desktop;
-    QRect availS = _desktop->availableGeometry();
-    QRect fullS = _desktop->geometry();
-    //int nscreen = _desktop->screenCount();
+    m_desktop = desktop;
+    QRect availS = m_desktop->availableGeometry();
+    QRect fullS = m_desktop->geometry();
+    //int nscreen = m_desktop->screenCount();
     double scale = 0.9;
     double scale_inv = 1-scale;
     switch (mode) {
@@ -92,67 +78,19 @@ void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) 
 }
 
 void MainWindow::getTabletActivity(bool active){
-    _tabletActive = active;
     emit sendTabletActivity(active);
 }
 
-/* Create an ordinary single view window on the scene _root */
+/* Create an ordinary single view window on the scene _root
+ * To create outside viewer, use:
+ * GLWidget* vwid = createViewer(Qt::Window);
+*/
 void MainWindow::onCreateViewer(){
     GLWidget* vwid = createViewer();
-    //ViewWidget* vwid = createViewer();
-    QMdiSubWindow* subwin = _mdiArea->addSubWindow(vwid);
+    QMdiSubWindow* subwin = m_mdiArea->addSubWindow(vwid);
     subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     vwid->showMaximized();
     subwin->show();
-}
-
-void MainWindow::onCreateDoubleViewer(){
-    GLWidget* vwid = createViewer(Qt::Widget, 2);
-    QMdiSubWindow* subwin = _mdiArea->addSubWindow(vwid);
-    subwin->show();
-}
-
-void MainWindow::onCreateOutsideViewer(){
-    GLWidget* vwid = createViewer(Qt::Window);
-    vwid->show();
-}
-
-void MainWindow::onLoadCow(){
-    bool success = _rootScene->loadSceneFromFile("../../samples/cow.osgt");
-    if (!success){
-        std::cerr << "The filename provided was not correct, or the model could not be read" << std::endl;
-    }
-}
-
-void MainWindow::onSetStylusSketchON(){
-    emit sendStylusSketchStatus(true);
-}
-
-void MainWindow::onSetStylusSketchOFF(){
-    emit sendStylusSketchStatus(false);
-}
-
-void MainWindow::onSetGloAxesON() {
-    _rootScene->setAxesVisibility(true);
-}
-
-void MainWindow::onSetGloAxesOFF() {
-    _rootScene->setAxesVisibility(false);
-}
-
-void MainWindow::onDeleteCanvas()
-{
-    // this is just to show how a certain canvas can be deleted
-    _rootScene->deleteCanvas(2); // we delete a canvas with id "3"
-}
-
-void MainWindow::onDeleteCow() {
-    _rootScene->deleteNode("cow.node");
-}
-
-void MainWindow::onChangeSizeCanvas()
-{
-    //_rootScene->getCanvasCurrent()->testWidthPlus();
 }
 
 void MainWindow::onMouseOrbit(){
@@ -224,13 +162,23 @@ void MainWindow::onMouseMove()
     setCursor(*m_currentCursor);
 }
 
+void MainWindow::onFileImage()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load an Image File"), QString(),
+            tr("Image Files (*.bmp)"));
+    if (!fileName.isEmpty()) {
+        if (!m_rootScene->loadPhotoFromFile(fileName.toStdString())){
+            QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
+            return;
+        }
+    }
+}
+
 GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
 {
-    GLWidget* vwid = new GLWidget(_rootScene.get(), this, f);
+    GLWidget* vwid = new GLWidget(m_rootScene.get(), this, f);
     QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
                      vwid, SLOT(getTabletActivity(bool)));
-    QObject::connect(this, SIGNAL(sendStylusSketchStatus(bool)),
-                     vwid, SLOT(getStylusSketchStatus(bool)) );
     QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)),
                      vwid, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
     return vwid;
@@ -250,7 +198,7 @@ void MainWindow::createActions()
 
     loadImageAction = new QAction(QIcon(":/load_image.png"), tr("Load Image"), this);
     loadImageAction->setStatusTip(tr("Load an image"));
-    connect(loadImageAction, SIGNAL(triggered()), this, SLOT(loadImage()));
+    connect(loadImageAction, SIGNAL(triggered()), this, SLOT(onFileImage()));
 
     saveAct = new QAction(QIcon(":/save.png"), tr("&Save"), this);
     saveAct->setShortcuts(QKeySequence::Save);
@@ -272,13 +220,13 @@ void MainWindow::createActions()
     print->setStatusTip(tr("Print..."));
 
     //m_ActionUndo = new QAction(QIcon(":/undo.png"), tr("&Undo"), this);
-    m_ActionUndo = m_UndoStack->createUndoAction(this, tr("&Undo"));
+    m_ActionUndo = m_undoStack->createUndoAction(this, tr("&Undo"));
     m_ActionUndo->setIcon(QIcon(":/undo.png"));
     m_ActionUndo->setShortcuts(QKeySequence::Undo);
     m_ActionUndo->setStatusTip(tr("Undo"));
 
     //m_ActionRedo = new QAction(QIcon(":/redo.png"), tr("&Redo"), this);
-    m_ActionRedo = m_UndoStack->createRedoAction(this, tr("&Redo"));
+    m_ActionRedo = m_undoStack->createRedoAction(this, tr("&Redo"));
     m_ActionRedo->setIcon(QIcon(":/redo.png"));
     m_ActionRedo->setShortcuts(QKeySequence::Redo);
     m_ActionRedo->setStatusTip(tr("Redo"));
@@ -635,7 +583,7 @@ void MainWindow::createBookMark()
 
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
 {
-    if(object==_mdiArea && (event->type()==QEvent::Enter || event->type()==QEvent::Leave)){
+    if(object==m_mdiArea && (event->type()==QEvent::Enter || event->type()==QEvent::Leave)){
         if(event->type()==QEvent::Enter){
             this->setCursor(*m_currentCursor);
             qDebug()<<"enter"<<this->mapFromGlobal(QCursor::pos());
@@ -649,18 +597,3 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
     return true;
 }
 
-void MainWindow::loadImage()
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Load an Image File"), QString(),
-            tr("Image Files (*.bmp)"));
-
-    if (!fileName.isEmpty()) {
-        _rootScene->loadPhotoFromFile(fileName.toStdString());
-        /*recommend change loadPhotoFromFile into a bool function
-          if (something wrong) {
-            QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
-            return;
-        }*/
-    }
-
-}

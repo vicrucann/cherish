@@ -10,6 +10,8 @@ endif()
 set(DureuApplication_SRCS
     main.cpp
     settings.h
+    Data.h
+    Data.cpp
 )
 
 qt5_add_resources(IMG_RSC_ADDED

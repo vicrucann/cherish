@@ -1,5 +1,5 @@
 #include <iostream>
-#include "dureuapplication.h"
+#include "DureuApplication.h"
 #include "mainwindow.h"
 #include "settings.h"
 #include <QObject>

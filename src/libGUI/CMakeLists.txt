@@ -10,19 +10,17 @@ include_directories(
 )
 
 set(libGUI_SRCS
-    dureuapplication.cpp
-    dureuapplication.h
+    DureuApplication.cpp
+    DureuApplication.h
+    #MainWindow.h
+    #MainWindow.cpp
     mainwindow.cpp
     mainwindow.h
-    bookmarkwidget.h
-    bookmarkwidget.cpp
     hudcamera.h
     listwidget.h
     listwidget.cpp
     glwidget.h
     glwidget.cpp
-    canvasinfomodel.h
-    canvasinfomodel.cpp
 )
 
 add_library(libGUI

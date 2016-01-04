@@ -26,7 +26,6 @@ GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
     , m_ModeView(1)
     , m_DeviceDown(false)
     , m_DeviceActive(false)
-    , m_DeviceSketch(false)
     , m_ModeMouse(dureu::MOUSE_SKETCH)
 
     , m_Manipulator(new Manipulator(m_ModeMouse))
@@ -72,11 +71,6 @@ GLWidget::~GLWidget()
 void GLWidget::getTabletActivity(bool active)
 {
     m_DeviceActive = active;
-}
-
-void GLWidget::getStylusSketchStatus(bool sketch)
-{
-    m_DeviceSketch = sketch;
 }
 
 void GLWidget::recieveMouseMode(dureu::MOUSE_MODE mode)
