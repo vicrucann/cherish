@@ -80,6 +80,13 @@ const QIcon &Data::editPasteIcon()
     return icon;
 }
 
+const QIcon &Data::editDeleteIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/Actions/edit-delete-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/Actions/edit-delete-3x.png"));
+    return icon;
+}
+
 const QIcon &Data::sceneSketchIcon()
 {
     Q_ASSERT_X(!QPixmap(":/Actions/scene-sketch-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
@@ -164,63 +171,70 @@ const QIcon &Data::scenePushImagesIcon()
     return icon;
 }
 
-const QIcon &Data::sceneEditCanvasOffset()
+const QIcon &Data::sceneCanvasOffsetIcon()
 {
     Q_ASSERT_X(!QPixmap(":/Actions/scene-canvas-offset-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(QPixmap(":/Actions/scene-canvas-offset-3x.png"));
     return icon;
 }
 
-const QIcon &Data::sceneEditCanvasRotate()
+const QIcon &Data::sceneCanvasRotateIcon()
 {
     Q_ASSERT_X(!QPixmap(":/Actions/scene-canvas-rotate-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(QPixmap(":/Actions/scene-canvas-rotate-3x.png"));
     return icon;
 }
 
-const QIcon &Data::sceneEditImageMove()
+const QIcon &Data::sceneImageMoveIcon()
 {
     Q_ASSERT_X(!QPixmap(":/Actions/scene-image-move-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(QPixmap(":/Actions/scene-image-move-3x.png"));
     return icon;
 }
 
-const QIcon &Data::sceneEditImageRotate()
+const QIcon &Data::sceneImageRotateIcon()
 {
     Q_ASSERT_X(!QPixmap(":/Actions/scene-image-rotate-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(QPixmap(":/Actions/scene-image-rotate-3x.png"));
     return icon;
 }
 
-const QIcon &Data::sceneEditImageScale()
+const QIcon &Data::sceneImageScaleIcon()
 {
     Q_ASSERT_X(!QPixmap(":/Actions/scene-image-scale-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(QPixmap(":/Actions/scene-image-scale-3x.png"));
     return icon;
 }
 
-const QIcon &Data::sceneEditImageFlip()
+const QIcon &Data::sceneImageFlipIcon()
 {
     Q_ASSERT_X(!QPixmap(":/Actions/scene-image-flip-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(QPixmap(":/Actions/scene-image-flip-3x.png"));
     return icon;
 }
 
-const QIcon &Data::sceneNewGeomRectangle()
+const QIcon &Data::sceneImagePushIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/Actions/scene-image-push-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/Actions/scene-image-push-3x.png"));
+    return icon;
+}
+
+const QIcon &Data::sceneRectangleIcon()
 {
     Q_ASSERT_X(!QPixmap(":/Actions/scene-geom-rectangle-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(QPixmap(":/Actions/scene-geom-rectangle-3x.png"));
     return icon;
 }
 
-const QIcon &Data::sceneNewGeomArc()
+const QIcon &Data::sceneArcIcon()
 {
     Q_ASSERT_X(!QPixmap(":/Actions/scene-geom-arc-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(QPixmap(":/Actions/scene-geom-arc-3x.png"));
     return icon;
 }
 
-const QIcon &Data::sceneNewGeomPolyline()
+const QIcon &Data::scenePolylineIcon()
 {
     Q_ASSERT_X(!QPixmap(":/Actions/scene-geom-poly-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(QPixmap(":/Actions/scene-geom-poly-3x.png"));

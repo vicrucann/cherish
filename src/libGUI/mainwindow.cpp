@@ -23,14 +23,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_undoView(new QUndoView(m_undoStack))
     , m_menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
     , m_rootScene(new RootScene(m_undoStack))
-
-    , m_actionNewFile(new QAction(Data::fileNewSceneIcon(), tr("New..."), this))
-    , m_actionClose(new QAction(Data::fileCloseIcon(), tr("Close"), this))
-    , m_actionExit(new QAction(Data::fileExitIcon(), tr("Exit"), this))
-    , m_actionImportImage(new QAction(Data::fileExitIcon(), tr("Import Image..."), this))
-    , m_actionOpenFile(new QAction(Data::fileOpenIcon(), tr("Open..."), this))
-    , m_actionSaveFile(new QAction(Data::fileSaveIcon(), tr("Save..."), this))
-    // (new QAction(), tr(), this)
 {
 
     this->setMenuBar(m_menuBar);
@@ -41,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     m_undoView->setAttribute(Qt::WA_QuitOnClose, false);
 
     this->setCentralWidget(m_mdiArea);
+    this->initializeActions();
 }
 
 MainWindow::~MainWindow(){
@@ -163,28 +156,83 @@ GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
     return vwid;
 }
 
-void MainWindow::createActions()
+void MainWindow::initializeActions()
 {
+    // FILE
+    m_actionNewFile = new QAction(Data::fileNewSceneIcon(), tr("&New..."), this);
 
-    loadImageAction = new QAction(QIcon(":/load_image.png"), tr("Load Image"), this);
-    loadImageAction->setStatusTip(tr("Load an image"));
-    connect(loadImageAction, SIGNAL(triggered()), this, SLOT(onFileImage()));
+    m_actionClose = new QAction(Data::fileCloseIcon(), tr("&Close"), this);
 
-    m_ActionUndo = m_undoStack->createUndoAction(this, tr("&Undo"));
-    m_ActionUndo->setIcon(QIcon(":/undo.png"));
-    m_ActionUndo->setShortcuts(QKeySequence::Undo);
-    m_ActionUndo->setStatusTip(tr("Undo"));
+    m_actionExit = new QAction(Data::fileExitIcon(), tr("&Exit"), this);
 
-    m_ActionRedo = m_undoStack->createRedoAction(this, tr("&Redo"));
-    m_ActionRedo->setIcon(QIcon(":/redo.png"));
-    m_ActionRedo->setShortcuts(QKeySequence::Redo);
-    m_ActionRedo->setStatusTip(tr("Redo"));
+    m_actionImportImage = new QAction(Data::fileExitIcon(), tr("Import &Image..."), this);
+    connect(m_actionImportImage, SIGNAL(triggered(bool)), this, SLOT(onFileImage()));
 
-    _mActionSketch = new QAction(QIcon(":/pencil.png"), tr("Sketch"), this);
-    _mActionSketch->setStatusTip(tr("Sketch"));
-    this->connect(_mActionSketch, SIGNAL(triggered()), this, SLOT(onMouseSketch()));
+    m_actionOpenFile = new QAction(Data::fileOpenIcon(), tr("&Open..."), this);
 
-    _mActionOrbit = new QAction(QIcon(":/orbit.png"),tr("&orbit"), this);
+    m_actionSaveFile = new QAction(Data::fileSaveIcon(), tr("&Save..."), this);
+
+    // EDIT
+
+    m_actionUndo = m_undoStack->createUndoAction(this, tr("&Undo"));
+    m_actionUndo->setIcon(Data::editUndoIcon());
+    m_actionUndo->setShortcuts(QKeySequence::Undo);
+
+    m_actionRedo = m_undoStack->createRedoAction(this, tr("&Redo"));
+    m_actionRedo->setIcon(Data::editRedoIcon());
+    m_actionRedo->setShortcuts(QKeySequence::Redo);
+
+    m_actionCut = new QAction(Data::editCutIcon(), tr("&Cut"), this);
+
+    m_actionCopy = new QAction(Data::editCopyIcon(), tr("C&opy"), this);
+
+    m_actionPaste = new QAction(Data::editPasteIcon(), tr("&Paste"), this);
+
+    m_actionDelete = new QAction(Data::editDeleteIcon(), tr("&Delete"), this);
+    this->connect(m_actionDelete, SIGNAL(triggered(bool)), this, SLOT(onMouseDelete()));
+
+    // SCENE
+
+    m_actionSketch = new QAction(Data::sceneSketchIcon(), tr("&Sketch"), this);
+    this->connect(m_actionSketch, SIGNAL(triggered(bool)), this, SLOT(onMouseSketch()));
+
+    m_actionEraser = new QAction(Data::sceneEraserIcon(), tr("&Eraser"), this);
+    this->connect(m_actionEraser, SIGNAL(triggered(bool)), this, SLOT(onMouseErase()));
+
+    m_actionSelect = new QAction(tr("S&elect"), this);
+    this->connect(m_actionSelect, SIGNAL(triggered(bool)), this, SLOT(onMousePick()));
+
+    m_actionCanvasClone = new QAction(Data::sceneNewCanvasCloneIcon(), tr("Clone Current"), this);
+
+    m_actionCanvasXY = new QAction(Data::sceneNewCanvasXYIcon(), tr("Plane XY"), this);
+
+    m_actionCanvasYZ = new QAction(Data::sceneNewCanvasYZIcon(), tr("Plane YZ"), this);
+
+    m_actionCanvasXZ = new QAction(Data::sceneNewCanvasXZIcon(), tr("Plane XZ"), this);
+
+    m_actionCanvasOffset = new QAction(Data::sceneCanvasOffsetIcon(), tr("Offset Canvas"), this);
+    this->connect(m_actionCanvasOffset, SIGNAL(triggered(bool)), this, SLOT(onMouseOffset()));
+
+    m_actionCanvasRotate = new QAction(Data::sceneCanvasRotateIcon(), tr("Rotate Canvas"), this);
+    this->connect(m_actionCanvasRotate, SIGNAL(triggered(bool)), this, SLOT(onMouseRotate()));
+
+    m_actionImageMove = new QAction(Data::sceneImageMoveIcon(), tr("Move Image"), this);
+    this->connect(m_actionImageMove, SIGNAL(triggered(bool)), this, SLOT(onMouseMove()));
+
+    m_actionImageRotate = new QAction(Data::sceneImageRotateIcon(), tr("Rotate Image"), this);
+    this->connect(m_actionImageRotate, SIGNAL(triggered(bool)), this, SLOT(onMouseRotateImage()));
+
+    m_actionImageScale = new QAction(Data::sceneImageScaleIcon(), tr("Scale Image"), this);
+
+    m_actionImageFlip = new QAction(Data::sceneImageFlipIcon(), tr("Flip Image"), this);
+
+    m_actionImagePush = new QAction(Data::sceneImagePushIcon(), tr("Push Image"), this);
+
+    m_actionStrokesPush = new QAction(Data::scenePushStrokesIcon(), tr("Push Strokes"), this);
+    this->connect(m_actionStrokesPush, SIGNAL(triggered(bool)), this, SLOT(onMousePushStrokes()));
+}
+
+/*_mActionOrbit = new QAction(QIcon(":/orbit.png"),tr("&orbit"), this);
     _mActionOrbit->setStatusTip(tr("orbit"));
     this->connect(_mActionOrbit, SIGNAL(triggered()), this, SLOT(onMouseOrbit()));
 
@@ -194,37 +242,4 @@ void MainWindow::createActions()
 
     _mActionZoom = new QAction(QIcon(":/zoom.png"),tr("&Zoom"), this);
     _mActionZoom->setStatusTip(tr("Zoom"));
-    this->connect(_mActionZoom, SIGNAL(triggered()), this, SLOT(onMouseZoom()));
-
-    _mActionSelect = new QAction(QIcon(":/select.png"),tr("&Select"), this);
-    _mActionSelect->setStatusTip(tr("Select"));
-    this->connect(_mActionSelect, SIGNAL(triggered()), this, SLOT(onMousePick()));
-
-    _mActionEraser = new QAction(QIcon(":/eraser.png"),tr("Eraser"), this);
-    _mActionEraser->setStatusTip(tr("Eraser"));
-    this->connect(_mActionEraser, SIGNAL(triggered(bool)), this, SLOT(onMouseErase()));
-
-    _mActionDelete = new QAction(QIcon(":/delete.png"),tr("Delete"), this);
-    _mActionDelete->setStatusTip(tr("Delete"));
-    this->connect(_mActionDelete, SIGNAL(triggered(bool)), this, SLOT(onMouseDelete()));
-
-    _mActionMove = new QAction(QIcon(":/move.png"),tr("&Move"), this);
-    _mActionMove->setStatusTip(tr("Move"));
-    this->connect(_mActionMove, SIGNAL(triggered(bool)), this, SLOT(onMouseMove()));
-
-    _mActionPushStrokes = new QAction(tr("&Push Strokes"), this);
-    _mActionPushStrokes->setStatusTip(tr("Push Strokes"));
-    this->connect(_mActionPushStrokes, SIGNAL(triggered(bool)), this, SLOT(onMousePushStrokes()));
-
-    _mActionRotate = new QAction(QIcon(":/rotate.png"),tr("&Rotate"), this);
-    _mActionRotate->setStatusTip(tr("Rotate"));
-    this->connect(_mActionRotate, SIGNAL(triggered(bool)), this, SLOT(onMouseRotate()));
-
-    _mActionRotateImage = new QAction(tr("&Rotate Image"), this);
-    _mActionRotateImage->setStatusTip(tr("Rotate Image"));
-    this->connect(_mActionRotateImage, SIGNAL(triggered(bool)), this, SLOT(onMouseRotateImage()));
-
-    _mActionOffset = new QAction(QIcon(":/offset.png"),tr("&Offset"), this);
-    _mActionOffset->setStatusTip(tr("Offset"));
-    this->connect(_mActionOffset, SIGNAL(triggered(bool)), this, SLOT(onMouseOffset()));
-}
+    this->connect(_mActionZoom, SIGNAL(triggered()), this, SLOT(onMouseZoom()));*/

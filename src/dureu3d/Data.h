@@ -20,6 +20,7 @@ public:
     static const QIcon& editCutIcon();
     static const QIcon& editCopyIcon();
     static const QIcon& editPasteIcon();
+    static const QIcon& editDeleteIcon();
 
 
     static const QIcon& sceneSketchIcon();
@@ -37,16 +38,17 @@ public:
     static const QIcon& scenePushStrokesIcon();
     static const QIcon& scenePushImagesIcon();
 
-    static const QIcon& sceneEditCanvasOffset();
-    static const QIcon& sceneEditCanvasRotate();
-    static const QIcon& sceneEditImageMove();
-    static const QIcon& sceneEditImageRotate();
-    static const QIcon& sceneEditImageScale();
-    static const QIcon& sceneEditImageFlip();
+    static const QIcon& sceneCanvasOffsetIcon();
+    static const QIcon& sceneCanvasRotateIcon();
+    static const QIcon& sceneImageMoveIcon();
+    static const QIcon& sceneImageRotateIcon();
+    static const QIcon& sceneImageScaleIcon();
+    static const QIcon& sceneImageFlipIcon();
+    static const QIcon& sceneImagePushIcon();
 
-    static const QIcon& sceneNewGeomRectangle();
-    static const QIcon& sceneNewGeomArc();
-    static const QIcon& sceneNewGeomPolyline();
+    static const QIcon& sceneRectangleIcon();
+    static const QIcon& sceneArcIcon();
+    static const QIcon& scenePolylineIcon();
 
 private:
 

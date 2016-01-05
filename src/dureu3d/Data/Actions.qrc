@@ -24,5 +24,6 @@
     <file>edit-undo-3x.png</file>
     <file>edit-redo-3x.png</file>
     <file>file-newscene-3x.png</file>
+    <file>scene-image-push-3x.png</file>
   </qresource>
 </RCC>

@@ -49,7 +49,8 @@ private slots:
     void onFileImage();
 
 private:
-    GLWidget* createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
+    GLWidget*   createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
+    void        initializeActions();
 
     QDesktopWidget* m_desktop;
     QMdiArea*       m_mdiArea;
@@ -61,34 +62,29 @@ private:
     QMenuBar*       m_menuBar;
     osg::ref_ptr<RootScene> m_rootScene; // main scene graph
 
-    QAction* m_actionNewFile;
-    QAction* m_actionClose;
-    QAction* m_actionExit;
-    QAction* m_actionImportImage;
-    QAction* m_actionOpenFile;
-    QAction* m_actionSaveFile;
+    // FILE actions
+    QAction * m_actionNewFile, * m_actionClose, * m_actionExit,
+            * m_actionImportImage, * m_actionOpenFile, * m_actionSaveFile;
 
-    void createActions();
-    QAction* m_ActionUndo;
-    QAction* m_ActionRedo;
+    // EDIT actions
+    QAction * m_actionUndo, * m_actionRedo, * m_actionCut, * m_actionCopy,
+            * m_actionPaste, * m_actionDelete;
 
-    QAction* _mActionSketch;
-
-    QAction* _mActionOrbit;
-    QAction* _mActionPan;
-    QAction* _mActionZoom;
-
-    QAction* _mActionEraser;
-    QAction* _mActionDelete;
-    QAction* _mActionMove; //toolMove; // move current photo within current canvas
-    QAction* _mActionPushStrokes;
-    QAction* _mActionRotate;// toolRotate;
-    QAction* _mActionRotateImage;
-    QAction* _mActionOffset; // offset current canvas along its normal
+    // SCENE actions
+    QAction * m_actionSketch, * m_actionEraser, * m_actionSelect
+            // New Canvas sub-menu
+            , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasXZ
+            // Edit Canvas
+            , * m_actionCanvasOffset, * m_actionCanvasRotate
+            // Edit Image
+            , * m_actionImageMove, * m_actionImageRotate, * m_actionImageScale, * m_actionImageFlip, * m_actionImagePush
+            // Edit Strokes
+            , * m_actionStrokesPush
+    ;
 
 
-    QAction* _mActionSelect;
-    QAction *loadImageAction;
+    // actions to be placed on GLWidget
+    //QAction* _mActionOrbit, * _mActionPan, * _mActionZoom;
     // QToolButton *select;
     // QWidgetAction* selectAction;
 };
