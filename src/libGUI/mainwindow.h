@@ -55,6 +55,15 @@ private slots:
     void onDelete();
     void onSketch();
 
+    void onNewCanvasClone();
+    void onNewCanvasXY();
+    void onNewCanvasYZ();
+    void onNewCanvasXZ();
+    void onNewCanvasStandard();
+    void onNewCanvasCoaxial();
+    void onNewCanvasParallel();
+    void onNewCanvasRing();
+
     void onCanvasOffset();
     void onCanvasRotate();
 

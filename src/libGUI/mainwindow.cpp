@@ -177,6 +177,46 @@ void MainWindow::onSketch()
     emit sendMouseMode(dureu::MOUSE_SKETCH);
 }
 
+void MainWindow::onNewCanvasClone()
+{
+
+}
+
+void MainWindow::onNewCanvasXY()
+{
+
+}
+
+void MainWindow::onNewCanvasYZ()
+{
+
+}
+
+void MainWindow::onNewCanvasXZ()
+{
+
+}
+
+void MainWindow::onNewCanvasStandard()
+{
+
+}
+
+void MainWindow::onNewCanvasCoaxial()
+{
+
+}
+
+void MainWindow::onNewCanvasParallel()
+{
+
+}
+
+void MainWindow::onNewCanvasRing()
+{
+
+}
+
 void MainWindow::onCanvasOffset()
 {
     emit sendMouseMode(dureu::MOUSE_EDIT_OFFSET);
@@ -301,20 +341,28 @@ void MainWindow::initializeActions()
     this->connect(m_actionZoom, SIGNAL(triggered(bool)), this, SLOT(onCameraZoom()));
 
     m_actionCanvasClone = new QAction(Data::sceneNewCanvasCloneIcon(), tr("Clone Current"), this);
+    this->connect(m_actionCanvasClone, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasClone()));
 
     m_actionCanvasXY = new QAction(Data::sceneNewCanvasXYIcon(), tr("Plane XY"), this);
+    this->connect(m_actionCanvasXY, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasXY()));
 
     m_actionCanvasYZ = new QAction(Data::sceneNewCanvasYZIcon(), tr("Plane YZ"), this);
+    this->connect(m_actionCanvasYZ, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasYZ()));
 
     m_actionCanvasXZ = new QAction(Data::sceneNewCanvasXZIcon(), tr("Plane XZ"), this);
+    this->connect(m_actionCanvasXZ, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasXZ()));
 
     m_actionSetStandard = new QAction(Data::sceneNewCanvasSetStandardIcon(), tr("Standard"), this);
+    this->connect(m_actionSetStandard, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasStandard()));
 
     m_actionSetCoaxial = new QAction(Data::sceneNewCanvasSetCoaxialIcon(), tr("Coaxial"), this);
+    this->connect(m_actionSetCoaxial, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasCoaxial()));
 
     m_actionSetParallel = new QAction(Data::sceneNewCanvasSetParallelIcon(), tr("Parallel"), this);
+    this->connect(m_actionSetParallel, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasParallel()));
 
     m_actionSetRing = new QAction(Data::sceneNewCanvasSetRingIcon(), tr("Ring"), this);
+    this->connect(m_actionSetRing, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasRing()));
 
     m_actionCanvasOffset = new QAction(Data::sceneCanvasOffsetIcon(), tr("Offset Canvas"), this);
     this->connect(m_actionCanvasOffset, SIGNAL(triggered(bool)), this, SLOT(onCanvasOffset()));
@@ -326,15 +374,19 @@ void MainWindow::initializeActions()
     this->connect(m_actionImageMove, SIGNAL(triggered(bool)), this, SLOT(onImageMove()));
 
     m_actionImageRotate = new QAction(Data::sceneImageRotateIcon(), tr("Rotate Image"), this);
+    this->connect(m_actionImageRotate, SIGNAL(triggered(bool)), this, SLOT(onImageRotate()));
 
     m_actionImageScale = new QAction(Data::sceneImageScaleIcon(), tr("Scale Image"), this);
+    this->connect(m_actionImageScale, SIGNAL(triggered(bool)), this, SLOT(onImageScale()));
 
     m_actionImageFlip = new QAction(Data::sceneImageFlipIcon(), tr("Flip Image"), this);
+    this->connect(m_actionImageFlip, SIGNAL(triggered(bool)), this, SLOT(onImageFlip()));
 
     m_actionImagePush = new QAction(Data::sceneImagePushIcon(), tr("Push Image"), this);
+    this->connect(m_actionImagePush, SIGNAL(triggered(bool)), this, SLOT(onImagePush()));
 
     m_actionStrokesPush = new QAction(Data::scenePushStrokesIcon(), tr("Push Strokes"), this);
-    this->connect(m_actionStrokesPush, SIGNAL(triggered(bool)), this, SLOT(onMousePushStrokes()));
+    this->connect(m_actionStrokesPush, SIGNAL(triggered(bool)), this, SLOT(onStrokePush()));
 }
 
 void MainWindow::initializeMenus()
