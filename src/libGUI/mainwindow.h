@@ -16,7 +16,6 @@
 #include "rootscene.h"
 #include "settings.h"
 #include "glwidget.h"
-#include "listwidget.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -62,70 +61,22 @@ private:
     QMenuBar*       m_menuBar;
     osg::ref_ptr<RootScene> m_rootScene; // main scene graph
 
+    QAction* m_actionNewFile;
+    QAction* m_actionClose;
+    QAction* m_actionExit;
+    QAction* m_actionImportImage;
+    QAction* m_actionOpenFile;
+    QAction* m_actionSaveFile;
+
     void createActions();
-    void createMenus();
-    void createToolBars();
-    void createStatusBar();
-    void loadFile(const QString &fileName);
-    bool saveFile(const QString &fileName);
-    void createLayerManager();
-    void createBookMark();
-
-    QMenu *fileMenu;
-    QMenu *editMenu;
-    QMenu *viewMenu;
-    QMenu *drawMenu;
-    QMenu *cameraMenu;
-    QMenu *toolsMenu;
-    QMenu *windowMenu;
-    QMenu *helpMenu;
-    QMenu *toolPalettes;
-    QMenu* _mSketchMenu;
-    QMenu *lines;
-    QMenu *arcs;
-    QMenu *shapes;
-
-    QToolBar *fileToolBar;
-    QToolBar *editToolBar;
-    QToolBar *toolsToolBar;
-    QToolBar *drawToolBar;
-    QToolBar *cameraToolBar;
-    QToolBar *styleToolBar;
-    QToolBar *viewToolBar;
-    QToolBar *windowToolBar;
-
-    // ACTIONS ======================= //
-
-    QAction *newAct;
-    QAction *openAct;
-    QAction *saveAct;
-    QAction *saveAsAct;
-    QAction *exitAct;
-    QAction *print;
-
     QAction* m_ActionUndo;
     QAction* m_ActionRedo;
-    QAction *cutAct;
-    QAction *copyAct;
-    QAction *pasteAct;
-
-    QAction *aboutAct;
-    QAction *contactUs;
-
-    QAction *axes;
-    QAction *toolPalsandBox;
 
     QAction* _mActionSketch;
-    QAction *line;
-    QAction *arc;
-    QAction *rectangle;
 
     QAction* _mActionOrbit;
     QAction* _mActionPan;
     QAction* _mActionZoom;
-    QAction *zoomWindow;
-    QAction *zoomExtents;
-    QAction *previousCam;
 
     QAction* _mActionEraser;
     QAction* _mActionDelete;
@@ -133,49 +84,13 @@ private:
     QAction* _mActionPushStrokes;
     QAction* _mActionRotate;// toolRotate;
     QAction* _mActionRotateImage;
-    QAction *toolScale;
     QAction* _mActionOffset; // offset current canvas along its normal
 
-    QAction *layers;
-
-    QAction *allStyle;
-    QAction *strokesStyle;
-    QAction *imagesStyle;
-
-    QAction *isoView;
-    QAction *topView;
-    QAction *frontView;
-    QAction *rightView;
-    QAction *backView;
-    QAction *leftView;
-
-    QAction* _mActionStack;
-    QAction* _mActionCircle;
-    QAction* _mActionClone;
-    QAction* _mActionXY;
-    QAction* _mActionXZ;
-    QAction* _mActionYZ;
-    QWidgetAction* newCanvasAction;
-    QMenu *newCanvasMenu;
-    QToolButton *newCanvas;
 
     QAction* _mActionSelect;
-    QAction* _mActionSelectPlane;
-    QWidgetAction* selectAction;
-    QMenu *selectMenu;
-    QToolButton *select;
-
     QAction *loadImageAction;
-
-
-    QCursor *m_currentCursor;
-
-    QTableView *tableView;
-
-    ListWidget* m_lw;
-
-protected:
-    bool eventFilter(QObject *object, QEvent *event);
+    // QToolButton *select;
+    // QWidgetAction* selectAction;
 };
 
 #endif // MAINWINDOW

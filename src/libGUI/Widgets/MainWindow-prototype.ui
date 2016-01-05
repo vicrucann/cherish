@@ -14,6 +14,81 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="m_centralwidget"/>
+  <widget class="QStatusBar" name="m_statusbar"/>
+  <widget class="QToolBar" name="m_toolBarFile">
+   <property name="windowTitle">
+    <string>File ToolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="m_actionNew"/>
+   <addaction name="m_actionOpen"/>
+   <addaction name="m_actionSave"/>
+   <addaction name="m_actionImportImage"/>
+  </widget>
+  <widget class="QToolBar" name="m_toolBarEdit">
+   <property name="windowTitle">
+    <string>Edit ToolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="m_actionUndo"/>
+   <addaction name="m_actionRedo"/>
+   <addaction name="separator"/>
+   <addaction name="m_actionCut"/>
+   <addaction name="m_actionCopy"/>
+   <addaction name="m_actionPaste"/>
+   <addaction name="m_actionDelete"/>
+  </widget>
+  <widget class="QToolBar" name="m_toolBarScene">
+   <property name="windowTitle">
+    <string>Scene ToolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="m_actionPencil"/>
+   <addaction name="m_actionEraser"/>
+   <addaction name="separator"/>
+   <addaction name="m_actionCanvasClone"/>
+   <addaction name="m_actionCanvasXY"/>
+   <addaction name="m_actionCanvasYZ"/>
+   <addaction name="m_actionCanvasXZ"/>
+   <addaction name="separator"/>
+   <addaction name="m_actionPushStrokes"/>
+   <addaction name="m_actionPushImages"/>
+   <addaction name="separator"/>
+   <addaction name="m_actionOffset3D"/>
+   <addaction name="m_actionRotate3D"/>
+   <addaction name="separator"/>
+   <addaction name="m_actionMove2D"/>
+   <addaction name="m_actionRotate2D"/>
+   <addaction name="m_actionScale2D"/>
+   <addaction name="m_actionFlip2D"/>
+  </widget>
+  <widget class="QToolBar" name="m_toolBarViewer">
+   <property name="windowTitle">
+    <string>Viewer ToolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="m_actionNewViewer"/>
+  </widget>
   <widget class="QMenuBar" name="m_menubar">
    <property name="geometry">
     <rect>
@@ -52,16 +127,6 @@
     <addaction name="m_actionCopy"/>
     <addaction name="m_actionPaste"/>
     <addaction name="m_actionDelete"/>
-   </widget>
-   <widget class="QMenu" name="m_menuCamera">
-    <property name="title">
-     <string>&amp;Camera</string>
-    </property>
-    <addaction name="m_actionOrbit"/>
-    <addaction name="m_actionPan"/>
-    <addaction name="m_actionZoom"/>
-    <addaction name="separator"/>
-    <addaction name="m_actionContructionTools"/>
    </widget>
    <widget class="QMenu" name="m_menuScene">
     <property name="title">
@@ -137,101 +202,9 @@
     <addaction name="m_menuEditCanvas"/>
     <addaction name="m_menuEditImage"/>
    </widget>
-   <widget class="QMenu" name="m_menuWindow">
-    <property name="title">
-     <string>Window</string>
-    </property>
-    <widget class="QMenu" name="m_menuViewer">
-     <property name="title">
-      <string>Viewer</string>
-     </property>
-     <addaction name="m_actionNewViewer"/>
-    </widget>
-    <addaction name="m_menuViewer"/>
-    <addaction name="separator"/>
-    <addaction name="actionCanvas_Manager"/>
-    <addaction name="actionBookmark_Manager"/>
-   </widget>
    <addaction name="m_menuFile"/>
    <addaction name="m_menuEdit"/>
-   <addaction name="m_menuCamera"/>
    <addaction name="m_menuScene"/>
-   <addaction name="m_menuWindow"/>
-  </widget>
-  <widget class="QStatusBar" name="m_statusbar"/>
-  <widget class="QToolBar" name="m_toolBarFile">
-   <property name="windowTitle">
-    <string>File ToolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="m_actionNew"/>
-   <addaction name="m_actionOpen"/>
-   <addaction name="m_actionSave"/>
-   <addaction name="m_actionImportImage"/>
-  </widget>
-  <widget class="QToolBar" name="m_toolBarEdit">
-   <property name="windowTitle">
-    <string>Edit ToolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="m_actionUndo"/>
-   <addaction name="m_actionRedo"/>
-   <addaction name="separator"/>
-   <addaction name="m_actionCut"/>
-   <addaction name="m_actionCopy"/>
-   <addaction name="m_actionPaste"/>
-   <addaction name="m_actionDelete"/>
-  </widget>
-  <widget class="QToolBar" name="m_toolBarScene">
-   <property name="windowTitle">
-    <string>Scene ToolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>LeftToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="m_actionPencil"/>
-   <addaction name="m_actionEraser"/>
-   <addaction name="separator"/>
-   <addaction name="m_actionCanvasClone"/>
-   <addaction name="m_actionCanvasXY"/>
-   <addaction name="m_actionCanvasYZ"/>
-   <addaction name="m_actionCanvasXZ"/>
-   <addaction name="separator"/>
-   <addaction name="m_actionPushStrokes"/>
-   <addaction name="m_actionPushImages"/>
-   <addaction name="separator"/>
-   <addaction name="m_actionOffset3D"/>
-   <addaction name="m_actionRotate3D"/>
-   <addaction name="separator"/>
-   <addaction name="m_actionMove2D"/>
-   <addaction name="m_actionRotate2D"/>
-   <addaction name="m_actionScale2D"/>
-   <addaction name="m_actionFlip2D"/>
-  </widget>
-  <widget class="QToolBar" name="m_toolBarViewer">
-   <property name="windowTitle">
-    <string>Viewer ToolBar</string>
-   </property>
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
-   <addaction name="m_actionNewViewer"/>
   </widget>
   <action name="m_actionNew">
    <property name="icon">

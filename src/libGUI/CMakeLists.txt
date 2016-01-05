@@ -12,19 +12,20 @@ include_directories(
 set(libGUI_SRCS
     DureuApplication.cpp
     DureuApplication.h
-    #MainWindow.h
-    #MainWindow.cpp
     mainwindow.cpp
     mainwindow.h
     hudcamera.h
-    listwidget.h
-    listwidget.cpp
     glwidget.h
     glwidget.cpp
 )
 
-add_library(libGUI
-    STATIC ${libGUI_SRCS}
+qt5_wrap_ui(UI_GENERATED_SRCS
+    Widgets/MainWindow.ui
+)
+
+add_library(libGUI STATIC
+    ${libGUI_SRCS}
+    ${UI_GENERATED_SRCS}
 )
 
 target_link_libraries( libGUI
