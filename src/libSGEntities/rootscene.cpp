@@ -20,6 +20,7 @@
 #include "photo.h"
 #include "findnodevisitor.h"
 #include "AddStrokeCommand.h"
+#include "AddCanvasCommand.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
     : _userScene(new osg::Group)
@@ -33,47 +34,43 @@ RootScene::RootScene(QUndoStack *undoStack)
     , _undoStack(undoStack)
     , current_stroke(0)
 {
-    osg::ref_ptr<osg::MatrixTransform> trans_i = new osg::MatrixTransform;
-    trans_i->setMatrix(osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f) );
-    Canvas* cnv0 = this->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0),
-                                   osg::Matrix::translate(0.f, 0.f, 0.f));
+    _userScene->setName("UserScene");
+    // child #0
+    if (!this->addChild(_userScene.get())){
+        outErrMsg("RootScene(): could not add user scene as a child");
+        fatalMsg("RootScene(): could not add user scene as a child");
+    }
 
-    Canvas* cnv1 = this->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 1, 0),
-                    osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
+    _axes->setName("Axes");
+    // child #1
+    if (!this->addChild(_axes.get())){
+        outErrMsg("RootScene(): could not add axes as a child");
+        fatalMsg("RootScene(): could not add axes as a child");
+    }
 
-    this->addCanvas(trans_i);
+    _observer->setName("SceneObserver");
+    _observer->setScenePointer(_userScene.get());
+    _userScene->addUpdateCallback(_observer.get());
 
-    this->setCanvasCurrent(cnv0);
-    this->setCanvasPrevious(cnv1);
 
-    this->addUserScene(); // child #0
-    this->addAxes(); // child #1
-    this->setSceneObserver();
-    this->addHudCamera();
-    this->setHudCameraObserve(); // child #2
+    _hud->setName("HUDCamera");
+    // child #2
+    if (!this->addChild(_hud.get())){
+        outErrMsg("RootScene(): could not add hud as a child");
+        fatalMsg("RootScene(): could not add hud as a child");
+    }
+
+    if (!_hud->setText(_observer->getTextGeode())){
+        outErrMsg("RootScene(): could not set text to hud camera");
+        fatalMsg("RootScene(): could not set text to hud camera");
+    }
+
     this->setName("RootScene");
 }
 
 RootScene::~RootScene(){}
 
-bool RootScene::addUserScene()
-{
-    if (!_userScene){
-         std::cerr << "addUserScene(): UserScene pointer is NULL" << std::endl;
-        return false;
-    }
-    for (unsigned int i=0; i<this->getNumChildren(); ++i){
-        Node* node = this->getChild(i);
-        if (node == _userScene){
-             std::cerr << "addUserScene(): UserScene is already a child of the scene" << std::endl;
-            return false;
-        }
-    }
-    _userScene->setName("UserScene");
-    return this->addChild(_userScene.get());
-}
-
-const osg::Group *RootScene::getUserScene() const{
+osg::Group* RootScene::getUserScene() const{
     return _userScene.get();
 }
 
@@ -83,22 +80,6 @@ void RootScene::setAxesVisibility(bool vis) {
 
 bool RootScene::getAxesVisibility() const{
     return _axes->getVisibility();
-}
-
-bool RootScene::addAxes(){
-    if (!_axes.get()){
-         std::cerr << "addAxes(): Axes pointer is NULL" << std::endl;
-        return false;
-    }
-    for (unsigned int i=0; i<this->getNumChildren(); ++i){
-        Node* node = this->getChild(i);
-        if (node == _axes.get()){
-             std::cerr << "addAxes(): Global axes is already on the scene" << std::endl;
-            return false;
-        }
-    }
-    _axes->setName("Axes");
-    return this->addChild(_axes.get());
 }
 
 const Axes* RootScene::getAxes() const{
@@ -117,36 +98,8 @@ const ObserveSceneCallback *RootScene::getSceneObserver() const{
     return _observer.get();
 }
 
-bool RootScene::addHudCamera(){
-    if (!_hud.get()){
-         std::cerr << "addHudCamera(): HUD is null" << std::endl;
-        return false;
-    }
-    for (unsigned int i=0; i<this->getNumChildren(); ++i){
-        Node* node = this->getChild(i);
-        if (node == _hud.get()){
-             std::cerr << "addHudCamera(): HUD is already on the scene" << std::endl;
-            return false;
-        }
-    }
-    _hud->setName("HUDCamera");
-    return this->addChild(_hud.get());
-}
-
 const HUDCamera *RootScene::getHudCamera() const{
     return _hud.get();
-}
-
-bool RootScene::setHudCameraObserve(){
-    if (!_observer.get()){
-         std::cerr << "setHudCameraObserve(): Observer is empty" << std::endl;
-        return false;
-    }
-    if (!_hud.get()){
-         std::cerr << "setHudCameraObserve(): HUD is NULL" << std::endl;
-        return false;
-    }
-    return _hud->setText(_observer->getTextGeode());
 }
 
 void RootScene::setHudCameraVisibility(bool vis){
@@ -197,129 +150,20 @@ void RootScene::addStroke(float u, float v, dureu::EVENT event)
     }
 }
 
-Canvas *RootScene::addCanvas(){
-    osg::MatrixTransform* transform = new osg::MatrixTransform;
-    transform->setMatrix(osg::Matrix::identity());
-    return addCanvas(transform);
+void RootScene::addCanvas(osg::MatrixTransform *transform)
+{
+    this->addCanvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
 }
 
-Canvas *RootScene::addCanvas(const osg::Matrix &R, const osg::Matrix &T){
-    osg::MatrixTransform* transform = new osg::MatrixTransform;
-    transform->setMatrix(R*T); // left hand coordinate system, see OSG docs
-    return this->addCanvas(transform);
-}
-
-// base addCanvas which calls for AddGroupCommand()
-Canvas* RootScene::addCanvas(osg::MatrixTransform* transform){
-    outLogMsg("addCanvas(*transform)");
-    Canvas* cnv = new Canvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
-    /*QUndoCommand* cmd = new AddGroupCommand(this, cnv);
+void RootScene::addCanvas(osg::MatrixTransform *transform, const std::string &name)
+{
     if (!_undoStack){
-        outErrMsg("undo stack is not initalized");
-        return cnv;
+        fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
     }
-    _undoStack->push(cmd);*/
-    this->setCanvasCurrent(cnv);
-    bool success = _userScene->addChild(cnv);
-    if (!success){
-        std::cerr << "addCanvas(): Could not add a canvas as a child of _userScene" << std::endl;
-        cnv = 0;
-    }
-    return cnv;
-}
-
-// this is a debug version of addCanvas, and it is not supposed
-// to be called from anywhere, but from addGroupCommand()
-// later this should be removed at all and the inside code moved to
-// addGroupCommand() class
-bool RootScene::addCanvas(Canvas *cnv){
-    outLogMsg("addCanvas(): Canvas*");
-    if (!cnv){
-        outErrMsg("Canvas pointer is NULL");
-        return false;
-    }
-    outLogVal("Trying to add canvas with name", cnv->getName());
-    this->setCanvasCurrent(cnv);
-    return _userScene->addChild(cnv);
-}
-
-bool RootScene::deleteCanvas(const std::string &name){
-    std::cout << "deleteCanvas(): (string&)" << std::endl;
-    Canvas* cnv = this->getCanvas(name);
-    if (!cnv){
-        std::cerr << "deleteCanvas(): The canvas pointer is NULL" << std::endl;
-        return false;
-    }
-    return deleteCanvas(cnv);
-}
-
-bool RootScene::deleteCanvas(const int id){
-    std::cout << "deleteCanvas(): (int)" << std::endl;
-    Canvas* cnv = this->getCanvas(id);
-    if (!cnv){
-        std::cerr << "deleteCanvas(): the canvas pointer is NULL" << std::endl;
-        return false;
-    }
-    return deleteCanvas(cnv);
-}
-
-bool RootScene::deleteCanvas(Canvas *cnv){
-    std::cout << "deleteCanvas(): (Canvas*)" << std::endl;
-    if (cnv == this->getCanvasCurrent()){
-        std::cout << "deleteCanvas(): current canvas is set to previous, to name: " << this->getCanvasCurrent()->getName() << std::endl;
-        this->setCanvasCurrent(this->getCanvasPrevious());
-    }
-
-    // replace the search block to the next:
-    // iterate over all the children
-    // see if the type is canvas, check if it's not current or prev or to delete
-    if (cnv == this->getCanvasPrevious() || getCanvasCurrent() == getCanvasCurrent()){
-        for (unsigned int i=0;i<this->getMaxCanvasId();++i){
-            Canvas* cnvi = this->getCanvas(i);
-            if (cnvi != NULL && cnvi != this->getCanvasCurrent() && cnvi != cnv){
-                this->setCanvasPrevious(cnvi);
-                std::cout << "deleteCanvas(): previous canvas is set to name: " << this->getCanvasPrevious()->getName() << std::endl;
-                break;
-            }
-        }
-    }
-    return deleteNode(cnv);
-}
-
-// we return bool and not osg::Node like it is done for the Canvas type
-// because we already pass pointer on that node
-bool RootScene::addNode(osg::Node *node){
-    std::cout << "addNode(): (Node*)" << std::endl;
-    node->setName(getEntityName(dureu::NAME_ENTITY, _idNode++));
-    return _userScene->addChild(node);
-}
-
-bool RootScene::deleteNode(const std::string &name)
-{
-    std::cout << "deleteNode(): (string&): " << name << std::endl;
-    osg::Node* node = this->getNode(name);
-    std::cout << "deleteNode(): Node child idx: " << _userScene->getChildIndex(node) << std::endl;
-    if (!node){
-        std::cerr << "deleteNode(): The node pointer is NULL" << std::endl;
-        return false;
-    }
-    return deleteNode(node);
-}
-
-bool RootScene::deleteNode(osg::Node *node)
-{
-    std::cout << "deleteNode(): (osg::Node*): " << node->getName() << std::endl;
-    if (!node){
-        std::cerr << "deleteNode(): The node pointer is NULL" << std::endl;
-        return true;
-    }
-    std::cout << "deleteNode(): Trying to delete node with ptr: " << node << std::endl;
-    std::cout << "deleteNode():   and name: " << node->getName() << std::endl;
-    //bool success = _userScene->removeChild(tn);
-    bool success = _userScene->removeChild(node);
-    if (success) std::cout << "deleteNode(): Success on removeChild(osg::Node*)" << std::endl;
-    else std::cerr << "deleteNode(): Failure to removeChild(osg::Node*)" << std::endl;
-    return success;
+    AddCanvasCommand* cmd = new AddCanvasCommand(this, transform, name);
+    _undoStack->push(cmd);
 }
 
 bool RootScene::loadSceneFromFile(const std::string& fname){
@@ -417,12 +261,6 @@ osg::Node *RootScene::getNode(const std::string &name) const
         return NULL;
     }
     return fnv.getNode();
-}
-
-bool RootScene::setCanvasName(Canvas *cnv, const std::string &name)
-{
-    std::cout << "setCanvasName(): (Canvas*, string&)" << std::endl;
-    return setNodeName(cnv, name);
 }
 
 bool RootScene::setNodeName(osg::Node *node, const std::string &name)
@@ -581,28 +419,12 @@ bool RootScene::clearUserData()
     return _userScene->removeChildren(0, _userScene->getNumChildren());
 }
 
-void RootScene::setCanvasName(Canvas *cnv){
-    cnv->setCanvasName(getEntityName(dureu::NAME_CANVAS, _idCanvas++));
-    std::cout << "setCanvasName(): Canvas renamed: " << cnv->getName() << std::endl;
-
-}
-
 std::string RootScene::getEntityName(const std::string &name, unsigned int id) const{
     char buffer[10];
     sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
     //snprintf(buffer, sizeof(buffer), "%d", id);
     //itoa(id, buffer, 10);
     return name + std::string(buffer);//std::to_string(static_cast<long double>(id));
-}
-
-bool RootScene::setSceneObserver() {
-    _observer->setName("SceneObserver");
-    if (_observer->getScenePointer()!=NULL){
-        std::cerr << "setSceneObserver(): SceneObserver will be overriden" << std::endl;
-    }
-    _observer->setScenePointer(_userScene.get());
-    _userScene->addUpdateCallback(_observer.get());
-    return true;
 }
 
 void RootScene::strokeStart()

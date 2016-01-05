@@ -52,38 +52,23 @@ public:
     RootScene(QUndoStack* undoStack = 0);
     ~RootScene();
 
-    bool addUserScene();
-    const osg::Group* getUserScene() const;
+    osg::Group* getUserScene() const;
 
     void setAxesVisibility(bool vis);
     bool getAxesVisibility() const;
-    bool addAxes();
     const Axes* getAxes() const;
 
     void setNameUserScene(const std::string& name);
     std::string getNameUserScene() const;
 
     const ObserveSceneCallback* getSceneObserver() const;
-
-    bool addHudCamera();
     const HUDCamera* getHudCamera() const;
-    bool setHudCameraObserve();
     void setHudCameraVisibility(bool vis);
     bool getHudCameraVisibility() const;
 
     void addStroke(float u, float v, dureu::EVENT event);
-
-    Canvas* addCanvas();
-    Canvas* addCanvas(const osg::Matrix& R, const osg::Matrix& T);
-    Canvas* addCanvas(osg::MatrixTransform* transform);
-    bool addCanvas(Canvas* cnv);
-    bool deleteCanvas(const std::string& name);
-    bool deleteCanvas(const int id);
-    bool deleteCanvas(Canvas* cnv);
-
-    bool addNode(osg::Node* node);
-    bool deleteNode(const std::string& name);
-    bool deleteNode(osg::Node* node);
+    void addCanvas(osg::MatrixTransform* transform);
+    void addCanvas(osg::MatrixTransform* transform, const std::string& name);
 
     bool loadSceneFromFile(const std::string& fname);
     bool writeSceneToFile(const std::string& fname) const;
@@ -99,7 +84,6 @@ public:
     osg::Node* getNode(unsigned int id) const;
     osg::Node* getNode(const std::string& name) const;
 
-    bool setCanvasName(Canvas* cnv, const std::string& name);
     bool setNodeName(osg::Node* node, const std::string& name);
 
     bool setCanvasCurrent(Canvas* cnv);
@@ -118,9 +102,7 @@ public:
 
 protected:
     bool clearUserData();
-    void setCanvasName(Canvas* cnv);
     std::string getEntityName(const std::string& name, unsigned int id) const;
-    bool setSceneObserver();
 
     void strokeStart();
     void strokeAppend(float u, float v);

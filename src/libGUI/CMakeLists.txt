@@ -30,4 +30,5 @@ add_library(libGUI STATIC
 
 target_link_libraries( libGUI
     ${QT_LIBRARIES}
+    ${OPENSCENEGRAPH_LIBRARIES}
 )

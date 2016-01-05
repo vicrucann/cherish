@@ -171,16 +171,6 @@ osg::MatrixTransform *Canvas::getTransform() const
     return _transform.get();
 }
 
-void Canvas::setCanvasName(const std::string &name)
-{
-    this->setName(name);
-    this->setSwitchName(name);
-    this->setTransformName(name);
-    this->setSwitchFrameName(name);
-    this->setGeodeDataName(name);
-    this->setPhotoNames(name);
-}
-
 void Canvas::setSwitchName(const std::string &parentName)
 {
     _switch->setName(parentName + "Switch");

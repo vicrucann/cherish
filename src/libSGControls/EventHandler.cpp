@@ -67,6 +67,11 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             mMode == dureu::MOUSE_ZOOM || mMode == dureu::MOUSE_FIXEDVIEW)
         return false;
 
+    if (!mScene->getCanvasCurrent()){
+        warningMsg("Create a Canvas to draw on and add elements to.");
+        return false;
+    }
+
     if (mMode == dureu::MOUSE_PICK || mMode == dureu::MOUSE_DELETE)
         doByLineIntersector(ea, aa);
     else if (mMode == dureu::MOUSE_EDIT_MOVE)
@@ -262,8 +267,8 @@ void EventHandler::doDelete(const osgUtil::LineSegmentIntersector::Intersection 
         return;
     }
     std::cout << "doDelete(): assumed canvas with name: " << cnv->getName() << std::endl;
-    bool success = mScene->deleteCanvas(cnv);
-    std::cout << "doDelete(): success is " << success << std::endl;
+    //bool success = mScene->deleteCanvas(cnv);
+    //std::cout << "doDelete(): success is " << success << std::endl;
 }
 
 void EventHandler::doErase(double u, double v, int mouse)

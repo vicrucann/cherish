@@ -16,6 +16,8 @@ set (libSGControls_SRCS
     AddStrokeCommand.cpp
     DeleteStrokeCommand.h
     DeleteStrokeCommand.cpp
+    AddCanvasCommand.h
+    AddCanvasCommand.cpp
 )
 
 add_library(libSGControls

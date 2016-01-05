@@ -71,7 +71,6 @@ public:
     void setTransformPre(osg::MatrixTransform* r);
     osg::MatrixTransform* getTransform() const;
 
-    void setCanvasName(const std::string& name);
     void setSwitchName(const std::string& parentName);
     void setTransformName(const std::string& parentName);
     void setSwitchFrameName(const std::string& parentName);

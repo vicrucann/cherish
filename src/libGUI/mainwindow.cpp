@@ -10,6 +10,8 @@
 #include <QSize>
 #include <QDebug>
 
+#include <osg/MatrixTransform>
+
 #include "mainwindow.h"
 #include "glwidget.h"
 #include "settings.h"
@@ -184,17 +186,23 @@ void MainWindow::onNewCanvasClone()
 
 void MainWindow::onNewCanvasXY()
 {
-
+    osg::MatrixTransform* t = new osg::MatrixTransform;
+    t->setMatrix(osg::Matrix::identity());
+    m_rootScene->addCanvas(t);
 }
 
 void MainWindow::onNewCanvasYZ()
 {
-
+    osg::MatrixTransform* t = new osg::MatrixTransform;
+    t->setMatrix(osg::Matrix::rotate(dureu::PI*0.5, 0, -1, 0));
+    m_rootScene->addCanvas(t);
 }
 
 void MainWindow::onNewCanvasXZ()
 {
-
+    osg::MatrixTransform* t = new osg::MatrixTransform;
+    t->setMatrix(osg::Matrix::rotate(dureu::PI*0.5, -1, 0, 0));
+    m_rootScene->addCanvas(t);
 }
 
 void MainWindow::onNewCanvasStandard()
