@@ -89,50 +89,24 @@ void MainWindow::onCreateViewer(){
     subwin->show();
 }
 
-void MainWindow::onMouseOrbit(){
-    emit sendMouseMode(dureu::MOUSE_ROTATE);
-}
-
-void MainWindow::onMouseZoom(){
-    emit sendMouseMode(dureu::MOUSE_ZOOM);
-}
-
-void MainWindow::onMousePan(){
-    emit sendMouseMode(dureu::MOUSE_PAN);
-}
-
-void MainWindow::onMousePick(){
-    emit sendMouseMode(dureu::MOUSE_PICK);
-}
-
-void MainWindow::onMouseErase()
+void MainWindow::onFileNew()
 {
-    emit sendMouseMode(dureu::MOUSE_ERASE);
+
 }
 
-void MainWindow::onMouseDelete()
+void MainWindow::onFileOpen()
 {
-    emit sendMouseMode(dureu::MOUSE_DELETE);
+
 }
 
-void MainWindow::onMouseSketch()
+void MainWindow::onFileSave()
 {
-    emit sendMouseMode(dureu::MOUSE_SKETCH);
+
 }
 
-void MainWindow::onMouseOffset()
+void MainWindow::onFileSaveAs()
 {
-    emit sendMouseMode(dureu::MOUSE_EDIT_OFFSET);
-}
 
-void MainWindow::onMouseRotate()
-{
-    emit sendMouseMode(dureu::MOUSE_EDIT_ROTATE);
-}
-
-void MainWindow::onMouseMove()
-{
-    emit sendMouseMode(dureu::MOUSE_EDIT_MOVE);
 }
 
 void MainWindow::onFileImage()
@@ -145,6 +119,87 @@ void MainWindow::onFileImage()
             return;
         }
     }
+}
+
+void MainWindow::onFileClose()
+{
+
+}
+
+void MainWindow::onFileExit()
+{
+
+}
+
+void MainWindow::onCameraOrbit(){
+    emit sendMouseMode(dureu::MOUSE_ROTATE);
+}
+
+void MainWindow::onCameraZoom(){
+    emit sendMouseMode(dureu::MOUSE_ZOOM);
+}
+
+void MainWindow::onCameraPan(){
+    emit sendMouseMode(dureu::MOUSE_PAN);
+}
+
+void MainWindow::onSelect(){
+    emit sendMouseMode(dureu::MOUSE_PICK);
+}
+
+void MainWindow::onErase()
+{
+    emit sendMouseMode(dureu::MOUSE_ERASE);
+}
+
+void MainWindow::onDelete()
+{
+    emit sendMouseMode(dureu::MOUSE_DELETE);
+}
+
+void MainWindow::onSketch()
+{
+    emit sendMouseMode(dureu::MOUSE_SKETCH);
+}
+
+void MainWindow::onCanvasOffset()
+{
+    emit sendMouseMode(dureu::MOUSE_EDIT_OFFSET);
+}
+
+void MainWindow::onCanvasRotate()
+{
+    emit sendMouseMode(dureu::MOUSE_EDIT_ROTATE);
+}
+
+void MainWindow::onImageMove()
+{
+    emit sendMouseMode(dureu::MOUSE_EDIT_MOVE);
+}
+
+void MainWindow::onImageRotate()
+{
+
+}
+
+void MainWindow::onImageScale()
+{
+
+}
+
+void MainWindow::onImageFlip()
+{
+
+}
+
+void MainWindow::onImagePush()
+{
+
+}
+
+void MainWindow::onStrokePush()
+{
+
 }
 
 GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
@@ -161,56 +216,71 @@ void MainWindow::initializeActions()
 {
     // FILE
     m_actionNewFile = new QAction(Data::fileNewSceneIcon(), tr("&New..."), this);
+    this->connect(m_actionNewFile, SIGNAL(triggered(bool)), this, SLOT(onFileNew()));
+    m_actionNewFile->setShortcut(tr("Ctrl+N"));
 
     m_actionClose = new QAction(Data::fileCloseIcon(), tr("&Close"), this);
+    this->connect(m_actionClose, SIGNAL(triggered(bool)), this, SLOT(onFileClose()));
+    m_actionClose->setShortcut(tr("Ctrl+W"));
 
     m_actionExit = new QAction(Data::fileExitIcon(), tr("&Exit"), this);
+    this->connect(m_actionClose, SIGNAL(triggered(bool)), this, SLOT(onFileExit()));
+    m_actionExit->setShortcut(tr("Ctrl+Q"));
 
     m_actionImportImage = new QAction(Data::fileExitIcon(), tr("Import &Image..."), this);
-    connect(m_actionImportImage, SIGNAL(triggered(bool)), this, SLOT(onFileImage()));
+    this->connect(m_actionImportImage, SIGNAL(triggered(bool)), this, SLOT(onFileImage()));
+    m_actionImportImage->setShortcut(tr("Ctrl+I"));
 
     m_actionOpenFile = new QAction(Data::fileOpenIcon(), tr("&Open..."), this);
+    this->connect(m_actionOpenFile, SIGNAL(triggered(bool)), this, SLOT(onFileOpen()));
+    m_actionOpenFile->setShortcut(tr("Ctrl+O"));
 
     m_actionSaveFile = new QAction(Data::fileSaveIcon(), tr("&Save..."), this);
+    this->connect(m_actionSaveFile, SIGNAL(triggered(bool)), this, SLOT(onFileSave()));
+    m_actionSaveFile->setShortcut(tr("Ctrl+S"));
 
     // EDIT
 
     m_actionUndo = m_undoStack->createUndoAction(this, tr("&Undo"));
     m_actionUndo->setIcon(Data::editUndoIcon());
-    m_actionUndo->setShortcuts(QKeySequence::Undo);
+    m_actionUndo->setShortcut(QKeySequence::Undo);
 
     m_actionRedo = m_undoStack->createRedoAction(this, tr("&Redo"));
     m_actionRedo->setIcon(Data::editRedoIcon());
-    m_actionRedo->setShortcuts(QKeySequence::Redo);
+    m_actionRedo->setShortcut(tr("Ctrl+R"));
 
     m_actionCut = new QAction(Data::editCutIcon(), tr("&Cut"), this);
+    m_actionCut->setShortcut(tr("Ctrl+X"));
 
     m_actionCopy = new QAction(Data::editCopyIcon(), tr("C&opy"), this);
+    m_actionCopy->setShortcut(tr("Ctrl+C"));
 
     m_actionPaste = new QAction(Data::editPasteIcon(), tr("&Paste"), this);
+    m_actionPaste->setShortcut(tr("Ctrl+V"));
 
     m_actionDelete = new QAction(Data::editDeleteIcon(), tr("&Delete"), this);
-    this->connect(m_actionDelete, SIGNAL(triggered(bool)), this, SLOT(onMouseDelete()));
+    this->connect(m_actionDelete, SIGNAL(triggered(bool)), this, SLOT(onDelete()));
+    m_actionDelete->setShortcut(Qt::Key_Delete);
 
     // SCENE
 
     m_actionSketch = new QAction(Data::sceneSketchIcon(), tr("&Sketch"), this);
-    this->connect(m_actionSketch, SIGNAL(triggered(bool)), this, SLOT(onMouseSketch()));
+    this->connect(m_actionSketch, SIGNAL(triggered(bool)), this, SLOT(onSketch()));
 
     m_actionEraser = new QAction(Data::sceneEraserIcon(), tr("&Eraser"), this);
-    this->connect(m_actionEraser, SIGNAL(triggered(bool)), this, SLOT(onMouseErase()));
+    this->connect(m_actionEraser, SIGNAL(triggered(bool)), this, SLOT(onErase()));
 
     m_actionSelect = new QAction(tr("S&elect"), this);
-    this->connect(m_actionSelect, SIGNAL(triggered(bool)), this, SLOT(onMousePick()));
+    this->connect(m_actionSelect, SIGNAL(triggered(bool)), this, SLOT(onSelect()));
 
     m_actionOrbit = new QAction(Data::sceneOrbitIcon(), tr("&Orbit"), this);
-    this->connect(m_actionOrbit, SIGNAL(triggered(bool)), this, SLOT(onMouseOrbit()));
+    this->connect(m_actionOrbit, SIGNAL(triggered(bool)), this, SLOT(onCameraOrbit()));
 
     m_actionPan = new QAction(Data::scenePanIcon(), tr("&Pan"), this);
-    this->connect(m_actionPan, SIGNAL(triggered(bool)), this, SLOT(onMousePan()));
+    this->connect(m_actionPan, SIGNAL(triggered(bool)), this, SLOT(onCameraPan()));
 
     m_actionZoom = new QAction(Data::sceneZoomIcon(), tr("&Zoom"), this);
-    this->connect(m_actionZoom, SIGNAL(triggered(bool)), this, SLOT(onMouseZoom()));
+    this->connect(m_actionZoom, SIGNAL(triggered(bool)), this, SLOT(onCameraZoom()));
 
     m_actionCanvasClone = new QAction(Data::sceneNewCanvasCloneIcon(), tr("Clone Current"), this);
 
@@ -229,16 +299,15 @@ void MainWindow::initializeActions()
     m_actionSetRing = new QAction(Data::sceneNewCanvasSetRingIcon(), tr("Ring"), this);
 
     m_actionCanvasOffset = new QAction(Data::sceneCanvasOffsetIcon(), tr("Offset Canvas"), this);
-    this->connect(m_actionCanvasOffset, SIGNAL(triggered(bool)), this, SLOT(onMouseOffset()));
+    this->connect(m_actionCanvasOffset, SIGNAL(triggered(bool)), this, SLOT(onCanvasOffset()));
 
     m_actionCanvasRotate = new QAction(Data::sceneCanvasRotateIcon(), tr("Rotate Canvas"), this);
-    this->connect(m_actionCanvasRotate, SIGNAL(triggered(bool)), this, SLOT(onMouseRotate()));
+    this->connect(m_actionCanvasRotate, SIGNAL(triggered(bool)), this, SLOT(onCanvasRotate()));
 
     m_actionImageMove = new QAction(Data::sceneImageMoveIcon(), tr("Move Image"), this);
-    this->connect(m_actionImageMove, SIGNAL(triggered(bool)), this, SLOT(onMouseMove()));
+    this->connect(m_actionImageMove, SIGNAL(triggered(bool)), this, SLOT(onImageMove()));
 
     m_actionImageRotate = new QAction(Data::sceneImageRotateIcon(), tr("Rotate Image"), this);
-    this->connect(m_actionImageRotate, SIGNAL(triggered(bool)), this, SLOT(onMouseRotateImage()));
 
     m_actionImageScale = new QAction(Data::sceneImageScaleIcon(), tr("Scale Image"), this);
 
@@ -260,6 +329,8 @@ void MainWindow::initializeMenus()
     menuFile->addAction(m_actionSaveFile);
     // "Save As" here
     menuFile->addSeparator();
+    menuFile->addAction(m_actionImportImage);
+    menuFile->addSeparator();
     menuFile->addAction(m_actionClose);
     menuFile->addAction(m_actionExit);
 
@@ -271,6 +342,7 @@ void MainWindow::initializeMenus()
     menuEdit->addAction(m_actionCut);
     menuEdit->addAction(m_actionCopy);
     menuEdit->addAction(m_actionPaste);
+    menuEdit->addAction(m_actionDelete);
 
     // SCENE
     QMenu* menuScene = m_menuBar->addMenu(tr("&Scene"));

@@ -35,18 +35,32 @@ signals:
 private slots:
     void onCreateViewer();
 
-    void onMouseOrbit();
-    void onMouseZoom();
-    void onMousePan();
-    void onMousePick();
-    void onMouseErase();
-    void onMouseDelete();
-    void onMouseSketch();
-    void onMouseOffset();
-    void onMouseRotate();
-    void onMouseMove();
-
+    void onFileNew();
+    void onFileOpen();
+    void onFileSave();
+    void onFileSaveAs();
     void onFileImage();
+    void onFileClose();
+    void onFileExit();
+
+    void onCameraOrbit();
+    void onCameraZoom();
+    void onCameraPan();
+    void onSelect();
+    void onErase();
+    void onDelete();
+    void onSketch();
+
+    void onCanvasOffset();
+    void onCanvasRotate();
+
+    void onImageMove();
+    void onImageRotate();
+    void onImageScale();
+    void onImageFlip();
+    void onImagePush();
+
+    void onStrokePush();
 
 private:
     GLWidget*   createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
