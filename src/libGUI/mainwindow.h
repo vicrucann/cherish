@@ -43,6 +43,10 @@ private slots:
     void onFileClose();
     void onFileExit();
 
+    void onCut();
+    void onCopy();
+    void onPaste();
+
     void onCameraOrbit();
     void onCameraZoom();
     void onCameraPan();

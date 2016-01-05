@@ -131,6 +131,21 @@ void MainWindow::onFileExit()
 
 }
 
+void MainWindow::onCut()
+{
+
+}
+
+void MainWindow::onCopy()
+{
+
+}
+
+void MainWindow::onPaste()
+{
+
+}
+
 void MainWindow::onCameraOrbit(){
     emit sendMouseMode(dureu::MOUSE_ROTATE);
 }
@@ -250,12 +265,15 @@ void MainWindow::initializeActions()
     m_actionRedo->setShortcut(tr("Ctrl+R"));
 
     m_actionCut = new QAction(Data::editCutIcon(), tr("&Cut"), this);
+    this->connect(m_actionCut, SIGNAL(triggered(bool)), this, SLOT(onCut()));
     m_actionCut->setShortcut(tr("Ctrl+X"));
 
     m_actionCopy = new QAction(Data::editCopyIcon(), tr("C&opy"), this);
+    this->connect(m_actionCopy, SIGNAL(triggered(bool)), this, SLOT(onCopy()));
     m_actionCopy->setShortcut(tr("Ctrl+C"));
 
     m_actionPaste = new QAction(Data::editPasteIcon(), tr("&Paste"), this);
+    this->connect(m_actionPaste, SIGNAL(triggered(bool)), this, SLOT(onPaste()));
     m_actionPaste->setShortcut(tr("Ctrl+V"));
 
     m_actionDelete = new QAction(Data::editDeleteIcon(), tr("&Delete"), this);
