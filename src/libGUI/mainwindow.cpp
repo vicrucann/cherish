@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     this->setCentralWidget(m_mdiArea);
     this->initializeActions();
+    this->initializeMenus();
 }
 
 MainWindow::~MainWindow(){
@@ -202,6 +203,15 @@ void MainWindow::initializeActions()
     m_actionSelect = new QAction(tr("S&elect"), this);
     this->connect(m_actionSelect, SIGNAL(triggered(bool)), this, SLOT(onMousePick()));
 
+    m_actionOrbit = new QAction(Data::sceneOrbitIcon(), tr("&Orbit"), this);
+    this->connect(m_actionOrbit, SIGNAL(triggered(bool)), this, SLOT(onMouseOrbit()));
+
+    m_actionPan = new QAction(Data::scenePanIcon(), tr("&Pan"), this);
+    this->connect(m_actionPan, SIGNAL(triggered(bool)), this, SLOT(onMousePan()));
+
+    m_actionZoom = new QAction(Data::sceneZoomIcon(), tr("&Zoom"), this);
+    this->connect(m_actionZoom, SIGNAL(triggered(bool)), this, SLOT(onMouseZoom()));
+
     m_actionCanvasClone = new QAction(Data::sceneNewCanvasCloneIcon(), tr("Clone Current"), this);
 
     m_actionCanvasXY = new QAction(Data::sceneNewCanvasXYIcon(), tr("Plane XY"), this);
@@ -209,6 +219,14 @@ void MainWindow::initializeActions()
     m_actionCanvasYZ = new QAction(Data::sceneNewCanvasYZIcon(), tr("Plane YZ"), this);
 
     m_actionCanvasXZ = new QAction(Data::sceneNewCanvasXZIcon(), tr("Plane XZ"), this);
+
+    m_actionSetStandard = new QAction(Data::sceneNewCanvasSetStandardIcon(), tr("Standard"), this);
+
+    m_actionSetCoaxial = new QAction(Data::sceneNewCanvasSetCoaxialIcon(), tr("Coaxial"), this);
+
+    m_actionSetParallel = new QAction(Data::sceneNewCanvasSetParallelIcon(), tr("Parallel"), this);
+
+    m_actionSetRing = new QAction(Data::sceneNewCanvasSetRingIcon(), tr("Ring"), this);
 
     m_actionCanvasOffset = new QAction(Data::sceneCanvasOffsetIcon(), tr("Offset Canvas"), this);
     this->connect(m_actionCanvasOffset, SIGNAL(triggered(bool)), this, SLOT(onMouseOffset()));
@@ -232,14 +250,59 @@ void MainWindow::initializeActions()
     this->connect(m_actionStrokesPush, SIGNAL(triggered(bool)), this, SLOT(onMousePushStrokes()));
 }
 
-/*_mActionOrbit = new QAction(QIcon(":/orbit.png"),tr("&orbit"), this);
-    _mActionOrbit->setStatusTip(tr("orbit"));
-    this->connect(_mActionOrbit, SIGNAL(triggered()), this, SLOT(onMouseOrbit()));
+void MainWindow::initializeMenus()
+{
+    // FILE
+    QMenu* menuFile = m_menuBar->addMenu(tr("&File"));
+    menuFile->addAction(m_actionNewFile);
+    menuFile->addAction(m_actionOpenFile);
+    menuFile->addSeparator();
+    menuFile->addAction(m_actionSaveFile);
+    // "Save As" here
+    menuFile->addSeparator();
+    menuFile->addAction(m_actionClose);
+    menuFile->addAction(m_actionExit);
 
-    _mActionPan = new QAction(QIcon(":/pan.png"),tr("&Pan"), this);
-    _mActionPan->setStatusTip(tr("Pan"));
-    this->connect(_mActionPan, SIGNAL(triggered()), this, SLOT(onMousePan()));
+    // EDIT
+    QMenu* menuEdit = m_menuBar->addMenu(tr("&Edit"));
+    menuEdit->addAction(m_actionUndo);
+    menuEdit->addAction(m_actionRedo);
+    menuEdit->addSeparator();
+    menuEdit->addAction(m_actionCut);
+    menuEdit->addAction(m_actionCopy);
+    menuEdit->addAction(m_actionPaste);
 
-    _mActionZoom = new QAction(QIcon(":/zoom.png"),tr("&Zoom"), this);
-    _mActionZoom->setStatusTip(tr("Zoom"));
-    this->connect(_mActionZoom, SIGNAL(triggered()), this, SLOT(onMouseZoom()));*/
+    // SCENE
+    QMenu* menuScene = m_menuBar->addMenu(tr("&Scene"));
+    menuScene->addAction(m_actionSelect);
+    menuScene->addAction(m_actionSketch);
+    menuScene->addAction(m_actionEraser);
+    menuScene->addSeparator();
+    QMenu* submenuCamera = menuScene->addMenu("Camera Navigation");
+    submenuCamera->addAction(m_actionOrbit);
+    submenuCamera->addAction(m_actionPan);
+    submenuCamera->addAction(m_actionZoom);
+    menuScene->addSeparator();
+    QMenu* submenuCanvas = menuScene->addMenu("New Canvas");
+    submenuCanvas->addAction(m_actionCanvasClone);
+    submenuCanvas->addAction(m_actionCanvasXY);
+    submenuCanvas->addAction(m_actionCanvasYZ);
+    submenuCanvas->addAction(m_actionCanvasXZ);
+    QMenu* submenuSet = menuScene->addMenu("New Canvas Set");
+    submenuSet->addAction(m_actionSetStandard);
+    submenuSet->addAction(m_actionSetCoaxial);
+    submenuSet->addAction(m_actionSetParallel);
+    submenuSet->addAction(m_actionSetRing);
+    menuScene->addSeparator();
+    QMenu* submenuEC = menuScene->addMenu("Edit Canvas");
+    submenuEC->addAction(m_actionCanvasOffset);
+    submenuEC->addAction(m_actionCanvasRotate);
+    QMenu* submenuEI = menuScene->addMenu("Edit Image");
+    submenuEI->addAction(m_actionImageMove);
+    submenuEI->addAction(m_actionImageRotate);
+    submenuEI->addAction(m_actionImageScale);
+    submenuEI->addAction(m_actionImageFlip);
+    submenuEI->addAction(m_actionImagePush);
+    QMenu* submenuES = menuScene->addMenu("Edit Strokes");
+    submenuES->addAction(m_actionStrokesPush);
+}

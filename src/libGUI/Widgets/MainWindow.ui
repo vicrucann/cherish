@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>615</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="m_menuFile">
@@ -102,9 +102,18 @@
      <addaction name="m_actionRectangle"/>
      <addaction name="m_actionArc"/>
     </widget>
+    <widget class="QMenu" name="menuCamera">
+     <property name="title">
+      <string>Camera</string>
+     </property>
+     <addaction name="actionOrbit"/>
+     <addaction name="actionPan"/>
+     <addaction name="actionZoom"/>
+    </widget>
     <addaction name="actionS_elect"/>
     <addaction name="m_actionSketch"/>
     <addaction name="m_actionEraser"/>
+    <addaction name="menuCamera"/>
     <addaction name="m_menuGeometry"/>
     <addaction name="separator"/>
     <addaction name="m_menuNewCanvas"/>
@@ -121,7 +130,7 @@
   <widget class="QStatusBar" name="m_statusbar"/>
   <action name="m_actionOpen">
    <property name="icon">
-    <iconset resource="../../dureu3d/Data/Icons.qrc">
+    <iconset resource="../../dureu3d/Data/Actions.qrc">
      <normaloff>:/file-open-3x.png</normaloff>:/file-open-3x.png</iconset>
    </property>
    <property name="text">
@@ -133,7 +142,7 @@
   </action>
   <action name="m_actionSave">
    <property name="icon">
-    <iconset resource="../../dureu3d/Data/Icons.qrc">
+    <iconset resource="../../dureu3d/Data/Actions.qrc">
      <normaloff>:/file-save-3x.png</normaloff>:/file-save-3x.png</iconset>
    </property>
    <property name="text">
@@ -150,7 +159,7 @@
   </action>
   <action name="m_actionImage">
    <property name="icon">
-    <iconset resource="../../dureu3d/Data/Icons.qrc">
+    <iconset resource="../../dureu3d/Data/Actions.qrc">
      <normaloff>:/file-image-3x.png</normaloff>:/file-image-3x.png</iconset>
    </property>
    <property name="text">
@@ -162,7 +171,7 @@
   </action>
   <action name="m_actionClose">
    <property name="icon">
-    <iconset resource="../../dureu3d/Data/Icons.qrc">
+    <iconset resource="../../dureu3d/Data/Actions.qrc">
      <normaloff>:/file-close-3x.png</normaloff>:/file-close-3x.png</iconset>
    </property>
    <property name="text">
@@ -174,7 +183,7 @@
   </action>
   <action name="m_actionExit">
    <property name="icon">
-    <iconset resource="../../dureu3d/Data/Icons.qrc">
+    <iconset resource="../../dureu3d/Data/Actions.qrc">
      <normaloff>:/file-exit-3x.png</normaloff>:/file-exit-3x.png</iconset>
    </property>
    <property name="text">
@@ -186,7 +195,7 @@
   </action>
   <action name="m_actionNew">
    <property name="icon">
-    <iconset resource="../../dureu3d/Data/Icons.qrc">
+    <iconset resource="../../dureu3d/Data/Actions.qrc">
      <normaloff>:/file-newscene-3x.png</normaloff>:/file-newscene-3x.png</iconset>
    </property>
    <property name="text">
@@ -198,7 +207,7 @@
   </action>
   <action name="m_actionUndo">
    <property name="icon">
-    <iconset resource="../../dureu3d/Data/Icons.qrc">
+    <iconset resource="../../dureu3d/Data/Actions.qrc">
      <normaloff>:/edit-undo-3x.png</normaloff>:/edit-undo-3x.png</iconset>
    </property>
    <property name="text">
@@ -210,7 +219,7 @@
   </action>
   <action name="m_actionRedo">
    <property name="icon">
-    <iconset resource="../../dureu3d/Data/Icons.qrc">
+    <iconset resource="../../dureu3d/Data/Actions.qrc">
      <normaloff>:/edit-redo-3x.png</normaloff>:/edit-redo-3x.png</iconset>
    </property>
    <property name="text">
@@ -246,7 +255,7 @@
   </action>
   <action name="m_actionDelete">
    <property name="icon">
-    <iconset resource="../../dureu3d/Data/Icons.qrc">
+    <iconset resource="../../dureu3d/Data/Actions.qrc">
      <normaloff>:/edit-delete-3x.png</normaloff>:/edit-delete-3x.png</iconset>
    </property>
    <property name="text">
@@ -371,9 +380,24 @@
     <string>Selec&amp;t</string>
    </property>
   </action>
+  <action name="actionOrbit">
+   <property name="text">
+    <string>&amp;Orbit</string>
+   </property>
+  </action>
+  <action name="actionPan">
+   <property name="text">
+    <string>&amp;Pan</string>
+   </property>
+  </action>
+  <action name="actionZoom">
+   <property name="text">
+    <string>&amp;Zoom</string>
+   </property>
+  </action>
  </widget>
  <resources>
-  <include location="../../dureu3d/Data/Icons.qrc"/>
+  <include location="../../dureu3d/Data/Actions.qrc"/>
  </resources>
  <connections/>
 </ui>

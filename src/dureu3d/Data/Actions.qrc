@@ -26,5 +26,12 @@
         <file>file-newscene-3x.png</file>
         <file>scene-image-push-3x.png</file>
         <file>scene-image-flip-3x.png</file>
+        <file>scene-orbit-3x.png</file>
+        <file>scene-pan-3x.png</file>
+        <file>scene-zoom-3x.png</file>
+        <file>scene-newcanvas-coaxial-3x.png</file>
+        <file>scene-newcanvas-parallel-3x.png</file>
+        <file>scene-newcanvas-ring-3x.png</file>
+        <file>scene-newcanvas-standard-3x.png</file>
     </qresource>
 </RCC>

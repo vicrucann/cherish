@@ -102,6 +102,27 @@ const QIcon &Data::sceneEraserIcon()
     return icon;
 }
 
+const QIcon &Data::sceneOrbitIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-orbit-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/scene-orbit-3x.png"));
+    return icon;
+}
+
+const QIcon &Data::scenePanIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-pan-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/scene-pan-3x.png"));
+    return icon;
+}
+
+const QIcon &Data::sceneZoomIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-zoom-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/scene-zoom-3x.png"));
+    return icon;
+}
+
 const QIcon &Data::sceneNewCanvasIcon()
 {
     Q_ASSERT_X(!QPixmap(":/scene-newcanvas-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
@@ -155,6 +176,13 @@ const QIcon &Data::sceneNewCanvasSetRingIcon()
 {
     Q_ASSERT_X(!QPixmap(":/scene-newcanvas-ring-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(QPixmap(":/scene-newcanvas-ring-3x.png"));
+    return icon;
+}
+
+const QIcon &Data::sceneNewCanvasSetStandardIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-standard-3x.png").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/scene-newcanvas-standard-3x.png"));
     return icon;
 }
 

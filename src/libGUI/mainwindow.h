@@ -51,6 +51,7 @@ private slots:
 private:
     GLWidget*   createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
     void        initializeActions();
+    void        initializeMenus();
 
     QDesktopWidget* m_desktop;
     QMdiArea*       m_mdiArea;
@@ -72,8 +73,12 @@ private:
 
     // SCENE actions
     QAction * m_actionSketch, * m_actionEraser, * m_actionSelect
+            // Camera navigation
+            , * m_actionOrbit, * m_actionPan, * m_actionZoom
             // New Canvas sub-menu
             , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasXZ
+            // New Canvas Set sub-menu
+            , * m_actionSetStandard, * m_actionSetParallel, * m_actionSetCoaxial, * m_actionSetRing
             // Edit Canvas
             , * m_actionCanvasOffset, * m_actionCanvasRotate
             // Edit Image
@@ -83,8 +88,6 @@ private:
     ;
 
 
-    // actions to be placed on GLWidget
-    //QAction* _mActionOrbit, * _mActionPan, * _mActionZoom;
     // QToolButton *select;
     // QWidgetAction* selectAction;
 };

@@ -25,6 +25,9 @@ public:
 
     static const QIcon& sceneSketchIcon();
     static const QIcon& sceneEraserIcon();
+    static const QIcon& sceneOrbitIcon();
+    static const QIcon& scenePanIcon();
+    static const QIcon& sceneZoomIcon();
 
     static const QIcon& sceneNewCanvasIcon();
     static const QIcon& sceneNewCanvasCloneIcon();
@@ -34,6 +37,7 @@ public:
     static const QIcon& sceneNewCanvasSetParallelIcon();
     static const QIcon& sceneNewCanvasSetCoaxialIcon();
     static const QIcon& sceneNewCanvasSetRingIcon();
+    static const QIcon& sceneNewCanvasSetStandardIcon();
 
     static const QIcon& scenePushStrokesIcon();
     static const QIcon& scenePushImagesIcon();
