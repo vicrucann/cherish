@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
     , m_desktop(0)
     , m_mdiArea(new QMdiArea(this))
+    , m_glWidget(0)
     , m_undoStack(new QUndoStack(this))
     , m_undoView(new QUndoView(m_undoStack))
     , m_menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
@@ -84,10 +85,10 @@ void MainWindow::getTabletActivity(bool active){
  * GLWidget* vwid = createViewer(Qt::Window);
 */
 void MainWindow::onCreateViewer(){
-    GLWidget* vwid = createViewer();
-    QMdiSubWindow* subwin = m_mdiArea->addSubWindow(vwid);
+    GLWidget* m_glWidget = createViewer();
+    QMdiSubWindow* subwin = m_mdiArea->addSubWindow(m_glWidget);
     subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-    vwid->showMaximized();
+    m_glWidget->showMaximized();
     subwin->show();
 }
 
@@ -106,7 +107,20 @@ void MainWindow::onFileNew()
 */
 void MainWindow::onFileOpen()
 {
-
+    QString fname = QFileDialog::getOpenFileName(this, tr("Open a scene from file"),
+                                                 QString(), tr("OSG files (*.osg *.osgt)"));
+    if (fname.isEmpty()){
+        QMessageBox::critical(this, tr("Error"), tr("Could not obtain a file name"));
+        return;
+    }
+    m_rootScene->setFilePath(fname.toStdString());
+    if (!m_rootScene->loadSceneFromFile()){
+        QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
+        m_rootScene->setFilePath("");
+    }
+    else
+        this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
+    //m_glWidget->forceUpdate();
 }
 
 /* Take content of scene graph
@@ -118,7 +132,7 @@ void MainWindow::onFileOpen()
 void MainWindow::onFileSave()
 {
     if (!m_rootScene->isSetFilePath()){
-        QString fname = QFileDialog::getSaveFileName(this, tr("Save a Scene to File"),
+        QString fname = QFileDialog::getSaveFileName(this, tr("Save a scene to file"),
                                                      QString(), tr("OSG files (*.osg *.osgt)"));
         if (fname.isEmpty()){
             QMessageBox::critical(this, tr("Error"), tr("Could not save file. File name variable is empty."));
@@ -131,7 +145,7 @@ void MainWindow::onFileSave()
         m_rootScene->setFilePath("");
     }
     else
-        this->setStatusTip(tr("Scene was successfully written to file"));
+        this->statusBar()->setStatusTip(tr("Scene was successfully written to file"));
 }
 
 /* Take content of scene graph

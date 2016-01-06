@@ -72,6 +72,7 @@ public:
     void addCanvas(osg::MatrixTransform* transform, const std::string& name);
 
     bool loadSceneFromFile(const std::string& fname);
+    bool loadSceneFromFile();
     bool writeSceneToFile(const std::string& fname) const;
     bool writeSceneToFile() const;
     Photo* loadPhotoFromFile(const std::string& fname);
@@ -103,10 +104,12 @@ public:
     QUndoStack* getUndoStack() const;
 
     void setFilePath(const std::string& fname);
+    const std::string& getFilePath() const;
     bool isSetFilePath() const;
 
 protected:
     bool clearUserData();
+    std::string getCanvasName();
     std::string getEntityName(const std::string& name, unsigned int id) const;
 
     void strokeStart();

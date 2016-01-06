@@ -82,6 +82,7 @@ private:
 
     QDesktopWidget* m_desktop;
     QMdiArea*       m_mdiArea;
+    GLWidget*       m_glWidget;
 
     // http://doc.qt.io/qt-5/qtwidgets-tools-undoframework-example.html
     QUndoStack*     m_undoStack;

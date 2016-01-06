@@ -189,6 +189,46 @@ bool RootScene::loadSceneFromFile(const std::string& fname){
     return true;
 }
 
+bool RootScene::loadSceneFromFile()
+{
+    if (!_undoStack){
+        fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
+                 "Restart the program to ensure undo stack initialization.");
+        return false;
+    }
+    osg::ref_ptr<osg::Group> userScene = dynamic_cast<osg::Group*>(osgDB::readNodeFile(m_filePath));
+    if (!userScene.get()){
+        outErrMsg("loadSceneFromFile: could not load from file, or could not perform the dynamic_cast<osg::Group*>");
+        return false;
+    }
+    if (_userScene->getNumChildren() > 0){
+        outLogMsg("loadSceneFromFile(): the current _userScene will be replaced by a scene from file");
+        if (!this->clearUserData()){
+            outErrMsg("loadSceneFromFile(): could not clear the current user scene data");
+            userScene = 0;
+            return false;
+        }
+    }
+    for (unsigned int i=0; i<userScene->getNumChildren(); ++i){
+        Canvas* cnv = dynamic_cast<Canvas*>(userScene->getChild(i));
+        if (!cnv){
+            outErrMsg("loadSceneFromFile: could not dynamic_cast to Canvas*.");
+            return false;
+        }
+        osg::MatrixTransform* t = cnv->getTransform();
+        AddCanvasCommand* cmd = new AddCanvasCommand(this, t, this->getCanvasName());
+        if (!cmd){
+            outErrMsg("loadSceneFromFile: could not create AddCanvasCommand.");
+            return false;
+        }
+        _undoStack->push(cmd);
+    }
+    userScene = 0;
+    return true;
+}
+
+// read more in OSG beginner's guide, Chapter 10,
+// "Serializing OSG native scenes"
 bool RootScene::writeSceneToFile(const std::string &fname) const
 {
     outLogVal("writeSceneToFile", fname);
@@ -432,6 +472,12 @@ QUndoStack *RootScene::getUndoStack() const
 void RootScene::setFilePath(const std::string &fname)
 {
     m_filePath = fname;
+    outLogMsg("file path is set");
+}
+
+const std::string &RootScene::getFilePath() const
+{
+    return m_filePath;
 }
 
 bool RootScene::isSetFilePath() const
@@ -442,6 +488,11 @@ bool RootScene::isSetFilePath() const
 bool RootScene::clearUserData()
 {
     return _userScene->removeChildren(0, _userScene->getNumChildren());
+}
+
+std::string RootScene::getCanvasName()
+{
+    return getEntityName(dureu::NAME_CANVAS, _idCanvas++);
 }
 
 std::string RootScene::getEntityName(const std::string &name, unsigned int id) const{
@@ -492,7 +543,7 @@ void RootScene::strokeFinish()
         return;
     }
     this->getCanvasCurrent()->getGeodeData()->removeChild(current_stroke.get()); // remove the "current" copy
-    current_stroke.release();
+    current_stroke = 0;
     outLogMsg("strokeFinish()");
 }
 
