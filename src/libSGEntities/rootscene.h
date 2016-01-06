@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <string>
+#include <string>
 
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
@@ -72,6 +73,7 @@ public:
 
     bool loadSceneFromFile(const std::string& fname);
     bool writeSceneToFile(const std::string& fname) const;
+    bool writeSceneToFile() const;
     Photo* loadPhotoFromFile(const std::string& fname);
     bool addPhoto(Photo *photo);
 
@@ -100,6 +102,9 @@ public:
     void setUndoStack(QUndoStack* stack);
     QUndoStack* getUndoStack() const;
 
+    void setFilePath(const std::string& fname);
+    bool isSetFilePath() const;
+
 protected:
     bool clearUserData();
     std::string getEntityName(const std::string& name, unsigned int id) const;
@@ -121,6 +126,8 @@ private:
 
     QUndoStack* _undoStack;
     osg::ref_ptr<Stroke> current_stroke;
+
+    std::string m_filePath;
 
 };
 

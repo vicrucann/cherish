@@ -67,10 +67,8 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             mMode == dureu::MOUSE_ZOOM || mMode == dureu::MOUSE_FIXEDVIEW)
         return false;
 
-    if (!mScene->getCanvasCurrent()){
-        warningMsg("Create a Canvas to draw on and add elements to.");
+    if (!mScene->getCanvasCurrent())
         return false;
-    }
 
     if (mMode == dureu::MOUSE_PICK || mMode == dureu::MOUSE_DELETE)
         doByLineIntersector(ea, aa);

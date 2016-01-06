@@ -33,6 +33,7 @@ RootScene::RootScene(QUndoStack *undoStack)
     , _idNode(0)
     , _undoStack(undoStack)
     , current_stroke(0)
+    , m_filePath("")
 {
     _userScene->setName("UserScene");
     // child #0
@@ -196,6 +197,20 @@ bool RootScene::writeSceneToFile(const std::string &fname) const
     if (!written)
         outErrMsg("writeSceneToFile(): Could not write scene to the specified file");
     return written;
+}
+
+bool RootScene::writeSceneToFile() const
+{
+    if (_userScene->getNumChildren() == 0){
+        outErrMsg("The scene is empty, there is nothing to save.");
+        return false;
+    }
+    osg::Node* node = dynamic_cast<osg::Node*>(_userScene.get());
+    if (!node){
+        outErrMsg("writeSceneToFile: could not perform the dynamic_cast. File will not be saved.");
+        return false;
+    }
+    return osgDB::writeNodeFile(*node, m_filePath);
 }
 
 Photo *RootScene::loadPhotoFromFile(const std::string &fname)
@@ -412,6 +427,16 @@ void RootScene::setUndoStack(QUndoStack *stack)
 QUndoStack *RootScene::getUndoStack() const
 {
     return _undoStack;
+}
+
+void RootScene::setFilePath(const std::string &fname)
+{
+    m_filePath = fname;
+}
+
+bool RootScene::isSetFilePath() const
+{
+    return m_filePath == ""? false : true;
 }
 
 bool RootScene::clearUserData()

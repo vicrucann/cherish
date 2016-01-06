@@ -91,21 +91,54 @@ void MainWindow::onCreateViewer(){
     subwin->show();
 }
 
+/* Check whether the current scene is empty or not
+ * If not - propose to save changes.
+ * Clear the scene graph
+*/
 void MainWindow::onFileNew()
 {
 
 }
 
+/* Check whether the current scene is empty or not
+ * If not - propose to save changes.
+ * Load the content of file into scene graph
+*/
 void MainWindow::onFileOpen()
 {
 
 }
 
+/* Take content of scene graph
+ * If scene graph does not have an associated file name:
+ * Open menu and let user to enter the name of the file
+ * under which to save the data
+ * Write content of scene graph into associated file
+ */
 void MainWindow::onFileSave()
 {
-
+    if (!m_rootScene->isSetFilePath()){
+        QString fname = QFileDialog::getSaveFileName(this, tr("Save a Scene to File"),
+                                                     QString(), tr("OSG files (*.osg *.osgt)"));
+        if (fname.isEmpty()){
+            QMessageBox::critical(this, tr("Error"), tr("Could not save file. File name variable is empty."));
+            return;
+        }
+        m_rootScene->setFilePath(fname.toStdString());
+    }
+    if (!m_rootScene->writeSceneToFile()){
+        QMessageBox::critical(this, tr("Error"), tr("Could not write scene to file"));
+        m_rootScene->setFilePath("");
+    }
+    else
+        this->setStatusTip(tr("Scene was successfully written to file"));
 }
 
+/* Take content of scene graph
+ * Open menu and let user to enter the name of the file
+ * under which to save the data
+ * Write content of scene graph into associated file
+*/
 void MainWindow::onFileSaveAs()
 {
 
