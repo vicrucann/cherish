@@ -30,7 +30,7 @@ class RootScene;
 class AddStrokeCommand : public QUndoCommand
 {
 public:
-    AddStrokeCommand(RootScene* scene, Stroke* stroke, QUndoCommand *parent = 0);
+    AddStrokeCommand(RootScene* scene, entity::Stroke* stroke, QUndoCommand *parent = 0);
     ~AddStrokeCommand();
 
     void undo() Q_DECL_OVERRIDE;
@@ -40,7 +40,7 @@ private:
     bool checkPointers() const;
 
     osg::observer_ptr<RootScene> mScene;
-    osg::ref_ptr<Stroke> mStroke;
+    osg::ref_ptr<entity::Stroke> mStroke;
     bool mValid;
 };
 

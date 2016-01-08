@@ -17,24 +17,31 @@
 
 #include "settings.h"
 #include <osg/Geometry>
+#include <osgDB/ObjectWrapper>
 
+namespace entity {
 class Stroke : public osg::Geometry {
 public:
     Stroke();
+    Stroke(const Stroke& copy, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
+
+    META_Node(entity, Stroke)
+
+    void setLines(osg::DrawArrays* lines);
+    const osg::DrawArrays* getLines() const;
+
+    inline void setColor(const osg::Vec4f& color);
+    inline const osg::Vec4f& getColor() const;
+
     void appendPoint(const float u, const float v);
     float getLength() const;
     bool isLengthy() const;
 
-    void setVertexData(osg::Vec3Array* vertices);
-    osg::Vec3Array* getVertexData() const;
-
-    void setColor(const osg::Vec4f &color);
 private:
-    osg::DrawArrays* mDrawArrayLines;
-    osg::DrawArrays* mDrawArrayPoints;
-    osg::Vec3Array* mVertexData;
-    osg::Vec4Array* mColors;
+    osg::ref_ptr<osg::DrawArrays> m_lines;
+    osg::Vec4f m_color;
 };
+}
 
 #endif // STROKE
 

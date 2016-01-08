@@ -128,7 +128,7 @@ private:
     unsigned int _idNode; // for misc entities
 
     QUndoStack* _undoStack;
-    osg::ref_ptr<Stroke> current_stroke;
+    osg::ref_ptr<entity::Stroke> current_stroke;
 
     std::string m_filePath;
 

@@ -15,34 +15,35 @@
 #include <osg/BlendFunc>
 #include <osg/BoundingSphere>
 
-Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name):
-    _switch(new osg::Switch),
-    _transform(transform),
-    _switchFrame(new osg::Switch),
-    _transformData(new osg::MatrixTransform),
-    _geodeFrame(new osg::Geode),
-    _geodeAxis(new osg::Geode),
-    _frame(new osg::Geometry),
-    _pickable(new osg::Geometry),
-    _axis(new osg::Geometry),
-    _geodeData(new osg::Geode),
+Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name)
+    : osg::Group()
+    , _switch(new osg::Switch)
+    , _transform(transform)
+    , _switchFrame(new osg::Switch)
+    , _transformData(new osg::MatrixTransform)
+    , _geodeFrame(new osg::Geode)
+    , _geodeAxis(new osg::Geode)
+    , _frame(new osg::Geometry)
+    , _pickable(new osg::Geometry)
+    , _axis(new osg::Geometry)
+    , _geodeData(new osg::Geode)
 
-    _mSwitchNormal(new osg::Switch),
-    _mGeodeNormal(new osg::Geode),
-    _mGeometryNormal(new osg::Geometry),
+    , _mSwitchNormal(new osg::Switch)
+    , _mGeodeNormal(new osg::Geode)
+    , _mGeometryNormal(new osg::Geometry)
 
-    _mVerticesFrame(new osg::Vec3Array(4)),
-    _mVerticesPickable(new osg::Vec3Array(4)),
-    _mVerticesAxis(new osg::Vec3Array(4)),
-    _mVerticesNormal(new osg::Vec3Array(2)),
+    , _mVerticesFrame(new osg::Vec3Array(4))
+    , _mVerticesPickable(new osg::Vec3Array(4))
+    , _mVerticesAxis(new osg::Vec3Array(4))
+    , _mVerticesNormal(new osg::Vec3Array(2))
 
-    _strokeCurrent(0),
-    _photoCurrent(0),
+    , _strokeCurrent(0)
+    , _photoCurrent(0)
 
-    _center(osg::Vec3f(0.f,0.f,0.f)), // moves only when strokes are introduced so that to define it as centroid
-    _normal(dureu::NORMAL),
-    _color(dureu::CANVAS_CLR_REST) // frame and pickable color
-  , _idPhoto(0)
+    , _center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
+    , _normal(dureu::NORMAL)
+    , _color(dureu::CANVAS_CLR_REST) // frame and pickable color
+    , _idPhoto(0)
 
 {
     this->transformData(_transform->getMatrix());
@@ -331,7 +332,7 @@ osg::Vec3f Canvas::getNormal() const
     return _normal;
 }
 
-Stroke *Canvas::getStrokeCurrent() const
+entity::Stroke *Canvas::getStrokeCurrent() const
 {
     return _strokeCurrent.get();
 }

@@ -5,7 +5,7 @@
 #include "settings.h"
 
 // allocate memory
-AddStrokeCommand::AddStrokeCommand(RootScene *scene, Stroke *stroke, QUndoCommand *parent)
+AddStrokeCommand::AddStrokeCommand(RootScene *scene, entity::Stroke *stroke, QUndoCommand *parent)
     : QUndoCommand(parent)
     , mScene(scene)
     , mStroke(stroke)

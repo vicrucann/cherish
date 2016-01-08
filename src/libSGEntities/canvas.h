@@ -97,7 +97,7 @@ public:
     osg::Plane getPlane() const;
     osg::Vec3f getNormal() const;
 
-    Stroke* getStrokeCurrent() const;
+    entity::Stroke* getStrokeCurrent() const;
     void finishStrokeCurrent();
 
     Photo* getPhotoCurrent() const;
@@ -128,7 +128,7 @@ private:
     osg::Vec3Array* _mVerticesAxis;
     osg::Vec3Array* _mVerticesNormal;
 
-    osg::observer_ptr<Stroke> _strokeCurrent;
+    osg::observer_ptr<entity::Stroke> _strokeCurrent;
     osg::observer_ptr<Photo> _photoCurrent;
 
     osg::Vec3f _center; // centrod of the canvas

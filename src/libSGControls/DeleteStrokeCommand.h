@@ -18,7 +18,7 @@ public:
 
 private:
     osg::observer_ptr<RootScene> mScene;
-    osg::observer_ptr<Stroke> mStroke;
+    osg::observer_ptr<entity::Stroke> mStroke;
 
 };
 

@@ -510,7 +510,7 @@ void RootScene::strokeStart()
         outErrMsg("strokeStart(): Cannot start new stroke since the pointer is not NULL");
         return;
     }
-    current_stroke = new Stroke();
+    current_stroke = new entity::Stroke();
     this->getCanvasCurrent()->getGeodeData()->addDrawable(current_stroke);
 }
 
@@ -532,8 +532,7 @@ void RootScene::strokeFinish()
 {
     if (this->strokeValid()){
         if (current_stroke->isLengthy()){
-            Stroke* stroke = new Stroke;
-            stroke->setVertexData(current_stroke->getVertexData());
+            entity::Stroke* stroke = new entity::Stroke(*current_stroke, osg::CopyOp::DEEP_COPY_ALL);
             AddStrokeCommand* cmd = new AddStrokeCommand(this, stroke);
             _undoStack->push(cmd);
         }
