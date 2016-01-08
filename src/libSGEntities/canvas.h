@@ -71,18 +71,6 @@ public:
     void setTransformPre(osg::MatrixTransform* r);
     osg::MatrixTransform* getTransform() const;
 
-    void setSwitchName(const std::string& parentName);
-    void setTransformName(const std::string& parentName);
-    void setSwitchFrameName(const std::string& parentName);
-    void setGeodeDataName(const std::string& parentName);
-    void setPhotoNames(const std::string& parentName);
-
-    std::string getSwitchName() const;
-    std::string getTransformName() const;
-    std::string getSwitchFrameName() const;
-    std::string getGeodeDataName() const;
-
-    bool addPhoto(entity::Photo* photo, const double u = 0, const double v = 0);
     void movePhoto(entity::Photo* photo, const double u, const double v, int mouse);
     void setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);

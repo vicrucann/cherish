@@ -25,5 +25,6 @@ void AddPhotoCommand::redo()
     if (!m_root->getCanvasCurrent()->getGeodeData()->addDrawable(m_photo))
         outErrMsg("Could not add photo to current canvas");
     m_root->getCanvasCurrent()->getGeodeData()->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTexture());
+    m_root->getCanvasCurrent()->updateFrame();
 }
 

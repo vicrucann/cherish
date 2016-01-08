@@ -172,69 +172,6 @@ osg::MatrixTransform *Canvas::getTransform() const
     return _transform.get();
 }
 
-void Canvas::setSwitchName(const std::string &parentName)
-{
-    _switch->setName(parentName + "Switch");
-}
-
-void Canvas::setTransformName(const std::string &parentName)
-{
-    _transform->setName(parentName + "Transform");
-}
-
-void Canvas::setSwitchFrameName(const std::string &parentName)
-{
-    _switchFrame->setName(parentName + "SwitchFrame");
-}
-
-void Canvas::setGeodeDataName(const std::string &parentName)
-{
-    _geodeData->setName(parentName + "GeodeData");
-}
-
-void Canvas::setPhotoNames(const std::string &parentName)
-{
-    // for all the photos within canvas
-    // set name of each based on parent name
-}
-
-std::string Canvas::getSwitchName() const{
-    return _switch->getName();
-}
-
-std::string Canvas::getTransformName() const{
-    return _transform->getName();
-}
-
-std::string Canvas::getSwitchFrameName() const
-{
-    return _switchFrame->getName();
-}
-
-std::string Canvas::getGeodeDataName() const{
-    return _geodeData->getName();
-}
-
-bool Canvas::addPhoto(entity::Photo *photo, const double u, const double v)
-{
-    if (!photo){
-        outErrMsg("addPhoto(): photo pointer is NULL");
-        return false;
-    }
-    if (!_geodeData.get()){
-        outErrMsg("addPhoto(): _geodeData pointer is NULL");
-        return false;
-    }
-    bool added = _geodeData->addDrawable(photo);
-    if (!added){
-        outErrMsg("addPhoto: could not add photo as a child to the _geodeData of current canvas");
-        return false;
-    }
-    _geodeData->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTexture());
-    //this->setPhotoCurrent(photo);
-    return added;
-}
-
 void Canvas::movePhoto(entity::Photo *photo, const double u, const double v, int mouse)
 {
     if (!photo){

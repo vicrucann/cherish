@@ -266,15 +266,6 @@ void RootScene::loadPhotoFromFile(const std::string &fname)
     _undoStack->push(cmd);
 }
 
-bool RootScene::addPhoto(entity::Photo* photo)
-{
-    if (!photo){
-        outErrMsg("addPhoto(): photo pointer is null, photo is not added to RootScene");
-        return false;
-    }
-    return _canvasCurrent->addPhoto(photo);
-}
-
 unsigned int RootScene::getMaxCanvasId() const {
     return _idCanvas;
 }
