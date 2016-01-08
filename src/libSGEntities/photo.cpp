@@ -5,13 +5,35 @@
 #include <osgDB/ReadFile>
 #include <osg/Image>
 
-entity::Photo::Photo(const std::string &fname)
-    : _vertices(new osg::Vec3Array)
-    , _normals(new osg::Vec3Array)
-    , _texcoords(new osg::Vec2Array)
-    , _texture(new osg::Texture2D)
-    , _width(dureu::PHOTO_MINW)
-    , _height(dureu::PHOTO_MINH)
+entity::Photo::Photo()
+    : osg::Geometry()
+    , m_texture(new osg::Texture2D)
+    , m_center(osg::Vec3f(0.f,0.f,0.f))
+    , m_width(dureu::PHOTO_MINW)
+    , m_height(dureu::PHOTO_MINH)
+{
+    osg::Vec3Array* verts = new osg::Vec3Array;
+    osg::Vec3Array* normals = new osg::Vec3Array;
+    osg::Vec2Array* texcoords = new osg::Vec2Array;
+
+    this->setVertexArray(verts);
+    this->setNormalArray(normals);
+    this->setTexCoordArray(0, texcoords);
+    this->setNormalBinding(osg::Geometry::BIND_OVERALL);
+    this->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
+}
+
+entity::Photo::Photo(const entity::Photo& photo, const osg::CopyOp& copyop)
+{
+
+}
+
+/*entity::Photo::Photo(const std::string &fname)
+    : osg::Geometry()
+    , m_texture(new osg::Texture2D)
+    , m_center(osg::Vec3f(0.f,0.f,0.f))
+    , m_width(dureu::PHOTO_MINW)
+    , m_height(dureu::PHOTO_MINH)
 {
     osg::Image* image = osgDB::readImageFile(fname);
     float aspectRatio = static_cast<float>(image->s()) / static_cast<float>(image->t());
@@ -19,36 +41,112 @@ entity::Photo::Photo(const std::string &fname)
     outLogVal("Image width", image->s());
 
     // half sizes based on aspect ratio
-    _width = 2.f * (dureu::PHOTO_MINW);
-    _height = _width * aspectRatio;
-    outLogVal("Photo(): width", _width);
-    outLogVal("Photo(): height", _height);
-    _vertices->push_back( osg::Vec3(_width/2.f, _height/2.f, 0.f) );
-    _vertices->push_back( osg::Vec3(-_width/2.f, _height/2.f, 0.f) );
-    _vertices->push_back( osg::Vec3(-_width/2.f, -_height/2.f, 0.f) );
-    _vertices->push_back( osg::Vec3(_width/2.f, -_height/2.f, 0.f) );
+    m_width = 2.f * (dureu::PHOTO_MINW);
+    m_height = m_width * aspectRatio;
+    outLogVal("Photo(): width", m_width);
+    outLogVal("Photo(): height", m_height);
 
-    _normals->push_back( dureu::NORMAL );
+    osg::Vec3Array* verts = new osg::Vec3Array;
+    verts->push_back(m_center + osg::Vec3(m_width/2.f, m_height/2.f, 0.f));
+    verts->push_back(m_center + osg::Vec3(-m_width/2.f, m_height/2.f, 0.f));
+    verts->push_back(m_center + osg::Vec3(-m_width/2.f, -m_height/2.f, 0.f));
+    verts->push_back(m_center + osg::Vec3(m_width/2.f, -m_height/2.f, 0.f));
+
+    osg::Vec3Array* normals = new osg::Vec3Array;
+    normals->push_back(dureu::NORMAL);
 
     // we use W because the image was scaled to be normalized
-    _texcoords->push_back( osg::Vec2(_width, _width) );
-    _texcoords->push_back( osg::Vec2(_width, 0.0f) );
-    _texcoords->push_back( osg::Vec2(0.0f, 0.0f) );
-    _texcoords->push_back( osg::Vec2(0.0f, _width) );
+    osg::Vec2Array* texcoords = new osg::Vec2Array;
+    texcoords->push_back( osg::Vec2(m_width, m_width) );
+    texcoords->push_back( osg::Vec2(m_width, 0.0f) );
+    texcoords->push_back( osg::Vec2(0.0f, 0.0f) );
+    texcoords->push_back( osg::Vec2(0.0f, m_width) );
 
-    this->setVertexArray(_vertices.get());
-    this->setNormalArray(_normals.get());
+    this->setVertexArray(verts);
+    this->setNormalArray(normals);
+    this->setTexCoordArray(0, texcoords);
     this->setNormalBinding(osg::Geometry::BIND_OVERALL);
-    this->setTexCoordArray(0, _texcoords.get());
     this->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
 
-    _texture->setImage(image);
+    m_texture->setImage(image);
+    this->setFrameColor(dureu::PHOTO_CLR_REST);
+}*/
+
+void entity::Photo::setTexture(osg::Texture2D* texture)
+{
+    m_texture = texture;
+}
+
+const osg::Texture2D*entity::Photo::getTexture() const
+{
+    return m_texture.get();
+}
+
+void entity::Photo::setWidth(float w)
+{
+    m_width = w;
+}
+
+float entity::Photo::getWidth() const
+{
+    return m_width;
+}
+
+void entity::Photo::setHeight(float h)
+{
+    m_height = h;
+}
+
+float entity::Photo::getHeight() const
+{
+    return m_height;
+}
+
+void entity::Photo::setCenter(const osg::Vec3f& c)
+{
+    m_center = c;
+}
+
+const osg::Vec3f entity::Photo::getCenter() const
+{
+    return m_center;
+}
+
+void entity::Photo::loadImage(const std::string& fname)
+{
+    osg::Image* image = osgDB::readImageFile(fname);
+    float aspectRatio = static_cast<float>(image->s()) / static_cast<float>(image->t());
+    outLogVal("Image height", image->t());
+    outLogVal("Image width", image->s());
+
+    // half sizes based on aspect ratio
+    m_width = 2.f * (dureu::PHOTO_MINW);
+    m_height = m_width * aspectRatio;
+    outLogVal("Photo(): width", m_width);
+    outLogVal("Photo(): height", m_height);
+
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    verts->push_back(m_center + osg::Vec3(m_width/2.f, m_height/2.f, 0.f));
+    verts->push_back(m_center + osg::Vec3(-m_width/2.f, m_height/2.f, 0.f));
+    verts->push_back(m_center + osg::Vec3(-m_width/2.f, -m_height/2.f, 0.f));
+    verts->push_back(m_center + osg::Vec3(m_width/2.f, -m_height/2.f, 0.f));
+
+    osg::Vec3Array* normals = static_cast<osg::Vec3Array*>(this->getNormalArray());
+    normals->push_back(dureu::NORMAL);
+
+    osg::Vec2Array* texcoords = static_cast<osg::Vec2Array*>(this->getTexCoordArray(0));
+    texcoords->push_back( osg::Vec2(m_width, m_width) );
+    texcoords->push_back( osg::Vec2(m_width, 0.0f) );
+    texcoords->push_back( osg::Vec2(0.0f, 0.0f) );
+    texcoords->push_back( osg::Vec2(0.0f, m_width) );
+
+    m_texture->setImage(image);
     this->setFrameColor(dureu::PHOTO_CLR_REST);
 }
 
-osg::Texture2D* entity::Photo::getTexture() const
+osg::StateAttribute* entity::Photo::getTextureAsAttribute() const
 {
-    return _texture.get();
+    return dynamic_cast<osg::StateAttribute*>(m_texture.get());
 }
 
 void entity::Photo::setFrameColor(const osg::Vec4 color)
@@ -71,11 +169,25 @@ void entity::Photo::setModeEdit(bool edit)
 
 void entity::Photo::move(const double u, const double v)
 {
-    osg::Vec3f center = osg::Vec3f(u,v,0.f);
-    (*_vertices)[0] = center + osg::Vec3(_width/2.f, _height/2.f, 0.f);
-    (*_vertices)[1] = center + osg::Vec3(-_width/2.f, _height/2.f, 0.f);
-    (*_vertices)[2] = center + osg::Vec3(-_width/2.f, -_height/2.f, 0.f);
-    (*_vertices)[3] = center + osg::Vec3(_width/2.f, -_height/2.f, 0.f);
+    m_center = osg::Vec3f(u,v,0.f);
+
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    (*verts)[0] = m_center + osg::Vec3(m_width/2.f, m_height/2.f, 0.f);
+    (*verts)[1] = m_center + osg::Vec3(-m_width/2.f, m_height/2.f, 0.f);
+    (*verts)[2] = m_center + osg::Vec3(-m_width/2.f, -m_height/2.f, 0.f);
+    (*verts)[3] = m_center + osg::Vec3(m_width/2.f, -m_height/2.f, 0.f);
+
     this->dirtyDisplayList();
     this->dirtyBound();
+}
+
+REGISTER_OBJECT_WRAPPER(Photo_Wrapper
+                        , new entity::Photo
+                        , entity::Photo
+                        , "osg::Object osg::Geometry entity::Photo")
+{
+    ADD_OBJECT_SERIALIZER(Texture, osg::Texture2D, NULL);
+    //ADD_VEC3F_SERIALIZER(Center, osg::Vec3f());
+    ADD_FLOAT_SERIALIZER(Width, 0.f);
+    ADD_FLOAT_SERIALIZER(Height, 0.f);
 }
