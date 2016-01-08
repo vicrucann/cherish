@@ -79,14 +79,11 @@ void entity::Stroke::appendPoint(const float u, const float v)
 
     verts->push_back(osg::Vec3f(u,v,0.f));
     unsigned int sz = verts->size();
-    /*mVertexData->push_back(osg::Vec3f(u,v,0.f));
-    unsigned int sz = mVertexData->size();*/
+
     m_lines->setFirst(0);
     m_lines->setCount(sz);
 
     verts->dirty();
-    //mVertexData->dirty();
-
     this->dirtyBound();
     // read more: http://forum.openscenegraph.org/viewtopic.php?t=2190&postdays=0&postorder=asc&start=15
 }
