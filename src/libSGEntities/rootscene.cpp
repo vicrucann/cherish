@@ -21,6 +21,7 @@
 #include "findnodevisitor.h"
 #include "AddStrokeCommand.h"
 #include "AddCanvasCommand.h"
+#include "AddPhotoCommand.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
     : _userScene(new osg::Group)
@@ -253,21 +254,16 @@ bool RootScene::writeSceneToFile() const
     return osgDB::writeNodeFile(*node, m_filePath);
 }
 
-entity::Photo *RootScene::loadPhotoFromFile(const std::string &fname)
+void RootScene::loadPhotoFromFile(const std::string &fname)
 {
     outLogMsg("loadPhotoFromFile()");
-    entity::Photo* photo = new entity::Photo(fname);
-    if (!photo){
-        outErrMsg("loadPhotoFromFile(): File could not be loaded");
-        outLogVal("file name", fname);
-        return 0;
+    if (!_undoStack){
+        fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
     }
-    if (!_canvasCurrent.get()){
-        outErrMsg("There is not active canvas to load the photo to. Create new canvas first");
-        return 0;
-    }
-    this->addPhoto(photo);
-    return photo;
+    AddPhotoCommand* cmd = new AddPhotoCommand(this, fname);
+    _undoStack->push(cmd);
 }
 
 bool RootScene::addPhoto(entity::Photo* photo)

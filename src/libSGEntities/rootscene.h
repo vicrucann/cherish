@@ -75,7 +75,7 @@ public:
     bool loadSceneFromFile();
     bool writeSceneToFile(const std::string& fname) const;
     bool writeSceneToFile() const;
-    entity::Photo* loadPhotoFromFile(const std::string& fname);
+    void loadPhotoFromFile(const std::string& fname);
     bool addPhoto(entity::Photo *photo);
 
     unsigned int getMaxCanvasId() const;

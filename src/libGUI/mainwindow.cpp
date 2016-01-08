@@ -163,10 +163,11 @@ void MainWindow::onFileImage()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load an Image File"), QString(),
             tr("Image Files (*.bmp)"));
     if (!fileName.isEmpty()) {
-        if (!m_rootScene->loadPhotoFromFile(fileName.toStdString())){
+        m_rootScene->loadPhotoFromFile(fileName.toStdString());
+       /* if (!m_rootScene->loadPhotoFromFile(fileName.toStdString())){
             QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
             return;
-        }
+        }*/
     }
 }
 
