@@ -215,7 +215,7 @@ std::string Canvas::getGeodeDataName() const{
     return _geodeData->getName();
 }
 
-bool Canvas::addPhoto(Photo *photo, const double u, const double v)
+bool Canvas::addPhoto(entity::Photo *photo, const double u, const double v)
 {
     if (!photo){
         outErrMsg("addPhoto(): photo pointer is NULL");
@@ -235,7 +235,7 @@ bool Canvas::addPhoto(Photo *photo, const double u, const double v)
     return added;
 }
 
-void Canvas::movePhoto(Photo *photo, const double u, const double v, int mouse)
+void Canvas::movePhoto(entity::Photo *photo, const double u, const double v, int mouse)
 {
     if (!photo){
         outErrMsg("movePhoto(): photo pointer is NULL");
@@ -254,7 +254,7 @@ void Canvas::movePhoto(Photo *photo, const double u, const double v, int mouse)
     }
 }
 
-void Canvas::setPhotoCurrent(Photo *photo)
+void Canvas::setPhotoCurrent(entity::Photo *photo)
 {
     if (_photoCurrent.get() == photo)
         return;
@@ -346,7 +346,7 @@ void Canvas::finishStrokeCurrent()
     //this->updateData();
 }
 
-Photo *Canvas::getPhotoCurrent() const
+entity::Photo* Canvas::getPhotoCurrent() const
 {
     return _photoCurrent.get();
 }

@@ -18,8 +18,8 @@ set (libSGEntities_SRCS
     rootscene.cpp
     Stroke.h
     Stroke.cpp
-    photo.h
-    photo.cpp
+    Photo.h
+    Photo.cpp
 )
 
 add_library(libSGEntities

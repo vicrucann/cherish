@@ -17,7 +17,7 @@
 
 #include "settings.h"
 #include "canvas.h"
-#include "photo.h"
+#include "Photo.h"
 #include "rootscene.h"
 
 class EventHandler : public osgGA::GUIEventHandler {
@@ -41,7 +41,7 @@ public:
 
 protected:
     Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
-    Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
+    entity::Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
 
     bool getLineIntersections(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                               osgUtil::LineSegmentIntersector::Intersection& result);

@@ -17,7 +17,7 @@
 #include "axes.h"
 #include "settings.h"
 #include "canvas.h"
-#include "photo.h"
+#include "Photo.h"
 #include "findnodevisitor.h"
 #include "AddStrokeCommand.h"
 #include "AddCanvasCommand.h"
@@ -253,10 +253,10 @@ bool RootScene::writeSceneToFile() const
     return osgDB::writeNodeFile(*node, m_filePath);
 }
 
-Photo *RootScene::loadPhotoFromFile(const std::string &fname)
+entity::Photo *RootScene::loadPhotoFromFile(const std::string &fname)
 {
     outLogMsg("loadPhotoFromFile()");
-    Photo* photo = new Photo(fname);
+    entity::Photo* photo = new entity::Photo(fname);
     if (!photo){
         outErrMsg("loadPhotoFromFile(): File could not be loaded");
         outLogVal("file name", fname);
@@ -270,7 +270,7 @@ Photo *RootScene::loadPhotoFromFile(const std::string &fname)
     return photo;
 }
 
-bool RootScene::addPhoto(Photo* photo)
+bool RootScene::addPhoto(entity::Photo* photo)
 {
     if (!photo){
         outErrMsg("addPhoto(): photo pointer is null, photo is not added to RootScene");
@@ -352,7 +352,7 @@ bool RootScene::setCanvasCurrent(Canvas *cnv)
             _canvasPrevious = NULL;
         }
         _canvasCurrent->setColor(dureu::CANVAS_CLR_PREVIOUS);
-        Photo* photo = _canvasCurrent->getPhotoCurrent();
+        entity::Photo* photo = _canvasCurrent->getPhotoCurrent();
         if (photo){
             _canvasCurrent->setPhotoCurrent(false);
         }

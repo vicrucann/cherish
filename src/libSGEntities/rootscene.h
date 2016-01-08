@@ -37,7 +37,7 @@
 
 #include "axes.h"
 #include "canvas.h"
-#include "photo.h"
+#include "Photo.h"
 #include "Stroke.h"
 #include "settings.h"
 #include "../libSGUtils/observescenecallback.h"
@@ -75,8 +75,8 @@ public:
     bool loadSceneFromFile();
     bool writeSceneToFile(const std::string& fname) const;
     bool writeSceneToFile() const;
-    Photo* loadPhotoFromFile(const std::string& fname);
-    bool addPhoto(Photo *photo);
+    entity::Photo* loadPhotoFromFile(const std::string& fname);
+    bool addPhoto(entity::Photo *photo);
 
     unsigned int getMaxCanvasId() const;
     unsigned int getMaxNodeId() const;

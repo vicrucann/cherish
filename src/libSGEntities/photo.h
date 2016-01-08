@@ -9,7 +9,9 @@
 #include <osg/Geometry>
 #include <osg/ref_ptr>
 #include <osg/Texture2D>
+#include <osgDB/ObjectWrapper>
 
+namespace entity {
 class Photo: public osg::Geometry{
 public:
     Photo(const std::string& fname);
@@ -25,6 +27,7 @@ private:
 
     float _width, _height;
 };
+}
 
 #endif // PHOTO
 

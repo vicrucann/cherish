@@ -43,7 +43,7 @@
 
 #include "settings.h"
 #include "Stroke.h"
-#include "photo.h"
+#include "Photo.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
@@ -82,9 +82,9 @@ public:
     std::string getSwitchFrameName() const;
     std::string getGeodeDataName() const;
 
-    bool addPhoto(Photo* photo, const double u = 0, const double v = 0);
-    void movePhoto(Photo* photo, const double u, const double v, int mouse);
-    void setPhotoCurrent(Photo* photo);
+    bool addPhoto(entity::Photo* photo, const double u = 0, const double v = 0);
+    void movePhoto(entity::Photo* photo, const double u, const double v, int mouse);
+    void setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);
 
     // recalculate frame's geometry based on strokes
@@ -100,7 +100,7 @@ public:
     entity::Stroke* getStrokeCurrent() const;
     void finishStrokeCurrent();
 
-    Photo* getPhotoCurrent() const;
+    entity::Photo* getPhotoCurrent() const;
 
     osg::Geode* getGeodeData() const;
 
@@ -129,7 +129,7 @@ private:
     osg::Vec3Array* _mVerticesNormal;
 
     osg::observer_ptr<entity::Stroke> _strokeCurrent;
-    osg::observer_ptr<Photo> _photoCurrent;
+    osg::observer_ptr<entity::Photo> _photoCurrent;
 
     osg::Vec3f _center; // centrod of the canvas
     osg::Vec3f _normal;

@@ -1,11 +1,11 @@
-#include "photo.h"
+#include "Photo.h"
 #include "settings.h"
 
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
 #include <osg/Image>
 
-Photo::Photo(const std::string &fname)
+entity::Photo::Photo(const std::string &fname)
     : _vertices(new osg::Vec3Array)
     , _normals(new osg::Vec3Array)
     , _texcoords(new osg::Vec2Array)
@@ -46,12 +46,12 @@ Photo::Photo(const std::string &fname)
     this->setFrameColor(dureu::PHOTO_CLR_REST);
 }
 
-osg::Texture2D *Photo::getTexture() const
+osg::Texture2D* entity::Photo::getTexture() const
 {
     return _texture.get();
 }
 
-void Photo::setFrameColor(const osg::Vec4 color)
+void entity::Photo::setFrameColor(const osg::Vec4 color)
 {
     osg::Vec4Array* colors = new osg::Vec4Array(4);
     (*colors)[0] = color;
@@ -61,7 +61,7 @@ void Photo::setFrameColor(const osg::Vec4 color)
     this->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
 }
 
-void Photo::setModeEdit(bool edit)
+void entity::Photo::setModeEdit(bool edit)
 {
     if (edit)
         this->setFrameColor(dureu::CANVAS_CLR_EDIT);
@@ -69,7 +69,7 @@ void Photo::setModeEdit(bool edit)
         this->setFrameColor(dureu::PHOTO_CLR_REST);
 }
 
-void Photo::move(const double u, const double v)
+void entity::Photo::move(const double u, const double v)
 {
     osg::Vec3f center = osg::Vec3f(u,v,0.f);
     (*_vertices)[0] = center + osg::Vec3(_width/2.f, _height/2.f, 0.f);

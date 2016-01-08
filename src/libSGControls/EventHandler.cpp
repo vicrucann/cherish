@@ -309,7 +309,7 @@ void EventHandler::doEditRotate(int x, int y, int mouse)
 // Change photo colors when pushed (edit color) and released (no color)
 void EventHandler::doEditMove(const osgUtil::LineSegmentIntersector::Intersection &result, double u, double v, int mouse)
 {
-    Photo* photo = getPhoto(result);
+    entity::Photo* photo = getPhoto(result);
     if (!photo){
         std::cerr << "doEditMove(): could not dynamic_cast<Photo*>" << std::endl;
         return;
@@ -327,9 +327,9 @@ Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersect
     return dynamic_cast<Canvas*>(result.nodePath.at(mScene->getCanvasLevel()));
 }
 
-Photo *EventHandler::getPhoto(const osgUtil::LineSegmentIntersector::Intersection &result)
+entity::Photo *EventHandler::getPhoto(const osgUtil::LineSegmentIntersector::Intersection &result)
 {
-    return dynamic_cast<Photo*>(result.drawable.get());
+    return dynamic_cast<entity::Photo*>(result.drawable.get());
 }
 
 bool EventHandler::getLineIntersections(const osgGA::GUIEventAdapter &ea,
