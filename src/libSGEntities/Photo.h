@@ -30,7 +30,7 @@ public:
     float getHeight() const;
 
     void setCenter(const osg::Vec3f& c);
-    const osg::Vec3f getCenter() const;
+    const osg::Vec3f& getCenter() const;
 
     void loadImage(const std::string& fname);
     osg::StateAttribute* getTextureAsAttribute() const;

@@ -3,8 +3,9 @@
 AddPhotoCommand::AddPhotoCommand(RootScene* scene, const std::string& name, QUndoCommand* parent)
     : QUndoCommand(parent)
     , m_root(scene)
-    , m_photo(new entity::Photo(name))
+    , m_photo(new entity::Photo)
 {
+    m_photo->loadImage(name);
     this->setText(QObject::tr("Add photo to %1")
                   .arg(QString(m_root->getCanvasCurrent()->getName().c_str())));
 }
