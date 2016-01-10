@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <iostream>
 
-#include "canvas.h"
+#include "Canvas.h"
 #include "settings.h"
 #include "Stroke.h"
 

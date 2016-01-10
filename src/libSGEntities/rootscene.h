@@ -36,7 +36,7 @@
 #include <osg/Matrix>
 
 #include "axes.h"
-#include "canvas.h"
+#include "Canvas.h"
 #include "Photo.h"
 #include "Stroke.h"
 #include "settings.h"

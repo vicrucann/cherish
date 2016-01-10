@@ -22,7 +22,7 @@
 #include <osg/observer_ptr>
 
 #include "rootscene.h"
-#include "canvas.h"
+#include "Canvas.h"
 #include "Stroke.h"
 
 class RootScene;

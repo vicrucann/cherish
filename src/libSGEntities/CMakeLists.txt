@@ -10,8 +10,8 @@ include_directories(
 )
 
 set (libSGEntities_SRCS
-    canvas.h
-    canvas.cpp
+    Canvas.h
+    Canvas.cpp
     axes.h
     axes.cpp
     rootscene.h

@@ -16,7 +16,7 @@
 #include "rootscene.h"
 #include "axes.h"
 #include "settings.h"
-#include "canvas.h"
+#include "Canvas.h"
 #include "Photo.h"
 #include "findnodevisitor.h"
 #include "AddStrokeCommand.h"

@@ -16,7 +16,7 @@
 #include <osg/observer_ptr>
 
 #include "settings.h"
-#include "canvas.h"
+#include "Canvas.h"
 #include "Photo.h"
 #include "rootscene.h"
 

@@ -8,7 +8,7 @@
 #include <osg/MatrixTransform>
 
 #include "rootscene.h"
-#include "canvas.h"
+#include "Canvas.h"
 
 class RootScene;
 

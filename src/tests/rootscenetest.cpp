@@ -1,5 +1,5 @@
 #include "rootscenetest.h"
-#include "canvas.h"
+#include "Canvas.h"
 #include "settings.h"
 
 #include <QtTest>
