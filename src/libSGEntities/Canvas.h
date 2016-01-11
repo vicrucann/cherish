@@ -35,7 +35,8 @@ class Canvas : public osg::Group {
 public:
     Canvas();
     Canvas(const Canvas& cnv, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
-    Canvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
+
+    META_Node(entity, Canvas)
 
     void setMatrixRotation(const osg::Matrix& R);
     const osg::Matrix& getMatrixRotation() const;
@@ -43,8 +44,6 @@ public:
     void setMatrixTranslation(const osg::Matrix& T);
     const osg::Matrix& getMatrixTranslation() const;
 
-    void setTransform(osg::MatrixTransform* t);
-    const osg::MatrixTransform* getTransform() const;
     osg::MatrixTransform* getTransform();
 
     void setSwitch(osg::Switch* sw);
@@ -58,6 +57,9 @@ public:
 
     void setAxis(osg::Geometry* geom);
     const osg::Geometry* getAxis() const;
+
+    void setNorm(osg::Geometry* n);
+    const osg::Geometry* getNorm() const;
 
     void setGeodeData(osg::Geode* geode);
     const osg::Geode* getGeodeData() const;
@@ -77,9 +79,7 @@ public:
     void setVisibilityLocalAxis(bool vis);
     bool getVisibilityLocalAxis() const;
 
-    void setTransformPost(osg::MatrixTransform* t);
     void setTransformPost(const osg::Matrix& m);
-    void setTransformPre(osg::MatrixTransform* r);
 
     void movePhoto(entity::Photo* photo, const double u, const double v, int mouse);
     void setPhotoCurrent(entity::Photo* photo);
@@ -92,6 +92,7 @@ public:
     void setModeOffset(bool on); // changes certain colors, shows or hides normal
 
     osg::Plane getPlane() const;
+    osg::MatrixTransform* getMatrixTransform() const;
 
     entity::Stroke* getStrokeCurrent() const;
     entity::Photo* getPhotoCurrent() const;
