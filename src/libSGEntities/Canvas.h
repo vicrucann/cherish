@@ -35,7 +35,6 @@ class Canvas : public osg::Group {
 public:
     Canvas();
     Canvas(const Canvas& cnv, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
-    Canvas(osg::MatrixTransform *transform, const std::string& name);
     Canvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
 
     void setTransform(osg::MatrixTransform* t);

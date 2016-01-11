@@ -2,17 +2,6 @@
 
 #include <QObject>
 
-AddCanvasCommand::AddCanvasCommand(RootScene *scene, osg::MatrixTransform *transform, const std::string &name, QUndoCommand *parent)
-    : QUndoCommand(parent)
-    , m_scene(scene)
-    , m_canvas(new entity::Canvas(transform,name))
-{
-    //m_canvas->setName(name);
-    //m_canvas->setTransform(transform);
-    this->setText(QObject::tr("Add Canvas with name %1")
-                  .arg(QString(name.c_str())));
-}
-
 AddCanvasCommand::AddCanvasCommand(RootScene* scene, const osg::Matrix& R, const osg::Matrix& T, const std::string& name, QUndoCommand* parent)
     : QUndoCommand(parent)
     , m_scene(scene)

@@ -168,22 +168,6 @@ void RootScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std:
     _undoStack->push(cmd);
 }
 
-void RootScene::addCanvas(osg::MatrixTransform *transform)
-{
-    this->addCanvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
-}
-
-void RootScene::addCanvas(osg::MatrixTransform *transform, const std::string &name)
-{
-    if (!_undoStack){
-        fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
-                 "Restart the program to ensure undo stack initialization.");
-        return;
-    }
-    AddCanvasCommand* cmd = new AddCanvasCommand(this, transform, name);
-    _undoStack->push(cmd);
-}
-
 bool RootScene::loadSceneFromFile(const std::string& fname){
     outLogVal("loadSceneFromFile", fname);
     osg::ref_ptr<osg::Group> userScene = dynamic_cast<osg::Group*>(osgDB::readNodeFile(fname));
@@ -232,13 +216,14 @@ bool RootScene::loadSceneFromFile()
             outErrMsg("loadSceneFromFile: could not dynamic_cast to Canvas*.");
             return false;
         }
-        osg::MatrixTransform* t = cnv->getTransform();
+        outErrMsg("loadSceneFromFile: have to uncomment the code");
+        /*osg::MatrixTransform* t = cnv->getTransform();
         AddCanvasCommand* cmd = new AddCanvasCommand(this, t, this->getCanvasName());
         if (!cmd){
             outErrMsg("loadSceneFromFile: could not create AddCanvasCommand.");
             return false;
         }
-        _undoStack->push(cmd);
+        _undoStack->push(cmd);*/
     }
     userScene = 0;
     return true;
