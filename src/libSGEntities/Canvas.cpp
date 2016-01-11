@@ -15,7 +15,7 @@
 #include <osg/BlendFunc>
 #include <osg/BoundingSphere>
 
-Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name)
+entity::Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name)
     : osg::Group()
     , _switch(new osg::Switch)
     , _transform(transform)
@@ -42,13 +42,12 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name)
 
     , _center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
     , _normal(dureu::NORMAL)
-    , _color(dureu::CANVAS_CLR_REST) // frame and pickable color
-    , _idPhoto(0)
+    , m_color(dureu::CANVAS_CLR_REST) // frame and pickable color
 
 {
     this->transformData(_transform->getMatrix());
     this->setName(name);
-    this->setColor(_color);
+    this->setColor(m_color);
 
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
@@ -108,71 +107,92 @@ Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name)
     _axis->setColorArray(colorAxis, osg::Array::BIND_PER_VERTEX);
 }
 
-void Canvas::setColor(osg::Vec4f color)
+void entity::Canvas::setCenter(const osg::Vec3f &center)
+{
+    _center = center;
+}
+
+const osg::Vec3f& entity::Canvas::getCenter() const
+{
+    return _center;
+}
+
+void entity::Canvas::setNormal(const osg::Vec3f &normal)
+{
+    _normal = normal;
+}
+
+const osg::Vec3f& entity::Canvas::getNormal() const
+{
+    return _normal;
+}
+
+void entity::Canvas::setColor(const osg::Vec4f &color)
 {
     if (color == dureu::CANVAS_CLR_CURRENT) // hide the axis for "rest" canvases
         _switchFrame->setChildValue(_geodeAxis, true);
     else
         _switchFrame->setChildValue(_geodeAxis, false);
 
-    _color = color;
+    m_color = color;
     osg::Vec4Array* colors = new osg::Vec4Array(4);
-    (*colors)[0] = _color;
-    (*colors)[1] = _color;
-    (*colors)[2] = _color;
-    (*colors)[3] = _color;
+    (*colors)[0] = m_color;
+    (*colors)[1] = m_color;
+    (*colors)[2] = m_color;
+    (*colors)[3] = m_color;
     _frame->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
     _pickable->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
 }
 
-osg::Vec4f Canvas::getColor() const{
-    return _color;
+const osg::Vec4f& entity::Canvas::getColor() const
+{
+    return m_color;
 }
 
-void Canvas::setVisibility(bool vis)
+void entity::Canvas::setVisibility(bool vis)
 {
     _switch->setChildValue(_switch->getChild(0), vis);
 }
 
-bool Canvas::getVisibility() const{
+bool entity::Canvas::getVisibility() const{
     return _switch->getChildValue(_switch->getChild(0));
 }
 
-void Canvas::setVisibilityLocalAxis(bool vis)
+void entity::Canvas::setVisibilityLocalAxis(bool vis)
 {
     _switchFrame->setChildValue(_geodeAxis, vis);
 }
 
-bool Canvas::getVisibilityLocalAxis() const
+bool entity::Canvas::getVisibilityLocalAxis() const
 {
     return _switchFrame->getChildValue(_geodeAxis);
 }
 
-void Canvas::setTransformPost(osg::MatrixTransform *t){
+void entity::Canvas::setTransformPost(osg::MatrixTransform *t){
     osg::Matrix matrix = t->getMatrix();
     _transform->postMult(matrix);
     this->transformData(matrix);
 }
 
-void Canvas::setTransformPost(const osg::Matrix &m)
+void entity::Canvas::setTransformPost(const osg::Matrix &m)
 {
     _transform->postMult(m);
     this->transformData(m);
 }
 
-void Canvas::setTransformPre(osg::MatrixTransform *r)
+void entity::Canvas::setTransformPre(osg::MatrixTransform *r)
 {
     osg::Matrix matrix = r->getMatrix();
     _transform->preMult(matrix);
     this->transformData(matrix);
 }
 
-osg::MatrixTransform *Canvas::getTransform() const
+osg::MatrixTransform* entity::Canvas::getTransform() const
 {
     return _transform.get();
 }
 
-void Canvas::movePhoto(entity::Photo *photo, const double u, const double v, int mouse)
+void entity::Canvas::movePhoto(entity::Photo *photo, const double u, const double v, int mouse)
 {
     if (!photo){
         outErrMsg("movePhoto(): photo pointer is NULL");
@@ -191,7 +211,7 @@ void Canvas::movePhoto(entity::Photo *photo, const double u, const double v, int
     }
 }
 
-void Canvas::setPhotoCurrent(entity::Photo *photo)
+void entity::Canvas::setPhotoCurrent(entity::Photo *photo)
 {
     if (_photoCurrent.get() == photo)
         return;
@@ -202,7 +222,7 @@ void Canvas::setPhotoCurrent(entity::Photo *photo)
 }
 
 // changes photo frame color based on bool varialbe
-void Canvas::setPhotoCurrent(bool current)
+void entity::Canvas::setPhotoCurrent(bool current)
 {
     if (!current)
         _photoCurrent->setFrameColor(dureu::PHOTO_CLR_REST);
@@ -210,7 +230,7 @@ void Canvas::setPhotoCurrent(bool current)
         _photoCurrent->setFrameColor(dureu::PHOTO_CLR_SELECTED);
 }
 
-void Canvas::updateFrame()
+void entity::Canvas::updateFrame()
 {
     osg::BoundingBox bb = _geodeData->getBoundingBox();
     assert(bb.valid());
@@ -226,7 +246,7 @@ void Canvas::updateFrame()
 // we do not want to update data during certain operations, such as
 // moving photo within the canvas, or adding a stroke to a canvas
 // updateData is called on release button for the mentioned cases
-void Canvas::updateData()
+void entity::Canvas::updateData()
 {
     osg::BoundingBox bb = _geodeData->getBoundingBox();
     assert(bb.valid());
@@ -238,7 +258,7 @@ void Canvas::updateData()
     this->transformData(mat);
 }
 
-void Canvas::setModeOffset(bool on)
+void entity::Canvas::setModeOffset(bool on)
 {
     if (on){
         std::cout << "setModeOffset(): ON - " << on << std::endl;
@@ -253,28 +273,18 @@ void Canvas::setModeOffset(bool on)
     _mSwitchNormal->setChildValue(_mGeodeNormal, on);
 }
 
-osg::Vec3f Canvas::getCenter() const
-{
-    return _center;
-}
-
-osg::Plane Canvas::getPlane() const
+osg::Plane entity::Canvas::getPlane() const
 {
     osg::Plane plane(_normal, _center);
     return plane;
 }
 
-osg::Vec3f Canvas::getNormal() const
-{
-    return _normal;
-}
-
-entity::Stroke *Canvas::getStrokeCurrent() const
+entity::Stroke* entity::Canvas::getStrokeCurrent() const
 {
     return _strokeCurrent.get();
 }
 
-void Canvas::finishStrokeCurrent()
+void entity::Canvas::finishStrokeCurrent()
 {
     assert(_strokeCurrent.get());
     _strokeCurrent = 0;
@@ -283,19 +293,23 @@ void Canvas::finishStrokeCurrent()
     //this->updateData();
 }
 
-entity::Photo* Canvas::getPhotoCurrent() const
+entity::Photo* entity::Canvas::getPhotoCurrent() const
 {
     return _photoCurrent.get();
 }
 
-osg::Geode *Canvas::getGeodeData() const
+osg::Geode* entity::Canvas::getGeodeData() const
 {
     return _geodeData.get();
 }
 
+entity::Canvas::~Canvas()
+{
+}
+
 // to transform plane, centroid and local axis
 // must be called every time when transform node is changed
-void Canvas::transformData(const osg::Matrix &matrix)
+void entity::Canvas::transformData(const osg::Matrix &matrix)
 {
     osg::Plane plane(_normal, _center);
     _center = _center * matrix;
@@ -306,7 +320,7 @@ void Canvas::transformData(const osg::Matrix &matrix)
     assert(plane.valid());
 }
 
-void Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
+void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
 {
     assert(szX>=dureu::CANVAS_MINW && szY>=dureu::CANVAS_MINH);
 

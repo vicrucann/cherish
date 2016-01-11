@@ -247,7 +247,7 @@ void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
 }
 
 void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &result){
-    Canvas* cnv = getCanvas(result);
+    entity::Canvas* cnv = getCanvas(result);
     if (!cnv){
         std::cerr << "doPick(): could not dynamic_cast<Canvas*>" << std::endl;
         return;
@@ -259,7 +259,7 @@ void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &r
 // check nodepath to see how to go far enough so that to get canvas type
 void EventHandler::doDelete(const osgUtil::LineSegmentIntersector::Intersection &result)
 {
-    Canvas* cnv = getCanvas(result);
+    entity::Canvas* cnv = getCanvas(result);
     if (!cnv){
         std::cerr << "doDelete(): could not dynamic_cast<Canvas*>" << std::endl;
         return;
@@ -314,7 +314,7 @@ void EventHandler::doEditMove(const osgUtil::LineSegmentIntersector::Intersectio
         std::cerr << "doEditMove(): could not dynamic_cast<Photo*>" << std::endl;
         return;
     }
-    Canvas* cnv = getCanvas(result);
+    entity::Canvas* cnv = getCanvas(result);
     if (!cnv){
         std::cerr << "doEditMove(): could not dynamic_cast<Canvas*>" << std::endl;
         return;
@@ -323,8 +323,8 @@ void EventHandler::doEditMove(const osgUtil::LineSegmentIntersector::Intersectio
     mScene->getCanvasCurrent()->movePhoto(photo, u, v, mouse);
 }
 
-Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
-    return dynamic_cast<Canvas*>(result.nodePath.at(mScene->getCanvasLevel()));
+entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
+    return dynamic_cast<entity::Canvas*>(result.nodePath.at(mScene->getCanvasLevel()));
 }
 
 entity::Photo *EventHandler::getPhoto(const osgUtil::LineSegmentIntersector::Intersection &result)

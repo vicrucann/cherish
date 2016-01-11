@@ -80,18 +80,18 @@ public:
     unsigned int getMaxCanvasId() const;
     unsigned int getMaxNodeId() const;
 
-    Canvas* getCanvas(unsigned int id) const;
-    Canvas* getCanvas(const std::string& name) const;
+    entity::Canvas* getCanvas(unsigned int id) const;
+    entity::Canvas* getCanvas(const std::string& name) const;
 
     osg::Node* getNode(unsigned int id) const;
     osg::Node* getNode(const std::string& name) const;
 
     bool setNodeName(osg::Node* node, const std::string& name);
 
-    bool setCanvasCurrent(Canvas* cnv);
-    bool setCanvasPrevious(Canvas* cnv);
-    Canvas* getCanvasCurrent() const;
-    Canvas* getCanvasPrevious() const;
+    bool setCanvasCurrent(entity::Canvas* cnv);
+    bool setCanvasPrevious(entity::Canvas* cnv);
+    entity::Canvas* getCanvasCurrent() const;
+    entity::Canvas* getCanvasPrevious() const;
 
     unsigned int getCanvasLevel() const;
     unsigned int getPhotoLevel() const;
@@ -121,8 +121,8 @@ private:
     osg::ref_ptr<Axes> _axes;
     osg::ref_ptr<ObserveSceneCallback> _observer;
     osg::ref_ptr<HUDCamera> _hud;
-    osg::observer_ptr<Canvas> _canvasCurrent;
-    osg::observer_ptr<Canvas> _canvasPrevious;
+    osg::observer_ptr<entity::Canvas> _canvasCurrent;
+    osg::observer_ptr<entity::Canvas> _canvasPrevious;
     unsigned int _idCanvas;
     unsigned int _idNode; // for misc entities
 

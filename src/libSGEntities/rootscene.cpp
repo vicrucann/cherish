@@ -211,7 +211,7 @@ bool RootScene::loadSceneFromFile()
         }
     }
     for (unsigned int i=0; i<userScene->getNumChildren(); ++i){
-        Canvas* cnv = dynamic_cast<Canvas*>(userScene->getChild(i));
+        entity::Canvas* cnv = dynamic_cast<entity::Canvas*>(userScene->getChild(i));
         if (!cnv){
             outErrMsg("loadSceneFromFile: could not dynamic_cast to Canvas*.");
             return false;
@@ -274,11 +274,11 @@ unsigned int RootScene::getMaxNodeId() const{
     return _idNode;
 }
 
-Canvas *RootScene::getCanvas(unsigned int id) const {
+entity::Canvas *RootScene::getCanvas(unsigned int id) const {
     return getCanvas(getEntityName(dureu::NAME_CANVAS, id));
 }
 
-Canvas *RootScene::getCanvas(const std::string &name) const{
+entity::Canvas *RootScene::getCanvas(const std::string &name) const{
     std::cout << "getCanvas(): (string&)" << std::endl;
     FindNodeVisitor fnv(name);
     _userScene->accept(fnv);
@@ -286,7 +286,7 @@ Canvas *RootScene::getCanvas(const std::string &name) const{
         std::cerr << "getCanvas(): No entity with such name found: " << name << std::endl;
         return NULL;
     }
-    return dynamic_cast<Canvas*>(fnv.getNode());
+    return dynamic_cast<entity::Canvas*>(fnv.getNode());
 }
 
 osg::Node *RootScene::getNode(unsigned int id) const{
@@ -326,7 +326,7 @@ bool RootScene::setNodeName(osg::Node *node, const std::string &name)
     return true;
 }
 
-bool RootScene::setCanvasCurrent(Canvas *cnv)
+bool RootScene::setCanvasCurrent(entity::Canvas *cnv)
 {
     // if canvasCurr and canvasPrev are equal, search for the nearest
     // valiable candidate to assign the previous to
@@ -355,7 +355,7 @@ bool RootScene::setCanvasCurrent(Canvas *cnv)
     return true;
 }
 
-bool RootScene::setCanvasPrevious(Canvas *cnv)
+bool RootScene::setCanvasPrevious(entity::Canvas *cnv)
 {
     if (cnv == _canvasPrevious.get())
         return true;
@@ -372,11 +372,11 @@ bool RootScene::setCanvasPrevious(Canvas *cnv)
     return true;
 }
 
-Canvas *RootScene::getCanvasCurrent() const{
+entity::Canvas *RootScene::getCanvasCurrent() const{
     return _canvasCurrent.get();
 }
 
-Canvas *RootScene::getCanvasPrevious() const{
+entity::Canvas *RootScene::getCanvasPrevious() const{
     return _canvasPrevious.get();
 }
 

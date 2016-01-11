@@ -25,7 +25,7 @@ public:
 private:
 
     osg::observer_ptr<RootScene> m_scene;
-    osg::ref_ptr<Canvas> m_canvas;
+    osg::ref_ptr<entity::Canvas> m_canvas;
 };
 
 #endif // ADDCANVASCOMMAND_H

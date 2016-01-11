@@ -40,7 +40,7 @@ public:
                             double u, double v, int mouse = 1);
 
 protected:
-    Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
+    entity::Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
     entity::Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
 
     bool getLineIntersections(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,

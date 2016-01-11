@@ -5,7 +5,7 @@
 AddCanvasCommand::AddCanvasCommand(RootScene *scene, osg::MatrixTransform *transform, const std::string &name, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
-    , m_canvas(new Canvas(transform, name))
+    , m_canvas(new entity::Canvas(transform, name))
 {
     this->setText(QObject::tr("Add Canvas with name %1")
                   .arg(QString(name.c_str())));
@@ -24,7 +24,7 @@ void AddCanvasCommand::undo()
     if (m_canvas == m_scene->getCanvasPrevious() ||
             m_scene->getCanvasCurrent() == m_scene->getCanvasPrevious()){
         for (unsigned int i = 0; i < m_scene->getUserScene()->getNumChildren(); ++i){
-            Canvas* cnvi = dynamic_cast<Canvas*>( m_scene->getUserScene()->getChild(i));
+            entity::Canvas* cnvi = dynamic_cast<entity::Canvas*>( m_scene->getUserScene()->getChild(i));
             if (cnvi != NULL && cnvi != m_scene->getCanvasCurrent() && cnvi != m_canvas){
                 m_scene->setCanvasPrevious(cnvi);
                 break;
