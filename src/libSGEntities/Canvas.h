@@ -110,13 +110,9 @@ private:
     osg::ref_ptr<osg::Geometry> m_frame; // frame drawables
     osg::ref_ptr<osg::Geometry> m_pickable; // to select canvas by mouse
     osg::ref_ptr<osg::Geometry> m_axis; // local coordinate axis
+    osg::ref_ptr<osg::Geometry> m_norm;
     osg::ref_ptr<osg::Geode> m_geodeData; // keeps user canvas drawables such as strokes
     osg::ref_ptr<osg::Switch> m_switchNormal; // normal's data
-
-    osg::Vec3Array* _mVerticesFrame;
-    osg::Vec3Array* _mVerticesPickable;
-    osg::Vec3Array* _mVerticesAxis;
-    osg::Vec3Array* _mVerticesNormal;
 
     osg::observer_ptr<entity::Stroke> _strokeCurrent;
     osg::observer_ptr<entity::Photo> _photoCurrent;
