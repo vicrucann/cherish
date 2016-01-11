@@ -37,6 +37,12 @@ public:
     Canvas(const Canvas& cnv, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
     Canvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
 
+    void setMatrixRotation(const osg::Matrix& R);
+    const osg::Matrix& getMatrixRotation() const;
+
+    void setMatrixTranslation(const osg::Matrix& T);
+    const osg::Matrix& getMatrixTranslation() const;
+
     void setTransform(osg::MatrixTransform* t);
     const osg::MatrixTransform* getTransform() const;
     osg::MatrixTransform* getTransform();

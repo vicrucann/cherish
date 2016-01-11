@@ -17,9 +17,9 @@
 
 entity::Canvas::Canvas()
     : osg::Group()
-    , m_mR(osg::Matrix::identity())
+    , m_mR(osg::Matrix::rotate(0, dureu::NORMAL))
     , m_mT(osg::Matrix::translate(0,0,0))
-    , m_transform(new osg::MatrixTransform)
+    , m_transform(new osg::MatrixTransform(m_mR * m_mT))
     , m_switch(new osg::Switch)
     , m_geodeData(new osg::Geode)
     , m_frame(new osg::Geometry)
@@ -102,6 +102,7 @@ entity::Canvas::Canvas()
     m_pickable->setColorArray(colorPick, osg::Array::BIND_PER_VERTEX);
 
     m_transform->setMatrix(m_mR * m_mT);
+    outLogMsg("Identity transform");
     this->transformData(m_mR * m_mT);
     this->setColor(m_color);
     this->setVertices(m_center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
@@ -132,7 +133,7 @@ entity::Canvas::Canvas(const osg::Matrix& R, const osg::Matrix& T, const std::st
     : osg::Group()
     , m_mR(R)
     , m_mT(T)
-    , m_transform(new osg::MatrixTransform)
+    , m_transform(new osg::MatrixTransform(m_mR * m_mT))
     , m_switch(new osg::Switch)
     , m_geodeData(new osg::Geode)
     , m_frame(new osg::Geometry)
@@ -147,8 +148,6 @@ entity::Canvas::Canvas(const osg::Matrix& R, const osg::Matrix& T, const std::st
     , m_normal(dureu::NORMAL)
     , m_color(dureu::CANVAS_CLR_REST) // frame and pickable color
 {
-    m_transform->setMatrix(m_mR * m_mT);
-
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
     linewidth->setWidth(1.5);
@@ -220,6 +219,36 @@ entity::Canvas::Canvas(const osg::Matrix& R, const osg::Matrix& T, const std::st
     this->setName(name);
     this->setColor(m_color);
     this->setVertices(m_center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+}
+
+void entity::Canvas::setMatrixRotation(const osg::Matrix& R)
+{
+    outLogMsg("Pure rotation");
+    m_mR = R;
+    m_transform->setMatrix(m_mR * m_mT);
+    m_normal = dureu::NORMAL;
+    m_center = osg::Vec3(0,0,0);
+    this->transformData(m_transform->getMatrix());
+}
+
+const osg::Matrix&entity::Canvas::getMatrixRotation() const
+{
+    return m_mR;
+}
+
+void entity::Canvas::setMatrixTranslation(const osg::Matrix& T)
+{
+    outLogMsg("Pure translation");
+    m_mT = T;
+    m_transform->setMatrix(m_mR * m_mT);
+    m_normal = dureu::NORMAL;
+    m_center = osg::Vec3(0,0,0);
+    this->transformData(m_transform->getMatrix());
+}
+
+const osg::Matrix&entity::Canvas::getMatrixTranslation() const
+{
+    return m_mT;
 }
 
 void entity::Canvas::setTransform(osg::MatrixTransform* t)
