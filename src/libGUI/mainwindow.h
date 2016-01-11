@@ -79,6 +79,7 @@ private:
     GLWidget*   createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
     void        initializeActions();
     void        initializeMenus();
+    void        initializeToolbars();
 
     QDesktopWidget* m_desktop;
     QMdiArea*       m_mdiArea;

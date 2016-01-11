@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     this->setCentralWidget(m_mdiArea);
     this->initializeActions();
     this->initializeMenus();
+    this->initializeToolbars();
 }
 
 MainWindow::~MainWindow(){
@@ -512,4 +513,61 @@ void MainWindow::initializeMenus()
     submenuEI->addAction(m_actionImagePush);
     QMenu* submenuES = menuScene->addMenu("Edit Strokes");
     submenuES->addAction(m_actionStrokesPush);
+}
+
+void MainWindow::initializeToolbars()
+{
+    // File
+    QToolBar* tbFile = this->addToolBar(tr("File"));
+    tbFile->addAction(m_actionNewFile);
+    tbFile->addAction(m_actionOpenFile);
+    tbFile->addAction(m_actionSaveFile);
+    tbFile->addAction(m_actionImportImage);
+
+    // Edit
+    QToolBar* tbEdit = this->addToolBar(tr("Edit"));
+    tbEdit->addAction(m_actionUndo);
+    tbEdit->addAction(m_actionRedo);
+    tbEdit->addSeparator();
+    tbEdit->addAction(m_actionCut);
+    tbEdit->addAction(m_actionCopy);
+    tbEdit->addAction(m_actionPaste);
+    tbEdit->addAction(m_actionDelete);
+
+    // Camera navigation
+    QToolBar* tbCamera = this->addToolBar(tr("Camera"));
+    tbCamera->addAction(m_actionOrbit);
+    tbCamera->addAction(m_actionZoom);
+    tbCamera->addAction(m_actionPan);
+
+    // Input
+    QToolBar* tbInput = this->addToolBar(tr("Input"));
+    tbInput->addAction(m_actionSelect);
+    tbInput->addAction(m_actionSketch);
+    tbInput->addAction(m_actionEraser);
+    QMenu* menuNewCanvas = new QMenu();
+    menuNewCanvas->addAction(m_actionCanvasXY);
+    menuNewCanvas->addAction(m_actionCanvasYZ);
+    menuNewCanvas->addAction(m_actionCanvasXZ);
+    menuNewCanvas->addAction(m_actionCanvasClone);
+    QToolButton* tbNewCanvas = new QToolButton();
+    tbNewCanvas->setMenu(menuNewCanvas);
+    tbNewCanvas->setPopupMode(QToolButton::InstantPopup);
+    QWidgetAction* waNewCanvas = new QWidgetAction(this);
+    waNewCanvas->setDefaultWidget(tbNewCanvas);
+    tbInput->addAction(waNewCanvas);
+    tbInput->addAction(m_actionSetStandard);
+
+    // Edit entity
+    QToolBar* tbEntity = this->addToolBar(tr("Edit entity"));
+    tbEntity->addAction(m_actionCanvasOffset);
+    tbEntity->addAction(m_actionCanvasRotate);
+    tbEntity->addSeparator();
+    tbEntity->addAction(m_actionImageMove);
+    tbEntity->addAction(m_actionImageRotate);
+    tbEntity->addAction(m_actionImageScale);
+    tbEntity->addAction(m_actionImageFlip);
+    tbEntity->addAction(m_actionImagePush);
+    tbEntity->addSeparator();
+    tbEntity->addAction(m_actionStrokesPush);
 }
