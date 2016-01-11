@@ -85,6 +85,20 @@ entity::Canvas::Canvas()
     (*colorNormal)[1] = dureu::CANVAS_CLR_EDIT;
     m_norm->setColorArray(colorNormal, osg::Array::BIND_PER_VERTEX);
 
+    osg::Vec4Array* colorFrame = new osg::Vec4Array;
+    colorFrame->push_back(m_color);
+    colorFrame->push_back(m_color);
+    colorFrame->push_back(m_color);
+    colorFrame->push_back(m_color);
+    m_frame->setColorArray(colorFrame, osg::Array::BIND_PER_VERTEX);
+
+    osg::Vec4Array* colorPick = new osg::Vec4Array;
+    colorPick->push_back(m_color);
+    colorPick->push_back(m_color);
+    colorPick->push_back(m_color);
+    colorPick->push_back(m_color);
+    m_pickable->setColorArray(colorPick, osg::Array::BIND_PER_VERTEX);
+
     m_transform->setMatrix(osg::Matrix::identity());
     this->transformData(m_transform->getMatrix());
     this->setColor(m_color);
@@ -180,6 +194,20 @@ entity::Canvas::Canvas(osg::MatrixTransform *transform, const std::string &name)
     (*colorNormal)[0] = dureu::CANVAS_CLR_EDIT;
     (*colorNormal)[1] = dureu::CANVAS_CLR_EDIT;
     m_norm->setColorArray(colorNormal, osg::Array::BIND_PER_VERTEX);
+
+    osg::Vec4Array* colorFrame = new osg::Vec4Array;
+    colorFrame->push_back(m_color);
+    colorFrame->push_back(m_color);
+    colorFrame->push_back(m_color);
+    colorFrame->push_back(m_color);
+    m_frame->setColorArray(colorFrame, osg::Array::BIND_PER_VERTEX);
+
+    osg::Vec4Array* colorPick = new osg::Vec4Array;
+    colorPick->push_back(m_color);
+    colorPick->push_back(m_color);
+    colorPick->push_back(m_color);
+    colorPick->push_back(m_color);
+    m_pickable->setColorArray(colorPick, osg::Array::BIND_PER_VERTEX);
 
     this->transformData(m_transform->getMatrix());
     this->setName(name);
@@ -286,13 +314,21 @@ void entity::Canvas::setColor(const osg::Vec4f &color)
         m_switch->setChildValue(m_switch->getChild(1), false);
 
     m_color = color;
-    osg::Vec4Array* colors = new osg::Vec4Array(4);
-    (*colors)[0] = m_color;
-    (*colors)[1] = m_color;
-    (*colors)[2] = m_color;
-    (*colors)[3] = m_color;
-    m_frame->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
-    m_pickable->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
+    osg::Vec4Array* colorFrame = static_cast<osg::Vec4Array*>(m_frame->getColorArray());
+    (*colorFrame)[0] = m_color;
+    (*colorFrame)[1] = m_color;
+    (*colorFrame)[2] = m_color;
+    (*colorFrame)[3] = m_color;
+    m_frame->dirtyDisplayList();
+    m_frame->dirtyBound();
+
+    osg::Vec4Array* colorPick = static_cast<osg::Vec4Array*>(m_pickable->getColorArray());
+    (*colorPick)[0] = m_color;
+    (*colorPick)[1] = m_color;
+    (*colorPick)[2] = m_color;
+    (*colorPick)[3] = m_color;
+    m_pickable->dirtyDisplayList();
+    m_pickable->dirtyBound();
 }
 
 const osg::Vec4f& entity::Canvas::getColor() const

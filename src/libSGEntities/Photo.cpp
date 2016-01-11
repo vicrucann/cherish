@@ -141,7 +141,13 @@ void entity::Photo::loadImage(const std::string& fname)
     this->setTexCoordArray(0, texcoords);
     this->setNormalBinding(osg::Geometry::BIND_OVERALL);
     this->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
-    this->setFrameColor(dureu::PHOTO_CLR_REST);
+
+    osg::Vec4Array* colors = new osg::Vec4Array;
+    colors->push_back(dureu::PHOTO_CLR_REST);
+    colors->push_back(dureu::PHOTO_CLR_REST);
+    colors->push_back(dureu::PHOTO_CLR_REST);
+    colors->push_back(dureu::PHOTO_CLR_REST);
+    this->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
 }
 
 osg::StateAttribute* entity::Photo::getTextureAsAttribute() const
@@ -151,12 +157,14 @@ osg::StateAttribute* entity::Photo::getTextureAsAttribute() const
 
 void entity::Photo::setFrameColor(const osg::Vec4 color)
 {
-    osg::Vec4Array* colors = new osg::Vec4Array(4);
+    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
     (*colors)[0] = color;
     (*colors)[1] = color;
     (*colors)[2] = color;
     (*colors)[3] = color;
     this->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
+    this->dirtyDisplayList();
+    this->dirtyBound();
 }
 
 void entity::Photo::setModeEdit(bool edit)
