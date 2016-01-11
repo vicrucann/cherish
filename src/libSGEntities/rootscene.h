@@ -68,6 +68,8 @@ public:
     bool getHudCameraVisibility() const;
 
     void addStroke(float u, float v, dureu::EVENT event);
+    void addCanvas(const osg::Matrix& R, const osg::Matrix& T);
+    void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
     void addCanvas(osg::MatrixTransform* transform);
     void addCanvas(osg::MatrixTransform* transform, const std::string& name);
 

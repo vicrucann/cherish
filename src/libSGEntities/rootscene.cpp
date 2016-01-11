@@ -152,6 +152,22 @@ void RootScene::addStroke(float u, float v, dureu::EVENT event)
     }
 }
 
+void RootScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T)
+{
+    this->addCanvas(R,T, getEntityName(dureu::NAME_CANVAS, _idCanvas++));
+}
+
+void RootScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name)
+{
+    if (!_undoStack){
+        fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
+    }
+    AddCanvasCommand* cmd = new AddCanvasCommand(this, R, T, name);
+    _undoStack->push(cmd);
+}
+
 void RootScene::addCanvas(osg::MatrixTransform *transform)
 {
     this->addCanvas(transform, getEntityName(dureu::NAME_CANVAS, _idCanvas++));

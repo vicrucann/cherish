@@ -36,6 +36,7 @@ public:
     Canvas();
     Canvas(const Canvas& cnv, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
     Canvas(osg::MatrixTransform *transform, const std::string& name);
+    Canvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
 
     void setTransform(osg::MatrixTransform* t);
     const osg::MatrixTransform* getTransform() const;
@@ -95,6 +96,8 @@ protected:
     void transformData(const osg::Matrix& matrix);
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
 private:
+    osg::Matrix m_mR;
+    osg::Matrix m_mT;
     osg::ref_ptr<osg::MatrixTransform> m_transform; // matrix transform in 3D space
     osg::ref_ptr<osg::Switch> m_switch; // inisible or not, the whole canvas
     osg::ref_ptr<osg::Geode> m_geodeData; // keeps user canvas drawables such as strokes

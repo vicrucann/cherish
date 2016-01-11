@@ -235,37 +235,27 @@ void MainWindow::onNewCanvasClone()
 
 void MainWindow::onNewCanvasXY()
 {
-    osg::MatrixTransform* t = new osg::MatrixTransform;
-    t->setMatrix(osg::Matrix::identity());
-    m_rootScene->addCanvas(t);
+    m_rootScene->addCanvas(osg::Matrix::identity(), osg::Matrix::translate(0,0,0));
 }
 
 void MainWindow::onNewCanvasYZ()
 {
-    osg::MatrixTransform* t = new osg::MatrixTransform;
-    t->setMatrix(osg::Matrix::rotate(dureu::PI*0.5, 0, -1, 0));
-    m_rootScene->addCanvas(t);
+    m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
 }
 
 void MainWindow::onNewCanvasXZ()
 {
-    osg::MatrixTransform* t = new osg::MatrixTransform;
-    t->setMatrix(osg::Matrix::rotate(dureu::PI*0.5, -1, 0, 0));
-    m_rootScene->addCanvas(t);
+    m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, -1, 0, 0), osg::Matrix::translate(0,0,0));
 }
 
 void MainWindow::onNewCanvasStandard()
 {
-    osg::MatrixTransform* t1 = new osg::MatrixTransform;
-    t1->setMatrix(osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
-    osg::MatrixTransform* t2 = new osg::MatrixTransform;
-    t2->setMatrix(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0) * osg::Matrix::translate(0.f, 0.f, 0.f));
-    osg::MatrixTransform* t3 = new osg::MatrixTransform;
-    t3->setMatrix(osg::Matrix::rotate(-dureu::PI*0.5, 0, 1, 0) * osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
-
-    m_rootScene->addCanvas(t1);
-    m_rootScene->addCanvas(t2);
-    m_rootScene->addCanvas(t3);
+    m_rootScene->addCanvas(osg::Matrix::identity(),
+                           osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
+    m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0),
+                           osg::Matrix::translate(0.f, 0.f, 0.f));
+    m_rootScene->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 1, 0),
+                           osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
 }
 
 void MainWindow::onNewCanvasCoaxial()
