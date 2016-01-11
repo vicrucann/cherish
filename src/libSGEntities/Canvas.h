@@ -37,14 +37,12 @@ public:
     Canvas(const Canvas& cnv, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
     Canvas(osg::MatrixTransform *transform, const std::string& name);
 
+    void setTransform(osg::MatrixTransform* t);
+    const osg::MatrixTransform* getTransform() const;
+    osg::MatrixTransform* getTransform();
+
     void setSwitch(osg::Switch* sw);
     const osg::Switch* getSwitch() const;
-
-    void setSwitchFrame(osg::Switch* sw);
-    const osg::Switch* getSwitchFrame() const;
-
-    void setGeodeAxis(osg::Geode* geode);
-    const osg::Geode* getGeodeAxis() const;
 
     void setFrame(osg::Geometry* geom);
     const osg::Geometry* getFrame() const;
@@ -54,9 +52,6 @@ public:
 
     void setAxis(osg::Geometry* geom);
     const osg::Geometry* getAxis() const;
-
-    void setSwitchNormal(osg::Switch* sw);
-    const osg::Switch* getSwitchNormal() const;
 
     void setGeodeData(osg::Geode* geode);
     const osg::Geode* getGeodeData() const;
@@ -79,7 +74,6 @@ public:
     void setTransformPost(osg::MatrixTransform* t);
     void setTransformPost(const osg::Matrix& m);
     void setTransformPre(osg::MatrixTransform* r);
-    osg::MatrixTransform* getTransform() const;
 
     void movePhoto(entity::Photo* photo, const double u, const double v, int mouse);
     void setPhotoCurrent(entity::Photo* photo);
@@ -94,8 +88,6 @@ public:
     osg::Plane getPlane() const;
 
     entity::Stroke* getStrokeCurrent() const;
-    void finishStrokeCurrent();
-
     entity::Photo* getPhotoCurrent() const;
 
 protected:
@@ -103,19 +95,16 @@ protected:
     void transformData(const osg::Matrix& matrix);
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
 private:
+    osg::ref_ptr<osg::MatrixTransform> m_transform; // matrix transform in 3D space
     osg::ref_ptr<osg::Switch> m_switch; // inisible or not, the whole canvas
-    osg::ref_ptr<osg::MatrixTransform> _transform; // matrix transform in 3D space
-    osg::ref_ptr<osg::Switch> m_switchFrame; // frame, pickable, axis
-    osg::ref_ptr<osg::Geode> m_geodeAxis;
+    osg::ref_ptr<osg::Geode> m_geodeData; // keeps user canvas drawables such as strokes
     osg::ref_ptr<osg::Geometry> m_frame; // frame drawables
     osg::ref_ptr<osg::Geometry> m_pickable; // to select canvas by mouse
     osg::ref_ptr<osg::Geometry> m_axis; // local coordinate axis
     osg::ref_ptr<osg::Geometry> m_norm;
-    osg::ref_ptr<osg::Geode> m_geodeData; // keeps user canvas drawables such as strokes
-    osg::ref_ptr<osg::Switch> m_switchNormal; // normal's data
 
-    osg::observer_ptr<entity::Stroke> _strokeCurrent;
-    osg::observer_ptr<entity::Photo> _photoCurrent;
+    osg::observer_ptr<entity::Stroke> m_strokeCurrent;
+    osg::observer_ptr<entity::Photo> m_photoCurrent;
 
     osg::Vec3f m_center;
     osg::Vec3f m_normal;
