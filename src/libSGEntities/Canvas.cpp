@@ -158,7 +158,10 @@ osg::MatrixTransform* entity::Canvas::getTransform()
 
 void entity::Canvas::setSwitch(osg::Switch* sw)
 {
-    m_switch = sw;
+    assert(m_switch->getNumChildren() == sw->getNumChildren());
+    for (unsigned int i = 0; i<sw->getNumChildren(); ++i){
+        m_switch->setChildValue(m_switch->getChild(i), sw->getChildValue(sw->getChild(i)));
+    }
 }
 
 const osg::Switch* entity::Canvas::getSwitch() const
@@ -168,7 +171,12 @@ const osg::Switch* entity::Canvas::getSwitch() const
 
 void entity::Canvas::setFrame(osg::Geometry* geom)
 {
-    m_frame = geom;
+    osg::Vec3Array* v1 = static_cast<osg::Vec3Array*>(geom->getVertexArray());
+    osg::Vec3Array* v2 = static_cast<osg::Vec3Array*>(m_frame->getVertexArray());
+    assert(v1->size() == v2->size());
+    for (unsigned int i = 0; i < v2->size(); ++i)
+        (*v2)[i] = (*v1)[i];
+    v2->dirty();
 }
 
 const osg::Geometry* entity::Canvas::getFrame() const
@@ -178,7 +186,12 @@ const osg::Geometry* entity::Canvas::getFrame() const
 
 void entity::Canvas::setPickable(osg::Geometry* geom)
 {
-    m_pickable = geom;
+    osg::Vec3Array* v1 = static_cast<osg::Vec3Array*>(geom->getVertexArray());
+    osg::Vec3Array* v2 = static_cast<osg::Vec3Array*>(m_pickable->getVertexArray());
+    assert(v1->size() == v2->size());
+    for (unsigned int i = 0; i < v2->size(); ++i)
+        (*v2)[i] = (*v1)[i];
+    v2->dirty();
 }
 
 const osg::Geometry* entity::Canvas::getPickable() const
@@ -188,7 +201,13 @@ const osg::Geometry* entity::Canvas::getPickable() const
 
 void entity::Canvas::setAxis(osg::Geometry* geom)
 {
-    m_axis = geom;
+    osg::Vec3Array* v1 = static_cast<osg::Vec3Array*>(geom->getVertexArray());
+    osg::Vec3Array* v2 = static_cast<osg::Vec3Array*>(m_axis->getVertexArray());
+    assert(v1->size() == v2->size());
+    for (unsigned int i = 0; i < v2->size(); ++i)
+        (*v2)[i] = (*v1)[i];
+    v2->dirty();
+    //m_axis = geom;
 }
 
 const osg::Geometry* entity::Canvas::getAxis() const
@@ -198,6 +217,12 @@ const osg::Geometry* entity::Canvas::getAxis() const
 
 void entity::Canvas::setNorm(osg::Geometry* n)
 {
+    osg::Vec3Array* v1 = static_cast<osg::Vec3Array*>(n->getVertexArray());
+    osg::Vec3Array* v2 = static_cast<osg::Vec3Array*>(m_norm->getVertexArray());
+    assert(v1->size() == v2->size());
+    for (unsigned int i = 0; i < v2->size(); ++i)
+        (*v2)[i] = (*v1)[i];
+    v2->dirty();
     m_norm = n;
 }
 
