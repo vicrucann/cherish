@@ -101,7 +101,8 @@ entity::Canvas::Canvas()
     colorPick->push_back(m_color);
     m_pickable->setColorArray(colorPick, osg::Array::BIND_PER_VERTEX);
 
-    this->transformData(m_mR * m_mT);
+    //this->transformData(m_mR * m_mT);
+    this->updateTransforms();
     this->setColor(m_color);
     this->setVertices(m_center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
 }
@@ -130,10 +131,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
 void entity::Canvas::setMatrixRotation(const osg::Matrix& R)
 {
     m_mR = R;
-    m_transform->setMatrix(m_mR * m_mT);
-    m_normal = dureu::NORMAL;
-    m_center = osg::Vec3(0,0,0);
-    this->transformData(m_transform->getMatrix());
+    this->updateTransforms();
 }
 
 const osg::Matrix&entity::Canvas::getMatrixRotation() const
@@ -144,10 +142,7 @@ const osg::Matrix&entity::Canvas::getMatrixRotation() const
 void entity::Canvas::setMatrixTranslation(const osg::Matrix& T)
 {
     m_mT = T;
-    m_transform->setMatrix(m_mR * m_mT);
-    m_normal = dureu::NORMAL;
-    m_center = osg::Vec3(0,0,0);
-    this->transformData(m_transform->getMatrix());
+    this->updateTransforms();
 }
 
 const osg::Matrix&entity::Canvas::getMatrixTranslation() const
@@ -294,6 +289,20 @@ bool entity::Canvas::getVisibilityLocalAxis() const
     return m_switch->getChildValue(m_switch->getChild(1));
 }
 
+// translates the current params on mt matrix
+void entity::Canvas::translate(const osg::Matrix& mt)
+{
+    m_mT = m_mT * mt;
+    this->updateTransforms();
+}
+
+// rotates the current params on mr matrix
+void entity::Canvas::rotate(const osg::Matrix& mr)
+{
+    m_mR = m_mR * mr;
+    this->updateTransforms();
+}
+
 void entity::Canvas::setTransformPost(const osg::Matrix &m)
 {
     m_transform->postMult(m);
@@ -361,9 +370,11 @@ void entity::Canvas::updateData()
 
     outLogVec("_center", m_center.x(), m_center.y(), m_center.z());
     outLogVec("bb.center", bb.center().x(), bb.center().y(), bb.center().z());
-    osg::Matrix mat;
-    mat.makeTranslate(bb.center() - m_center);
-    this->transformData(mat);
+    osg::Matrix M;
+    M.makeTranslate(bb.center() - m_center);
+    m_mT = M;
+    this->updateTransforms();
+    //this->transformData(M);
 }
 
 void entity::Canvas::setModeOffset(bool on)
@@ -404,6 +415,23 @@ entity::Photo* entity::Canvas::getPhotoCurrent() const
 
 entity::Canvas::~Canvas()
 {
+}
+
+// updates internals from m_r and m_t
+void entity::Canvas::updateTransforms()
+{
+    osg::Matrix M = m_mR * m_mT;
+    m_transform->setMatrix(M);
+
+    m_normal = dureu::NORMAL;
+    m_center = osg::Vec3(0,0,0);
+    osg::Plane plane(m_normal, m_center);
+    m_center = m_center * M;
+    plane.transform(M);
+    m_normal = plane.getNormal();
+    if (!plane.valid()){
+        outErrMsg("Error while transforming internal canvas data");
+    }
 }
 
 // to transform plane, centroid and local axis

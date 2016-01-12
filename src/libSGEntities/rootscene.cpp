@@ -407,7 +407,8 @@ void RootScene::setTransformOffset(const osg::Vec3f &translate, const int mouse)
     else {
         //osg::ref_ptr<osg::MatrixTransform> T = new osg::MatrixTransform;
         //T->setMatrix(osg::Matrix::translate(translate.x(), translate.y(), translate.z()));
-        _canvasCurrent->setTransformPost(osg::Matrix::translate(translate.x(), translate.y(), translate.z()));
+        _canvasCurrent->translate(osg::Matrix::translate(translate.x(), translate.y(), translate.z()));
+        //_canvasCurrent->setTransformPost(osg::Matrix::translate(translate.x(), translate.y(), translate.z()));
     }
 }
 
@@ -425,7 +426,8 @@ void RootScene::setTransformRotate(const osg::Vec3f &normal, const int mouse)
     else {
         /*osg::ref_ptr<osg::MatrixTransform> R = new osg::MatrixTransform;
         R->setMatrix(osg::Matrix::rotate(dureu::PI/24, osg::Vec3f(0,0,1)));*/
-        _canvasCurrent->setTransformPost(osg::Matrix::rotate(dureu::PI/24, osg::Vec3f(0,0,1))); // must be fixed
+        _canvasCurrent->rotate(osg::Matrix::rotate(dureu::PI/24, osg::Vec3f(0,0,1)));
+        //_canvasCurrent->setTransformPost(osg::Matrix::rotate(dureu::PI/24, osg::Vec3f(0,0,1))); // must be fixed
         // organize transforms inside canvas so that there would be two parts:
         // M = M1*M2,
         // where Mr - accumulation of all rotate transforms

@@ -79,6 +79,8 @@ public:
     void setVisibilityLocalAxis(bool vis);
     bool getVisibilityLocalAxis() const;
 
+    void translate(const osg::Matrix& mt);
+    void rotate(const osg::Matrix& mr);
     void setTransformPost(const osg::Matrix& m);
 
     void movePhoto(entity::Photo* photo, const double u, const double v, int mouse);
@@ -99,6 +101,7 @@ public:
 
 protected:
     ~Canvas();
+    void updateTransforms();
     void transformData(const osg::Matrix& matrix);
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
 private:
