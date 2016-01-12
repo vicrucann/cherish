@@ -101,7 +101,6 @@ entity::Canvas::Canvas()
     colorPick->push_back(m_color);
     m_pickable->setColorArray(colorPick, osg::Array::BIND_PER_VERTEX);
 
-    //this->transformData(m_mR * m_mT);
     this->updateTransforms();
     this->setColor(m_color);
     this->setVertices(m_center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
@@ -303,12 +302,6 @@ void entity::Canvas::rotate(const osg::Matrix& mr)
     this->updateTransforms();
 }
 
-void entity::Canvas::setTransformPost(const osg::Matrix &m)
-{
-    m_transform->postMult(m);
-    this->transformData(m);
-}
-
 void entity::Canvas::movePhoto(entity::Photo *photo, const double u, const double v, int mouse)
 {
     if (!photo){
@@ -374,7 +367,6 @@ void entity::Canvas::updateData()
     M.makeTranslate(bb.center() - m_center);
     m_mT = M;
     this->updateTransforms();
-    //this->transformData(M);
 }
 
 void entity::Canvas::setModeOffset(bool on)
@@ -432,19 +424,6 @@ void entity::Canvas::updateTransforms()
     if (!plane.valid()){
         outErrMsg("Error while transforming internal canvas data");
     }
-}
-
-// to transform plane, centroid and local axis
-// must be called every time when transform node is changed
-void entity::Canvas::transformData(const osg::Matrix &matrix)
-{
-    osg::Plane plane(m_normal, m_center);
-    m_center = m_center * matrix;
-    plane.transform(matrix);
-    m_normal = plane.getNormal();
-    outLogVec("transformData(): Canvas center", m_center.x(),m_center.y(),m_center.z());
-    outLogVec("transformData(): Canvas normal", m_normal.x(), m_normal.y(), m_normal.z());
-    assert(plane.valid());
 }
 
 void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)

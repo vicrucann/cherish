@@ -134,7 +134,7 @@ void MainWindow::onFileSave()
 {
     if (!m_rootScene->isSetFilePath()){
         QString fname = QFileDialog::getSaveFileName(this, tr("Save a scene to file"),
-                                                     QString(), tr("OSG files (*.osg *.osgt)"));
+                                                     QString(), tr("OSG files (*.osgt)"));
         if (fname.isEmpty()){
             QMessageBox::critical(this, tr("Error"), tr("Could not save file. File name variable is empty."));
             return;
