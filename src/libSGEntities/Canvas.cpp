@@ -104,6 +104,8 @@ entity::Canvas::Canvas()
     this->updateTransforms();
     this->setColor(m_color);
     this->setVertices(m_center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+
+    outLogMsg("New Canvas ctor completed");
 }
 
 entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)

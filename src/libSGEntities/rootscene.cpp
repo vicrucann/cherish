@@ -2,6 +2,7 @@
 #include <sstream>
 #include <stdlib.h>
 #include <assert.h>
+#include <typeinfo>
 
 #include <osg/ref_ptr>
 #include <osg/Group>
@@ -24,7 +25,8 @@
 #include "AddPhotoCommand.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
-    : _userScene(new osg::Group)
+    : osg::Group()
+    , _userScene(new osg::Group)
     , _axes(new Axes)
     , _observer(new ObserveSceneCallback)
     , _hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
@@ -210,20 +212,20 @@ bool RootScene::loadSceneFromFile()
             return false;
         }
     }
+
     for (unsigned int i=0; i<userScene->getNumChildren(); ++i){
         entity::Canvas* cnv = dynamic_cast<entity::Canvas*>(userScene->getChild(i));
         if (!cnv){
             outErrMsg("loadSceneFromFile: could not dynamic_cast to Canvas*.");
             return false;
         }
-        outErrMsg("loadSceneFromFile: have to uncomment the code");
-        /*osg::MatrixTransform* t = cnv->getTransform();
-        AddCanvasCommand* cmd = new AddCanvasCommand(this, t, this->getCanvasName());
+        //_userScene->addChild(cnv);
+        AddCanvasCommand* cmd = new AddCanvasCommand(this, *cnv);
         if (!cmd){
             outErrMsg("loadSceneFromFile: could not create AddCanvasCommand.");
             return false;
         }
-        _undoStack->push(cmd);*/
+        _undoStack->push(cmd);
     }
     userScene = 0;
     return true;

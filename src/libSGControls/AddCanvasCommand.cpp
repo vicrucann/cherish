@@ -16,6 +16,15 @@ AddCanvasCommand::AddCanvasCommand(RootScene* scene, const osg::Matrix& R, const
                   .arg(QString(name.c_str())));
 }
 
+AddCanvasCommand::AddCanvasCommand(RootScene *scene, const entity::Canvas &copy, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_canvas(new entity::Canvas(copy, osg::CopyOp::DEEP_COPY_ALL))
+{
+    this->setText(QObject::tr("Add Canvas with name %1")
+                  .arg(QString(m_canvas->getName().c_str())));
+}
+
 AddCanvasCommand::~AddCanvasCommand()
 {
 
