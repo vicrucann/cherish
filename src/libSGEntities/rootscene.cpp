@@ -212,20 +212,27 @@ bool RootScene::loadSceneFromFile()
             return false;
         }
     }
+    this->insertChild(0, userScene.get());
+    _userScene = userScene.get();
+    _observer->setScenePointer(_userScene.get());
+    _userScene->addUpdateCallback(_observer.get());
 
-    for (unsigned int i=0; i<userScene->getNumChildren(); ++i){
+    _canvasCurrent = 0;
+    _canvasPrevious = 0;
+    /*for (unsigned int i=0; i<userScene->getNumChildren(); ++i){
         entity::Canvas* cnv = dynamic_cast<entity::Canvas*>(userScene->getChild(i));
         if (!cnv){
             outErrMsg("loadSceneFromFile: could not dynamic_cast to Canvas*.");
             return false;
         }
-        //_userScene->addChild(cnv);
-        AddCanvasCommand* cmd = new AddCanvasCommand(this, *cnv);
-        if (!cmd){
-            outErrMsg("loadSceneFromFile: could not create AddCanvasCommand.");
-            return false;
-        }
-        _undoStack->push(cmd);
+        //AddCanvasCommand* cmd = new AddCanvasCommand(this, *cnv);
+        //_undoStack->push(cmd);
+    }*/
+    for (unsigned int i=0; i<userScene->getNumChildren(); ++i){
+        entity::Canvas* cnv = this->getCanvas(i);
+        if (cnv)
+            cnv->setColor(dureu::CANVAS_CLR_REST);
+        this->setCanvasCurrent(cnv);
     }
     userScene = 0;
     return true;
@@ -278,7 +285,8 @@ unsigned int RootScene::getMaxNodeId() const{
 }
 
 entity::Canvas *RootScene::getCanvas(unsigned int id) const {
-    return getCanvas(getEntityName(dureu::NAME_CANVAS, id));
+    return getCanvas(_userScene->getChild(id)->getName());
+    //return getCanvas(getEntityName(dureu::NAME_CANVAS, id));
 }
 
 entity::Canvas *RootScene::getCanvas(const std::string &name) const{

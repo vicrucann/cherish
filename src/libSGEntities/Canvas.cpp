@@ -223,7 +223,7 @@ void entity::Canvas::setNorm(osg::Geometry* n)
     for (unsigned int i = 0; i < v2->size(); ++i)
         (*v2)[i] = (*v1)[i];
     v2->dirty();
-    m_norm = n;
+    //m_norm = n;
 }
 
 const osg::Geometry* entity::Canvas::getNorm() const
@@ -233,7 +233,30 @@ const osg::Geometry* entity::Canvas::getNorm() const
 
 void entity::Canvas::setGeodeData(osg::Geode* geode)
 {
-    m_geodeData = geode;
+    for (unsigned int i=0; i<geode->getNumChildren(); ++i){
+        if (geode->getChild(i)->getName() == "Stroke"){
+            Stroke* stroke = dynamic_cast<Stroke*>(geode->getDrawable(i));
+            if (!stroke){
+                outErrMsg("Could not dynamic_cast<Stroke*>");
+                return;
+            }
+            m_geodeData->addDrawable(stroke);
+        }
+        else if (geode->getChild(i)->getName() == "Photo"){
+            Photo* photo = dynamic_cast<Photo*>(geode->getDrawable(i));
+            if (!photo){
+                outErrMsg("Could not dynamic_cast<Photo*>");
+                return;
+            }
+            m_geodeData->addDrawable(photo);
+            m_geodeData->getOrCreateStateSet()->
+                    setTextureAttributeAndModes(0, photo->getTextureAsAttribute());
+            this->updateFrame();
+        }
+        else
+            outErrMsg("Setting geode data: cannot recognize the drawable type");
+    }
+    //m_geodeData = geode;
 }
 
 const osg::Geode* entity::Canvas::getGeodeData() const
@@ -458,6 +481,7 @@ void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY,
     assert(szX>=dureu::CANVAS_MINW && szY>=dureu::CANVAS_MINH);
 
     osg::Vec3Array* vFrame = static_cast<osg::Vec3Array*>(m_frame->getVertexArray());
+    assert(vFrame->size() == 4);
     (*vFrame)[0] = center + osg::Vec3(szX,szY,0.f);
     (*vFrame)[1] = center + osg::Vec3(-szX,szY,0.f);
     (*vFrame)[2] = center + osg::Vec3(-szX,-szY,0.f);
@@ -468,6 +492,7 @@ void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY,
     assert(szCr >= dureu::CANVAS_CORNER);
     osg::Vec3 p0 = (*vFrame)[0];
     osg::Vec3Array* vPick = static_cast<osg::Vec3Array*>(m_pickable->getVertexArray());
+    assert(vPick->size() == 4);
     (*vPick)[0] = p0;
     (*vPick)[1] = p0 + osg::Vec3(-szCr, 0.f, 0.f);
     (*vPick)[2] = p0 + osg::Vec3(-szCr, -szCr, 0.f);
@@ -477,6 +502,7 @@ void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY,
 
     assert(szAx>=dureu::CANVAS_AXIS);
     osg::Vec3Array* vAxis = static_cast<osg::Vec3Array*>(m_axis->getVertexArray());
+    assert(vAxis->size() == 4);
     (*vAxis)[0] = center;
     (*vAxis)[1] = center + osg::Vec3(szAx,0.f,0.f);
     (*vAxis)[2] = center;
@@ -486,6 +512,7 @@ void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY,
 
     float szN = std::max(szX,szY);
     osg::Vec3Array* vNormal = static_cast<osg::Vec3Array*>(m_norm->getVertexArray());
+    assert(vNormal->size() == 2);
     (*vNormal)[0] = center;
     (*vNormal)[1] = center + osg::Vec3f(0.f,0.f, szN);
 }

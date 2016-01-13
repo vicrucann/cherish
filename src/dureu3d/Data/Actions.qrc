@@ -3,7 +3,7 @@
         <file>scene-canvas-offset-3x.png</file>
         <file>scene-canvas-rotate-3x.png</file>
         <file>scene-eraser-3x.png</file>
-        <file>scene-image-move-24px.png</file>
+        <file>scene-image-move-3x.png</file>
         <file>scene-image-rotate-3x.png</file>
         <file>scene-image-scale-3x.png</file>
         <file>scene-newcanvas-clone-3x.png</file>
@@ -11,23 +11,23 @@
         <file>scene-newcanvas-xz-3x.png</file>
         <file>scene-newcanvas-yz-3x.png</file>
         <file>scene-push-strokes-3x.png</file>
-        <file>scene-sketch-24px.png</file>
-        <file>edit-paste-24px.png</file>
-        <file>edit-copy-24px.png</file>
-        <file>edit-cut-24px.png</file>
-        <file>file-close-24px.png</file>
+        <file>scene-sketch-3x.png</file>
+        <file>edit-paste-3x.png</file>
+        <file>edit-copy-3x.png</file>
+        <file>edit-cut-3x.png</file>
+        <file>file-close-3x.png</file>
         <file>file-exit-3x.png</file>
         <file>file-image-3x.png</file>
-        <file>file-save-24px.png</file>
-        <file>file-open-24px.png</file>
+        <file>file-save-3x.png</file>
+        <file>file-open-3x.png</file>
         <file>edit-delete-3x.png</file>
         <file>edit-undo-3x.png</file>
-        <file>edit-redo-24px.png</file>
-        <file>file-newscene-24px.png</file>
+        <file>edit-redo-3x.png</file>
+        <file>file-newscene-3x.png</file>
         <file>scene-image-push-3x.png</file>
         <file>scene-image-flip-3x.png</file>
-        <file>scene-orbit-24px.png</file>
-        <file>scene-pan-24px.png</file>
+        <file>scene-orbit-3x.png</file>
+        <file>scene-pan-3x.png</file>
         <file>scene-zoom-3x.png</file>
         <file>scene-newcanvas-coaxial-3x.png</file>
         <file>scene-newcanvas-parallel-3x.png</file>

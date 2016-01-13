@@ -12,6 +12,7 @@ entity::Photo::Photo()
     , m_width(0)
     , m_height(0)
 {
+    this->setName("Photo");
     outLogMsg("New Photo ctor complete");
 }
 

@@ -33,6 +33,7 @@ entity::Stroke::Stroke()
     this->setDataVariance(osg::Object::DYNAMIC);
     this->setUseDisplayList(false);
     this->setUseVertexBufferObjects(true);
+    this->setName("Stroke");
 
     noticeMsg("New stroke ctor complete");
 }
