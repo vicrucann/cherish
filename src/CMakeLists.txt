@@ -22,6 +22,10 @@ ENDIF()
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
+if( CMAKE_BUILD_TYPE MATCHES "^[Rr]elease$" )
+    add_definitions( -DQT_NO_DEBUG_OUTPUT )
+endif()
+
 ## Required Qt packages
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)

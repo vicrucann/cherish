@@ -35,3 +35,7 @@ target_link_libraries( ${PROJECT_NAME}
     libSGControls
     libSGUtils
 )
+
+if( CMAKE_BUILD_TYPE MATCHES "^([Dd][Ee][Bb][Uu][Gg])" )
+        set( CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY TRUE )
+endif()
