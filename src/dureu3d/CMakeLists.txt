@@ -15,7 +15,6 @@ set(DureuApplication_SRCS
 )
 
 qt5_add_resources(IMG_RSC_ADDED
-    icons/image.qrc
     Data/Actions.qrc
 )
 
