@@ -41,6 +41,8 @@ public:
 
     entity::Canvas* getCanvas(unsigned int id);
     entity::Canvas* getCanvas(const std::string& name);
+    int getCanvasLevel() const;
+    int getPhotoLevel() const;
 
     bool setCanvasCurrent(entity::Canvas* cnv);
     bool setCanvasPrevious(entity::Canvas* cnv);

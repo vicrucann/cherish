@@ -140,6 +140,16 @@ entity::Canvas* entity::UserScene::getCanvas(const std::string& name)
     return dynamic_cast<entity::Canvas*>(fnv.getNode());
 }
 
+int entity::UserScene::getCanvasLevel() const
+{
+    return 3;
+}
+
+int entity::UserScene::getPhotoLevel() const
+{
+    return this->getCanvasLevel() + 4;
+}
+
 bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
 {
     // if canvasCurr and canvasPrev are equal, search for the nearest

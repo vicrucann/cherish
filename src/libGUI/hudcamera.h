@@ -35,6 +35,7 @@ public:
         _camera->setAllowEventFocus(false);
         _camera->setProjectionMatrix(osg::Matrix::ortho2D(left,right,bottom,top));
         _camera->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+        this->setName("HUDCamera");
         //this->addTestDrawables();
     }
 

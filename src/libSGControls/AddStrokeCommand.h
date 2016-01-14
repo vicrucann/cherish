@@ -31,7 +31,6 @@ class RootScene;
 class AddStrokeCommand : public QUndoCommand
 {
 public:
-    AddStrokeCommand(RootScene* scene, entity::Stroke* stroke, QUndoCommand *parent = 0);
     AddStrokeCommand(entity::UserScene* scene, entity::Stroke* stroke, QUndoCommand *parent = 0);
     ~AddStrokeCommand();
 

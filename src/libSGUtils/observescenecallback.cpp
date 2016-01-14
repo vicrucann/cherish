@@ -9,6 +9,7 @@ ObserveSceneCallback::ObserveSceneCallback():
 {
     this->setTextProperties(osg::Vec3(dureu::HUD_TEXT_POSX, dureu::HUD_TEXT_POSY, dureu::HUD_TEXT_POSZ), dureu::HUD_TEXT_SIZE);
     _geode->addDrawable(_text.get());
+    this->setName("Observer");
 }
 
 void ObserveSceneCallback::operator ()(osg::Node *node, osg::NodeVisitor *nv)

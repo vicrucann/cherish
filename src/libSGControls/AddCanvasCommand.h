@@ -16,10 +16,6 @@ class RootScene;
 class AddCanvasCommand : public QUndoCommand
 {
 public:
-    AddCanvasCommand(RootScene* scene, const osg::Matrix& R, const osg::Matrix& T,
-                     const std::string& name, QUndoCommand* parent = 0);
-    AddCanvasCommand(RootScene* scene, const entity::Canvas& copy,
-                     QUndoCommand* parent = 0);
     AddCanvasCommand(entity::UserScene* scene, const osg::Matrix& R, const osg::Matrix& T,
                      const std::string& name, QUndoCommand* parent = 0);
     AddCanvasCommand(entity::UserScene* scene, const entity::Canvas& copy,

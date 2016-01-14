@@ -16,7 +16,6 @@
 class AddPhotoCommand : public QUndoCommand
 {
 public:
-    AddPhotoCommand(RootScene* scene, const std::string& name, QUndoCommand* parent = 0);
     AddPhotoCommand(entity::UserScene* scene, const std::string& name, QUndoCommand* parent = 0);
     ~AddPhotoCommand();
 

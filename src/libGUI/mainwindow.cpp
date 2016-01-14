@@ -114,10 +114,10 @@ void MainWindow::onFileOpen()
         QMessageBox::critical(this, tr("Error"), tr("Could not obtain a file name"));
         return;
     }
-    m_rootScene->setFilePath(fname.toStdString());
+    m_rootScene->getUserScene()->setFilePath(fname.toStdString());
     if (!m_rootScene->loadSceneFromFile()){
         QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
-        m_rootScene->setFilePath("");
+        m_rootScene->getUserScene()->setFilePath("");
     }
     else
         this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
@@ -132,18 +132,18 @@ void MainWindow::onFileOpen()
  */
 void MainWindow::onFileSave()
 {
-    if (!m_rootScene->isSetFilePath()){
+    if (!m_rootScene->getUserScene()->isSetFilePath()){
         QString fname = QFileDialog::getSaveFileName(this, tr("Save a scene to file"),
                                                      QString(), tr("OSG files (*.osgt)"));
         if (fname.isEmpty()){
             QMessageBox::critical(this, tr("Error"), tr("Could not save file. File name variable is empty."));
             return;
         }
-        m_rootScene->setFilePath(fname.toStdString());
+        m_rootScene->getUserScene()->setFilePath(fname.toStdString());
     }
     if (!m_rootScene->writeSceneToFile()){
         QMessageBox::critical(this, tr("Error"), tr("Could not write scene to file"));
-        m_rootScene->setFilePath("");
+        m_rootScene->getUserScene()->setFilePath("");
     }
     else
         this->statusBar()->setStatusTip(tr("Scene was successfully written to file"));
@@ -164,7 +164,7 @@ void MainWindow::onFileImage()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load an Image File"), QString(),
             tr("Image Files (*.bmp)"));
     if (!fileName.isEmpty()) {
-        m_rootScene->loadPhotoFromFile(fileName.toStdString());
+        m_rootScene->getUserScene()->addPhoto(fileName.toStdString());
        /* if (!m_rootScene->loadPhotoFromFile(fileName.toStdString())){
             QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
             return;
@@ -235,27 +235,27 @@ void MainWindow::onNewCanvasClone()
 
 void MainWindow::onNewCanvasXY()
 {
-    m_rootScene->addCanvas(osg::Matrix::identity(), osg::Matrix::translate(0,0,0));
+    m_rootScene->getUserScene()->addCanvas(osg::Matrix::identity(), osg::Matrix::translate(0,0,0));
 }
 
 void MainWindow::onNewCanvasYZ()
 {
-    m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
+    m_rootScene->getUserScene()->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
 }
 
 void MainWindow::onNewCanvasXZ()
 {
-    m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, -1, 0, 0), osg::Matrix::translate(0,0,0));
+    m_rootScene->getUserScene()->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, -1, 0, 0), osg::Matrix::translate(0,0,0));
 }
 
 void MainWindow::onNewCanvasStandard()
 {
-    m_rootScene->addCanvas(osg::Matrix::identity(),
-                           osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
-    m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0),
-                           osg::Matrix::translate(0.f, 0.f, 0.f));
-    m_rootScene->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 1, 0),
-                           osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
+    m_rootScene->getUserScene()->addCanvas(osg::Matrix::identity(),
+                                           osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
+    m_rootScene->getUserScene()->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0),
+                                           osg::Matrix::translate(0.f, 0.f, 0.f));
+    m_rootScene->getUserScene()->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 1, 0),
+                                           osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
 }
 
 void MainWindow::onNewCanvasCoaxial()

@@ -4,16 +4,6 @@
 
 #include "settings.h"
 
-// allocate memory
-AddStrokeCommand::AddStrokeCommand(RootScene *scene, entity::Stroke *stroke, QUndoCommand *parent)
-    : QUndoCommand(parent)
-    , mScene(scene)
-    , m_stroke(stroke)
-{
-    this->setText(QObject::tr("Add new stroke to canvas %1")
-                  .arg(QString( mScene->getCanvasCurrent()->getName().c_str() ) ) );
-}
-
 AddStrokeCommand::AddStrokeCommand(entity::UserScene* scene, entity::Stroke* stroke, QUndoCommand* parent)
     : QUndoCommand(parent)
     , m_scene(scene)

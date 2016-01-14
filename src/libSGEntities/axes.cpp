@@ -62,6 +62,7 @@ Axes::Axes():
     _switch->addChild(_camera.get(), true);
 
     this->addChild(_switch.get());
+    this->setName("Axes");
 }
 
 Axes::~Axes(){}
