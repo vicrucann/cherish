@@ -8,6 +8,7 @@ AddCanvasCommand::AddCanvasCommand(RootScene* scene, const osg::Matrix& R, const
     //, m_canvas(new entity::Canvas(R, T, name))
     , m_canvas(new entity::Canvas)
 {
+    m_canvas->initializeSG();
     m_canvas->setName(name);
     m_canvas->setMatrixRotation(R);
     m_canvas->setMatrixTranslation(T);

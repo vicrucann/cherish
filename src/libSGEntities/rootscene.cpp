@@ -195,46 +195,48 @@ bool RootScene::loadSceneFromFile(const std::string& fname){
 bool RootScene::loadSceneFromFile()
 {
     if (!_undoStack){
-        fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
+        fatalMsg("loadSceneFromFile(): undo stack is NULL. "
                  "Restart the program to ensure undo stack initialization.");
         return false;
     }
-    osg::ref_ptr<osg::Group> userScene = dynamic_cast<osg::Group*>(osgDB::readNodeFile(m_filePath));
-    if (!userScene.get()){
+    osg::ref_ptr<osg::Group> scene = dynamic_cast<osg::Group*>(osgDB::readNodeFile(m_filePath));
+    if (!scene.get()){
         outErrMsg("loadSceneFromFile: could not load from file, or could not perform the dynamic_cast<osg::Group*>");
         return false;
     }
+
     if (_userScene->getNumChildren() > 0){
         outLogMsg("loadSceneFromFile(): the current _userScene will be replaced by a scene from file");
         if (!this->clearUserData()){
             outErrMsg("loadSceneFromFile(): could not clear the current user scene data");
-            userScene = 0;
+            scene = 0;
             return false;
         }
     }
-    this->insertChild(0, userScene.get());
-    _userScene = userScene.get();
+    // reset the user scene
+    this->insertChild(0, scene.get());
+    _userScene = scene.get();
+
+    // reset the observer
     _observer->setScenePointer(_userScene.get());
     _userScene->addUpdateCallback(_observer.get());
 
+    // reset current and previous canvases
+    // todo: reset idCanvas
+    _undoStack->clear();
     _canvasCurrent = 0;
     _canvasPrevious = 0;
-    /*for (unsigned int i=0; i<userScene->getNumChildren(); ++i){
-        entity::Canvas* cnv = dynamic_cast<entity::Canvas*>(userScene->getChild(i));
+    for (unsigned int i=0; i<_userScene->getNumChildren(); ++i){
+        entity::Canvas* cnv = this->getCanvas(i);
         if (!cnv){
-            outErrMsg("loadSceneFromFile: could not dynamic_cast to Canvas*.");
+            outErrMsg("loadSceneFromFile: could not extract a canvas from loaded scene");
             return false;
         }
-        //AddCanvasCommand* cmd = new AddCanvasCommand(this, *cnv);
-        //_undoStack->push(cmd);
-    }*/
-    for (unsigned int i=0; i<userScene->getNumChildren(); ++i){
-        entity::Canvas* cnv = this->getCanvas(i);
-        if (cnv)
-            cnv->setColor(dureu::CANVAS_CLR_REST);
+        cnv->setColor(dureu::CANVAS_CLR_REST);
         this->setCanvasCurrent(cnv);
     }
-    userScene = 0;
+
+    scene = 0;
     return true;
 }
 

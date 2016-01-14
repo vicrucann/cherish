@@ -36,6 +36,8 @@ public:
     Canvas();
     Canvas(const Canvas& cnv, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
 
+    virtual void initializeSG();
+
     META_Node(entity, Canvas)
 
     void setMatrixRotation(const osg::Matrix& R);
@@ -100,6 +102,7 @@ public:
 
 protected:
     ~Canvas();
+
     void updateTransforms();
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
 private:

@@ -117,6 +117,8 @@ protected:
     bool strokeValid() const;
 
 private:
+    // todo: move userScene to a separate entity class
+    // so that to save other variables such as idCanvas
     osg::ref_ptr<osg::Group> _userScene;
     osg::ref_ptr<Axes> _axes;
     osg::ref_ptr<ObserveSceneCallback> _observer;

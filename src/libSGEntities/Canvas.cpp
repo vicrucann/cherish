@@ -45,20 +45,53 @@ entity::Canvas::Canvas()
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     this->setStateSet(stateset);
+}
 
+entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
+    : osg::Group(cnv, copyop)
+    , m_mR(cnv.m_mR)
+    , m_mT(cnv.m_mT)
+    , m_transform(cnv.m_transform)
+    , m_switch(cnv.m_switch)
+    , m_geodeData(cnv.m_geodeData)
+    , m_frame(cnv.m_frame)
+    , m_pickable(cnv.m_pickable)
+    , m_axis(cnv.m_axis)
+    , m_norm(cnv.m_norm)
+
+    , m_strokeCurrent(0)
+    , m_photoCurrent(0)
+
+    , m_center(cnv.m_center)
+    , m_normal(cnv.m_normal)
+    , m_color(cnv.m_color)
+{
+}
+
+/* Method to initialize canvases' scene graph structure
+ * must be called from AddCanvasCommand right after the canvas
+ * allocated.
+*/
+void entity::Canvas::initializeSG()
+{
     osg::Geode* geodeFrame = new osg::Geode;
     osg::Geode* geodeNormal = new osg::Geode;
     osg::Geode* geodeAxis = new osg::Geode;
     this->addChild(m_transform.get());
+    m_transform->setName("Transform");
     m_transform->addChild(m_switch.get());
+    m_switch->setName("Switch");
     m_switch->addChild(geodeFrame, true); // child #0
     m_switch->addChild(geodeAxis, true); // #1
     m_switch->addChild(geodeNormal, false); // #2
     m_switch->addChild(m_geodeData.get(), true); // _geodeData is  empty, it is for user input: strokes
 
+    geodeFrame->setName("GeodeFrame");
     geodeFrame->addDrawable(m_frame.get());
     geodeFrame->addDrawable(m_pickable.get());
+    geodeNormal->setName("GeodeNormal");
     geodeNormal->addDrawable(m_norm.get());
+    geodeAxis->setName("GeodeAxis");
     geodeAxis->addDrawable(m_axis.get());
 
     osg::Vec3Array* vFrame = new osg::Vec3Array(4);
@@ -104,29 +137,6 @@ entity::Canvas::Canvas()
     this->updateTransforms();
     this->setColor(m_color);
     this->setVertices(m_center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
-
-    outLogMsg("New Canvas ctor completed");
-}
-
-entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
-    : osg::Group(cnv, copyop)
-    , m_mR(cnv.m_mR)
-    , m_mT(cnv.m_mT)
-    , m_transform(cnv.m_transform)
-    , m_switch(cnv.m_switch)
-    , m_geodeData(cnv.m_geodeData)
-    , m_frame(cnv.m_frame)
-    , m_pickable(cnv.m_pickable)
-    , m_axis(cnv.m_axis)
-    , m_norm(cnv.m_norm)
-
-    , m_strokeCurrent(0)
-    , m_photoCurrent(0)
-
-    , m_center(cnv.m_center)
-    , m_normal(cnv.m_normal)
-    , m_color(cnv.m_color)
-{
 }
 
 void entity::Canvas::setMatrixRotation(const osg::Matrix& R)
@@ -158,10 +168,7 @@ osg::MatrixTransform* entity::Canvas::getTransform()
 
 void entity::Canvas::setSwitch(osg::Switch* sw)
 {
-    assert(m_switch->getNumChildren() == sw->getNumChildren());
-    for (unsigned int i = 0; i<sw->getNumChildren(); ++i){
-        m_switch->setChildValue(m_switch->getChild(i), sw->getChildValue(sw->getChild(i)));
-    }
+    m_switch = sw;
 }
 
 const osg::Switch* entity::Canvas::getSwitch() const
@@ -171,12 +178,7 @@ const osg::Switch* entity::Canvas::getSwitch() const
 
 void entity::Canvas::setFrame(osg::Geometry* geom)
 {
-    osg::Vec3Array* v1 = static_cast<osg::Vec3Array*>(geom->getVertexArray());
-    osg::Vec3Array* v2 = static_cast<osg::Vec3Array*>(m_frame->getVertexArray());
-    assert(v1->size() == v2->size());
-    for (unsigned int i = 0; i < v2->size(); ++i)
-        (*v2)[i] = (*v1)[i];
-    v2->dirty();
+    m_frame = geom;
 }
 
 const osg::Geometry* entity::Canvas::getFrame() const
@@ -186,12 +188,7 @@ const osg::Geometry* entity::Canvas::getFrame() const
 
 void entity::Canvas::setPickable(osg::Geometry* geom)
 {
-    osg::Vec3Array* v1 = static_cast<osg::Vec3Array*>(geom->getVertexArray());
-    osg::Vec3Array* v2 = static_cast<osg::Vec3Array*>(m_pickable->getVertexArray());
-    assert(v1->size() == v2->size());
-    for (unsigned int i = 0; i < v2->size(); ++i)
-        (*v2)[i] = (*v1)[i];
-    v2->dirty();
+    m_pickable = geom;
 }
 
 const osg::Geometry* entity::Canvas::getPickable() const
@@ -201,13 +198,7 @@ const osg::Geometry* entity::Canvas::getPickable() const
 
 void entity::Canvas::setAxis(osg::Geometry* geom)
 {
-    osg::Vec3Array* v1 = static_cast<osg::Vec3Array*>(geom->getVertexArray());
-    osg::Vec3Array* v2 = static_cast<osg::Vec3Array*>(m_axis->getVertexArray());
-    assert(v1->size() == v2->size());
-    for (unsigned int i = 0; i < v2->size(); ++i)
-        (*v2)[i] = (*v1)[i];
-    v2->dirty();
-    //m_axis = geom;
+    m_axis = geom;
 }
 
 const osg::Geometry* entity::Canvas::getAxis() const
@@ -217,13 +208,7 @@ const osg::Geometry* entity::Canvas::getAxis() const
 
 void entity::Canvas::setNorm(osg::Geometry* n)
 {
-    osg::Vec3Array* v1 = static_cast<osg::Vec3Array*>(n->getVertexArray());
-    osg::Vec3Array* v2 = static_cast<osg::Vec3Array*>(m_norm->getVertexArray());
-    assert(v1->size() == v2->size());
-    for (unsigned int i = 0; i < v2->size(); ++i)
-        (*v2)[i] = (*v1)[i];
-    v2->dirty();
-    //m_norm = n;
+    m_norm = n;
 }
 
 const osg::Geometry* entity::Canvas::getNorm() const
@@ -233,30 +218,7 @@ const osg::Geometry* entity::Canvas::getNorm() const
 
 void entity::Canvas::setGeodeData(osg::Geode* geode)
 {
-    for (unsigned int i=0; i<geode->getNumChildren(); ++i){
-        if (geode->getChild(i)->getName() == "Stroke"){
-            Stroke* stroke = dynamic_cast<Stroke*>(geode->getDrawable(i));
-            if (!stroke){
-                outErrMsg("Could not dynamic_cast<Stroke*>");
-                return;
-            }
-            m_geodeData->addDrawable(stroke);
-        }
-        else if (geode->getChild(i)->getName() == "Photo"){
-            Photo* photo = dynamic_cast<Photo*>(geode->getDrawable(i));
-            if (!photo){
-                outErrMsg("Could not dynamic_cast<Photo*>");
-                return;
-            }
-            m_geodeData->addDrawable(photo);
-            m_geodeData->getOrCreateStateSet()->
-                    setTextureAttributeAndModes(0, photo->getTextureAsAttribute());
-            this->updateFrame();
-        }
-        else
-            outErrMsg("Setting geode data: cannot recognize the drawable type");
-    }
-    //m_geodeData = geode;
+    m_geodeData = geode;
 }
 
 const osg::Geode* entity::Canvas::getGeodeData() const
@@ -405,7 +367,7 @@ void entity::Canvas::updateFrame()
 // we have to separate updateData() from updateFrame because:
 // we do not want to update data during certain operations, such as
 // moving photo within the canvas, or adding a stroke to a canvas
-// updateData is called on release button for the mentioned cases
+// updateData should be called on release button for the mentioned cases
 void entity::Canvas::updateData()
 {
     osg::BoundingBox bb = m_geodeData->getBoundingBox();
