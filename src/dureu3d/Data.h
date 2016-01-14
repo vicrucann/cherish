@@ -54,6 +54,20 @@ public:
     static const QIcon& sceneArcIcon();
     static const QIcon& scenePolylineIcon();
 
+    static const QIcon& viewerBackIcon();
+    static const QIcon& viewerBottomIcon();
+    static const QIcon& viewerFrontIcon();
+    static const QIcon& viewerFullscreenIcon();
+    static const QIcon& viewerHomeIcon();
+    static const QIcon& viewerIsoIcon();
+    static const QIcon& viewerLeftIcon();
+    static const QIcon& viewerNextIcon();
+    static const QIcon& viewerPreviousIcon();
+    static const QIcon& viewerRightIcon();
+    static const QIcon& viewerTopIcon();
+    static const QIcon& viewerTwoscreenIcon();
+    static const QIcon& viewerVirtualIcon();
+
 private:
 
 };

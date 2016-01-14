@@ -270,3 +270,94 @@ const QIcon &Data::scenePolylineIcon()
     return icon;
 }
 
+const QIcon &Data::viewerBackIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-back-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-back-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerBottomIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-bottom-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-bottom-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerFrontIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-front-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-front-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerFullscreenIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-fullscreen-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-fullscreen-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerHomeIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-home-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-home-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerIsoIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-iso-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-iso-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerLeftIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-left-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-left-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerNextIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-next-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-next-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerPreviousIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-previous-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-previous-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerRightIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-right-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-right-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerTopIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-top-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-top-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerTwoscreenIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-twoscreen-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-twoscreen-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::viewerVirtualIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-virtualscreen-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/viewer-virtualscreen-24px.svg"));
+    return icon;
+}
+
