@@ -338,7 +338,7 @@ void MainWindow::initializeActions()
     this->connect(m_actionClose, SIGNAL(triggered(bool)), this, SLOT(onFileExit()));
     m_actionExit->setShortcut(tr("Ctrl+Q"));
 
-    m_actionImportImage = new QAction(Data::fileExitIcon(), tr("Import &Image..."), this);
+    m_actionImportImage = new QAction(Data::fileImageIcon(), tr("Import &Image..."), this);
     this->connect(m_actionImportImage, SIGNAL(triggered(bool)), this, SLOT(onFileImage()));
     m_actionImportImage->setShortcut(tr("Ctrl+I"));
 
