@@ -17,11 +17,6 @@
 #include "RootScene.h"
 #include "axes.h"
 #include "settings.h"
-#include "Canvas.h"
-#include "Photo.h"
-#include "findnodevisitor.h"
-#include "AddCanvasCommand.h"
-#include "AddPhotoCommand.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
     : osg::Group()

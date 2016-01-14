@@ -36,13 +36,9 @@
 #include <osg/Matrix>
 
 #include "axes.h"
-#include "Canvas.h"
-#include "Photo.h"
-#include "Stroke.h"
 #include "settings.h"
 #include "../libSGUtils/observescenecallback.h"
 #include "../libGUI/hudcamera.h"
-#include "../libSGControls/AddStrokeCommand.h"
 #include "UserScene.h"
 
 #include <QUndoStack>
