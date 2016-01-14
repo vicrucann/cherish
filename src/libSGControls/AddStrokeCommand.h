@@ -22,6 +22,7 @@
 #include <osg/observer_ptr>
 
 #include "rootscene.h"
+#include "UserScene.h"
 #include "Canvas.h"
 #include "Stroke.h"
 
@@ -31,6 +32,7 @@ class AddStrokeCommand : public QUndoCommand
 {
 public:
     AddStrokeCommand(RootScene* scene, entity::Stroke* stroke, QUndoCommand *parent = 0);
+    AddStrokeCommand(entity::UserScene* scene, entity::Stroke* stroke, QUndoCommand *parent = 0);
     ~AddStrokeCommand();
 
     void undo() Q_DECL_OVERRIDE;
@@ -40,8 +42,8 @@ private:
     bool checkPointers() const;
 
     osg::observer_ptr<RootScene> mScene;
-    osg::ref_ptr<entity::Stroke> mStroke;
-    bool mValid;
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::ref_ptr<entity::Stroke> m_stroke;
 };
 
 #endif // ADDSTROKECOMMAND_H

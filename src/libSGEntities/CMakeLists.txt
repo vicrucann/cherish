@@ -20,6 +20,8 @@ set (libSGEntities_SRCS
     Stroke.cpp
     Photo.h
     Photo.cpp
+    UserScene.h
+    UserScene.cpp
 )
 
 add_library(libSGEntities
