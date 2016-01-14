@@ -13,7 +13,7 @@
 
 #include <osg/ref_ptr>
 
-#include "rootscene.h"
+#include "RootScene.h"
 #include "settings.h"
 #include "glwidget.h"
 

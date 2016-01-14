@@ -14,7 +14,7 @@
 #include <osg/ValueObject>
 #include <osg/Switch>
 
-#include "rootscene.h"
+#include "RootScene.h"
 #include "axes.h"
 #include "settings.h"
 #include "Canvas.h"

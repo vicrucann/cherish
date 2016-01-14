@@ -7,7 +7,6 @@
 #include <osg/observer_ptr>
 #include <osg/MatrixTransform>
 
-#include "rootscene.h"
 #include "UserScene.h"
 #include "Canvas.h"
 

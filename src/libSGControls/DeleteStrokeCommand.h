@@ -3,7 +3,7 @@
 
 #include <QUndoCommand>
 
-#include "rootscene.h"
+#include "RootScene.h"
 #include "Stroke.h"
 
 #include <osg/observer_ptr>

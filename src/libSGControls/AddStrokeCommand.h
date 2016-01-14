@@ -21,12 +21,9 @@
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
 
-#include "rootscene.h"
 #include "UserScene.h"
 #include "Canvas.h"
 #include "Stroke.h"
-
-class RootScene;
 
 class AddStrokeCommand : public QUndoCommand
 {
@@ -40,7 +37,6 @@ public:
 private:
     bool checkPointers() const;
 
-    osg::observer_ptr<RootScene> mScene;
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::ref_ptr<entity::Stroke> m_stroke;
 };

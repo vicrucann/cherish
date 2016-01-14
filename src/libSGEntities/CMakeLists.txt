@@ -14,8 +14,8 @@ set (libSGEntities_SRCS
     Canvas.cpp
     axes.h
     axes.cpp
-    rootscene.h
-    rootscene.cpp
+    RootScene.h
+    RootScene.cpp
     Stroke.h
     Stroke.cpp
     Photo.h

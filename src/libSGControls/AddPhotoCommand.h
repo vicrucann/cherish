@@ -9,7 +9,6 @@
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
 
-#include "rootscene.h"
 #include "UserScene.h"
 #include "Photo.h"
 
@@ -23,7 +22,6 @@ public:
     void redo() Q_DECL_OVERRIDE;
 
 private:
-    osg::observer_ptr<RootScene> m_root;
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::ref_ptr<entity::Photo> m_photo;
 };
