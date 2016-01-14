@@ -61,8 +61,6 @@ RootScene::RootScene(QUndoStack *undoStack)
     this->setName("RootScene");
 }
 
-RootScene::~RootScene(){}
-
 entity::UserScene*RootScene::getUserScene() const
 {
     return m_userScene.get();
@@ -149,6 +147,11 @@ bool RootScene::writeSceneToFile() const
         return false;
     }
     return osgDB::writeNodeFile(*node, m_userScene->getFilePath());
+}
+
+RootScene::~RootScene()
+{
+
 }
 
 

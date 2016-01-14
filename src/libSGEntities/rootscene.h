@@ -52,7 +52,6 @@ class AddStrokeCommand;
 class RootScene : public osg::Group {
 public:
     RootScene(QUndoStack* undoStack = 0);
-    ~RootScene();
 
     entity::UserScene* getUserScene() const;
 
@@ -69,10 +68,9 @@ public:
     bool writeSceneToFile() const;
 
 protected:
+    ~RootScene();
 
 private:
-    // todo: move userScene to a separate entity class
-    // so that to save other variables such as idCanvas
     osg::ref_ptr<entity::UserScene> m_userScene;
     osg::ref_ptr<Axes> m_axisGlo;
     osg::ref_ptr<ObserveSceneCallback> m_observer;
