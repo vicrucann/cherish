@@ -52,6 +52,8 @@ public:
     void setTransformOffset(const osg::Vec3f& translate, const int mouse);
     void setTransformRotate(const osg::Vec3f& normal, const int mouse);
 
+    bool saveToFile() const;
+
 protected:
     ~UserScene();
 

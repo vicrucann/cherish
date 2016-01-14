@@ -6,6 +6,9 @@
 #include "AddPhotoCommand.h"
 #include "findnodevisitor.h"
 
+#include <osgDB/WriteFile>
+#include <osgDB/ReadFile>
+
 entity::UserScene::UserScene()
     : osg::Group()
     , m_undoStack(0)
@@ -236,6 +239,13 @@ void entity::UserScene::setTransformRotate(const osg::Vec3f& normal, const int m
     else {
        m_canvasCurrent->rotate(osg::Matrix::rotate(dureu::PI/24, osg::Vec3f(0,0,1)));
     }
+}
+
+bool entity::UserScene::saveToFile() const
+{
+    if (m_filePath == "")
+        return false;
+    return osgDB::writeNodeFile(*this, m_filePath);
 }
 
 entity::UserScene::~UserScene()
