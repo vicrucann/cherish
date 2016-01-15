@@ -29,11 +29,6 @@
 #include <string>
 
 #include <osg/ref_ptr>
-#include <osg/observer_ptr>
-#include <osg/Group>
-#include <osg/Geode>
-#include <osg/Node>
-#include <osg/Matrix>
 
 #include "axes.h"
 #include "settings.h"
@@ -47,7 +42,7 @@ class AddStrokeCommand;
 
 class RootScene : public osg::Group {
 public:
-    RootScene(QUndoStack* undoStack = 0);
+    RootScene(QUndoStack* undoStack);
 
     entity::UserScene* getUserScene() const;
 
@@ -60,8 +55,8 @@ public:
     void setHudCameraVisibility(bool vis);
     bool getHudCameraVisibility() const;
 
+    bool writeScenetoFile();
     bool loadSceneFromFile();
-    bool writeSceneToFile() const;
 
 protected:
     ~RootScene();

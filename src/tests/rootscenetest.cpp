@@ -4,8 +4,9 @@
 
 #include <QtTest>
 
-RootSceneTest::RootSceneTest():
-    _RS(new RootScene)
+RootSceneTest::RootSceneTest()
+    //:
+    //_RS(new RootScene)
 {
 }
 

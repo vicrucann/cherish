@@ -34,6 +34,8 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
 
 void entity::UserScene::setUndoStack(QUndoStack* stack)
 {
+    if (!stack)
+        outErrMsg("UserScene->setUndoStack: pointer is NULL");
     m_undoStack = stack;
 }
 
@@ -241,11 +243,9 @@ void entity::UserScene::setTransformRotate(const osg::Vec3f& normal, const int m
     }
 }
 
-bool entity::UserScene::saveToFile() const
+QUndoStack *entity::UserScene::getUndoStack() const
 {
-    if (m_filePath == "")
-        return false;
-    return osgDB::writeNodeFile(*this, m_filePath);
+    return m_undoStack;
 }
 
 entity::UserScene::~UserScene()
@@ -266,8 +266,8 @@ std::string entity::UserScene::getCanvasName()
 std::string entity::UserScene::getEntityName(const std::string &name, unsigned int id) const
 {
     char buffer[10];
-    sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
-    //snprintf(buffer, sizeof(buffer), "%d", id);
+    //sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
+    snprintf(buffer, sizeof(buffer), "%d", id);
     //itoa(id, buffer, 10);
     return name + std::string(buffer);//std::to_string(static_cast<long double>(id));
 }

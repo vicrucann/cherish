@@ -141,7 +141,7 @@ void MainWindow::onFileSave()
         }
         m_rootScene->getUserScene()->setFilePath(fname.toStdString());
     }
-    if (!m_rootScene->getUserScene()->saveToFile()){
+    if (!m_rootScene->writeScenetoFile()){
         QMessageBox::critical(this, tr("Error"), tr("Could not write scene to file"));
         m_rootScene->getUserScene()->setFilePath("");
     }

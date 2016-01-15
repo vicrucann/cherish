@@ -45,6 +45,7 @@ entity::Canvas::Canvas()
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     this->setStateSet(stateset);
+    outLogMsg("New Canvas ctor complete");
 }
 
 entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)

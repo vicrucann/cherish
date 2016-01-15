@@ -10,7 +10,7 @@
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/Viewer>
 
-#include "rootscene.h"
+#include "RootScene.h"
 #include "settings.h"
 #include "../libSGControls/manipulator.h"
 #include "../libSGControls/EventHandler.h"

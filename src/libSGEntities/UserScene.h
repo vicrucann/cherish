@@ -52,12 +52,12 @@ public:
     void setTransformOffset(const osg::Vec3f& translate, const int mouse);
     void setTransformRotate(const osg::Vec3f& normal, const int mouse);
 
-    bool saveToFile() const;
+    QUndoStack* getUndoStack() const;
+    bool clearUserData();
 
 protected:
     ~UserScene();
 
-    bool clearUserData();
     std::string getCanvasName();
     std::string getEntityName(const std::string& name, unsigned int id) const;
 

@@ -2,17 +2,10 @@
 #include <sstream>
 #include <stdlib.h>
 #include <assert.h>
-#include <typeinfo>
 
-#include <osg/ref_ptr>
-#include <osg/Group>
-#include <osg/Node>
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
-#include "osg/MatrixTransform"
-#include <osgUtil/SceneView>
-#include <osg/ValueObject>
-#include <osg/Switch>
+#include <osgDB/Registry>
 
 #include "RootScene.h"
 #include "axes.h"
@@ -25,7 +18,10 @@ RootScene::RootScene(QUndoStack *undoStack)
     , m_observer(new ObserveSceneCallback)
     , m_hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
 {
-    m_userScene->setUndoStack(undoStack);
+    if (undoStack)
+        m_userScene->setUndoStack(undoStack);
+    else
+        outErrMsg("RootScene ctor: undo stack is NULL");
 
     // child #0
     if (!this->addChild(m_userScene.get())){
@@ -89,14 +85,23 @@ bool RootScene::getHudCameraVisibility() const{
     return m_hud->getVisibility();
 }
 
+bool RootScene::writeScenetoFile()
+{
+    if (m_userScene->getFilePath() == "")
+        return false;
+    return osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath());
+
+}
+
 bool RootScene::loadSceneFromFile()
 {
-    /*if (!_undoStack){
+    if (!m_userScene->getUndoStack()){
         fatalMsg("loadSceneFromFile(): undo stack is NULL. "
                  "Restart the program to ensure undo stack initialization.");
         return false;
     }
-    osg::ref_ptr<osg::Group> scene = dynamic_cast<osg::Group*>(osgDB::readNodeFile(m_userScene->getFilePath()));
+    osg::ref_ptr<entity::UserScene> scene = dynamic_cast<entity::UserScene*>(osgDB::readNodeFile(m_userScene->getFilePath()));
+    outLogMsg("dynamic_cast complete");
     if (!scene.get()){
         outErrMsg("loadSceneFromFile: could not load from file, or could not perform the dynamic_cast<osg::Group*>");
         return false;
@@ -104,19 +109,27 @@ bool RootScene::loadSceneFromFile()
 
     if (m_userScene->getNumChildren() > 0){
         outLogMsg("loadSceneFromFile(): the current m_userScene will be replaced by a scene from file");
-        if (!this->clearUserData()){
+        if (!m_userScene->clearUserData()){
             outErrMsg("loadSceneFromFile(): could not clear the current user scene data");
             scene = 0;
             return false;
         }
     }
-    this->insertChild(0, scene.get());
+    outLogVal("ptr before", m_userScene.get());
+    //this->replaceChild(m_userScene.get(), dynamic_cast<entity::UserScene*>(osgDB::readNodeFile(m_userScene->getFilePath())));
+    //this->replaceChild(m_userScene.get(), scene.get());
+    if (!this->insertChild(0, dynamic_cast<osg::Node*>(scene.get())))
+    {
+        outErrMsg("Could not insert child");
+        return false;
+    }
     m_userScene = scene.get();
-
     m_observer->setScenePointer(m_userScene.get());
     m_userScene->addUpdateCallback(m_observer.get());
+    outLogVal("ptr after", m_userScene.get());
 
-    _undoStack->clear();
+    //m_userScene->clearUndoStack();
+
     for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv){
@@ -126,22 +139,8 @@ bool RootScene::loadSceneFromFile()
         cnv->setColor(dureu::CANVAS_CLR_REST);
         m_userScene->setCanvasCurrent(cnv);
     }
-    scene = 0;*/
+    //scene = 0;
     return true;
-}
-
-bool RootScene::writeSceneToFile() const
-{
-    if (m_userScene->getNumChildren() == 0){
-        outErrMsg("The scene is empty, there is nothing to save.");
-        return false;
-    }
-    osg::Node* node = dynamic_cast<osg::Node*>(m_userScene.get());
-    if (!node){
-        outErrMsg("writeSceneToFile: could not perform the dynamic_cast. File will not be saved.");
-        return false;
-    }
-    return osgDB::writeNodeFile(*node, m_userScene->getFilePath());
 }
 
 RootScene::~RootScene()
