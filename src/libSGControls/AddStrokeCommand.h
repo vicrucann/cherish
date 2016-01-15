@@ -38,6 +38,7 @@ private:
     bool checkPointers() const;
 
     osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_canvas;
     osg::ref_ptr<entity::Stroke> m_stroke;
 };
 

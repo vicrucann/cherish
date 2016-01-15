@@ -10,6 +10,7 @@
 #include <osg/observer_ptr>
 
 #include "UserScene.h"
+#include "Canvas.h"
 #include "Photo.h"
 
 class AddPhotoCommand : public QUndoCommand
@@ -23,6 +24,7 @@ public:
 
 private:
     osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_canvas;
     osg::ref_ptr<entity::Photo> m_photo;
 };
 
