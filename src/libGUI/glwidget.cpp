@@ -29,7 +29,7 @@ GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
     , m_ModeMouse(dureu::MOUSE_SKETCH)
 
     , m_Manipulator(new Manipulator(m_ModeMouse))
-    , m_EH(new EventHandler(m_RootScene->getUserScene(), m_ModeMouse))
+    , m_EH(new EventHandler(m_RootScene.get(), m_ModeMouse))
 {
     // camera settings
     float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());

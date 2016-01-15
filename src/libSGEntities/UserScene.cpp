@@ -1,3 +1,5 @@
+#include "assert.h"
+
 #include "UserScene.h"
 
 #include "settings.h"
@@ -11,7 +13,6 @@
 
 entity::UserScene::UserScene()
     : osg::Group()
-    , m_undoStack(0)
     , m_canvasCurrent(0)
     , m_canvasPrevious(0)
     , m_strokeCurrent(0)
@@ -30,13 +31,6 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_filePath(scene.m_filePath)
 {
 
-}
-
-void entity::UserScene::setUndoStack(QUndoStack* stack)
-{
-    if (!stack)
-        outErrMsg("UserScene->setUndoStack: pointer is NULL");
-    m_undoStack = stack;
 }
 
 void entity::UserScene::setIdCanvas(unsigned int id)
@@ -64,25 +58,25 @@ bool entity::UserScene::isSetFilePath() const
     return m_filePath == ""? false : true;
 }
 
-void entity::UserScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T)
+void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T)
 {
-    this->addCanvas(R,T, getEntityName(dureu::NAME_CANVAS, m_idCanvas++));
+    this->addCanvas(stack, R,T, getEntityName(dureu::NAME_CANVAS, m_idCanvas++));
 }
 
-void entity::UserScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name)
+void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T, const std::string& name)
 {
-    if (!m_undoStack){
+    if (!stack){
         fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
     AddCanvasCommand* cmd = new AddCanvasCommand(this, R, T, name);
-    m_undoStack->push(cmd);
+    stack->push(cmd);
 }
 
-void entity::UserScene::addStroke(float u, float v, dureu::EVENT event)
+void entity::UserScene::addStroke(QUndoStack* stack, float u, float v, dureu::EVENT event)
 {
-    if (!m_undoStack){
+    if (!stack){
         fatalMsg("addStroke(): undo stack is NULL, it is not initialized. "
                  "Sketching is not possible. "
                  "Restart the program to ensure undo stack initialization.");
@@ -91,7 +85,7 @@ void entity::UserScene::addStroke(float u, float v, dureu::EVENT event)
     switch (event){
     case dureu::EVENT_OFF:
         outLogMsg("EVENT_OFF");
-        this->strokeFinish();
+        this->strokeFinish(stack);
         break;
     case dureu::EVENT_PRESSED:
         outLogMsg("EVENT_PRESSED");
@@ -108,23 +102,23 @@ void entity::UserScene::addStroke(float u, float v, dureu::EVENT event)
         if (!this->strokeValid())
             this->strokeStart();
         this->strokeAppend(u, v);
-        this->strokeFinish();
+        this->strokeFinish(stack);
         break;
     default:
         break;
     }
 }
 
-void entity::UserScene::addPhoto(const std::string& fname)
+void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
 {
     outLogMsg("loadPhotoFromFile()");
-    if (!m_undoStack){
+    if (!stack){
         fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
     AddPhotoCommand* cmd = new AddPhotoCommand(this, fname);
-    m_undoStack->push(cmd);
+    stack->push(cmd);
 }
 
 entity::Canvas* entity::UserScene::getCanvas(unsigned int id)
@@ -243,11 +237,6 @@ void entity::UserScene::setTransformRotate(const osg::Vec3f& normal, const int m
     }
 }
 
-QUndoStack *entity::UserScene::getUndoStack() const
-{
-    return m_undoStack;
-}
-
 entity::UserScene::~UserScene()
 {
 
@@ -258,6 +247,31 @@ bool entity::UserScene::clearUserData()
     return this->removeChildren(0, this->getNumChildren());
 }
 
+bool entity::UserScene::printScene()
+{
+    for (unsigned int i = 0; i < this->getNumChildren(); ++i){
+        Canvas* cnv = this->getCanvas(i);
+        if (!cnv){
+            outErrMsg("printScene: could not retrive canvas");
+            return false;
+        }
+        outLogVal("Canvas name", cnv->getName());
+
+        osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(cnv->getChild(0));
+        assert(t == cnv->getTransform());
+        outLogVal("Transform name", t->getName());
+
+        osg::Switch* sw = dynamic_cast<osg::Switch*>(t->getChild(0));
+        assert(sw == cnv->getSwitch());
+        outLogVal("Switch name", sw->getName());
+
+        osg::Geode* data = dynamic_cast<osg::Geode*>(sw->getChild(3));
+        assert(data == cnv->getGeodeData());
+        outLogVal("Geode data name", data->getName());
+    }
+    return true;
+}
+
 std::string entity::UserScene::getCanvasName()
 {
     return this->getEntityName(dureu::NAME_CANVAS, m_idCanvas++);
@@ -266,8 +280,8 @@ std::string entity::UserScene::getCanvasName()
 std::string entity::UserScene::getEntityName(const std::string &name, unsigned int id) const
 {
     char buffer[10];
-    //sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
-    snprintf(buffer, sizeof(buffer), "%d", id);
+    sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
+    //snprintf(buffer, sizeof(buffer), "%d", id);
     //itoa(id, buffer, 10);
     return name + std::string(buffer);//std::to_string(static_cast<long double>(id));
 }
@@ -297,13 +311,13 @@ void entity::UserScene::strokeAppend(float u, float v)
    if stroke is long enough to be kept,
    clone the AddStrokeCommand and push the cloned instance to stack
    set the shared pointer to zero and return*/
-void entity::UserScene::strokeFinish()
+void entity::UserScene::strokeFinish(QUndoStack* stack)
 {
     if (this->strokeValid()){
         if (m_strokeCurrent->isLengthy()){
             entity::Stroke* stroke = new entity::Stroke(*m_strokeCurrent, osg::CopyOp::DEEP_COPY_ALL);
             AddStrokeCommand* cmd = new AddStrokeCommand(this, stroke);
-            m_undoStack->push(cmd);
+            stack->push(cmd);
         }
     }
     else{

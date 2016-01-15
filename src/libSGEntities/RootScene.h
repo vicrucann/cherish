@@ -45,6 +45,8 @@ public:
     RootScene(QUndoStack* undoStack);
 
     entity::UserScene* getUserScene() const;
+    void setFilePath(const std::string& name);
+    bool isSetFilePath() const;
 
     void setAxesVisibility(bool vis);
     bool getAxesVisibility() const;
@@ -58,14 +60,32 @@ public:
     bool writeScenetoFile();
     bool loadSceneFromFile();
 
+    int getCanvasLevel() const;
+    int getPhotoLevel() const;
+
+    void addCanvas(const osg::Matrix& R, const osg::Matrix& T);
+    void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
+    void addStroke(float u, float v, dureu::EVENT event);
+    void addPhoto(const std::string& fname);
+
+    bool setCanvasCurrent(entity::Canvas* cnv);
+    bool setCanvasPrevious(entity::Canvas* cnv);
+    entity::Canvas* getCanvasCurrent() const;
+    entity::Canvas* getCanvasPrevious() const;
+
+    void setTransformOffset(const osg::Vec3f& translate, const int mouse);
+    void setTransformRotate(const osg::Vec3f& normal, const int mouse);
+
 protected:
     ~RootScene();
+    void printScene();
 
 private:
     osg::ref_ptr<entity::UserScene> m_userScene;
     osg::ref_ptr<Axes> m_axisGlo;
     osg::ref_ptr<ObserveSceneCallback> m_observer;
     osg::ref_ptr<HUDCamera> m_hud;
+    QUndoStack* m_undoStack;
 };
 
 #endif // SCENE

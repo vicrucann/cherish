@@ -19,10 +19,11 @@
 #include "Canvas.h"
 #include "Photo.h"
 #include "UserScene.h"
+#include "RootScene.h"
 
 class EventHandler : public osgGA::GUIEventHandler {
 public:
-    EventHandler(entity::UserScene* scene, dureu::MOUSE_MODE mode = dureu::MOUSE_PICK);
+    EventHandler(RootScene* scene, dureu::MOUSE_MODE mode = dureu::MOUSE_PICK);
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void setMode(dureu::MOUSE_MODE mode);
 
@@ -51,7 +52,7 @@ protected:
                                      osg::Vec3f &XC);
 
     dureu::MOUSE_MODE mMode;
-    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<RootScene> m_scene;
 };
 
 #endif // EVENTHANDLER

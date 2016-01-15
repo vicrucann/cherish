@@ -6,7 +6,7 @@
 #include <osgUtil/IntersectionVisitor>
 #include <osg/Viewport>
 
-EventHandler::EventHandler(entity::UserScene* scene, dureu::MOUSE_MODE mode)
+EventHandler::EventHandler(RootScene* scene, dureu::MOUSE_MODE mode)
     : osgGA::GUIEventHandler()
     , mMode(mode)
     , m_scene(scene)

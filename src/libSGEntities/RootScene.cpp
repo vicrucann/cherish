@@ -17,12 +17,8 @@ RootScene::RootScene(QUndoStack *undoStack)
     , m_axisGlo(new Axes)
     , m_observer(new ObserveSceneCallback)
     , m_hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
+    , m_undoStack(undoStack)
 {
-    if (undoStack)
-        m_userScene->setUndoStack(undoStack);
-    else
-        outErrMsg("RootScene ctor: undo stack is NULL");
-
     // child #0
     if (!this->addChild(m_userScene.get())){
         outErrMsg("RootScene(): could not add user scene as a child");
@@ -55,6 +51,16 @@ RootScene::RootScene(QUndoStack *undoStack)
 entity::UserScene*RootScene::getUserScene() const
 {
     return m_userScene.get();
+}
+
+void RootScene::setFilePath(const std::string& name)
+{
+    m_userScene->setFilePath(name);
+}
+
+bool RootScene::isSetFilePath() const
+{
+    return m_userScene->isSetFilePath();
 }
 
 void RootScene::setAxesVisibility(bool vis) {
@@ -95,41 +101,31 @@ bool RootScene::writeScenetoFile()
 
 bool RootScene::loadSceneFromFile()
 {
-    if (!m_userScene->getUndoStack()){
+    if (!m_undoStack){
         fatalMsg("loadSceneFromFile(): undo stack is NULL. "
                  "Restart the program to ensure undo stack initialization.");
         return false;
     }
-    osg::ref_ptr<entity::UserScene> scene = dynamic_cast<entity::UserScene*>(osgDB::readNodeFile(m_userScene->getFilePath()));
-    outLogMsg("dynamic_cast complete");
-    if (!scene.get()){
+    osg::ref_ptr<entity::UserScene> newscene = dynamic_cast<entity::UserScene*>(osgDB::readNodeFile(m_userScene->getFilePath()));
+    if (!newscene.get()){
         outErrMsg("loadSceneFromFile: could not load from file, or could not perform the dynamic_cast<osg::Group*>");
         return false;
     }
 
-    if (m_userScene->getNumChildren() > 0){
-        outLogMsg("loadSceneFromFile(): the current m_userScene will be replaced by a scene from file");
-        if (!m_userScene->clearUserData()){
-            outErrMsg("loadSceneFromFile(): could not clear the current user scene data");
-            scene = 0;
-            return false;
-        }
-    }
-    outLogVal("ptr before", m_userScene.get());
-    //this->replaceChild(m_userScene.get(), dynamic_cast<entity::UserScene*>(osgDB::readNodeFile(m_userScene->getFilePath())));
-    //this->replaceChild(m_userScene.get(), scene.get());
-    if (!this->insertChild(0, dynamic_cast<osg::Node*>(scene.get())))
-    {
-        outErrMsg("Could not insert child");
+    /* replace the original */
+    if (!this->replaceChild(m_userScene.get(), newscene.get())){
+        outErrMsg("loadSceneFromFile: could not replace the original child");
         return false;
     }
-    m_userScene = scene.get();
+
+    /* update pointer */
+    m_userScene = newscene.get();
+
+    /* reset observer */
     m_observer->setScenePointer(m_userScene.get());
     m_userScene->addUpdateCallback(m_observer.get());
-    outLogVal("ptr after", m_userScene.get());
 
-    //m_userScene->clearUndoStack();
-
+    /* update current/previous canvases */
     for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv){
@@ -139,13 +135,84 @@ bool RootScene::loadSceneFromFile()
         cnv->setColor(dureu::CANVAS_CLR_REST);
         m_userScene->setCanvasCurrent(cnv);
     }
-    //scene = 0;
+    newscene = 0;
+    this->printScene();
     return true;
+}
+
+int RootScene::getCanvasLevel() const
+{
+    return m_userScene->getCanvasLevel();
+}
+
+int RootScene::getPhotoLevel() const
+{
+    return m_userScene->getPhotoLevel();
+}
+
+void RootScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T)
+{
+    m_userScene->addCanvas(m_undoStack, R, T);
+}
+
+void RootScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name)
+{
+    m_userScene->addCanvas(m_undoStack, R, T, name);
+}
+
+void RootScene::addStroke(float u, float v, dureu::EVENT event)
+{
+    m_userScene->addStroke(m_undoStack, u, v, event);
+}
+
+void RootScene::addPhoto(const std::string& fname)
+{
+    m_userScene->addPhoto(m_undoStack, fname);
+}
+
+bool RootScene::setCanvasCurrent(entity::Canvas* cnv)
+{
+    return m_userScene->setCanvasCurrent(cnv);
+}
+
+bool RootScene::setCanvasPrevious(entity::Canvas* cnv)
+{
+    return m_userScene->setCanvasPrevious(cnv);
+}
+
+entity::Canvas* RootScene::getCanvasCurrent() const
+{
+    return m_userScene->getCanvasCurrent();
+}
+
+entity::Canvas* RootScene::getCanvasPrevious() const
+{
+    return m_userScene->getCanvasPrevious();
+}
+
+void RootScene::setTransformOffset(const osg::Vec3f& translate, const int mouse)
+{
+    m_userScene->setTransformOffset(translate, mouse);
+}
+
+void RootScene::setTransformRotate(const osg::Vec3f& normal, const int mouse)
+{
+    m_userScene->setTransformRotate(normal, mouse);
 }
 
 RootScene::~RootScene()
 {
 
+}
+
+void RootScene::printScene()
+{
+    outLogVal("RootScene #children", this->getNumChildren());
+    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+        outLogVal("Child", this->getChild(i)->getName());
+    }
+    outLogMsg("For each canvas");
+    m_userScene->printScene();
 }
 
 

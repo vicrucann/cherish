@@ -45,6 +45,10 @@ entity::Canvas::Canvas()
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     this->setStateSet(stateset);
+
+    m_transform->setName("Transform");
+    m_switch->setName("Switch");
+
     outLogMsg("New Canvas ctor complete");
 }
 
@@ -160,6 +164,16 @@ void entity::Canvas::setMatrixTranslation(const osg::Matrix& T)
 const osg::Matrix&entity::Canvas::getMatrixTranslation() const
 {
     return m_mT;
+}
+
+void entity::Canvas::setTransform(osg::MatrixTransform* t)
+{
+    m_transform = t;
+}
+
+const osg::MatrixTransform*entity::Canvas::getTransform() const
+{
+    return m_transform.get();
 }
 
 osg::MatrixTransform* entity::Canvas::getTransform()
@@ -488,6 +502,7 @@ REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
     ADD_MATRIX_SERIALIZER(MatrixRotation, osg::Matrix());
     ADD_MATRIX_SERIALIZER(MatrixTranslation, osg::Matrix());
 
+    ADD_OBJECT_SERIALIZER(Transform, osg::MatrixTransform, NULL);
     ADD_OBJECT_SERIALIZER(Switch, osg::Switch, NULL);
     ADD_OBJECT_SERIALIZER(GeodeData, osg::Geode, NULL);
     ADD_OBJECT_SERIALIZER(Frame, osg::Geometry, NULL);

@@ -46,6 +46,8 @@ public:
     void setMatrixTranslation(const osg::Matrix& T);
     const osg::Matrix& getMatrixTranslation() const;
 
+    void setTransform(osg::MatrixTransform* t);
+    const osg::MatrixTransform* getTransform() const;
     osg::MatrixTransform* getTransform();
 
     void setSwitch(osg::Switch* sw);

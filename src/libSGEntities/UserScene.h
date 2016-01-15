@@ -21,7 +21,6 @@ public:
     /* ctors and initializers */
     UserScene();
     UserScene(const UserScene& scene, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
-    void setUndoStack(QUndoStack* stack);
 
     META_Node(entity, UserScene)
 
@@ -34,10 +33,10 @@ public:
     bool isSetFilePath() const;
 
     /* other methods */
-    void addCanvas(const osg::Matrix& R, const osg::Matrix& T);
-    void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
-    void addStroke(float u, float v, dureu::EVENT event);
-    void addPhoto(const std::string& fname);
+    void addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T);
+    void addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
+    void addStroke(QUndoStack* stack, float u, float v, dureu::EVENT event);
+    void addPhoto(QUndoStack* stack, const std::string& fname);
 
     entity::Canvas* getCanvas(unsigned int id);
     entity::Canvas* getCanvas(const std::string& name);
@@ -52,8 +51,8 @@ public:
     void setTransformOffset(const osg::Vec3f& translate, const int mouse);
     void setTransformRotate(const osg::Vec3f& normal, const int mouse);
 
-    QUndoStack* getUndoStack() const;
     bool clearUserData();
+    bool printScene();
 
 protected:
     ~UserScene();
@@ -63,11 +62,10 @@ protected:
 
     void strokeStart();
     void strokeAppend(float u, float v);
-    void strokeFinish();
+    void strokeFinish(QUndoStack* stack);
     bool strokeValid() const;
 
 private:
-    QUndoStack* m_undoStack;
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
     osg::observer_ptr<entity::Canvas> m_canvasPrevious;
     osg::observer_ptr<entity::Canvas> m_canvasTarget; /* for push operations */
