@@ -47,6 +47,9 @@ public:
     entity::UserScene* getUserScene() const;
     void setFilePath(const std::string& name);
     bool isSetFilePath() const;
+    bool isSavedToFile() const;
+    bool isEmptyScene() const;
+    void clearUserData();
 
     void setAxesVisibility(bool vis);
     bool getAxesVisibility() const;
@@ -86,6 +89,7 @@ private:
     osg::ref_ptr<ObserveSceneCallback> m_observer;
     osg::ref_ptr<HUDCamera> m_hud;
     QUndoStack* m_undoStack;
+    bool m_saved;
 };
 
 #endif // SCENE

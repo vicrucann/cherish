@@ -9,6 +9,7 @@
 #include <QRect>
 #include <QSize>
 #include <QDebug>
+#include <QMessageBox>
 
 #include <osg/MatrixTransform>
 
@@ -108,6 +109,8 @@ void MainWindow::onFileNew()
 */
 void MainWindow::onFileOpen()
 {
+    this->onFileClose();
+
     QString fname = QFileDialog::getOpenFileName(this, tr("Open a scene from file"),
                                                  QString(), tr("OSG files (*.osg *.osgt)"));
     if (fname.isEmpty()){
@@ -136,7 +139,8 @@ void MainWindow::onFileSave()
         QString fname = QFileDialog::getSaveFileName(this, tr("Save a scene to file"),
                                                      QString(), tr("OSG files (*.osgt)"));
         if (fname.isEmpty()){
-            QMessageBox::critical(this, tr("Error"), tr("Could not save file. File name variable is empty."));
+            QMessageBox::warning(this, tr("Chosing filename"), tr("No file name is chosen. Changes were not saved."));
+            this->statusBar()->showMessage(tr("Scene was not saved to file"), 2000);
             return;
         }
         m_rootScene->setFilePath(fname.toStdString());
@@ -144,9 +148,10 @@ void MainWindow::onFileSave()
     if (!m_rootScene->writeScenetoFile()){
         QMessageBox::critical(this, tr("Error"), tr("Could not write scene to file"));
         m_rootScene->setFilePath("");
+        this->statusBar()->showMessage(tr("Scene was not saved to file"), 2000);
+        return;
     }
-    else
-        this->statusBar()->setStatusTip(tr("Scene was successfully written to file"));
+    this->statusBar()->showMessage(tr("Scene was successfully saved to file"), 2000);
 }
 
 /* Take content of scene graph
@@ -156,7 +161,8 @@ void MainWindow::onFileSave()
 */
 void MainWindow::onFileSaveAs()
 {
-
+    this->m_rootScene->setFilePath("");
+    this->onFileSave();
 }
 
 void MainWindow::onFileImage()
@@ -174,12 +180,25 @@ void MainWindow::onFileImage()
 
 void MainWindow::onFileClose()
 {
-
+    if (!m_rootScene->isSavedToFile() && !m_rootScene->isEmptyScene()){
+        QMessageBox::StandardButton reply = QMessageBox::question(this,
+                                                                  tr("Closing the current project"),
+                                                                  tr("Do you want to save changes?"),
+                                                                  QMessageBox::Yes|QMessageBox::No);
+        if (reply == QMessageBox::Yes)
+            this->onFileSave();
+        //if (!m_rootScene->isSavedToFile())
+        //    return;
+    }
+    m_rootScene->clearUserData();
+    // m_glWidget->close(); // close all viewer widgets
+    this->statusBar()->showMessage(tr("Closed the current project"), 2000);
 }
 
 void MainWindow::onFileExit()
 {
-
+    this->onFileClose();
+    this->close();
 }
 
 void MainWindow::onCut()

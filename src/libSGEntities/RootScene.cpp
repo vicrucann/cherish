@@ -18,6 +18,7 @@ RootScene::RootScene(QUndoStack *undoStack)
     , m_observer(new ObserveSceneCallback)
     , m_hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
     , m_undoStack(undoStack)
+    , m_saved(false)
 {
     // child #0
     if (!this->addChild(m_userScene.get())){
@@ -56,11 +57,27 @@ entity::UserScene*RootScene::getUserScene() const
 void RootScene::setFilePath(const std::string& name)
 {
     m_userScene->setFilePath(name);
+    m_saved = false;
 }
 
 bool RootScene::isSetFilePath() const
 {
     return m_userScene->isSetFilePath();
+}
+
+bool RootScene::isSavedToFile() const
+{
+    return m_saved;
+}
+
+bool RootScene::isEmptyScene() const
+{
+    return m_userScene->isEmptyScene();
+}
+
+void RootScene::clearUserData()
+{
+    m_userScene->clearUserData();
 }
 
 void RootScene::setAxesVisibility(bool vis) {
@@ -95,7 +112,11 @@ bool RootScene::writeScenetoFile()
 {
     if (m_userScene->getFilePath() == "")
         return false;
-    return osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath());
+    if (osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())){
+        m_saved = true;
+        return true;
+    }
+    return false;
 
 }
 
@@ -137,6 +158,7 @@ bool RootScene::loadSceneFromFile()
     }
     newscene = 0;
     this->printScene();
+    m_saved = true;
     return true;
 }
 
@@ -153,21 +175,25 @@ int RootScene::getPhotoLevel() const
 void RootScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T)
 {
     m_userScene->addCanvas(m_undoStack, R, T);
+    m_saved = false;
 }
 
 void RootScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name)
 {
     m_userScene->addCanvas(m_undoStack, R, T, name);
+    m_saved = false;
 }
 
 void RootScene::addStroke(float u, float v, dureu::EVENT event)
 {
     m_userScene->addStroke(m_undoStack, u, v, event);
+    m_saved = false;
 }
 
 void RootScene::addPhoto(const std::string& fname)
 {
     m_userScene->addPhoto(m_undoStack, fname);
+    m_saved = false;
 }
 
 bool RootScene::setCanvasCurrent(entity::Canvas* cnv)
@@ -193,11 +219,13 @@ entity::Canvas* RootScene::getCanvasPrevious() const
 void RootScene::setTransformOffset(const osg::Vec3f& translate, const int mouse)
 {
     m_userScene->setTransformOffset(translate, mouse);
+    m_saved = false;
 }
 
 void RootScene::setTransformRotate(const osg::Vec3f& normal, const int mouse)
 {
     m_userScene->setTransformRotate(normal, mouse);
+    m_saved = false;
 }
 
 RootScene::~RootScene()

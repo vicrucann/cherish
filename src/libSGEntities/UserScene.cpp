@@ -237,6 +237,11 @@ void entity::UserScene::setTransformRotate(const osg::Vec3f& normal, const int m
     }
 }
 
+bool entity::UserScene::isEmptyScene() const
+{
+    return this->getNumChildren()==0? true : false;
+}
+
 entity::UserScene::~UserScene()
 {
 
