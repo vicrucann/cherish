@@ -64,6 +64,7 @@ public:
     static const QIcon& viewerLeftIcon();
     static const QIcon& viewerNextIcon();
     static const QIcon& viewerPreviousIcon();
+    static const QIcon& viewerBookmarkIcon();
     static const QIcon& viewerRightIcon();
     static const QIcon& viewerTopIcon();
     static const QIcon& viewerTwoscreenIcon();

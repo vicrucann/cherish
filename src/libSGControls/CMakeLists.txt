@@ -20,6 +20,12 @@ set (libSGControls_SRCS
     AddCanvasCommand.cpp
     AddPhotoCommand.h
     AddPhotoCommand.cpp
+    EditCanvasCommand.h
+    EditCanvasCommand.cpp
+    EditPhotoCommand.h
+    EditPhotoCommand.cpp
+    EditStrokeCommand.h
+    EditStrokeCommand.cpp
 )
 
 add_library(libSGControls
