@@ -100,7 +100,7 @@ void MainWindow::onCreateViewer(){
 */
 void MainWindow::onFileNew()
 {
-
+    this->onFileClose();
 }
 
 /* Check whether the current scene is empty or not
@@ -136,8 +136,8 @@ void MainWindow::onFileOpen()
 void MainWindow::onFileSave()
 {
     if (!m_rootScene->isSetFilePath()){
-        QString fname = QFileDialog::getSaveFileName(this, tr("Save a scene to file"),
-                                                     QString(), tr("OSG files (*.osgt)"));
+        QString fname = QFileDialog::getSaveFileName(this, tr("Saving scene to file"),
+                                                     QString(), tr("OSG file (*.osgt)"));
         if (fname.isEmpty()){
             QMessageBox::warning(this, tr("Chosing filename"), tr("No file name is chosen. Changes were not saved."));
             this->statusBar()->showMessage(tr("Scene was not saved to file"), 2000);
@@ -180,6 +180,7 @@ void MainWindow::onFileImage()
 
 void MainWindow::onFileClose()
 {
+    outLogMsg("onFileClose() called");
     if (!m_rootScene->isSavedToFile() && !m_rootScene->isEmptyScene()){
         QMessageBox::StandardButton reply = QMessageBox::question(this,
                                                                   tr("Closing the current project"),
@@ -187,16 +188,16 @@ void MainWindow::onFileClose()
                                                                   QMessageBox::Yes|QMessageBox::No);
         if (reply == QMessageBox::Yes)
             this->onFileSave();
-        //if (!m_rootScene->isSavedToFile())
-        //    return;
+        if (!m_rootScene->isSavedToFile() && reply==QMessageBox::Yes)
+            return;
     }
     m_rootScene->clearUserData();
-    // m_glWidget->close(); // close all viewer widgets
-    this->statusBar()->showMessage(tr("Closed the current project"), 2000);
+    this->statusBar()->showMessage(tr("Current project is closed"), 2000);
 }
 
 void MainWindow::onFileExit()
 {
+    outLogMsg("onFileExit() called");
     this->onFileClose();
     this->close();
 }
@@ -354,7 +355,7 @@ void MainWindow::initializeActions()
     m_actionClose->setShortcut(tr("Ctrl+W"));
 
     m_actionExit = new QAction(Data::fileExitIcon(), tr("&Exit"), this);
-    this->connect(m_actionClose, SIGNAL(triggered(bool)), this, SLOT(onFileExit()));
+    this->connect(m_actionExit, SIGNAL(triggered(bool)), this, SLOT(onFileExit()));
     m_actionExit->setShortcut(tr("Ctrl+Q"));
 
     m_actionImportImage = new QAction(Data::fileImageIcon(), tr("Import &Image..."), this);
