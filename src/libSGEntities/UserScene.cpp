@@ -113,11 +113,15 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
 {
     outLogMsg("loadPhotoFromFile()");
     if (!stack){
-        fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
+        fatalMsg("addPhoto(): undo stack is NULL, Canvas will not be added. "
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
     AddPhotoCommand* cmd = new AddPhotoCommand(this, fname);
+    if (!cmd){
+        fatalMsg("addPhoto(): could not allocate AddPhotoCommand.");
+        return;
+    }
     stack->push(cmd);
 }
 
