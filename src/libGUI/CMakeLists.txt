@@ -21,6 +21,7 @@ set(libGUI_SRCS
 
 qt5_wrap_ui(UI_GENERATED_SRCS
     Widgets/MainWindow.ui
+    Widgets/QtOSGWindow.ui
 )
 
 add_library(libGUI STATIC
