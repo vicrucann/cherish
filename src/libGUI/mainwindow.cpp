@@ -404,7 +404,7 @@ void MainWindow::initializeActions()
     m_actionEraser = new QAction(Data::sceneEraserIcon(), tr("&Eraser"), this);
     this->connect(m_actionEraser, SIGNAL(triggered(bool)), this, SLOT(onErase()));
 
-    m_actionSelect = new QAction(tr("S&elect"), this);
+    m_actionSelect = new QAction(Data::sceneSelectIcon(), tr("S&elect"), this);
     this->connect(m_actionSelect, SIGNAL(triggered(bool)), this, SLOT(onSelect()));
 
     m_actionOrbit = new QAction(Data::sceneOrbitIcon(), tr("&Orbit"), this);
@@ -502,11 +502,13 @@ void MainWindow::initializeMenus()
     submenuCamera->addAction(m_actionZoom);
     menuScene->addSeparator();
     QMenu* submenuCanvas = menuScene->addMenu("New Canvas");
+    submenuCanvas->setIcon(Data::sceneNewCanvasIcon());
     submenuCanvas->addAction(m_actionCanvasClone);
     submenuCanvas->addAction(m_actionCanvasXY);
     submenuCanvas->addAction(m_actionCanvasYZ);
     submenuCanvas->addAction(m_actionCanvasXZ);
     QMenu* submenuSet = menuScene->addMenu("New Canvas Set");
+    submenuSet->setIcon(Data::sceneNewCanvasSetParallelIcon());
     submenuSet->addAction(m_actionSetStandard);
     submenuSet->addAction(m_actionSetCoaxial);
     submenuSet->addAction(m_actionSetParallel);
@@ -561,6 +563,7 @@ void MainWindow::initializeToolbars()
     menuNewCanvas->addAction(m_actionCanvasXZ);
     menuNewCanvas->addAction(m_actionCanvasClone);
     QToolButton* tbNewCanvas = new QToolButton();
+    tbNewCanvas->setIcon(Data::sceneNewCanvasIcon());
     tbNewCanvas->setMenu(menuNewCanvas);
     tbNewCanvas->setPopupMode(QToolButton::InstantPopup);
     QWidgetAction* waNewCanvas = new QWidgetAction(this);

@@ -88,6 +88,13 @@ const QIcon &Data::editDeleteIcon()
     return icon;
 }
 
+const QIcon &Data::sceneSelectIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-select-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/scene-select-24px.svg"));
+    return icon;
+}
+
 const QIcon &Data::sceneSketchIcon()
 {
     Q_ASSERT_X(!QPixmap(":/scene-sketch-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");

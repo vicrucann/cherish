@@ -3,40 +3,37 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 18 18" style="enable-background:new 0 0 18 18;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:#4C4C4D;}
-	.st1{fill:none;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st2{fill:none;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
-	.st3{fill:#939393;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st0{fill:#939393;}
+	.st1{fill:none;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st2{fill:none;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;}
+	.st3{fill:#939393;stroke:#000000;stroke-linejoin:round;stroke-miterlimit:10;}
 </style>
-<polygon class="st0" points="17.6,13.5 9,10.1 9,0.9 17.4,3 "/>
-<polygon class="st1" points="9.3,17.1 1.1,13.7 1.1,3.4 9.1,1.1 17,3.2 17,13.7 "/>
-<polyline class="st2" points="1.1,3.5 9.4,6.3 17.1,3.4 "/>
-<line class="st3" x1="9.4" y1="6.3" x2="9.4" y2="17.1"/>
+<polygon class="st0" points="18,13.8 9,10.4 9,0.3 17.9,2.6 "/>
+<polygon class="st1" points="9.3,17.5 0.5,14 0.5,3 9,0.5 17.5,2.8 17.5,14 "/>
+<polyline class="st2" points="0.5,3.2 9.3,6.1 17.5,3 "/>
+<line class="st3" x1="9.3" y1="6.1" x2="9.3" y2="17.6"/>
 <g>
-	<ellipse transform="matrix(0.9377 -0.3473 0.3473 0.9377 -3.2211 3.501)" cx="8.2" cy="10.7" rx="0.5" ry="0.5"/>
+	<ellipse transform="matrix(0.9373 -0.3486 0.3486 0.9373 -3.2652 3.4714)" cx="8" cy="10.8" rx="0.5" ry="0.5"/>
 	<g>
-		<ellipse transform="matrix(0.9377 -0.3473 0.3473 0.9377 -3.5449 2.9235)" cx="6.4" cy="11.3" rx="0.5" ry="0.5"/>
-		<ellipse transform="matrix(0.9377 -0.3473 0.3473 0.9377 -3.8958 2.3276)" cx="4.5" cy="12" rx="0.5" ry="0.5"/>
-		<ellipse transform="matrix(0.9377 -0.3473 0.3473 0.9377 -4.2466 1.7317)" cx="2.7" cy="12.7" rx="0.5" ry="0.5"/>
+		<ellipse transform="matrix(0.9373 -0.3486 0.3486 0.9373 -3.6115 2.8531)" cx="6.1" cy="11.5" rx="0.5" ry="0.5"/>
+		<ellipse transform="matrix(0.9373 -0.3486 0.3486 0.9373 -3.9866 2.215)" cx="4.2" cy="12.2" rx="0.5" ry="0.5"/>
+		<ellipse transform="matrix(0.9373 -0.3486 0.3486 0.9373 -4.3617 1.5769)" cx="2.2" cy="12.9" rx="0.5" ry="0.5"/>
 	</g>
 </g>
 <g>
-	<ellipse transform="matrix(0.3397 -0.9405 0.9405 0.3397 -1.6718 23.0357)" cx="15.6" cy="12.7" rx="0.5" ry="0.5"/>
+	<ellipse transform="matrix(0.3409 -0.9401 0.9401 0.3409 -1.6364 23.4788)" cx="15.9" cy="12.9" rx="0.5" ry="0.5"/>
 	<g>
-		<ellipse transform="matrix(0.3397 -0.9405 0.9405 0.3397 -2.1937 20.9438)" cx="13.8" cy="12" rx="0.5" ry="0.5"/>
-		<ellipse transform="matrix(0.3397 -0.9405 0.9405 0.3397 -2.7845 18.7707)" cx="12" cy="11.4" rx="0.5" ry="0.5"/>
-		<ellipse transform="matrix(0.3397 -0.9405 0.9405 0.3397 -3.3753 16.5976)" cx="10.1" cy="10.7" rx="0.5" ry="0.5"/>
+		<ellipse transform="matrix(0.3409 -0.9401 0.9401 0.3409 -2.194 21.2504)" cx="14.1" cy="12.2" rx="0.5" ry="0.5"/>
+		<ellipse transform="matrix(0.3409 -0.9401 0.9401 0.3409 -2.825 18.9353)" cx="12.1" cy="11.5" rx="0.5" ry="0.5"/>
+		<ellipse transform="matrix(0.3409 -0.9401 0.9401 0.3409 -3.456 16.6202)" cx="10.1" cy="10.8" rx="0.5" ry="0.5"/>
 	</g>
 </g>
 <g>
-	<ellipse transform="matrix(1 -3.816151e-003 3.816151e-003 1 -3.205138e-002 3.458982e-002)" cx="9" cy="8.4" rx="0.5" ry="0.5"/>
+	<ellipse transform="matrix(1 -3.800923e-003 3.800923e-003 1 -3.165328e-002 3.414365e-002)" cx="9" cy="8.3" rx="0.5" ry="0.5"/>
 	<g>
-		
-			<ellipse transform="matrix(1 -3.816151e-003 3.816151e-003 1 -2.489229e-002 3.469890e-002)" cx="9.1" cy="6.5" rx="0.5" ry="0.5"/>
-		
-			<ellipse transform="matrix(1 -3.816151e-003 3.816151e-003 1 -1.741393e-002 3.465609e-002)" cx="9.1" cy="4.6" rx="0.5" ry="0.5"/>
-		
-			<ellipse transform="matrix(1 -3.816151e-003 3.816151e-003 1 -9.935565e-003 3.461329e-002)" cx="9.1" cy="2.6" rx="0.5" ry="0.5"/>
+		<ellipse transform="matrix(1 -3.800923e-003 3.800923e-003 1 -2.407549e-002 3.425969e-002)" cx="9" cy="6.4" rx="0.5" ry="0.5"/>
+		<ellipse transform="matrix(1 -3.800923e-003 3.800923e-003 1 -1.615974e-002 3.421431e-002)" cx="9" cy="4.3" rx="0.5" ry="0.5"/>
+		<ellipse transform="matrix(1 -3.800923e-003 3.800923e-003 1 -8.243990e-003 3.416894e-002)" cx="9" cy="2.2" rx="0.5" ry="0.5"/>
 	</g>
 </g>
 </svg>

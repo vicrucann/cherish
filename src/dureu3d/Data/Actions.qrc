@@ -52,5 +52,6 @@
         <file>scene-newcanvas-standard-24px.svg</file>
         <file>scene-push-strokes-24px.svg</file>
         <file>scene-image-rotate-24px.svg</file>
+        <file>scene-select-24px.svg</file>
     </qresource>
 </RCC>
