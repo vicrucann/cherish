@@ -35,9 +35,9 @@ public:
     virtual void doDelete(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doErase(double u, double v, int mouse = 1);
     virtual void doSketch(double u, double v, dureu::EVENT event);
-    virtual void doEditOffset(osg::Vec3f XC, int mouse = 1);
-    virtual void doEditRotate(int x, int y, int mouse = 1);
-    virtual void doEditMove(const osgUtil::LineSegmentIntersector::Intersection& result,
+    virtual void doEditCanvasOffset(osg::Vec3f XC, int mouse = 1);
+    virtual void doEditCanvasRotate(int x, int y, int mouse = 1);
+    virtual void doEditPhotoMove(const osgUtil::LineSegmentIntersector::Intersection& result,
                             double u, double v, int mouse = 1);
 
 protected:

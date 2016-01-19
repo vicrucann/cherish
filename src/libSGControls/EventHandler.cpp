@@ -137,10 +137,10 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_EDIT_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
                 return;
-            doEditOffset(XC, 0);
+            doEditCanvasOffset(XC, 0);
             break;
         case dureu::MOUSE_EDIT_ROTATE:
-            doEditRotate(ea.getX(), ea.getY(), 0);
+            doEditCanvasRotate(ea.getX(), ea.getY(), 0);
             break;
         case dureu::MOUSE_ERASE:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
@@ -162,10 +162,10 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_EDIT_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
                 return;
-            doEditOffset(XC, 2);
+            doEditCanvasOffset(XC, 2);
             break;
         case dureu::MOUSE_EDIT_ROTATE:
-            doEditRotate(ea.getX(), ea.getY(), 2);
+            doEditCanvasRotate(ea.getX(), ea.getY(), 2);
             break;
         case dureu::MOUSE_ERASE:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
@@ -186,10 +186,10 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_EDIT_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
                 return;
-            doEditOffset(XC, 1);
+            doEditCanvasOffset(XC, 1);
             break;
         case dureu::MOUSE_EDIT_ROTATE:
-            doEditRotate(ea.getX(), ea.getY(), 1);
+            doEditCanvasRotate(ea.getX(), ea.getY(), 1);
             break;
         case dureu::MOUSE_ERASE:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
@@ -232,15 +232,15 @@ void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
     case osgGA::GUIEventAdapter::PUSH:
         std::cout << "doByHybrid(): push button" << std::endl;
         outLogVec("u v", u, v, 0);
-        doEditMove(*result, u, v, 0);
+        doEditPhotoMove(*result, u, v, 0);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         std::cout << "doByHybrid(): release button" << std::endl;
         outLogVec("u v", u, v, 0);
-        doEditMove(*result, u, v, 2);
+        doEditPhotoMove(*result, u, v, 2);
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        doEditMove(*result, u, v, 1);
+        doEditPhotoMove(*result, u, v, 1);
         break;
     default: // scrolling, doubleclick, move, keydown, keyup, resize
         // frame, pen_pressure, pen_..., ...
@@ -293,12 +293,12 @@ void EventHandler::doSketch(double u, double v, dureu::EVENT event)
 }
 
 // performs offset of the current canvas along its normal
-void EventHandler::doEditOffset(osg::Vec3f XC, int mouse)
+void EventHandler::doEditCanvasOffset(osg::Vec3f XC, int mouse)
 {
     m_scene->setTransformOffset(XC, mouse);
 }
 
-void EventHandler::doEditRotate(int x, int y, int mouse)
+void EventHandler::doEditCanvasRotate(int x, int y, int mouse)
 {
     osg::Quat rot(dureu::PI/24, osg::Vec3f(0,0,1));
     m_scene->setTransformRotate(rot, mouse);
@@ -309,16 +309,16 @@ void EventHandler::doEditRotate(int x, int y, int mouse)
 // Make that canvas current
 // Change photo coordinates to [x, y]
 // Change photo colors when pushed (edit color) and released (no color)
-void EventHandler::doEditMove(const osgUtil::LineSegmentIntersector::Intersection &result, double u, double v, int mouse)
+void EventHandler::doEditPhotoMove(const osgUtil::LineSegmentIntersector::Intersection &result, double u, double v, int mouse)
 {
     entity::Photo* photo = getPhoto(result);
     if (!photo){
-        std::cerr << "doEditMove(): could not dynamic_cast<Photo*>" << std::endl;
+        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Photo*>" << std::endl;
         return;
     }
     entity::Canvas* cnv = getCanvas(result);
     if (!cnv){
-        std::cerr << "doEditMove(): could not dynamic_cast<Canvas*>" << std::endl;
+        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Canvas*>" << std::endl;
         return;
     }
     m_scene->setCanvasCurrent(cnv);
