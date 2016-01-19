@@ -15,6 +15,7 @@ entity::UserScene::UserScene()
     , m_canvasCurrent(0)
     , m_canvasPrevious(0)
     , m_deltaT(osg::Vec3f(0.f,0.f,0.f))
+    , m_deltaR(osg::Quat(0,0,0,1))
     , m_strokeCurrent(0)
     , m_idCanvas(0)
     , m_filePath("")
@@ -26,6 +27,8 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     : osg::Group(scene, copyop)
     , m_canvasCurrent(scene.m_canvasCurrent)
     , m_canvasPrevious(scene.m_canvasPrevious)
+    , m_deltaT(scene.m_deltaT)
+    , m_deltaR(scene.m_deltaR)
     , m_strokeCurrent(scene.m_strokeCurrent)
     , m_idCanvas(scene.m_idCanvas)
     , m_filePath(scene.m_filePath)
@@ -225,22 +228,27 @@ void entity::UserScene::setTransformOffset(QUndoStack* stack, const osg::Vec3f& 
         m_canvasCurrent->translate(osg::Matrix::translate(-m_deltaT.x(), -m_deltaT.y(), -m_deltaT.z()));
         EditCanvasOffsetCommand* cmd = new EditCanvasOffsetCommand(m_canvasCurrent.get(), m_deltaT);
         stack->push(cmd);
+        m_deltaT = osg::Vec3f(0.f,0.f,0.f);
     }
 }
 
-void entity::UserScene::setTransformRotate(const osg::Vec3f& normal, const int mouse)
+void entity::UserScene::setTransformRotate(QUndoStack* stack, const osg::Quat& rotation, const int mouse)
 {
     // initialize offset mode
-    if (mouse == 0){
+    if (mouse == 0 || (mouse == 1 && !m_canvasCurrent->getModeOffset())){
         m_canvasCurrent->setModeOffset(true);
+        m_deltaR = osg::Quat();
     }
+    m_canvasCurrent->rotate(osg::Matrix::rotate(rotation));
+    m_deltaR = rotation * m_deltaR;
 
     // back to normal mode
-    else if (mouse == 2){
+    if (mouse == 2){
         m_canvasCurrent->setModeOffset(false);
-    }
-    else {
-       m_canvasCurrent->rotate(osg::Matrix::rotate(dureu::PI/24, osg::Vec3f(0,0,1)));
+        m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()));
+        EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(m_canvasCurrent.get(), m_deltaR);
+        stack->push(cmd);
+        m_deltaR = osg::Quat();
     }
 }
 

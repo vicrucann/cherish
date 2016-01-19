@@ -77,7 +77,7 @@ public:
     entity::Canvas* getCanvasPrevious() const;
 
     void setTransformOffset(const osg::Vec3f& translate, const int mouse);
-    void setTransformRotate(const osg::Vec3f& normal, const int mouse);
+    void setTransformRotate(const osg::Quat& rotation, const int mouse);
 
 protected:
     ~RootScene();

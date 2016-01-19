@@ -222,9 +222,9 @@ void RootScene::setTransformOffset(const osg::Vec3f& translate, const int mouse)
     m_saved = false;
 }
 
-void RootScene::setTransformRotate(const osg::Vec3f& normal, const int mouse)
+void RootScene::setTransformRotate(const osg::Quat &rotation, const int mouse)
 {
-    m_userScene->setTransformRotate(normal, mouse);
+    m_userScene->setTransformRotate(m_undoStack, rotation, mouse);
     m_saved = false;
 }
 

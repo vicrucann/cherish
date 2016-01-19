@@ -300,7 +300,8 @@ void EventHandler::doEditOffset(osg::Vec3f XC, int mouse)
 
 void EventHandler::doEditRotate(int x, int y, int mouse)
 {
-    m_scene->setTransformRotate(osg::Vec3f(0,0,0), mouse);
+    osg::Quat rot(dureu::PI/24, osg::Vec3f(0,0,1));
+    m_scene->setTransformRotate(rot, mouse);
 }
 
 // Pick photo

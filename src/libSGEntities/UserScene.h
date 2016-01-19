@@ -49,7 +49,7 @@ public:
     entity::Canvas* getCanvasPrevious() const;
 
     void setTransformOffset(QUndoStack* stack, const osg::Vec3f& translate, const int mouse);
-    void setTransformRotate(const osg::Vec3f& normal, const int mouse);
+    void setTransformRotate(QUndoStack* stack, const osg::Quat& rotation, const int mouse);
 
     bool isEmptyScene() const;
     bool clearUserData();
@@ -71,6 +71,7 @@ private:
     osg::observer_ptr<entity::Canvas> m_canvasPrevious;
     osg::observer_ptr<entity::Canvas> m_canvasTarget; /* for push operations */
     osg::Vec3f m_deltaT; /* for edit operations: translate */
+    osg::Quat m_deltaR; /* for edit operation: rotate */
     osg::ref_ptr<entity::Stroke> m_strokeCurrent;
     unsigned int m_idCanvas;
     std::string m_filePath;
