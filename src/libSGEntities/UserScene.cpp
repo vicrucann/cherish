@@ -16,8 +16,11 @@ entity::UserScene::UserScene()
     , m_canvasPrevious(0)
     , m_deltaT(osg::Vec3f(0.f,0.f,0.f))
     , m_deltaR(osg::Quat(0,0,0,1))
+    , m_u(0)
+    , m_v(0)
     , m_strokeCurrent(0)
     , m_idCanvas(0)
+    , m_idPhoto(0)
     , m_filePath("")
 {
     this->setName("UserScene");
@@ -29,8 +32,11 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_canvasPrevious(scene.m_canvasPrevious)
     , m_deltaT(scene.m_deltaT)
     , m_deltaR(scene.m_deltaR)
+    , m_u(scene.m_u)
+    , m_v(scene.m_v)
     , m_strokeCurrent(scene.m_strokeCurrent)
     , m_idCanvas(scene.m_idCanvas)
+    , m_idPhoto(scene.m_idPhoto)
     , m_filePath(scene.m_filePath)
 {
 
@@ -44,6 +50,16 @@ void entity::UserScene::setIdCanvas(unsigned int id)
 unsigned int entity::UserScene::getIdCanvas() const
 {
     return m_idCanvas;
+}
+
+void entity::UserScene::setIdPhoto(unsigned int id)
+{
+    m_idPhoto = id;
+}
+
+unsigned int entity::UserScene::getIdPhoto() const
+{
+    return m_idPhoto;
 }
 
 void entity::UserScene::setFilePath(const std::string &name)
@@ -120,7 +136,7 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
-    AddPhotoCommand* cmd = new AddPhotoCommand(this, fname);
+    AddPhotoCommand* cmd = new AddPhotoCommand(this, fname, this->getPhotoName());
     if (!cmd){
         fatalMsg("addPhoto(): could not allocate AddPhotoCommand.");
         return;
@@ -212,7 +228,7 @@ entity::Canvas*entity::UserScene::getCanvasPrevious() const
     return m_canvasPrevious.get();
 }
 
-void entity::UserScene::setTransformOffset(QUndoStack* stack, const osg::Vec3f& translate, const int mouse)
+void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, const int mouse)
 {
     // initialize offset mode
     if (mouse == 0 || (mouse == 1 && !m_canvasCurrent->getModeOffset())){
@@ -232,7 +248,7 @@ void entity::UserScene::setTransformOffset(QUndoStack* stack, const osg::Vec3f& 
     }
 }
 
-void entity::UserScene::setTransformRotate(QUndoStack* stack, const osg::Quat& rotation, const int mouse)
+void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const int mouse)
 {
     // initialize offset mode
     if (mouse == 0 || (mouse == 1 && !m_canvasCurrent->getModeOffset())){
@@ -249,6 +265,41 @@ void entity::UserScene::setTransformRotate(QUndoStack* stack, const osg::Quat& r
         EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(m_canvasCurrent.get(), m_deltaR);
         stack->push(cmd);
         m_deltaR = osg::Quat();
+    }
+}
+
+void entity::UserScene::editPhotoMove(QUndoStack* stack, entity::Photo* photo, const double u, const double v, const int mouse)
+{
+    if (!photo){
+        outErrMsg("movePhoto(): photo pointer is NULL");
+        return;
+    }
+    osg::Geode* data = this->getCanvasCurrent()->getGeodeData();
+    if (!data){
+        outErrMsg("editPhotoMove: could not extract geode data");
+        return;
+    }
+    if (!data->containsNode(photo)){
+        outErrMsg("editPhotoMove: photo does not belong to current canvas");
+        return;
+    }
+
+    if (mouse == 0 || (mouse == 1 && !photo->getModeEdit())){
+        photo->setModeEdit(true);
+        m_u = photo->getCenter().x();
+        m_v = photo->getCenter().y();
+    }
+
+    photo->move(u,v);
+    this->getCanvasCurrent()->updateFrame();
+
+    if (mouse == 2){
+        photo->setModeEdit(false);
+        photo->move(m_u, m_v);
+        EditPhotoMoveCommand* cmd = new EditPhotoMoveCommand(this->getCanvasCurrent(), photo, u, v);
+        stack->push(cmd);
+        m_u = 0;
+        m_v = 0;
     }
 }
 
@@ -295,6 +346,11 @@ bool entity::UserScene::printScene()
 std::string entity::UserScene::getCanvasName()
 {
     return this->getEntityName(dureu::NAME_CANVAS, m_idCanvas++);
+}
+
+std::string entity::UserScene::getPhotoName()
+{
+    return this->getEntityName(dureu::NAME_PHOTO, m_idPhoto++);
 }
 
 std::string entity::UserScene::getEntityName(const std::string &name, unsigned int id) const
@@ -360,5 +416,6 @@ REGISTER_OBJECT_WRAPPER(UserScene_Wrapper
                         , "osg::Object osg::Group entity::UserScene")
 {
     ADD_UINT_SERIALIZER(IdCanvas, 0);
+    ADD_UINT_SERIALIZER(IdPhoto, 0);
     ADD_STRING_SERIALIZER(FilePath, "");
 }

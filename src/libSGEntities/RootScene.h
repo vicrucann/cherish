@@ -35,6 +35,7 @@
 #include "../libSGUtils/observescenecallback.h"
 #include "../libGUI/hudcamera.h"
 #include "UserScene.h"
+#include "Photo.h"
 
 #include <QUndoStack>
 
@@ -76,8 +77,9 @@ public:
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
 
-    void setTransformOffset(const osg::Vec3f& translate, const int mouse);
-    void setTransformRotate(const osg::Quat& rotation, const int mouse);
+    void editCanvasOffset(const osg::Vec3f& translate, const int mouse);
+    void editCanvasRotate(const osg::Quat& rotation, const int mouse);
+    void editPhotoMove(entity::Photo* photo, const double u, const double v, const int mouse);
 
 protected:
     ~RootScene();

@@ -86,7 +86,6 @@ public:
     void translate(const osg::Matrix& mt);
     void rotate(const osg::Matrix& mr);
 
-    void movePhoto(entity::Photo* photo, const double u, const double v, int mouse);
     void setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);
 

@@ -295,13 +295,13 @@ void EventHandler::doSketch(double u, double v, dureu::EVENT event)
 // performs offset of the current canvas along its normal
 void EventHandler::doEditCanvasOffset(osg::Vec3f XC, int mouse)
 {
-    m_scene->setTransformOffset(XC, mouse);
+    m_scene->editCanvasOffset(XC, mouse);
 }
 
 void EventHandler::doEditCanvasRotate(int x, int y, int mouse)
 {
     osg::Quat rot(dureu::PI/24, osg::Vec3f(0,0,1));
-    m_scene->setTransformRotate(rot, mouse);
+    m_scene->editCanvasRotate(rot, mouse);
 }
 
 // Pick photo
@@ -322,7 +322,7 @@ void EventHandler::doEditPhotoMove(const osgUtil::LineSegmentIntersector::Inters
         return;
     }
     m_scene->setCanvasCurrent(cnv);
-    m_scene->getCanvasCurrent()->movePhoto(photo, u, v, mouse);
+    m_scene->editPhotoMove(photo, u, v, mouse);
 }
 
 entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
@@ -516,7 +516,7 @@ bool EventHandler::getRaytraceNormalProjection(const osgGA::GUIEventAdapter &ea,
     if (std::fabs(u3.x())<=dureu::EPSILON && std::fabs(u3.y())<=dureu::EPSILON && std::fabs(u3.z())<=dureu::EPSILON){
         std::cerr << "getRaytraceNormalProjection(): cast ray and normal are almost parallel. To resolve, change the camera view." << std::endl;
         if (m_scene->getCanvasCurrent()->getModeOffset())
-            m_scene->setTransformOffset(osg::Vec3f(0.f,0.f,0.f), 2);
+            m_scene->editCanvasOffset(osg::Vec3f(0.f,0.f,0.f), 2);
         return false;
     }
 

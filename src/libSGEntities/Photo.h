@@ -37,11 +37,13 @@ public:
 
     void setFrameColor(const osg::Vec4 color);
     void setModeEdit(bool edit);
+    bool getModeEdit() const;
     void move(const double u, const double v);
 private:
     osg::ref_ptr<osg::Texture2D> m_texture;
     osg::Vec3f m_center;
     float m_width, m_height;
+    bool m_edit;
 };
 }
 

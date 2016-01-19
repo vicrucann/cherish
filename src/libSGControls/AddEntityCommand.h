@@ -31,7 +31,8 @@ private:
 class AddPhotoCommand : public QUndoCommand
 {
 public:
-    AddPhotoCommand(entity::UserScene* scene, const std::string& name, QUndoCommand* parent = 0);
+    AddPhotoCommand(entity::UserScene* scene, const std::string& fname, const std::string& ename,
+                    QUndoCommand* parent = 0);
     ~AddPhotoCommand();
 
     void undo() Q_DECL_OVERRIDE;

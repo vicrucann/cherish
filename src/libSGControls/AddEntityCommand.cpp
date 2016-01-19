@@ -54,12 +54,13 @@ void AddCanvasCommand::redo()
     m_scene->setCanvasCurrent(m_canvas);
 }
 
-AddPhotoCommand::AddPhotoCommand(entity::UserScene* scene, const std::string& name, QUndoCommand* parent)
+AddPhotoCommand::AddPhotoCommand(entity::UserScene* scene, const std::string& fname, const std::string &ename, QUndoCommand* parent)
     : QUndoCommand(parent)
     , m_canvas(scene->getCanvasCurrent())
     , m_photo(new entity::Photo)
 {
-    m_photo->loadImage(name);
+    m_photo->setName(ename);
+    m_photo->loadImage(fname);
     this->setText(QObject::tr("Add photo to %1")
                   .arg(QString(m_canvas->getName().c_str())));
 }

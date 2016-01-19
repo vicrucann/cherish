@@ -6,6 +6,7 @@
 #include <osg/observer_ptr>
 
 #include "Canvas.h"
+#include "Photo.h"
 
 class EditCanvasOffsetCommand : public QUndoCommand
 {
@@ -33,6 +34,22 @@ public:
 protected:
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::Quat m_rotate;
+};
+
+class EditPhotoMoveCommand : public QUndoCommand
+{
+public:
+    EditPhotoMoveCommand(entity::Canvas* canvas, entity::Photo* photo,
+                         const double u, const double v, QUndoCommand* parent = 0);
+    ~EditPhotoMoveCommand();
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    osg::observer_ptr<entity::Photo> m_photo;
+    double m_u0, m_v0, m_u1, m_v1;
 };
 
 #endif // EDITENTITYCOMMAND_H

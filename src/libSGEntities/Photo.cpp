@@ -11,6 +11,7 @@ entity::Photo::Photo()
     , m_center(osg::Vec3f(0.f,0.f,0.f))
     , m_width(0)
     , m_height(0)
+    , m_edit(false)
 {
     this->setName("Photo");
     outLogMsg("New Photo ctor complete");
@@ -22,6 +23,7 @@ entity::Photo::Photo(const entity::Photo& photo, const osg::CopyOp& copyop)
     , m_center(photo.m_center)
     , m_width(photo.m_width)
     , m_height(photo.m_height)
+    , m_edit(photo.m_edit)
 {
 }
 
@@ -175,6 +177,12 @@ void entity::Photo::setModeEdit(bool edit)
         this->setFrameColor(dureu::CANVAS_CLR_EDIT);
     else
         this->setFrameColor(dureu::PHOTO_CLR_REST);
+    m_edit = edit;
+}
+
+bool entity::Photo::getModeEdit() const
+{
+    return m_edit;
 }
 
 void entity::Photo::move(const double u, const double v)

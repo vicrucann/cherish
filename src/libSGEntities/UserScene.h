@@ -28,6 +28,9 @@ public:
     void setIdCanvas(unsigned int id);
     unsigned int getIdCanvas() const;
 
+    void setIdPhoto(unsigned int id);
+    unsigned int getIdPhoto() const;
+
     void setFilePath(const std::string& name);
     const std::string& getFilePath() const;
     bool isSetFilePath() const;
@@ -48,8 +51,9 @@ public:
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
 
-    void setTransformOffset(QUndoStack* stack, const osg::Vec3f& translate, const int mouse);
-    void setTransformRotate(QUndoStack* stack, const osg::Quat& rotation, const int mouse);
+    void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, const int mouse);
+    void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const int mouse);
+    void editPhotoMove(QUndoStack* stack, entity::Photo* photo, const double u, const double v, const int mouse);
 
     bool isEmptyScene() const;
     bool clearUserData();
@@ -59,6 +63,7 @@ protected:
     ~UserScene();
 
     std::string getCanvasName();
+    std::string getPhotoName();
     std::string getEntityName(const std::string& name, unsigned int id) const;
 
     void strokeStart();
@@ -72,8 +77,10 @@ private:
     osg::observer_ptr<entity::Canvas> m_canvasTarget; /* for push operations */
     osg::Vec3f m_deltaT; /* for edit operations: translate */
     osg::Quat m_deltaR; /* for edit operation: rotate */
+    double m_u, m_v; /* move photo */
     osg::ref_ptr<entity::Stroke> m_strokeCurrent;
     unsigned int m_idCanvas;
+    unsigned int m_idPhoto;
     std::string m_filePath;
 };
 

@@ -331,25 +331,6 @@ void entity::Canvas::rotate(const osg::Matrix& mr)
     this->updateTransforms();
 }
 
-void entity::Canvas::movePhoto(entity::Photo *photo, const double u, const double v, int mouse)
-{
-    if (!photo){
-        outErrMsg("movePhoto(): photo pointer is NULL");
-        return;
-    }
-    if (mouse == 0){
-        photo->setModeEdit(true);
-    }
-
-    photo->move(u,v);
-    this->updateFrame();
-
-    if (mouse == 2){
-        photo->setModeEdit(false);
-        //this->updateData();
-    }
-}
-
 void entity::Canvas::setPhotoCurrent(entity::Photo *photo)
 {
     if (m_photoCurrent.get() == photo)
