@@ -1,5 +1,5 @@
-#ifndef EDITCANVASCOMMAND_H
-#define EDITCANVASCOMMAND_H
+#ifndef EDITENTITYCOMMAND_H
+#define EDITENTITYCOMMAND_H
 
 #include <QUndoCommand>
 
@@ -35,4 +35,4 @@ protected:
     osg::Quat m_rotate;
 };
 
-#endif // EDITCANVASCOMMAND_H
+#endif // EDITENTITYCOMMAND_H

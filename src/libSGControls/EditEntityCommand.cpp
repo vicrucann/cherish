@@ -1,4 +1,4 @@
-#include "EditCanvasCommand.h"
+#include "EditEntityCommand.h"
 
 #include <QObject>
 
@@ -53,3 +53,5 @@ void EditCanvasRotateCommand::redo()
 {
     m_canvas->rotate(osg::Matrix::rotate(m_rotate));
 }
+
+
