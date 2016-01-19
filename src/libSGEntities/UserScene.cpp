@@ -3,9 +3,7 @@
 #include "UserScene.h"
 
 #include "settings.h"
-#include "AddCanvasCommand.h"
-#include "AddStrokeCommand.h"
-#include "AddPhotoCommand.h"
+#include "AddEntityCommand.h"
 #include "findnodevisitor.h"
 
 #include <osgDB/WriteFile>

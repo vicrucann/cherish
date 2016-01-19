@@ -12,14 +12,10 @@ set (libSGControls_SRCS
     EventHandler.cpp
     manipulator.h
     manipulator.cpp
-    AddStrokeCommand.h
-    AddStrokeCommand.cpp
     DeleteStrokeCommand.h
     DeleteStrokeCommand.cpp
-    AddCanvasCommand.h
-    AddCanvasCommand.cpp
-    AddPhotoCommand.h
-    AddPhotoCommand.cpp
+    AddEntityCommand.h
+    AddEntityCommand.cpp
     EditEntityCommand.h
     EditEntityCommand.cpp
 )
