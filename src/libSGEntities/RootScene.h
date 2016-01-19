@@ -77,9 +77,9 @@ public:
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
 
-    void editCanvasOffset(const osg::Vec3f& translate, const int mouse);
-    void editCanvasRotate(const osg::Quat& rotation, const int mouse);
-    void editPhotoMove(entity::Photo* photo, const double u, const double v, const int mouse);
+    void editCanvasOffset(const osg::Vec3f& translate, dureu::EVENT event);
+    void editCanvasRotate(const osg::Quat& rotation, dureu::EVENT event);
+    void editPhotoMove(const double u, const double v, dureu::EVENT event);
 
 protected:
     ~RootScene();

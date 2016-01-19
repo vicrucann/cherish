@@ -216,21 +216,21 @@ entity::Canvas* RootScene::getCanvasPrevious() const
     return m_userScene->getCanvasPrevious();
 }
 
-void RootScene::editCanvasOffset(const osg::Vec3f& translate, const int mouse)
+void RootScene::editCanvasOffset(const osg::Vec3f& translate, dureu::EVENT event)
 {
-    m_userScene->editCanvasOffset(m_undoStack, translate, mouse);
+    m_userScene->editCanvasOffset(m_undoStack, translate, event);
     m_saved = false;
 }
 
-void RootScene::editCanvasRotate(const osg::Quat &rotation, const int mouse)
+void RootScene::editCanvasRotate(const osg::Quat &rotation, dureu::EVENT event)
 {
-    m_userScene->editCanvasRotate(m_undoStack, rotation, mouse);
+    m_userScene->editCanvasRotate(m_undoStack, rotation, event);
     m_saved = false;
 }
 
-void RootScene::editPhotoMove(entity::Photo *photo, const double u, const double v, const int mouse)
+void RootScene::editPhotoMove(const double u, const double v, dureu::EVENT event)
 {
-    m_userScene->editPhotoMove(m_undoStack, photo, u, v, mouse);
+    m_userScene->editPhotoMove(m_undoStack, u, v, event);
 }
 
 RootScene::~RootScene()

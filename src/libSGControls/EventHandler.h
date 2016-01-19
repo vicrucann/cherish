@@ -35,10 +35,10 @@ public:
     virtual void doDelete(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doErase(double u, double v, int mouse = 1);
     virtual void doSketch(double u, double v, dureu::EVENT event);
-    virtual void doEditCanvasOffset(osg::Vec3f XC, int mouse = 1);
-    virtual void doEditCanvasRotate(int x, int y, int mouse = 1);
+    virtual void doEditCanvasOffset(osg::Vec3f XC, dureu::EVENT event);
+    virtual void doEditCanvasRotate(int x, int y, dureu::EVENT event);
     virtual void doEditPhotoMove(const osgUtil::LineSegmentIntersector::Intersection& result,
-                            double u, double v, int mouse = 1);
+                            double u, double v, dureu::EVENT event);
 
 protected:
     entity::Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
@@ -51,10 +51,10 @@ protected:
     bool getRaytraceNormalProjection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                                      osg::Vec3f &XC);
 
+    void finishAll();
+
     dureu::MOUSE_MODE mMode;
     osg::observer_ptr<RootScene> m_scene;
-
-private:
 };
 
 #endif // EVENTHANDLER

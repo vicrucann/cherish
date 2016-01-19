@@ -33,7 +33,7 @@ entity::Canvas::Canvas()
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
     , m_normal(dureu::NORMAL)
     , m_color(dureu::CANVAS_CLR_REST) // frame and pickable color
-    , m_editMode(false)
+    , m_edit(false)
 {
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
@@ -71,7 +71,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_center(cnv.m_center)
     , m_normal(cnv.m_normal)
     , m_color(cnv.m_color)
-    , m_editMode(cnv.m_editMode)
+    , m_edit(cnv.m_edit)
 {
 }
 
@@ -344,8 +344,12 @@ void entity::Canvas::setPhotoCurrent(entity::Photo *photo)
 // changes photo frame color based on bool varialbe
 void entity::Canvas::setPhotoCurrent(bool current)
 {
-    if (!current)
+    if (!m_photoCurrent)
+        return;
+    if (!current){
         m_photoCurrent->setFrameColor(dureu::PHOTO_CLR_REST);
+        m_photoCurrent = 0;
+    }
     else
         m_photoCurrent->setFrameColor(dureu::PHOTO_CLR_SELECTED);
 }
@@ -379,25 +383,25 @@ void entity::Canvas::updateData()
     this->updateTransforms();
 }
 
-void entity::Canvas::setModeOffset(bool on)
+void entity::Canvas::setModeEdit(bool on)
 {
     if (on){
-        std::cout << "setModeOffset(): ON - " << on << std::endl;
+        std::cout << "setModeEdit(): ON - " << on << std::endl;
         this->setColor(dureu::CANVAS_CLR_EDIT);
         this->setVisibilityLocalAxis(false);
     }
     else{
-        std::cout << "setModeOffset(): OFF - " << on << std::endl;
+        std::cout << "setModeEdit(): OFF - " << on << std::endl;
         this->setColor(dureu::CANVAS_CLR_CURRENT);
         this->setVisibilityLocalAxis(true); // could be bug here, when originally local axis is off by user
     }
     m_switch->setChildValue(m_switch->getChild(2), on);
-    m_editMode = on;
+    m_edit = on;
 }
 
-bool entity::Canvas::getModeOffset() const
+bool entity::Canvas::getModeEdit() const
 {
-    return m_editMode;
+    return m_edit;
 }
 
 osg::Plane entity::Canvas::getPlane() const

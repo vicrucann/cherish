@@ -137,10 +137,10 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_EDIT_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
                 return;
-            doEditCanvasOffset(XC, 0);
+            doEditCanvasOffset(XC, dureu::EVENT_PRESSED);
             break;
         case dureu::MOUSE_EDIT_ROTATE:
-            doEditCanvasRotate(ea.getX(), ea.getY(), 0);
+            doEditCanvasRotate(ea.getX(), ea.getY(), dureu::EVENT_PRESSED);
             break;
         case dureu::MOUSE_ERASE:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
@@ -162,10 +162,10 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_EDIT_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
                 return;
-            doEditCanvasOffset(XC, 2);
+            doEditCanvasOffset(XC, dureu::EVENT_RELEASED);
             break;
         case dureu::MOUSE_EDIT_ROTATE:
-            doEditCanvasRotate(ea.getX(), ea.getY(), 2);
+            doEditCanvasRotate(ea.getX(), ea.getY(), dureu::EVENT_RELEASED);
             break;
         case dureu::MOUSE_ERASE:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
@@ -186,10 +186,10 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_EDIT_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
                 return;
-            doEditCanvasOffset(XC, 1);
+            doEditCanvasOffset(XC, dureu::EVENT_DRAGGED);
             break;
         case dureu::MOUSE_EDIT_ROTATE:
-            doEditCanvasRotate(ea.getX(), ea.getY(), 1);
+            doEditCanvasRotate(ea.getX(), ea.getY(), dureu::EVENT_DRAGGED);
             break;
         case dureu::MOUSE_ERASE:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
@@ -232,15 +232,15 @@ void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
     case osgGA::GUIEventAdapter::PUSH:
         std::cout << "doByHybrid(): push button" << std::endl;
         outLogVec("u v", u, v, 0);
-        doEditPhotoMove(*result, u, v, 0);
+        doEditPhotoMove(*result, u, v, dureu::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         std::cout << "doByHybrid(): release button" << std::endl;
         outLogVec("u v", u, v, 0);
-        doEditPhotoMove(*result, u, v, 2);
+        doEditPhotoMove(*result, u, v, dureu::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        doEditPhotoMove(*result, u, v, 1);
+        doEditPhotoMove(*result, u, v, dureu::EVENT_DRAGGED);
         break;
     default: // scrolling, doubleclick, move, keydown, keyup, resize
         // frame, pen_pressure, pen_..., ...
@@ -293,15 +293,15 @@ void EventHandler::doSketch(double u, double v, dureu::EVENT event)
 }
 
 // performs offset of the current canvas along its normal
-void EventHandler::doEditCanvasOffset(osg::Vec3f XC, int mouse)
+void EventHandler::doEditCanvasOffset(osg::Vec3f XC, dureu::EVENT event)
 {
-    m_scene->editCanvasOffset(XC, mouse);
+    m_scene->editCanvasOffset(XC, event);
 }
 
-void EventHandler::doEditCanvasRotate(int x, int y, int mouse)
+void EventHandler::doEditCanvasRotate(int x, int y, dureu::EVENT event)
 {
     osg::Quat rot(dureu::PI/24, osg::Vec3f(0,0,1));
-    m_scene->editCanvasRotate(rot, mouse);
+    m_scene->editCanvasRotate(rot, event);
 }
 
 // Pick photo
@@ -309,7 +309,7 @@ void EventHandler::doEditCanvasRotate(int x, int y, int mouse)
 // Make that canvas current
 // Change photo coordinates to [x, y]
 // Change photo colors when pushed (edit color) and released (no color)
-void EventHandler::doEditPhotoMove(const osgUtil::LineSegmentIntersector::Intersection &result, double u, double v, int mouse)
+void EventHandler::doEditPhotoMove(const osgUtil::LineSegmentIntersector::Intersection &result, double u, double v, dureu::EVENT event)
 {
     entity::Photo* photo = getPhoto(result);
     if (!photo){
@@ -322,7 +322,8 @@ void EventHandler::doEditPhotoMove(const osgUtil::LineSegmentIntersector::Inters
         return;
     }
     m_scene->setCanvasCurrent(cnv);
-    m_scene->editPhotoMove(photo, u, v, mouse);
+    m_scene->getCanvasCurrent()->setPhotoCurrent(photo);
+    m_scene->editPhotoMove(u, v, event);
 }
 
 entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
@@ -355,6 +356,7 @@ bool EventHandler::getLineIntersections(const osgGA::GUIEventAdapter &ea,
     cam->accept(iv);
     if (!intersector->containsIntersections()){
         outLogMsg("getLineIntersections(): no intersections found");
+        this->finishAll();
         return false;
     }
     result = *(intersector->getIntersections().begin());
@@ -414,10 +416,7 @@ bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& e
         // this should be replaced by a function finishAll()
         // which checks what are the current modes (sketch, photo move, etc) that are not finished
         // and finishes each which is current
-        if (m_scene->getCanvasCurrent()->getStrokeCurrent()){
-            std::cout << "getRaytraceIntersection(): finishing the current stroke." << std::endl;
-            m_scene->addStroke(0,0, dureu::EVENT_OFF);
-        }
+        this->finishAll();
         return false;
     }
     osg::Vec3f dir = farPoint-nearPoint;
@@ -515,8 +514,7 @@ bool EventHandler::getRaytraceNormalProjection(const osgGA::GUIEventAdapter &ea,
 
     if (std::fabs(u3.x())<=dureu::EPSILON && std::fabs(u3.y())<=dureu::EPSILON && std::fabs(u3.z())<=dureu::EPSILON){
         std::cerr << "getRaytraceNormalProjection(): cast ray and normal are almost parallel. To resolve, change the camera view." << std::endl;
-        if (m_scene->getCanvasCurrent()->getModeOffset())
-            m_scene->editCanvasOffset(osg::Vec3f(0.f,0.f,0.f), 2);
+        this->finishAll();
         return false;
     }
 
@@ -532,4 +530,32 @@ bool EventHandler::getRaytraceNormalProjection(const osgGA::GUIEventAdapter &ea,
     osg::Vec3f X1 = P1 + u1*r1;
     XC = X1 - C;
     return true;
+}
+
+/* If any entity is in edit mode,
+ * finish the edit command.
+ * For example, if photo was in edit mode, set it to normal mode
+ * This function should be called only when an intersector fails to
+ * find an intersection. It can happen when, for example, the mouse goes
+ * off-plane mode, or the mouse movement is too fast and the photo is not
+ * tracked under the cursor.
+ */
+void EventHandler::finishAll()
+{
+    switch (mMode)
+    {
+    case dureu::MOUSE_SKETCH:
+        m_scene->addStroke(0,0, dureu::EVENT_OFF);
+        break;
+    case dureu::MOUSE_EDIT_OFFSET:
+        m_scene->editCanvasOffset(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
+        break;
+    case dureu::MOUSE_EDIT_ROTATE:
+        m_scene->editCanvasOffset(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
+        break;
+    case dureu::MOUSE_EDIT_MOVE:
+        m_scene->editPhotoMove(0,0, dureu::EVENT_OFF);
+    default:
+        break;
+    }
 }

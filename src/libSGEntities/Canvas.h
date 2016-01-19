@@ -93,8 +93,8 @@ public:
     void updateFrame();
     void updateData(); // update centroid as well
 
-    void setModeOffset(bool on); // changes certain colors, shows or hides normal
-    bool getModeOffset() const;
+    void setModeEdit(bool on); // changes certain colors, shows or hides normal
+    bool getModeEdit() const;
 
     osg::Plane getPlane() const;
     osg::MatrixTransform* getMatrixTransform() const;
@@ -125,7 +125,7 @@ private:
     osg::Vec3f m_normal;
     osg::Vec4f m_color; // display color for canvas drawables
 
-    bool m_editMode;
+    bool m_edit;
 
 };
 }

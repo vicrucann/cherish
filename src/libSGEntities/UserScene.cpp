@@ -228,78 +228,101 @@ entity::Canvas*entity::UserScene::getCanvasPrevious() const
     return m_canvasPrevious.get();
 }
 
-void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, const int mouse)
+void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event)
 {
-    // initialize offset mode
-    if (mouse == 0 || (mouse == 1 && !m_canvasCurrent->getModeOffset())){
-        m_canvasCurrent->setModeOffset(true);
-        m_deltaT = osg::Vec3f(0.f,0.f,0.f);
+    if (!stack){
+        fatalMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
+                 "Editing is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
     }
-    m_canvasCurrent->translate(osg::Matrix::translate(translate.x(), translate.y(), translate.z()));
-    m_deltaT = m_deltaT + translate;
 
-    // back to normal mode
-    if (mouse == 2){
-        m_canvasCurrent->setModeOffset(false);
-        m_canvasCurrent->translate(osg::Matrix::translate(-m_deltaT.x(), -m_deltaT.y(), -m_deltaT.z()));
-        EditCanvasOffsetCommand* cmd = new EditCanvasOffsetCommand(m_canvasCurrent.get(), m_deltaT);
-        stack->push(cmd);
-        m_deltaT = osg::Vec3f(0.f,0.f,0.f);
+    switch (event){
+    case dureu::EVENT_OFF:
+        this->canvasOffsetFinish(stack);
+        break;
+    case dureu::EVENT_PRESSED:
+        this->canvasOffsetStart();
+        this->canvasOffsetAppend(translate);
+        break;
+    case dureu::EVENT_DRAGGED:
+        if (!this->canvasEditValid())
+            this->canvasOffsetStart();
+        this->canvasOffsetAppend(translate);
+        break;
+    case dureu::EVENT_RELEASED:
+        if (!this->canvasEditValid())
+            this->canvasOffsetStart();
+        this->canvasOffsetAppend(translate);
+        this->canvasOffsetFinish(stack);
+        break;
+    default:
+        break;
     }
 }
 
-void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const int mouse)
+void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event)
 {
-    // initialize offset mode
-    if (mouse == 0 || (mouse == 1 && !m_canvasCurrent->getModeOffset())){
-        m_canvasCurrent->setModeOffset(true);
-        m_deltaR = osg::Quat();
+    if (!stack){
+        fatalMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
+                 "Editing is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
     }
-    m_canvasCurrent->rotate(osg::Matrix::rotate(rotation));
-    m_deltaR = rotation * m_deltaR;
 
-    // back to normal mode
-    if (mouse == 2){
-        m_canvasCurrent->setModeOffset(false);
-        m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()));
-        EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(m_canvasCurrent.get(), m_deltaR);
-        stack->push(cmd);
-        m_deltaR = osg::Quat();
+    switch (event){
+    case dureu::EVENT_OFF:
+        this->canvasRotateFinish(stack);
+        break;
+    case dureu::EVENT_PRESSED:
+        this->canvasRotateStart();
+        this->canvasRotateAppend(rotation);
+        break;
+    case dureu::EVENT_DRAGGED:
+        if (!this->canvasEditValid())
+            this->canvasRotateStart();
+        this->canvasRotateAppend(rotation);
+        break;
+    case dureu::EVENT_RELEASED:
+        if (!this->canvasEditValid())
+            this->canvasRotateStart();
+        this->canvasRotateAppend(rotation);
+        this->canvasRotateFinish(stack);
+        break;
+    default:
+        break;
     }
 }
 
-void entity::UserScene::editPhotoMove(QUndoStack* stack, entity::Photo* photo, const double u, const double v, const int mouse)
+void entity::UserScene::editPhotoMove(QUndoStack* stack, const double u, const double v, dureu::EVENT event)
 {
-    if (!photo){
-        outErrMsg("movePhoto(): photo pointer is NULL");
+    if (!stack){
+        fatalMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
+                 "Editing is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
         return;
     }
-    osg::Geode* data = this->getCanvasCurrent()->getGeodeData();
-    if (!data){
-        outErrMsg("editPhotoMove: could not extract geode data");
-        return;
-    }
-    if (!data->containsNode(photo)){
-        outErrMsg("editPhotoMove: photo does not belong to current canvas");
-        return;
-    }
-
-    if (mouse == 0 || (mouse == 1 && !photo->getModeEdit())){
-        photo->setModeEdit(true);
-        m_u = photo->getCenter().x();
-        m_v = photo->getCenter().y();
-    }
-
-    photo->move(u,v);
-    this->getCanvasCurrent()->updateFrame();
-
-    if (mouse == 2){
-        photo->setModeEdit(false);
-        photo->move(m_u, m_v);
-        EditPhotoMoveCommand* cmd = new EditPhotoMoveCommand(this->getCanvasCurrent(), photo, u, v);
-        stack->push(cmd);
-        m_u = 0;
-        m_v = 0;
+    switch (event){
+    case dureu::EVENT_OFF:
+        this->photoMoveFinish(stack, u, v);
+        break;
+    case dureu::EVENT_PRESSED:
+        this->photoMoveStart();
+        this->photoMoveAppend(u,v);
+        break;
+    case dureu::EVENT_DRAGGED:
+        if (!this->photoEditValid())
+            this->photoMoveStart();
+        this->photoMoveAppend(u,v);
+        break;
+    case dureu::EVENT_RELEASED:
+        if (!this->photoEditValid())
+            this->photoMoveStart();
+        this->photoMoveAppend(u,v);
+        this->photoMoveFinish(stack, u, v);
+        break;
+    default:
+        break;
     }
 }
 
@@ -408,6 +431,124 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
 bool entity::UserScene::strokeValid() const
 {
     return m_strokeCurrent.get();
+}
+
+void entity::UserScene::canvasOffsetStart()
+{
+    if (this->canvasEditValid()){
+        outErrMsg("CanvasOffsetStart: cannot start editing since the canvas is already in edit mode");
+        return;
+    }
+    m_canvasCurrent->setModeEdit(true);
+    m_deltaT = osg::Vec3f(0.f,0.f,0.f);
+}
+
+void entity::UserScene::canvasOffsetAppend(const osg::Vec3f &t)
+{
+    if (!this->canvasEditValid()){
+        outErrMsg("canvasOffsetAppend: canvas edit mode is not valid");
+        return;
+    }
+    m_canvasCurrent->translate(osg::Matrix::translate(t.x(), t.y(), t.z()));
+    m_deltaT = m_deltaT + t;
+}
+
+void entity::UserScene::canvasOffsetFinish(QUndoStack *stack)
+{
+    if (!this->canvasEditValid()){
+        outErrMsg("canvasOffsetFinish: no canvas in edit mode, impossible to finish offset mode");
+        return;
+    }
+    m_canvasCurrent->setModeEdit(false);
+    m_canvasCurrent->translate(osg::Matrix::translate(-m_deltaT.x(), -m_deltaT.y(), -m_deltaT.z()));
+    EditCanvasOffsetCommand* cmd = new EditCanvasOffsetCommand(m_canvasCurrent.get(), m_deltaT);
+    stack->push(cmd);
+    m_deltaT = osg::Vec3f(0.f,0.f,0.f);
+}
+
+bool entity::UserScene::canvasEditValid() const
+{
+    return this->getCanvasCurrent()->getModeEdit();
+}
+
+void entity::UserScene::canvasRotateStart()
+{
+    if (this->canvasEditValid()){
+        outErrMsg("CanvasRotateStart: cannot start editing since the canvas is already in edit mode");
+        return;
+    }
+    m_canvasCurrent->setModeEdit(true);
+    m_deltaR = osg::Quat();
+}
+
+void entity::UserScene::canvasRotateAppend(const osg::Quat &r)
+{
+    if (!this->canvasEditValid()){
+        outErrMsg("canvasRotateAppend: canvas edit mode is not valid");
+        return;
+    }
+    m_canvasCurrent->rotate(osg::Matrix::rotate(r));
+    m_deltaR = r * m_deltaR;
+}
+
+void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
+{
+    if (!this->canvasEditValid()){
+        outErrMsg("canvasRotateFinish: no canvas in edit mode, impossible to finish offset mode");
+        return;
+    }
+    m_canvasCurrent->setModeEdit(false);
+    m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()));
+    EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(m_canvasCurrent.get(), m_deltaR);
+    stack->push(cmd);
+    m_deltaR = osg::Quat();
+}
+
+void entity::UserScene::photoMoveStart()
+{
+    if (this->canvasEditValid()){
+        outErrMsg("photoMoveStart: cannot start editing since the photo is already in edit mode");
+        return;
+    }
+    Photo* photo = this->getCanvasCurrent()->getPhotoCurrent();
+    if (!photo){
+        outErrMsg("photoMoveStart(): photo pointer is NULL");
+        return;
+    }
+    photo->setModeEdit(true);
+    m_u = photo->getCenter().x();
+    m_v = photo->getCenter().y();
+}
+
+void entity::UserScene::photoMoveAppend(const double u, const double v)
+{
+    Photo* photo = this->getCanvasCurrent()->getPhotoCurrent();
+    if (!photo){
+        outErrMsg("photoMoveAppend(): photo pointer is NULL");
+        return;
+    }
+    photo->move(u,v);
+    this->getCanvasCurrent()->updateFrame();
+}
+
+void entity::UserScene::photoMoveFinish(QUndoStack *stack, const double u, const double v)
+{
+    Photo* photo = this->getCanvasCurrent()->getPhotoCurrent();
+    if (!photo){
+        outErrMsg("photoMoveFinish(): photo pointer is NULL");
+        return;
+    }
+    photo->setModeEdit(false);
+    photo->move(m_u, m_v);
+    EditPhotoMoveCommand* cmd = new EditPhotoMoveCommand(m_canvasCurrent.get(), u, v);
+    stack->push(cmd);
+    m_u = 0;
+    m_v = 0;
+}
+
+bool entity::UserScene::photoEditValid() const
+{
+    return this->getCanvasCurrent()->getPhotoCurrent()->getModeEdit();
 }
 
 REGISTER_OBJECT_WRAPPER(UserScene_Wrapper

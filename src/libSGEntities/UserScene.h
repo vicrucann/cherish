@@ -51,9 +51,9 @@ public:
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
 
-    void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, const int mouse);
-    void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const int mouse);
-    void editPhotoMove(QUndoStack* stack, entity::Photo* photo, const double u, const double v, const int mouse);
+    void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
+    void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event);
+    void editPhotoMove(QUndoStack* stack, const double u, const double v, dureu::EVENT event);
 
     bool isEmptyScene() const;
     bool clearUserData();
@@ -70,6 +70,21 @@ protected:
     void strokeAppend(float u, float v);
     void strokeFinish(QUndoStack* stack);
     bool strokeValid() const;
+
+    void canvasOffsetStart();
+    void canvasOffsetAppend(const osg::Vec3f& t);
+    void canvasOffsetFinish(QUndoStack* stack);
+    bool canvasEditValid() const;
+
+    void canvasRotateStart();
+    void canvasRotateAppend(const osg::Quat& r);
+    void canvasRotateFinish(QUndoStack* stack);
+
+    void photoMoveStart();
+    void photoMoveAppend(const double u, const double v);
+    void photoMoveFinish(QUndoStack* stack, const double u, const double v);
+    bool photoEditValid() const;
+
 
 private:
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
