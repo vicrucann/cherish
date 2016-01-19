@@ -30,25 +30,25 @@ Implementation steps:
     * (done) Canvas
     * (done) Strokes - entered by Stylus
     * 2D geometric forms: polylines, rectangles, circles 
-    * Photos = textured quads (Drawables)
+    * (done) Photos = textured quads (Drawables)
 * (done) Camera navigation: zoom, pan, rotate and different mouse modes (**Nov 2015**)
 * Building and manipulation of a scene graph (**Nov 2015**)
     * (done)Add / delete a canvas
     * (done) Switch to another canvas
-    * Add / delete a stroke to a current canvas
+    * (done) Add / delete a stroke to a current canvas
     * Add / delete a geometric shape to a current canvas
-    * Select a canvas and all it contains
+    * (done) Select a canvas and all it contains
     * Select two or more canvases and their contents
     * Select number of entities within one canvas
 * Advanced entity manipulation (**Dec 2015**)
     * (done) Create a new canvas as a copy of current
     * Push strokes from one canvas to another
     * Move a photo from one canvas to another
-* Save and load of a scene graph to disk (**Dec 2015**)
+* (done) Save and load of a scene graph to disk (**Dec 2015**)
 * Viewer entities (**Dec 2015**)
-    * Model views: built-in, second screen, detached menu, viewer splitters, viewer views setup (front, top, iso)
+    * (done) Model views: built-in, second screen, detached menu, viewer splitters, viewer views setup (front, top, iso)
     * Bookmarks
-* GUI integration (**Jan 2016**)
+* (done) GUI integration (**Jan 2016**)
 * First user tests and feedback (**Jan 2016**)
 * Unit tests (**Jan 2016**)
 * Configuration management (**Feb 2016**)
@@ -90,8 +90,7 @@ The presented **dureu3d** software creates a heterogeneous 3D representation of 
 
 ## Requirements
 
-The software is written on Windows 7, with QT and OpenSceneGraph libraries using OpenGL. It is planned to be compatible with Linux platform (e.g., Ubuntu 14.04). More precise requirements will be described later.
-
+The software is written on Windows 7, with QT-5.4 and OpenSceneGraph-3.4.0 libraries using minimal CMake-2.8.11. It is compatible with Linux platform. More precise requirements will be described later.
 
 ## Installation
 
@@ -133,7 +132,13 @@ This is far-future section. It will be filled as a need arises.
 
 ## Contact and authors info
 
-The author and lab information will be added here. For the current version, feel free to contact Victoria Rudakova - victoria.rudakova(at)yale.edu ; or use "Issues" (in the menu on right) for feature requests or bug submission.
+The author and lab information will be added here. For the current version, feel free to contact Victoria Rudakova - victoria.rudakova(at)yale.edu ; or use [Issues](https://github.com/vicrucann/dura-europos-insitu/issues) for feature requests or bug submission.
+
+Other contributors:
+
+* Yumo Rong: user interface functionality
+* Natallia Trayan: icon designer
+
 
 ## References
 
