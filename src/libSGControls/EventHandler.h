@@ -53,6 +53,8 @@ protected:
 
     dureu::MOUSE_MODE mMode;
     osg::observer_ptr<RootScene> m_scene;
+
+private:
 };
 
 #endif // EVENTHANDLER

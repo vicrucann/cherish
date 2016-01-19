@@ -218,7 +218,7 @@ entity::Canvas* RootScene::getCanvasPrevious() const
 
 void RootScene::setTransformOffset(const osg::Vec3f& translate, const int mouse)
 {
-    m_userScene->setTransformOffset(translate, mouse);
+    m_userScene->setTransformOffset(m_undoStack, translate, mouse);
     m_saved = false;
 }
 

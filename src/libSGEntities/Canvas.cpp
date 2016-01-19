@@ -33,6 +33,7 @@ entity::Canvas::Canvas()
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
     , m_normal(dureu::NORMAL)
     , m_color(dureu::CANVAS_CLR_REST) // frame and pickable color
+    , m_editMode(false)
 {
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
@@ -70,6 +71,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_center(cnv.m_center)
     , m_normal(cnv.m_normal)
     , m_color(cnv.m_color)
+    , m_editMode(cnv.m_editMode)
 {
 }
 
@@ -409,6 +411,12 @@ void entity::Canvas::setModeOffset(bool on)
         this->setVisibilityLocalAxis(true); // could be bug here, when originally local axis is off by user
     }
     m_switch->setChildValue(m_switch->getChild(2), on);
+    m_editMode = on;
+}
+
+bool entity::Canvas::getModeOffset() const
+{
+    return m_editMode;
 }
 
 osg::Plane entity::Canvas::getPlane() const

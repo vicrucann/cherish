@@ -514,6 +514,8 @@ bool EventHandler::getRaytraceNormalProjection(const osgGA::GUIEventAdapter &ea,
 
     if (std::fabs(u3.x())<=dureu::EPSILON && std::fabs(u3.y())<=dureu::EPSILON && std::fabs(u3.z())<=dureu::EPSILON){
         std::cerr << "getRaytraceNormalProjection(): cast ray and normal are almost parallel. To resolve, change the camera view." << std::endl;
+        if (m_scene->getCanvasCurrent()->getModeOffset())
+            m_scene->setTransformOffset(osg::Vec3f(0.f,0.f,0.f), 2);
         return false;
     }
 

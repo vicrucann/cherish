@@ -4,6 +4,7 @@
 
 #include "settings.h"
 #include "AddEntityCommand.h"
+#include "EditEntityCommand.h"
 #include "findnodevisitor.h"
 
 #include <osgDB/WriteFile>
@@ -13,6 +14,7 @@ entity::UserScene::UserScene()
     : osg::Group()
     , m_canvasCurrent(0)
     , m_canvasPrevious(0)
+    , m_deltaT(osg::Vec3f(0.f,0.f,0.f))
     , m_strokeCurrent(0)
     , m_idCanvas(0)
     , m_filePath("")
@@ -207,19 +209,22 @@ entity::Canvas*entity::UserScene::getCanvasPrevious() const
     return m_canvasPrevious.get();
 }
 
-void entity::UserScene::setTransformOffset(const osg::Vec3f& translate, const int mouse)
+void entity::UserScene::setTransformOffset(QUndoStack* stack, const osg::Vec3f& translate, const int mouse)
 {
     // initialize offset mode
-    if (mouse == 0){
+    if (mouse == 0 || (mouse == 1 && !m_canvasCurrent->getModeOffset())){
         m_canvasCurrent->setModeOffset(true);
+        m_deltaT = osg::Vec3f(0.f,0.f,0.f);
     }
+    m_canvasCurrent->translate(osg::Matrix::translate(translate.x(), translate.y(), translate.z()));
+    m_deltaT = m_deltaT + translate;
 
     // back to normal mode
-    else if (mouse == 2){
+    if (mouse == 2){
         m_canvasCurrent->setModeOffset(false);
-    }
-    else {
-        m_canvasCurrent->translate(osg::Matrix::translate(translate.x(), translate.y(), translate.z()));
+        m_canvasCurrent->translate(osg::Matrix::translate(-m_deltaT.x(), -m_deltaT.y(), -m_deltaT.z()));
+        EditCanvasOffsetCommand* cmd = new EditCanvasOffsetCommand(m_canvasCurrent.get(), m_deltaT);
+        stack->push(cmd);
     }
 }
 
