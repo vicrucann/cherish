@@ -4,7 +4,7 @@
 
 AddCanvasCommand::AddCanvasCommand(entity::UserScene* scene, const osg::Matrix& R, const osg::Matrix& T, const std::string& name, QUndoCommand* parent)
     : QUndoCommand(parent)
-    , m_scen(scene)
+    , m_scene(scene)
     , m_canvas(new entity::Canvas)
 {
     m_canvas->initializeSG();
@@ -17,7 +17,7 @@ AddCanvasCommand::AddCanvasCommand(entity::UserScene* scene, const osg::Matrix& 
 
 AddCanvasCommand::AddCanvasCommand(entity::UserScene* scene, const entity::Canvas& copy, QUndoCommand* parent)
     : QUndoCommand(parent)
-    , m_scen(scene)
+    , m_scene(scene)
     , m_canvas(new entity::Canvas(copy, osg::CopyOp::DEEP_COPY_ALL))
 {
     this->setText(QObject::tr("Add %1")
@@ -32,25 +32,25 @@ AddCanvasCommand::~AddCanvasCommand()
 void AddCanvasCommand::undo()
 {
     // make sure current/previous rules hold
-    if (m_canvas == m_scen->getCanvasCurrent())
-        m_scen->setCanvasCurrent(m_scen->getCanvasPrevious());
-    if (m_canvas == m_scen->getCanvasPrevious() ||
-            m_scen->getCanvasCurrent() == m_scen->getCanvasPrevious()){
-        for (unsigned int i = 0; i < m_scen->getNumChildren(); ++i){
-            entity::Canvas* cnvi = dynamic_cast<entity::Canvas*>( m_scen->getChild(i));
-            if (cnvi != NULL && cnvi != m_scen->getCanvasCurrent() && cnvi != m_canvas){
-                m_scen->setCanvasPrevious(cnvi);
+    if (m_canvas == m_scene->getCanvasCurrent())
+        m_scene->setCanvasCurrent(m_scene->getCanvasPrevious());
+    if (m_canvas == m_scene->getCanvasPrevious() ||
+            m_scene->getCanvasCurrent() == m_scene->getCanvasPrevious()){
+        for (unsigned int i = 0; i < m_scene->getNumChildren(); ++i){
+            entity::Canvas* cnvi = dynamic_cast<entity::Canvas*>( m_scene->getChild(i));
+            if (cnvi != NULL && cnvi != m_scene->getCanvasCurrent() && cnvi != m_canvas){
+                m_scene->setCanvasPrevious(cnvi);
                 break;
             }
         }
     }
     // now delete the canvas
-    m_scen->removeChild(m_canvas);
+    m_scene->removeChild(m_canvas);
 }
 
 void AddCanvasCommand::redo()
 {
-    m_scen->addChild(m_canvas);
-    m_scen->setCanvasCurrent(m_canvas);
+    m_scene->addChild(m_canvas);
+    m_scene->setCanvasCurrent(m_canvas);
 }
 

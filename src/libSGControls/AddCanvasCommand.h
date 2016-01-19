@@ -25,9 +25,7 @@ public:
     void redo() Q_DECL_OVERRIDE;
 
 private:
-
-    osg::observer_ptr<RootScene> m_scene;
-    osg::observer_ptr<entity::UserScene> m_scen;
+    osg::observer_ptr<entity::UserScene> m_scene;
     osg::ref_ptr<entity::Canvas> m_canvas;
 };
 
