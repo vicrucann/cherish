@@ -64,6 +64,7 @@ public:
     bool writeScenetoFile();
     bool loadSceneFromFile();
 
+    int getStrokeLevel() const;
     int getCanvasLevel() const;
     int getPhotoLevel() const;
 

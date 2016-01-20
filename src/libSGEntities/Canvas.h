@@ -90,6 +90,10 @@ public:
     void setStrokeCurrent(bool current);
     entity::Stroke* getStrokeCurrent() const;
 
+    void setStrokeSelected(entity::Stroke* stroke);
+    void setStrokeSelected(bool selected);
+    entity::Stroke* getStrokeSelected() const;
+
     void setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);
 
@@ -121,8 +125,9 @@ private:
     osg::ref_ptr<osg::Geometry> m_axis; // local coordinate axis
     osg::ref_ptr<osg::Geometry> m_norm;
 
-    osg::observer_ptr<entity::Stroke> m_strokeCurrent;
-    osg::observer_ptr<entity::Photo> m_photoCurrent;
+    osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
+    osg::observer_ptr<entity::Stroke> m_strokeSelected; /* for stroke editing, e.g., push, delete, copy, cut */
+    osg::observer_ptr<entity::Photo> m_photoCurrent; /* for editing photo position and properties*/
 
     osg::Vec3f m_center;
     osg::Vec3f m_normal;

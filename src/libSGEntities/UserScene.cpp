@@ -12,8 +12,9 @@
 
 entity::UserScene::UserScene()
     : osg::Group()
-    , m_canvasCurrent(0)
-    , m_canvasPrevious(0)
+    , m_canvasCurrent(NULL)
+    , m_canvasPrevious(NULL)
+    , m_canvasSelected(NULL)
     , m_deltaT(osg::Vec3f(0.f,0.f,0.f))
     , m_deltaR(osg::Quat(0,0,0,1))
     , m_u(0)
@@ -29,6 +30,7 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     : osg::Group(scene, copyop)
     , m_canvasCurrent(scene.m_canvasCurrent)
     , m_canvasPrevious(scene.m_canvasPrevious)
+    , m_canvasSelected(NULL)
     , m_deltaT(scene.m_deltaT)
     , m_deltaR(scene.m_deltaR)
     , m_u(scene.m_u)
@@ -160,6 +162,11 @@ entity::Canvas* entity::UserScene::getCanvas(const std::string& name)
     return dynamic_cast<entity::Canvas*>(fnv.getNode());
 }
 
+int entity::UserScene::getStrokeLevel() const
+{
+    return this->getCanvasLevel() + 4;
+}
+
 int entity::UserScene::getCanvasLevel() const
 {
     return 3;
@@ -216,6 +223,38 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
     return true;
 }
 
+void entity::UserScene::setCanvasSelected(entity::Canvas *cnv)
+{
+    if (m_canvasSelected.get() == cnv)
+        return;
+    if (m_canvasSelected.get() != NULL)
+        this->setCanvasSelected(false);
+    m_canvasSelected = cnv;
+    this->setCanvasSelected(true);
+}
+
+/* When doing select / deselct, we need to take care of:
+ * Canvas color change
+ * Setting / unsetting of traversal mask
+*/
+void entity::UserScene::setCanvasSelected(bool selected)
+{
+    if (!m_canvasSelected.get())
+        return;
+    if (!selected){
+        if (m_canvasSelected.get() == m_canvasCurrent.get())
+            m_canvasSelected->setColor(dureu::CANVAS_CLR_CURRENT);
+        else if (m_canvasSelected.get() == m_canvasPrevious.get())
+            m_canvasSelected->setColor(dureu::CANVAS_CLR_PREVIOUS);
+        else
+            m_canvasSelected->setColor(dureu::CANVAS_CLR_REST);
+        m_canvasSelected = NULL;
+    }
+    else {
+        m_canvasSelected->setColor(dureu::CANVAS_CLR_SELECTED);
+    }
+}
+
 entity::Canvas*entity::UserScene::getCanvasCurrent() const
 {
     return m_canvasCurrent.get();
@@ -224,6 +263,11 @@ entity::Canvas*entity::UserScene::getCanvasCurrent() const
 entity::Canvas*entity::UserScene::getCanvasPrevious() const
 {
     return m_canvasPrevious.get();
+}
+
+entity::Canvas *entity::UserScene::getCanvasSelected() const
+{
+    return m_canvasSelected.get();
 }
 
 void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event)

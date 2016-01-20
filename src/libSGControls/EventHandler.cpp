@@ -104,7 +104,10 @@ void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::
 
     switch (mMode) {
     case dureu::MOUSE_SELECT:
-        doPick(*result);
+        if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL)
+            doPickStroke(*result);
+        else
+            doPickCanvas(*result);
         break;
     case dureu::MOUSE_DELETE:
         doDelete(*result);
@@ -248,13 +251,23 @@ void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
     }
 }
 
-void EventHandler::doPick(const osgUtil::LineSegmentIntersector::Intersection &result){
-    entity::Canvas* cnv = getCanvas(result);
-    if (!cnv){
-        std::cerr << "doPick(): could not dynamic_cast<Canvas*>" << std::endl;
+void EventHandler::doPickStroke(const osgUtil::LineSegmentIntersector::Intersection &result)
+{
+    entity::Stroke* stroke = this->getStroke(result);
+    if (!stroke){
+        std::cerr << "doPickStroke(): could not dynamic_cast<Stroke*>" << std::endl;
         return;
     }
-    std::cout << "doPick(): assumed canvas with name: " << cnv->getName() << std::endl;
+    m_scene->getCanvasCurrent()->setStrokeSelected(stroke);
+}
+
+void EventHandler::doPickCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
+    entity::Canvas* cnv = this->getCanvas(result);
+    if (!cnv){
+        std::cerr << "doPickCanvas(): could not dynamic_cast<Canvas*>" << std::endl;
+        return;
+    }
+    std::cout << "doPickCanvas(): assumed canvas with name: " << cnv->getName() << std::endl;
     m_scene->setCanvasCurrent(cnv);
 }
 
@@ -324,6 +337,11 @@ void EventHandler::doEditPhotoMove(const osgUtil::LineSegmentIntersector::Inters
     m_scene->setCanvasCurrent(cnv);
     m_scene->getCanvasCurrent()->setPhotoCurrent(photo);
     m_scene->editPhotoMove(u, v, event);
+}
+
+entity::Stroke *EventHandler::getStroke(const osgUtil::LineSegmentIntersector::Intersection &result)
+{
+    return dynamic_cast<entity::Stroke*>(result.nodePath.at(m_scene->getStrokeLevel()));
 }
 
 entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){

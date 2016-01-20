@@ -28,6 +28,7 @@ entity::Canvas::Canvas()
     , m_norm(new osg::Geometry)
 
     , m_strokeCurrent(0)
+    , m_strokeSelected(0)
     , m_photoCurrent(0)
 
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
@@ -66,6 +67,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_norm(cnv.m_norm)
 
     , m_strokeCurrent(0)
+    , m_strokeSelected(0)
     , m_photoCurrent(0)
 
     , m_center(cnv.m_center)
@@ -349,6 +351,33 @@ void entity::Canvas::setStrokeCurrent(bool current)
 entity::Stroke *entity::Canvas::getStrokeCurrent() const
 {
     return m_strokeCurrent.get();
+}
+
+void entity::Canvas::setStrokeSelected(entity::Stroke *stroke)
+{
+    if (m_strokeSelected.get() == stroke)
+        return;
+    if (m_strokeSelected.get() != 0)
+        this->setStrokeSelected(false);
+    m_strokeSelected = stroke;
+    this->setStrokeSelected(true);
+}
+
+void entity::Canvas::setStrokeSelected(bool selected)
+{
+    if (!m_strokeSelected.get())
+        return;
+    if (!selected){
+        m_strokeSelected->setColor(dureu::STROKE_CLR_NORMAL);
+        m_strokeSelected = 0;
+    }
+    else
+        m_strokeSelected->setColor(dureu::STROKE_CLR_SELECTED);
+}
+
+entity::Stroke *entity::Canvas::getStrokeSelected() const
+{
+    return m_strokeSelected.get();
 }
 
 void entity::Canvas::setPhotoCurrent(entity::Photo *photo)

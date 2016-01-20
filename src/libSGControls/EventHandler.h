@@ -31,7 +31,8 @@ public:
     virtual void doByRaytrace(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     virtual void doByHybrid(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
-    virtual void doPick(const osgUtil::LineSegmentIntersector::Intersection& result);
+    virtual void doPickStroke(const osgUtil::LineSegmentIntersector::Intersection& result);
+    virtual void doPickCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doDelete(const osgUtil::LineSegmentIntersector::Intersection& result);
     virtual void doErase(double u, double v, int mouse = 1);
     virtual void doSketch(double u, double v, dureu::EVENT event);
@@ -41,6 +42,7 @@ public:
                             double u, double v, dureu::EVENT event);
 
 protected:
+    entity::Stroke* getStroke(const osgUtil::LineSegmentIntersector::Intersection& result);
     entity::Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
     entity::Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
 

@@ -43,13 +43,17 @@ public:
 
     entity::Canvas* getCanvas(unsigned int id);
     entity::Canvas* getCanvas(const std::string& name);
+    int getStrokeLevel() const;
     int getCanvasLevel() const;
     int getPhotoLevel() const;
 
     bool setCanvasCurrent(entity::Canvas* cnv);
     bool setCanvasPrevious(entity::Canvas* cnv);
+    void setCanvasSelected(entity::Canvas* cnv);
+    void setCanvasSelected(bool selected);
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
+    entity::Canvas* getCanvasSelected() const;
 
     void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event);
@@ -89,6 +93,7 @@ protected:
 private:
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
     osg::observer_ptr<entity::Canvas> m_canvasPrevious;
+    osg::observer_ptr<entity::Canvas> m_canvasSelected;
     osg::observer_ptr<entity::Canvas> m_canvasTarget; /* for push operations */
     osg::Vec3f m_deltaT; /* for edit operations: translate */
     osg::Quat m_deltaR; /* for edit operation: rotate */

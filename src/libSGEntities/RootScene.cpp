@@ -162,6 +162,11 @@ bool RootScene::loadSceneFromFile()
     return true;
 }
 
+int RootScene::getStrokeLevel() const
+{
+    return m_userScene->getStrokeLevel();
+}
+
 int RootScene::getCanvasLevel() const
 {
     return m_userScene->getCanvasLevel();
