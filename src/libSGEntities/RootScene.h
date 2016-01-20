@@ -73,8 +73,10 @@ public:
     void addStroke(float u, float v, dureu::EVENT event);
     void addPhoto(const std::string& fname);
 
+    void setCanvasSelected(entity::Canvas* cnv);
     bool setCanvasCurrent(entity::Canvas* cnv);
     bool setCanvasPrevious(entity::Canvas* cnv);
+    entity::Canvas* getCanvasSelected() const;
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
 
