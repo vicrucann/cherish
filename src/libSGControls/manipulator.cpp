@@ -17,7 +17,7 @@ bool Manipulator::performMovementLeftMouseButton(const double eventTimeDelta, co
         return this->wrapZoom(eventTimeDelta, dx, dy);
     case dureu::MOUSE_PAN:
         return this->wrapPan(eventTimeDelta, dx, dy);
-    case dureu::MOUSE_ROTATE:
+    case dureu::MOUSE_ORBIT:
         return this->wrapRotation(eventTimeDelta, dx, dy);
     case dureu::MOUSE_FIXEDVIEW:
         return this->wrapPan(eventTimeDelta, dx, dy);

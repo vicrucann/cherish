@@ -65,16 +65,16 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 
     // if it's mouse navigation mode, don't process event
     // it will be processed by mouse navigator
-    if (mMode == dureu::MOUSE_ROTATE || mMode == dureu::MOUSE_PAN ||
+    if (mMode == dureu::MOUSE_ORBIT || mMode == dureu::MOUSE_PAN ||
             mMode == dureu::MOUSE_ZOOM || mMode == dureu::MOUSE_FIXEDVIEW)
         return false;
 
     if (!m_scene->getCanvasCurrent())
         return false;
 
-    if (mMode == dureu::MOUSE_PICK || mMode == dureu::MOUSE_DELETE)
+    if (mMode == dureu::MOUSE_SELECT || mMode == dureu::MOUSE_DELETE)
         doByLineIntersector(ea, aa);
-    else if (mMode == dureu::MOUSE_EDIT_MOVE)
+    else if (mMode == dureu::MOUSE_PHOTO_MOVE)
         doByHybrid(ea, aa);
     else
         doByRaytrace(ea, aa);
@@ -103,7 +103,7 @@ void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::
         return;
 
     switch (mMode) {
-    case dureu::MOUSE_PICK:
+    case dureu::MOUSE_SELECT:
         doPick(*result);
         break;
     case dureu::MOUSE_DELETE:
@@ -134,12 +134,12 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
                 return;
             doSketch(u, v, dureu::EVENT_PRESSED);
             break;
-        case dureu::MOUSE_EDIT_OFFSET:
+        case dureu::MOUSE_CANVAS_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
                 return;
             doEditCanvasOffset(XC, dureu::EVENT_PRESSED);
             break;
-        case dureu::MOUSE_EDIT_ROTATE:
+        case dureu::MOUSE_CANVAS_ROTATE:
             doEditCanvasRotate(ea.getX(), ea.getY(), dureu::EVENT_PRESSED);
             break;
         case dureu::MOUSE_ERASE:
@@ -159,12 +159,12 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
                 return;
             doSketch(u, v, dureu::EVENT_RELEASED);
             break;
-        case dureu::MOUSE_EDIT_OFFSET:
+        case dureu::MOUSE_CANVAS_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
                 return;
             doEditCanvasOffset(XC, dureu::EVENT_RELEASED);
             break;
-        case dureu::MOUSE_EDIT_ROTATE:
+        case dureu::MOUSE_CANVAS_ROTATE:
             doEditCanvasRotate(ea.getX(), ea.getY(), dureu::EVENT_RELEASED);
             break;
         case dureu::MOUSE_ERASE:
@@ -183,12 +183,12 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
                 return;
             doSketch(u, v, dureu::EVENT_DRAGGED);
             break;
-        case dureu::MOUSE_EDIT_OFFSET:
+        case dureu::MOUSE_CANVAS_OFFSET:
             if (!this->getRaytraceNormalProjection(ea,aa,XC))
                 return;
             doEditCanvasOffset(XC, dureu::EVENT_DRAGGED);
             break;
-        case dureu::MOUSE_EDIT_ROTATE:
+        case dureu::MOUSE_CANVAS_ROTATE:
             doEditCanvasRotate(ea.getX(), ea.getY(), dureu::EVENT_DRAGGED);
             break;
         case dureu::MOUSE_ERASE:
@@ -547,13 +547,13 @@ void EventHandler::finishAll()
     case dureu::MOUSE_SKETCH:
         m_scene->addStroke(0,0, dureu::EVENT_OFF);
         break;
-    case dureu::MOUSE_EDIT_OFFSET:
+    case dureu::MOUSE_CANVAS_OFFSET:
         m_scene->editCanvasOffset(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
         break;
-    case dureu::MOUSE_EDIT_ROTATE:
+    case dureu::MOUSE_CANVAS_ROTATE:
         m_scene->editCanvasOffset(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
         break;
-    case dureu::MOUSE_EDIT_MOVE:
+    case dureu::MOUSE_PHOTO_MOVE:
         m_scene->editPhotoMove(0,0, dureu::EVENT_OFF);
     default:
         break;

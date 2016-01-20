@@ -76,16 +76,15 @@ enum APPMODE{
 };
 
 enum MOUSE_MODE {
-    MOUSE_PICK, // for selection and delete
+    MOUSE_SELECT, // for selection and delete
     MOUSE_SKETCH, // to draw strokes and 2D geometric shapes
-    MOUSE_EDIT, // rotate, translate, offset the selected entity
-    MOUSE_EDIT_OFFSET,
-    MOUSE_EDIT_ROTATE,
-    MOUSE_EDIT_MOVE,
+    MOUSE_CANVAS_OFFSET,
+    MOUSE_CANVAS_ROTATE,
+    MOUSE_PHOTO_MOVE,
     MOUSE_BOOKMARK, // create bookmark (take a snapshot of a selected viewer)
     MOUSE_ERASE, // deletes entyties from scene
     MOUSE_DELETE, // remove the selected element completely (photo or canvas)
-    MOUSE_ROTATE,
+    MOUSE_ORBIT,
     MOUSE_ZOOM,
     MOUSE_PAN,
     MOUSE_FIXEDVIEW

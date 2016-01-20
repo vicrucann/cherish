@@ -218,7 +218,7 @@ void MainWindow::onPaste()
 }
 
 void MainWindow::onCameraOrbit(){
-    emit sendMouseMode(dureu::MOUSE_ROTATE);
+    emit sendMouseMode(dureu::MOUSE_ORBIT);
 }
 
 void MainWindow::onCameraZoom(){
@@ -230,7 +230,7 @@ void MainWindow::onCameraPan(){
 }
 
 void MainWindow::onSelect(){
-    emit sendMouseMode(dureu::MOUSE_PICK);
+    emit sendMouseMode(dureu::MOUSE_SELECT);
 }
 
 void MainWindow::onErase()
@@ -295,17 +295,17 @@ void MainWindow::onNewCanvasRing()
 
 void MainWindow::onCanvasOffset()
 {
-    emit sendMouseMode(dureu::MOUSE_EDIT_OFFSET);
+    emit sendMouseMode(dureu::MOUSE_CANVAS_OFFSET);
 }
 
 void MainWindow::onCanvasRotate()
 {
-    emit sendMouseMode(dureu::MOUSE_EDIT_ROTATE);
+    emit sendMouseMode(dureu::MOUSE_CANVAS_ROTATE);
 }
 
 void MainWindow::onImageMove()
 {
-    emit sendMouseMode(dureu::MOUSE_EDIT_MOVE);
+    emit sendMouseMode(dureu::MOUSE_PHOTO_MOVE);
 }
 
 void MainWindow::onImageRotate()
