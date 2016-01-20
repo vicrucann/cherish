@@ -93,7 +93,6 @@ private:
     osg::Vec3f m_deltaT; /* for edit operations: translate */
     osg::Quat m_deltaR; /* for edit operation: rotate */
     double m_u, m_v; /* move photo */
-    osg::ref_ptr<entity::Stroke> m_strokeCurrent;
     unsigned int m_idCanvas;
     unsigned int m_idPhoto;
     std::string m_filePath;

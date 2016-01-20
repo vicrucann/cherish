@@ -18,7 +18,6 @@ entity::UserScene::UserScene()
     , m_deltaR(osg::Quat(0,0,0,1))
     , m_u(0)
     , m_v(0)
-    , m_strokeCurrent(0)
     , m_idCanvas(0)
     , m_idPhoto(0)
     , m_filePath("")
@@ -34,7 +33,6 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_deltaR(scene.m_deltaR)
     , m_u(scene.m_u)
     , m_v(scene.m_v)
-    , m_strokeCurrent(scene.m_strokeCurrent)
     , m_idCanvas(scene.m_idCanvas)
     , m_idPhoto(scene.m_idPhoto)
     , m_filePath(scene.m_filePath)
@@ -119,7 +117,7 @@ void entity::UserScene::addStroke(QUndoStack* stack, float u, float v, dureu::EV
     case dureu::EVENT_RELEASED:
         outLogMsg("EVENT_RELEASED");
         if (!this->strokeValid())
-            this->strokeStart();
+            break;
         this->strokeAppend(u, v);
         this->strokeFinish(stack);
         break;
@@ -252,7 +250,7 @@ void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& tr
         break;
     case dureu::EVENT_RELEASED:
         if (!this->canvasEditValid())
-            this->canvasOffsetStart();
+            break;
         this->canvasOffsetAppend(translate);
         this->canvasOffsetFinish(stack);
         break;
@@ -285,7 +283,7 @@ void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rot
         break;
     case dureu::EVENT_RELEASED:
         if (!this->canvasEditValid())
-            this->canvasRotateStart();
+            break;
         this->canvasRotateAppend(rotation);
         this->canvasRotateFinish(stack);
         break;
@@ -317,7 +315,7 @@ void entity::UserScene::editPhotoMove(QUndoStack* stack, const double u, const d
         break;
     case dureu::EVENT_RELEASED:
         if (!this->photoEditValid())
-            this->photoMoveStart();
+            break;
         this->photoMoveAppend(u,v);
         this->photoMoveFinish(stack, u, v);
         break;
@@ -392,15 +390,17 @@ void entity::UserScene::strokeStart()
         outErrMsg("strokeStart(): Cannot start new stroke since the pointer is not NULL");
         return;
     }
-    m_strokeCurrent = new entity::Stroke();
-    this->getCanvasCurrent()->getGeodeData()->addDrawable(m_strokeCurrent);
+    entity::Stroke* stroke = new entity::Stroke();
+    m_canvasCurrent->setStrokeCurrent(stroke);
+    m_canvasCurrent->getGeodeData()->addDrawable(stroke);
 }
 
 void entity::UserScene::strokeAppend(float u, float v)
 {
     if (this->strokeValid()){
-        m_strokeCurrent->appendPoint(u, v);
-        this->getCanvasCurrent()->updateFrame();
+        entity::Stroke* stroke = m_canvasCurrent->getStrokeCurrent();
+        stroke->appendPoint(u, v);
+        m_canvasCurrent->updateFrame();
     }
     else
         outErrMsg("strokeAppend: pointer is NULL");
@@ -412,10 +412,11 @@ void entity::UserScene::strokeAppend(float u, float v)
    set the shared pointer to zero and return*/
 void entity::UserScene::strokeFinish(QUndoStack* stack)
 {
+    entity::Stroke* stroke = m_canvasCurrent->getStrokeCurrent();
     if (this->strokeValid()){
-        if (m_strokeCurrent->isLengthy()){
-            entity::Stroke* stroke = new entity::Stroke(*m_strokeCurrent, osg::CopyOp::DEEP_COPY_ALL);
-            AddStrokeCommand* cmd = new AddStrokeCommand(this, stroke);
+        if (stroke->isLengthy()){
+            entity::Stroke* stroke_clone = new entity::Stroke(*stroke, osg::CopyOp::DEEP_COPY_ALL);
+            AddStrokeCommand* cmd = new AddStrokeCommand(this, stroke_clone);
             stack->push(cmd);
         }
     }
@@ -423,14 +424,14 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
         outErrMsg("strokeFinish(): stroke pointer is NULL, impossible to finish the stroke");
         return;
     }
-    this->getCanvasCurrent()->getGeodeData()->removeChild(m_strokeCurrent.get()); // remove the "current" copy
-    m_strokeCurrent = 0;
+    m_canvasCurrent->getGeodeData()->removeChild(stroke); // remove the "current" copy
+    m_canvasCurrent->setStrokeCurrent(false);
     outLogMsg("strokeFinish()");
 }
 
 bool entity::UserScene::strokeValid() const
 {
-    return m_strokeCurrent.get();
+    return m_canvasCurrent->getStrokeCurrent();
 }
 
 void entity::UserScene::canvasOffsetStart()

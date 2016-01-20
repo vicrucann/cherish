@@ -331,6 +331,26 @@ void entity::Canvas::rotate(const osg::Matrix& mr)
     this->updateTransforms();
 }
 
+void entity::Canvas::setStrokeCurrent(entity::Stroke *stroke)
+{
+    if (m_strokeCurrent.get() == stroke)
+        return;
+    if (m_strokeCurrent.get() !=0 )
+        this->setStrokeCurrent(false);
+    m_strokeCurrent = stroke;
+}
+
+void entity::Canvas::setStrokeCurrent(bool current)
+{
+    if (!current)
+        m_strokeCurrent = 0;
+}
+
+entity::Stroke *entity::Canvas::getStrokeCurrent() const
+{
+    return m_strokeCurrent.get();
+}
+
 void entity::Canvas::setPhotoCurrent(entity::Photo *photo)
 {
     if (m_photoCurrent.get() == photo)
@@ -413,11 +433,6 @@ osg::Plane entity::Canvas::getPlane() const
 osg::MatrixTransform* entity::Canvas::getMatrixTransform() const
 {
     return m_transform.get();
-}
-
-entity::Stroke* entity::Canvas::getStrokeCurrent() const
-{
-    return m_strokeCurrent.get();
 }
 
 entity::Photo* entity::Canvas::getPhotoCurrent() const

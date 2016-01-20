@@ -86,6 +86,10 @@ public:
     void translate(const osg::Matrix& mt);
     void rotate(const osg::Matrix& mr);
 
+    void setStrokeCurrent(entity::Stroke* stroke);
+    void setStrokeCurrent(bool current);
+    entity::Stroke* getStrokeCurrent() const;
+
     void setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);
 
@@ -99,7 +103,6 @@ public:
     osg::Plane getPlane() const;
     osg::MatrixTransform* getMatrixTransform() const;
 
-    entity::Stroke* getStrokeCurrent() const;
     entity::Photo* getPhotoCurrent() const;
 
 protected:
