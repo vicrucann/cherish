@@ -72,6 +72,9 @@ public:
     static const QIcon& viewerTwoscreenIcon();
     static const QIcon& viewerVirtualIcon();
 
+    /* Cursors */
+    static const QPixmap& sceneSketchPixmap();
+
 private:
 
 };

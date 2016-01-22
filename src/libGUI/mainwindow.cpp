@@ -218,58 +218,70 @@ void MainWindow::onPaste()
 }
 
 void MainWindow::onCameraOrbit(){
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     emit sendMouseMode(dureu::MOUSE_ORBIT);
 }
 
 void MainWindow::onCameraZoom(){
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     emit sendMouseMode(dureu::MOUSE_ZOOM);
 }
 
 void MainWindow::onCameraPan(){
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     emit sendMouseMode(dureu::MOUSE_PAN);
 }
 
 void MainWindow::onSelect(){
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     emit sendMouseMode(dureu::MOUSE_SELECT);
 }
 
 void MainWindow::onErase()
 {
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     emit sendMouseMode(dureu::MOUSE_ERASE);
 }
 
 void MainWindow::onDelete()
 {
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     emit sendMouseMode(dureu::MOUSE_DELETE);
 }
 
 void MainWindow::onSketch()
 {
+    QCursor* cur = new QCursor(Data::sceneSketchPixmap(), -1, -1);
+    m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_SKETCH);
 }
 
 void MainWindow::onNewCanvasClone()
 {
-
+    m_mdiArea->setCursor(Qt::ArrowCursor);
 }
 
 void MainWindow::onNewCanvasXY()
 {
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::identity(), osg::Matrix::translate(0,0,0));
 }
 
 void MainWindow::onNewCanvasYZ()
 {
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
 }
 
 void MainWindow::onNewCanvasXZ()
 {
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, -1, 0, 0), osg::Matrix::translate(0,0,0));
 }
 
 void MainWindow::onNewCanvasStandard()
 {
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::identity(),
                            osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0),
@@ -280,57 +292,60 @@ void MainWindow::onNewCanvasStandard()
 
 void MainWindow::onNewCanvasCoaxial()
 {
-
+    m_mdiArea->setCursor(Qt::ArrowCursor);
 }
 
 void MainWindow::onNewCanvasParallel()
 {
-
+    m_mdiArea->setCursor(Qt::ArrowCursor);
 }
 
 void MainWindow::onNewCanvasRing()
 {
-
+    m_mdiArea->setCursor(Qt::ArrowCursor);
 }
 
 void MainWindow::onCanvasOffset()
 {
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     emit sendMouseMode(dureu::MOUSE_CANVAS_OFFSET);
 }
 
 void MainWindow::onCanvasRotate()
 {
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     emit sendMouseMode(dureu::MOUSE_CANVAS_ROTATE);
 }
 
 void MainWindow::onImageMove()
 {
+    m_mdiArea->setCursor(Qt::ArrowCursor);
     emit sendMouseMode(dureu::MOUSE_PHOTO_MOVE);
 }
 
 void MainWindow::onImageRotate()
 {
-
+    m_mdiArea->setCursor(Qt::ArrowCursor);
 }
 
 void MainWindow::onImageScale()
 {
-
+    m_mdiArea->setCursor(Qt::ArrowCursor);
 }
 
 void MainWindow::onImageFlip()
 {
-
+    m_mdiArea->setCursor(Qt::ArrowCursor);
 }
 
 void MainWindow::onImagePush()
 {
-
+    m_mdiArea->setCursor(Qt::ArrowCursor);
 }
 
 void MainWindow::onStrokePush()
 {
-
+    m_mdiArea->setCursor(Qt::ArrowCursor);
 }
 
 GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)

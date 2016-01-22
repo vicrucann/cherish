@@ -382,3 +382,10 @@ const QIcon &Data::viewerVirtualIcon()
     return icon;
 }
 
+const QPixmap &Data::sceneSketchPixmap()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-sketch-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QPixmap pmap(":/scene-sketch-24px.svg");
+    return pmap;
+}
+
