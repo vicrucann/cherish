@@ -333,6 +333,18 @@ void entity::Canvas::rotate(const osg::Matrix& mr)
     this->updateTransforms();
 }
 
+void entity::Canvas::unselectAll()
+{
+    this->setPhotoCurrent(false);
+    this->setStrokeCurrent(false);
+    this->unselectStrokes();
+}
+
+void entity::Canvas::unselectStrokes()
+{
+    this->setStrokeSelected(false);
+}
+
 void entity::Canvas::setStrokeCurrent(entity::Stroke *stroke)
 {
     if (m_strokeCurrent.get() == stroke)
@@ -345,7 +357,7 @@ void entity::Canvas::setStrokeCurrent(entity::Stroke *stroke)
 void entity::Canvas::setStrokeCurrent(bool current)
 {
     if (!current)
-        m_strokeCurrent = 0;
+        m_strokeCurrent = NULL;
 }
 
 entity::Stroke *entity::Canvas::getStrokeCurrent() const

@@ -190,10 +190,8 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
             m_canvasPrevious = NULL;
         }
         m_canvasCurrent->setColor(dureu::CANVAS_CLR_PREVIOUS);
-        entity::Photo* photo = m_canvasCurrent->getPhotoCurrent();
-        if (photo) m_canvasCurrent->setPhotoCurrent(false);
-        entity::Stroke* stroke = m_canvasCurrent->getStrokeSelected();
-        if (stroke) m_canvasCurrent->setStrokeSelected(false);
+        m_canvasCurrent->unselectAll();
+
         m_canvasPrevious = m_canvasCurrent;
         m_canvasCurrent = NULL;
     }
@@ -429,6 +427,7 @@ std::string entity::UserScene::getEntityName(const std::string &name, unsigned i
 
 void entity::UserScene::strokeStart()
 {
+    m_canvasCurrent->unselectStrokes();
     outLogMsg("strokeStart()");
     if (this->strokeValid()){
         outErrMsg("strokeStart(): Cannot start new stroke since the pointer is not NULL");

@@ -8,7 +8,7 @@
 
 EventHandler::EventHandler(RootScene* scene, dureu::MOUSE_MODE mode)
     : osgGA::GUIEventHandler()
-    , mMode(mode)
+    , m_mode(mode)
     , m_scene(scene)
 
 {
@@ -23,21 +23,21 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     /* if it's mouse navigation mode, don't process event
      * it will be processed by Manipulator */
 
-    if (mMode == dureu::MOUSE_ORBIT || mMode == dureu::MOUSE_PAN ||
-            mMode == dureu::MOUSE_ZOOM || mMode == dureu::MOUSE_FIXEDVIEW)
+    if (m_mode == dureu::MOUSE_ORBIT || m_mode == dureu::MOUSE_PAN ||
+            m_mode == dureu::MOUSE_ZOOM || m_mode == dureu::MOUSE_FIXEDVIEW)
         return false;
 
     if (!m_scene->getCanvasCurrent())
         return false;
 
-    if (mMode == dureu::MOUSE_SELECT || mMode == dureu::MOUSE_DELETE){
+    if (m_mode == dureu::MOUSE_SELECT || m_mode == dureu::MOUSE_DELETE){
         if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL){
             doByLineIntersector<StrokeIntersector::Intersection, StrokeIntersector>(ea, aa);
         }
         else
             doByLineIntersector<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
     }
-    else if (mMode == dureu::MOUSE_PHOTO_MOVE)
+    else if (m_mode == dureu::MOUSE_PHOTO_MOVE)
         doByHybrid(ea, aa);
     else
         doByRaytrace(ea, aa);
@@ -46,7 +46,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 
 void EventHandler::setMode(dureu::MOUSE_MODE mode)
 {
-    mMode = mode;
+    m_mode = mode;
 }
 
 // for pick and erase when lineintersector is going to be used
@@ -66,7 +66,7 @@ void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::
     if (!intersected)
         return;
 
-    switch (mMode) {
+    switch (m_mode) {
     case dureu::MOUSE_SELECT:
         if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL)
             doPickStroke(*result);
@@ -95,7 +95,7 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         std::cout << "doByRayTrace(): push button" << std::endl;
-        switch(mMode){
+        switch(m_mode){
         case dureu::MOUSE_SKETCH:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
                 return;
@@ -120,7 +120,7 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         std::cout << "doByRayTrace(): release button" << std::endl;
-        switch(mMode){
+        switch(m_mode){
         case dureu::MOUSE_SKETCH:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
                 return;
@@ -144,7 +144,7 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         }
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        switch(mMode){
+        switch(m_mode){
         case dureu::MOUSE_SKETCH:
             if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
                 return;
@@ -527,7 +527,7 @@ bool EventHandler::getRaytraceNormalProjection(const osgGA::GUIEventAdapter &ea,
  */
 void EventHandler::finishAll()
 {
-    switch (mMode)
+    switch (m_mode)
     {
     case dureu::MOUSE_SKETCH:
         m_scene->addStroke(0,0, dureu::EVENT_OFF);

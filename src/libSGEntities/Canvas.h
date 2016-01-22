@@ -86,6 +86,9 @@ public:
     void translate(const osg::Matrix& mt);
     void rotate(const osg::Matrix& mr);
 
+    void unselectAll();
+    void unselectStrokes();
+
     void setStrokeCurrent(entity::Stroke* stroke);
     void setStrokeCurrent(bool current);
     entity::Stroke* getStrokeCurrent() const;
@@ -96,6 +99,7 @@ public:
 
     void setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);
+    entity::Photo* getPhotoCurrent() const;
 
     // recalculate frame's geometry based on strokes
     void updateFrame();
@@ -106,8 +110,6 @@ public:
 
     osg::Plane getPlane() const;
     osg::MatrixTransform* getMatrixTransform() const;
-
-    entity::Photo* getPhotoCurrent() const;
 
 protected:
     ~Canvas();
