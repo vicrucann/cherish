@@ -508,7 +508,7 @@ void MainWindow::initializeMenus()
     submenuCanvas->addAction(m_actionCanvasYZ);
     submenuCanvas->addAction(m_actionCanvasXZ);
     QMenu* submenuSet = menuScene->addMenu("New Canvas Set");
-    submenuSet->setIcon(Data::sceneNewCanvasSetParallelIcon());
+    submenuSet->setIcon(Data::sceneNewCanvasSetIcon());
     submenuSet->addAction(m_actionSetStandard);
     submenuSet->addAction(m_actionSetCoaxial);
     submenuSet->addAction(m_actionSetParallel);
@@ -557,6 +557,7 @@ void MainWindow::initializeToolbars()
     tbInput->addAction(m_actionSelect);
     tbInput->addAction(m_actionSketch);
     tbInput->addAction(m_actionEraser);
+
     QMenu* menuNewCanvas = new QMenu();
     menuNewCanvas->addAction(m_actionCanvasXY);
     menuNewCanvas->addAction(m_actionCanvasYZ);
@@ -568,8 +569,21 @@ void MainWindow::initializeToolbars()
     tbNewCanvas->setPopupMode(QToolButton::InstantPopup);
     QWidgetAction* waNewCanvas = new QWidgetAction(this);
     waNewCanvas->setDefaultWidget(tbNewCanvas);
+
+    QMenu* menuNewCanvasSet = new QMenu();
+    menuNewCanvasSet->addAction(m_actionSetStandard);
+    menuNewCanvasSet->addAction(m_actionSetCoaxial);
+    menuNewCanvasSet->addAction(m_actionSetParallel);
+    menuNewCanvasSet->addAction(m_actionSetRing);
+    QToolButton* tbNewCanvasSet = new QToolButton();
+    tbNewCanvasSet->setIcon(Data::sceneNewCanvasSetIcon());
+    tbNewCanvasSet->setMenu(menuNewCanvasSet);
+    tbNewCanvasSet->setPopupMode(QToolButton::InstantPopup);
+    QWidgetAction* waNewCanvasSet = new QWidgetAction(this);
+    waNewCanvasSet->setDefaultWidget(tbNewCanvasSet);
+
     tbInput->addAction(waNewCanvas);
-    tbInput->addAction(m_actionSetStandard);
+    tbInput->addAction(waNewCanvasSet);
 
     // Edit entity
     QToolBar* tbEntity = this->addToolBar(tr("Edit entity"));

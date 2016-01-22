@@ -72,8 +72,13 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     if (!m_scene->getCanvasCurrent())
         return false;
 
-    if (mMode == dureu::MOUSE_SELECT || mMode == dureu::MOUSE_DELETE)
-        doByLineIntersector(ea, aa);
+    if (mMode == dureu::MOUSE_SELECT || mMode == dureu::MOUSE_DELETE){
+        if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL){
+            doByLineIntersector<StrokeIntersector::Intersection, StrokeIntersector>(ea, aa);
+        }
+        else
+            doByLineIntersector<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
+    }
     else if (mMode == dureu::MOUSE_PHOTO_MOVE)
         doByHybrid(ea, aa);
     else
@@ -90,6 +95,7 @@ void EventHandler::setMode(dureu::MOUSE_MODE mode)
 // line intersector is already implemented within OSG
 // so we only need to return the intersection results which is
 // already sorted from closest to farthest
+template <typename T1, typename T2>
 void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     // proceed only if it is release of left mouse button
@@ -97,8 +103,8 @@ void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::
             ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
         return;
 
-    osgUtil::LineSegmentIntersector::Intersection* result = new osgUtil::LineSegmentIntersector::Intersection;
-    bool intersected = this->getLineIntersections(ea,aa, *result);
+    T1* result = new T1;
+    bool intersected = this->getLineIntersections<T1, T2>(ea,aa, *result);
     if (!intersected)
         return;
 
@@ -223,7 +229,10 @@ void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
         return;
 
     osgUtil::LineSegmentIntersector::Intersection* result = new osgUtil::LineSegmentIntersector::Intersection;
-    bool intersected = this->getLineIntersections(ea,aa, *result);
+
+    bool intersected = this->getLineIntersections<osgUtil::LineSegmentIntersector::Intersection,
+            osgUtil::LineSegmentIntersector>(ea,aa, *result);
+
     if (!intersected)
         return;
 
@@ -251,7 +260,7 @@ void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
     }
 }
 
-void EventHandler::doPickStroke(const osgUtil::LineSegmentIntersector::Intersection &result)
+void EventHandler::doPickStroke(const StrokeIntersector::Intersection &result)
 {
     entity::Stroke* stroke = this->getStroke(result);
     if (!stroke){
@@ -339,9 +348,9 @@ void EventHandler::doEditPhotoMove(const osgUtil::LineSegmentIntersector::Inters
     m_scene->editPhotoMove(u, v, event);
 }
 
-entity::Stroke *EventHandler::getStroke(const osgUtil::LineSegmentIntersector::Intersection &result)
+entity::Stroke *EventHandler::getStroke(const StrokeIntersector::Intersection &result)
 {
-    return dynamic_cast<entity::Stroke*>(result.nodePath.at(m_scene->getStrokeLevel()));
+    return dynamic_cast<entity::Stroke*>(result.drawable.get());
 }
 
 entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
@@ -353,17 +362,17 @@ entity::Photo *EventHandler::getPhoto(const osgUtil::LineSegmentIntersector::Int
     return dynamic_cast<entity::Photo*>(result.drawable.get());
 }
 
+template <typename T1, typename T2>
 bool EventHandler::getLineIntersections(const osgGA::GUIEventAdapter &ea,
                                         osgGA::GUIActionAdapter &aa,
-                                        osgUtil::LineSegmentIntersector::Intersection &result)
+                                        T1& result)
 {
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (!viewer){
         outErrMsg("getLineIntersections(): could not retrieve viewer");
         return false;
     }
-    osg::ref_ptr<osgUtil::LineSegmentIntersector> intersector = new osgUtil::LineSegmentIntersector(
-                osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
+    osg::ref_ptr<T2> intersector = new T2(osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
 
     osgUtil::IntersectionVisitor iv(intersector);
     osg::Camera* cam = viewer->getCamera();

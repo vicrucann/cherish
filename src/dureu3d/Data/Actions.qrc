@@ -54,5 +54,6 @@
         <file>scene-image-rotate-24px.svg</file>
         <file>scene-select-24px.svg</file>
         <file>viewer-bookmark-24px.svg</file>
+        <file>scene-newcanvas-set-24px.svg</file>
     </qresource>
 </RCC>

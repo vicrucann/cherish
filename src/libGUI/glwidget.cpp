@@ -113,6 +113,8 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     default:
         break;
     }
+    if (event->modifiers() & Qt::ControlModifier)
+        this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KEY_Control_L);
     this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KeySymbol (*keydat));
 }
 

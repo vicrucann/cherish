@@ -165,6 +165,13 @@ const QIcon &Data::sceneNewCanvasXZIcon()
     return icon;
 }
 
+const QIcon &Data::sceneNewCanvasSetIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-set-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/scene-newcanvas-set-24px.svg"));
+    return icon;
+}
+
 const QIcon &Data::sceneNewCanvasSetParallelIcon()
 {
     Q_ASSERT_X(!QPixmap(":/scene-newcanvas-parallel-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");

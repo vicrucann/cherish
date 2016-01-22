@@ -20,6 +20,7 @@
 #include "Photo.h"
 #include "UserScene.h"
 #include "RootScene.h"
+#include "StrokeIntersector.h"
 
 class EventHandler : public osgGA::GUIEventHandler {
 public:
@@ -27,27 +28,30 @@ public:
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void setMode(dureu::MOUSE_MODE mode);
 
-    virtual void doByLineIntersector(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-    virtual void doByRaytrace(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-    virtual void doByHybrid(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    template <typename T1, typename T2>
+    void doByLineIntersector(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
-    virtual void doPickStroke(const osgUtil::LineSegmentIntersector::Intersection& result);
-    virtual void doPickCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
-    virtual void doDelete(const osgUtil::LineSegmentIntersector::Intersection& result);
-    virtual void doErase(double u, double v, int mouse = 1);
-    virtual void doSketch(double u, double v, dureu::EVENT event);
-    virtual void doEditCanvasOffset(osg::Vec3f XC, dureu::EVENT event);
-    virtual void doEditCanvasRotate(int x, int y, dureu::EVENT event);
-    virtual void doEditPhotoMove(const osgUtil::LineSegmentIntersector::Intersection& result,
+    void doByRaytrace(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doByHybrid(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
+    void doPickStroke(const StrokeIntersector::Intersection& result);
+    void doPickCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
+    void doDelete(const osgUtil::LineSegmentIntersector::Intersection& result);
+    void doErase(double u, double v, int mouse = 1);
+    void doSketch(double u, double v, dureu::EVENT event);
+    void doEditCanvasOffset(osg::Vec3f XC, dureu::EVENT event);
+    void doEditCanvasRotate(int x, int y, dureu::EVENT event);
+    void doEditPhotoMove(const osgUtil::LineSegmentIntersector::Intersection& result,
                             double u, double v, dureu::EVENT event);
 
 protected:
-    entity::Stroke* getStroke(const osgUtil::LineSegmentIntersector::Intersection& result);
+    entity::Stroke* getStroke(const StrokeIntersector::Intersection& result);
     entity::Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
     entity::Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
 
-    bool getLineIntersections(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
-                              osgUtil::LineSegmentIntersector::Intersection& result);
+    template <typename T1, typename T2>
+    bool getLineIntersections(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, T1& result);
+
     bool getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                                  double& u, double& v);
     bool getRaytraceNormalProjection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
