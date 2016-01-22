@@ -251,7 +251,7 @@ void MainWindow::onDelete()
 
 void MainWindow::onSketch()
 {
-    QCursor* cur = new QCursor(Data::sceneSketchPixmap(), -1, -1);
+    QCursor* cur = new QCursor(Data::sceneSketchPixmap(), 0, Data::sceneSketchPixmap().height());
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_SKETCH);
 }
