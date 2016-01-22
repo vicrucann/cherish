@@ -191,9 +191,9 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
         }
         m_canvasCurrent->setColor(dureu::CANVAS_CLR_PREVIOUS);
         entity::Photo* photo = m_canvasCurrent->getPhotoCurrent();
-        if (photo){
-            m_canvasCurrent->setPhotoCurrent(false);
-        }
+        if (photo) m_canvasCurrent->setPhotoCurrent(false);
+        entity::Stroke* stroke = m_canvasCurrent->getStrokeSelected();
+        if (stroke) m_canvasCurrent->setStrokeSelected(false);
         m_canvasPrevious = m_canvasCurrent;
         m_canvasCurrent = NULL;
     }
