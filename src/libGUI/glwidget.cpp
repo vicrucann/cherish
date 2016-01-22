@@ -113,13 +113,22 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     default:
         break;
     }
-    if (event->modifiers() & Qt::ControlModifier)
+    if (event->modifiers() & Qt::ControlModifier){
+        std::cout << "Qt ctrl ON" << std::endl;
         this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KEY_Control_L);
+    }
+
     this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KeySymbol (*keydat));
 }
 
 void GLWidget::keyReleaseEvent(QKeyEvent *event)
 {
+    /* http://stackoverflow.com/questions/20746488/how-to-catch-ctrl-key-release */
+    if (event->key() == Qt::Key_Control){
+        std::cout << "Qt ctrl OFF" << std::endl;
+        this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KEY_Control_L);
+    }
+
     QString keystr = event->text();
     const char* keydat = keystr.toLocal8Bit().data();
     this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KeySymbol(*keydat));

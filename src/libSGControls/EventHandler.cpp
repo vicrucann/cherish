@@ -19,52 +19,10 @@ EventHandler::EventHandler(RootScene* scene, dureu::MOUSE_MODE mode)
 // OpenSceneGraph 3.0 Cookbook
 // and search for custom event handler examples
 bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
-{
-    /*switch(ea.getEventType()){
-    case osgGA::GUIEventAdapter::PEN_PRESSURE:
-        outLogMsg("OSG pressure");
-        break;
-    case osgGA::GUIEventAdapter::PEN_PROXIMITY_ENTER:
-        outLogMsg("OSG enter");
-        break;
-    case osgGA::GUIEventAdapter::PEN_PROXIMITY_LEAVE:
-        outLogMsg("OSG leave");
-        break;
-    case osgGA::GUIEventAdapter::PUSH:
-        outLogMsg("OSG push");
-        break;
-    case osgGA::GUIEventAdapter::RELEASE:
-        outLogMsg("OSG release");
-        break;
-    default:
-        break;
-    }*/
+{    
+    /* if it's mouse navigation mode, don't process event
+     * it will be processed by Manipulator */
 
-    /*switch (ea.getButtonMask()){
-    case osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON:
-        outLogMsg("OSG left button");
-        break;
-    case osgGA::GUIEventAdapter::MIDDLE_MOUSE_BUTTON:
-        outLogMsg("OSG mid button");
-        break;
-    case osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON:
-        outLogMsg("OSG right button");
-        break;
-    default:
-        break;
-    }*/
-
-    /*switch (ea.getTabletPointerType()){
-    case osgGA::GUIEventAdapter::PEN:
-        outLogMsg("OSG pen");
-        break;
-    case osgGA::GUIEventAdapter::ERASER:
-        outLogMsg("OSG eraser");
-        break;
-    }*/
-
-    // if it's mouse navigation mode, don't process event
-    // it will be processed by mouse navigator
     if (mMode == dureu::MOUSE_ORBIT || mMode == dureu::MOUSE_PAN ||
             mMode == dureu::MOUSE_ZOOM || mMode == dureu::MOUSE_FIXEDVIEW)
         return false;
@@ -128,7 +86,7 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-            ))
+           ))
         return;
 
     double u=0, v=0;
@@ -225,7 +183,7 @@ void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-            ))
+           ))
         return;
 
     osgUtil::LineSegmentIntersector::Intersection* result = new osgUtil::LineSegmentIntersector::Intersection;
@@ -391,7 +349,7 @@ bool EventHandler::getLineIntersections(const osgGA::GUIEventAdapter &ea,
 }
 
 bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
-                                           double &u, double &v)
+                                                 double &u, double &v)
 {
     double x = ea.getX();
     double y = ea.getY();

@@ -80,7 +80,6 @@ osgUtil::Intersector *StrokeIntersector::clone(osgUtil::IntersectionVisitor &iv)
 
 void StrokeIntersector::intersect(osgUtil::IntersectionVisitor &iv, osg::Drawable *drawable)
 {
-    std::cout << "intersect() called" << std::endl;
     osg::BoundingBox bb = drawable->getBoundingBox();
     bb.xMin() -= m_offset; bb.xMax() += m_offset;
     bb.yMin() -= m_offset; bb.yMax() += m_offset;
