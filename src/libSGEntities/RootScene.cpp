@@ -260,6 +260,12 @@ void RootScene::editPhotoMove(const double u, const double v, dureu::EVENT event
     m_userScene->editPhotoMove(m_undoStack, u, v, event);
 }
 
+void RootScene::editStrokesPush(osg::Camera *camera)
+{
+    m_userScene->editStrokesPush(camera);
+    m_saved = false;
+}
+
 RootScene::~RootScene()
 {
 

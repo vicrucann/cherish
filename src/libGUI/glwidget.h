@@ -21,6 +21,8 @@ public:
     GLWidget(RootScene* root, QWidget* parent=0, Qt::WindowFlags f = 0);
     virtual ~GLWidget();
 
+    osg::Camera* getCamera() const;
+
 public slots:
     void getTabletActivity(bool active);
     void recieveMouseMode(dureu::MOUSE_MODE mode);

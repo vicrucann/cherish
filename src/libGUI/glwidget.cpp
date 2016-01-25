@@ -68,6 +68,13 @@ GLWidget::~GLWidget()
 {
 }
 
+osg::Camera *GLWidget::getCamera() const
+{
+    std::vector<osg::Camera*> cameras;
+    m_Viewer->getCameras(cameras);
+    return cameras.at(0);
+}
+
 void GLWidget::getTabletActivity(bool active)
 {
     m_DeviceActive = active;

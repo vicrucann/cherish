@@ -392,6 +392,25 @@ void entity::UserScene::editPhotoMove(QUndoStack* stack, const double u, const d
     }
 }
 
+void entity::UserScene::editStrokesPush(osg::Camera *camera)
+{
+    const std::vector<entity::Stroke*>& strokes = this->getCanvasCurrent()->getStrokesSelected();
+    if (strokes.empty()){
+        outErrMsg("Before performing push strokes, select a set of strokes");
+        return;
+    }
+    if (!m_canvasPrevious.get()){
+        outErrMsg("There must be at least two canvases to perform push of strokes");
+        return;
+    }
+    if (!camera){
+        outErrMsg("editStrokesPush: camera is NULL");
+        return;
+    }
+    outLogMsg("Pushing strokes to previously selected canvas (highlighted violet)");
+
+}
+
 bool entity::UserScene::isEmptyScene() const
 {
     return this->getNumChildren()==0? true : false;

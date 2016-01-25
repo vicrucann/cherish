@@ -345,9 +345,11 @@ void MainWindow::onImagePush()
     m_mdiArea->setCursor(Qt::ArrowCursor);
 }
 
-void MainWindow::onStrokePush()
+void MainWindow::onStrokesPush()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
+    m_mdiArea->setCursor(Qt::CrossCursor);
+    osg::Camera* camera = m_glWidget->getCamera();
+    m_rootScene->editStrokesPush(camera);
 }
 
 GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
@@ -479,7 +481,7 @@ void MainWindow::initializeActions()
     this->connect(m_actionImagePush, SIGNAL(triggered(bool)), this, SLOT(onImagePush()));
 
     m_actionStrokesPush = new QAction(Data::scenePushStrokesIcon(), tr("Push Strokes"), this);
-    this->connect(m_actionStrokesPush, SIGNAL(triggered(bool)), this, SLOT(onStrokePush()));
+    this->connect(m_actionStrokesPush, SIGNAL(triggered(bool)), this, SLOT(onStrokesPush()));
 }
 
 void MainWindow::initializeMenus()

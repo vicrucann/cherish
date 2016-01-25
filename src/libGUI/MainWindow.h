@@ -73,7 +73,7 @@ private slots:
     void onImageFlip();
     void onImagePush();
 
-    void onStrokePush();
+    void onStrokesPush();
 
 private:
     GLWidget*   createViewer(Qt::WindowFlags f = 0, int viewmode = 1);

@@ -85,6 +85,7 @@ public:
     void editCanvasOffset(const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasRotate(const osg::Quat& rotation, dureu::EVENT event);
     void editPhotoMove(const double u, const double v, dureu::EVENT event);
+    void editStrokesPush(osg::Camera* camera);
 
 protected:
     ~RootScene();
