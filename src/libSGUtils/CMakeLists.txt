@@ -8,11 +8,11 @@ include_directories(
 )
 
 set (libSGUtils_SRCS
-    logfilehandler.h
-    observescenecallback.h
-    observescenecallback.cpp
-    findnodevisitor.h
-    findnodevisitor.cpp
+    LogFileHandler.h
+    ObserveSceneCallback.h
+    ObserveSceneCallback.cpp
+    FindNodeVisitor.h
+    FindNodeVisitor.cpp
 )
 
 add_library(libSGUtils

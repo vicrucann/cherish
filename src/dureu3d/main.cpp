@@ -1,7 +1,7 @@
 #include <iostream>
 #include "DureuApplication.h"
 #include "MainWindow.h"
-#include "settings.h"
+#include "Settings.h"
 #include <QObject>
 #include <QDesktopWidget>
 

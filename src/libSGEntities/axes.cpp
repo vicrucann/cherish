@@ -1,5 +1,5 @@
 #include "axes.h"
-#include "settings.h"
+#include "Settings.h"
 
 #include <osg/Drawable>
 #include <osg/ref_ptr>

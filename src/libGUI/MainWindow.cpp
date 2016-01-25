@@ -15,7 +15,7 @@
 
 #include "MainWindow.h"
 #include "glwidget.h"
-#include "settings.h"
+#include "Settings.h"
 #include "Data.h"
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)

@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include "observescenecallback.h"
-#include "settings.h"
+#include "ObserveSceneCallback.h"
+#include "Settings.h"
 
 ObserveSceneCallback::ObserveSceneCallback():
     _text(new osgText::Text),

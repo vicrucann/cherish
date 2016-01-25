@@ -13,7 +13,7 @@
 #include <osg/LineWidth>
 #include <osg/BlendFunc>
 
-#include "settings.h"
+#include "Settings.h"
 
 /* HUDCamera
  * A tester class to create a HUD display that can show

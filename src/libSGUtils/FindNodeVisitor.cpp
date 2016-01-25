@@ -1,4 +1,4 @@
-#include "findnodevisitor.h"
+#include "FindNodeVisitor.h"
 
 FindNodeVisitor::FindNodeVisitor(const std::string &name):
     osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN),

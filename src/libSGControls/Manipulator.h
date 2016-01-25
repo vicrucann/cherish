@@ -1,7 +1,7 @@
 #ifndef MANIPULATOR
 #define MANIPULATOR
 
-#include "settings.h"
+#include "Settings.h"
 
 #include <osg/ref_ptr>
 #include <osgGA/GUIEventHandler>

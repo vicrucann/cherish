@@ -9,7 +9,7 @@
 
 #include "RootScene.h"
 #include "axes.h"
-#include "settings.h"
+#include "Settings.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
     : osg::Group()

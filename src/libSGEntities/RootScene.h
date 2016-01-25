@@ -31,8 +31,8 @@
 #include <osg/ref_ptr>
 
 #include "axes.h"
-#include "settings.h"
-#include "../libSGUtils/observescenecallback.h"
+#include "Settings.h"
+#include "../libSGUtils/ObserveSceneCallback.h"
 #include "../libGUI/hudcamera.h"
 #include "UserScene.h"
 #include "Photo.h"

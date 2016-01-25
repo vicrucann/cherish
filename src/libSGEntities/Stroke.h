@@ -15,7 +15,7 @@
 #ifndef STROKE
 #define STROKE
 
-#include "settings.h"
+#include "Settings.h"
 #include <osg/Geometry>
 #include <osgDB/ObjectWrapper>
 

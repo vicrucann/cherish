@@ -1,5 +1,5 @@
 #include "Photo.h"
-#include "settings.h"
+#include "Settings.h"
 
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>

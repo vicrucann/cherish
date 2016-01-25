@@ -11,8 +11,8 @@
 #include <osgViewer/Viewer>
 
 #include "RootScene.h"
-#include "settings.h"
-#include "../libSGControls/manipulator.h"
+#include "Settings.h"
+#include "../libSGControls/Manipulator.h"
 #include "../libSGControls/EventHandler.h"
 
 class GLWidget : public QOpenGLWidget {

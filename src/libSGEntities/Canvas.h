@@ -17,7 +17,7 @@
  *                                           |-> User drawables (strokes)
  */
 
-#include "settings.h"
+#include "Settings.h"
 #include "Stroke.h"
 #include "Photo.h"
 

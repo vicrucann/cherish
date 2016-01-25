@@ -14,7 +14,7 @@
 #include <osg/ref_ptr>
 
 #include "RootScene.h"
-#include "settings.h"
+#include "Settings.h"
 #include "glwidget.h"
 
 class MainWindow : public QMainWindow {

@@ -10,8 +10,8 @@ include_directories(
 set (libSGControls_SRCS
     EventHandler.h
     EventHandler.cpp
-    manipulator.h
-    manipulator.cpp
+    Manipulator.h
+    Manipulator.cpp
     DeleteStrokeCommand.h
     DeleteStrokeCommand.cpp
     AddEntityCommand.h

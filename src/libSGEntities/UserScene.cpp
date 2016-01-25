@@ -2,10 +2,10 @@
 
 #include "UserScene.h"
 
-#include "settings.h"
+#include "Settings.h"
 #include "AddEntityCommand.h"
 #include "EditEntityCommand.h"
-#include "findnodevisitor.h"
+#include "FindNodeVisitor.h"
 
 #include <osgDB/WriteFile>
 #include <osgDB/ReadFile>

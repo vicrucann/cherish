@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "Canvas.h"
-#include "settings.h"
+#include "Settings.h"
 #include "Stroke.h"
 
 #include <osg/Geode>

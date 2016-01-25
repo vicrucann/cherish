@@ -9,7 +9,7 @@ endif()
 
 set(DureuApplication_SRCS
     main.cpp
-    settings.h
+    Settings.h
     Data.h
     Data.cpp
 )
