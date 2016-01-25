@@ -3,12 +3,13 @@
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 18 18" style="enable-background:new 0 0 18 18;" xml:space="preserve">
 <style type="text/css">
-	.st0{fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}
+	.st0{fill:none;stroke:#000000;stroke-miterlimit:10;}
+	.st1{stroke:#000000;stroke-width:0.25;stroke-miterlimit:10;}
 </style>
-<circle class="st0" cx="9" cy="9.1" r="8.8"/>
-<rect x="3.2" y="9.1" width="4.3" height="0.7"/>
-<rect x="10.5" y="9.1" width="4.3" height="0.7"/>
-<rect x="8.7" y="9.1" width="0.7" height="0.7"/>
-<rect x="8.7" y="3.6" width="0.7" height="4.3"/>
-<rect x="8.7" y="10.9" width="0.7" height="4.3"/>
+<circle class="st0" cx="9" cy="9" r="8.5"/>
+<rect x="3.4" y="9" class="st1" width="4.1" height="0.6"/>
+<rect x="10.5" y="9" class="st1" width="4.1" height="0.6"/>
+<rect x="8.7" y="9" class="st1" width="0.6" height="0.6"/>
+<rect x="8.7" y="3.7" class="st1" width="0.6" height="4.1"/>
+<rect x="8.7" y="10.8" class="st1" width="0.6" height="4.1"/>
 </svg>
