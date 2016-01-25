@@ -13,7 +13,7 @@
 
 #include <osg/MatrixTransform>
 
-#include "mainwindow.h"
+#include "MainWindow.h"
 #include "glwidget.h"
 #include "settings.h"
 #include "Data.h"

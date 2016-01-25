@@ -12,8 +12,8 @@ include_directories(
 set(libGUI_SRCS
     DureuApplication.cpp
     DureuApplication.h
-    mainwindow.cpp
-    mainwindow.h
+    MainWindow.cpp
+    MainWindow.h
     hudcamera.h
     glwidget.h
     glwidget.cpp
