@@ -553,34 +553,3 @@ void EventHandler::finishAll()
         break;
     }
 }
-
-bool EventHandler::getStrokesIntersections(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa,
-                                          StrokeIntersector::Intersection& result)
-{
-    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
-    if (!viewer){
-        outErrMsg("getLineIntersection(): could not retrieve viewer");
-        return false;
-    }
-
-    osg::ref_ptr<StrokeIntersector> intersector = new StrokeIntersector(osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
-
-    osgUtil::IntersectionVisitor iv(intersector);
-    osg::Camera* cam = viewer->getCamera();
-    if (!cam){
-        std::cerr << "getLineIntersection(): could not read camera" << std::endl;
-        return false;
-    }
-    cam->accept(iv);
-    if (!intersector->containsIntersections()){
-        outLogMsg("getLineIntersection(): no intersections found");
-        this->finishAll();
-        return false;
-    }
-    //auto results = intersector->getIntersections();
-    //auto it = results.const_iterator;
-
-    //result = results.begin();
-    result = *(intersector->getIntersections().begin());
-    return true;
-}
