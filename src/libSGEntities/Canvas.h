@@ -96,6 +96,7 @@ public:
 
     void addStrokesSelected(entity::Stroke* stroke);
     void resetStrokesSelected();
+    void resetStrokeSelected(entity::Stroke* stroke);
     const std::vector< entity::Stroke* >& getStrokesSelected() const;
 
     void setPhotoCurrent(entity::Photo* photo);
@@ -117,6 +118,7 @@ protected:
 
     void setStrokeSelected(entity::Stroke* stroke);
     void setStrokeSelected(bool selected);
+    bool isStrokeSelected(entity::Stroke* stroke) const;
     entity::Stroke* getStrokeSelected() const;
 
     void updateTransforms();

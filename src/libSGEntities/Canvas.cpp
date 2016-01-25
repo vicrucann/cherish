@@ -381,8 +381,12 @@ void entity::Canvas::addStrokesSelected(entity::Stroke* stroke)
 {
     if (!stroke)
         return;
-    this->setStrokeSelected(stroke);
-    m_strokesSelected.push_back(stroke);
+    if (!this->isStrokeSelected(stroke)){
+        this->setStrokeSelected(stroke);
+        m_strokesSelected.push_back(stroke);
+    }
+    else
+        this->resetStrokeSelected(stroke);
 }
 
 void entity::Canvas::resetStrokesSelected()
@@ -395,6 +399,19 @@ void entity::Canvas::resetStrokesSelected()
     m_strokesSelected.clear();
 }
 
+void entity::Canvas::resetStrokeSelected(entity::Stroke *stroke)
+{
+    unsigned int i;
+    for (i = 0; i < m_strokesSelected.size(); ++i){
+        entity::Stroke* s = m_strokesSelected.at(i);
+        if (stroke == s)
+            break;
+    }
+    this->setStrokeSelected(stroke);
+    this->setStrokeSelected(false);
+    m_strokesSelected.erase(m_strokesSelected.begin()+i);
+}
+
 const std::vector<entity::Stroke* >& entity::Canvas::getStrokesSelected() const
 {
     return m_strokesSelected;
@@ -402,8 +419,9 @@ const std::vector<entity::Stroke* >& entity::Canvas::getStrokesSelected() const
 
 void entity::Canvas::setStrokeSelected(entity::Stroke *stroke)
 {
-    if (m_strokeSelected.get() == stroke)
+    if (m_strokeSelected.get() == stroke){
         return;
+    }
     //if (m_strokeSelected.get() != 0)
     //    this->setStrokeSelected(false);
     m_strokeSelected = stroke;
@@ -420,6 +438,15 @@ void entity::Canvas::setStrokeSelected(bool selected)
     }
     else
         m_strokeSelected->setColor(dureu::STROKE_CLR_SELECTED);
+}
+
+bool entity::Canvas::isStrokeSelected(entity::Stroke *stroke) const
+{
+    for (unsigned int i = 0; i < m_strokesSelected.size(); ++i){
+        if (stroke == m_strokesSelected.at(i))
+            return true;
+    }
+    return false;
 }
 
 entity::Stroke *entity::Canvas::getStrokeSelected() const
