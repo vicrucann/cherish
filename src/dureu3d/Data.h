@@ -74,7 +74,7 @@ public:
 
     /* Cursors */
     static const QPixmap& sceneSketchPixmap();
-    //static const QPixmap& sceneEraserPixmap();
+    static const QPixmap& sceneEraserPixmap();
 
 private:
 

@@ -240,8 +240,8 @@ void MainWindow::onSelect(){
 
 void MainWindow::onErase()
 {
-    //QCursor* cur = new QCursor(Data::sceneEraserPixmap(), -1, -1);
-    m_mdiArea->setCursor(Qt::CrossCursor);
+    QCursor* cur = new QCursor(Data::sceneEraserPixmap(), -1, -1);
+    m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_ERASE);
 }
 

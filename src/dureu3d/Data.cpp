@@ -389,10 +389,10 @@ const QPixmap &Data::sceneSketchPixmap()
     return pmap;
 }
 
-/*const QPixmap &Data::sceneEraserPixmap()
+const QPixmap &Data::sceneEraserPixmap()
 {
     Q_ASSERT_X(!QPixmap(":/scene-eraser-cursor-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QPixmap pmap(":/scene-eraser-cursor-24px.svg");
     return pmap;
-}*/
+}
 
