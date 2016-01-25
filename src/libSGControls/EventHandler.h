@@ -27,6 +27,7 @@ public:
     EventHandler(RootScene* scene, dureu::MOUSE_MODE mode = dureu::MOUSE_SELECT);
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void setMode(dureu::MOUSE_MODE mode);
+    dureu::MOUSE_MODE getMode() const;
 
     template <typename T1, typename T2>
     void doByLineIntersector(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);

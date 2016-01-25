@@ -347,6 +347,16 @@ void entity::Canvas::unselectStrokes()
     this->resetStrokesSelected();
 }
 
+void entity::Canvas::selectAllStrokes()
+{
+    for (unsigned int i = 0; i < m_geodeData->getNumChildren(); ++i){
+        entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_geodeData->getChild(i));
+        if (!stroke)
+            continue;
+        this->addStrokesSelected(stroke);
+    }
+}
+
 void entity::Canvas::setStrokeCurrent(entity::Stroke *stroke)
 {
     if (m_strokeCurrent.get() == stroke)

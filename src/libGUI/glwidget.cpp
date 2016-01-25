@@ -110,6 +110,10 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     case Qt::Key_H:
         this->onHome();
         return;
+    case Qt::Key_A:
+        if ((event->modifiers() & Qt::ControlModifier))
+            m_RootScene->selectAllStrokes();
+        return;
     default:
         break;
     }

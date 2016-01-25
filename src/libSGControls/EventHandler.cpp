@@ -54,6 +54,11 @@ void EventHandler::setMode(dureu::MOUSE_MODE mode)
     m_mode = mode;
 }
 
+dureu::MOUSE_MODE EventHandler::getMode() const
+{
+    return m_mode;
+}
+
 // for pick and erase when lineintersector is going to be used
 // line intersector is already implemented within OSG
 // so we only need to return the intersection results which is

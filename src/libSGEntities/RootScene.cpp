@@ -195,6 +195,12 @@ void RootScene::addStroke(float u, float v, dureu::EVENT event)
     m_saved = false;
 }
 
+void RootScene::selectAllStrokes()
+{
+    if (this->getCanvasCurrent())
+        this->getCanvasCurrent()->selectAllStrokes();
+}
+
 void RootScene::addPhoto(const std::string& fname)
 {
     m_userScene->addPhoto(m_undoStack, fname);

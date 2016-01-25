@@ -88,6 +88,7 @@ public:
 
     void unselectAll();
     void unselectStrokes();
+    void selectAllStrokes();
 
     void setStrokeCurrent(entity::Stroke* stroke);
     void setStrokeCurrent(bool current);
