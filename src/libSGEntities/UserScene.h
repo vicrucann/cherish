@@ -40,6 +40,7 @@ public:
     void addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
     void addStroke(QUndoStack* stack, float u, float v, dureu::EVENT event);
     void addPhoto(QUndoStack* stack, const std::string& fname);
+    void eraseStroke(QUndoStack* stack, entity::Stroke* stroke, const osg::Vec3d& hit, dureu::EVENT event);
 
     entity::Canvas* getCanvas(unsigned int id);
     entity::Canvas* getCanvas(const std::string& name);
@@ -74,6 +75,11 @@ protected:
     void strokeAppend(float u, float v);
     void strokeFinish(QUndoStack* stack);
     bool strokeValid() const;
+
+    void eraseStart(entity::Stroke* stroke, osg::Vec3d& hit);
+    void eraseAppend(entity::Stroke* stroke, osg::Vec3d& hit);
+    void eraseFinish(QUndoStack* stack, entity::Stroke* stroke);
+    bool eraseValid(entity::Stroke* stroke) const;
 
     void canvasOffsetStart();
     void canvasOffsetAppend(const osg::Vec3f& t);

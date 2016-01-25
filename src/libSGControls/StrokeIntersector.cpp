@@ -9,21 +9,21 @@
 
 StrokeIntersector::StrokeIntersector()
     : osgUtil::LineSegmentIntersector(MODEL, 0.f, 0.f)
-    , m_offset(0.1f)
+    , m_offset(0.05f)
 {
 
 }
 
 StrokeIntersector::StrokeIntersector(const osg::Vec3 &start, const osg::Vec3 &end)
     : osgUtil::LineSegmentIntersector(start, end)
-    , m_offset(0.1f)
+    , m_offset(0.05f)
 {
 
 }
 
 StrokeIntersector::StrokeIntersector(osgUtil::Intersector::CoordinateFrame cf, double x, double y)
     : osgUtil::LineSegmentIntersector(cf, x, y)
-    , m_offset(0.1f)
+    , m_offset(0.05f)
 {
 
 }

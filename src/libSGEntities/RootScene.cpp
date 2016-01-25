@@ -201,6 +201,12 @@ void RootScene::addPhoto(const std::string& fname)
     m_saved = false;
 }
 
+void RootScene::eraseStroke(entity::Stroke *stroke, const osg::Vec3d &hit, dureu::EVENT event)
+{
+    m_userScene->eraseStroke(m_undoStack, stroke, hit, event);
+    m_saved = false;
+}
+
 void RootScene::setCanvasSelected(entity::Canvas *cnv)
 {
     m_userScene->setCanvasSelected(cnv);

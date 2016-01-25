@@ -72,6 +72,7 @@ public:
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
     void addStroke(float u, float v, dureu::EVENT event);
     void addPhoto(const std::string& fname);
+    void eraseStroke(entity::Stroke* stroke, const osg::Vec3d& hit, dureu::EVENT event);
 
     void setCanvasSelected(entity::Canvas* cnv);
     bool setCanvasCurrent(entity::Canvas* cnv);

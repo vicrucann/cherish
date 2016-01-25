@@ -92,6 +92,7 @@ void MainWindow::onCreateViewer(){
     subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     m_glWidget->showMaximized();
     subwin->show();
+    this->onSketch();
 }
 
 /* Check whether the current scene is empty or not
@@ -239,7 +240,8 @@ void MainWindow::onSelect(){
 
 void MainWindow::onErase()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
+    //QCursor* cur = new QCursor(Data::sceneEraserPixmap(), -1, -1);
+    m_mdiArea->setCursor(Qt::CrossCursor);
     emit sendMouseMode(dureu::MOUSE_ERASE);
 }
 

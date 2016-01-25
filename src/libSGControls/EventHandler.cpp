@@ -30,7 +30,8 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     if (!m_scene->getCanvasCurrent())
         return false;
 
-    if (m_mode == dureu::MOUSE_SELECT || m_mode == dureu::MOUSE_DELETE){
+    if (m_mode == dureu::MOUSE_SELECT)
+    {
         if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL){
             if (ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN)
                 m_scene->getCanvasCurrent()->resetStrokesSelected();
@@ -39,6 +40,8 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         else
             doByLineIntersector<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
     }
+    else if (m_mode == dureu::MOUSE_ERASE)
+        doByLineIntersector<StrokeIntersector::Intersection, StrokeIntersector>(ea, aa);
     else if (m_mode == dureu::MOUSE_PHOTO_MOVE)
         doByHybrid(ea, aa);
     else
@@ -64,7 +67,7 @@ void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::
         return;
 
     T1* result = new T1;
-    bool intersected = this->getLineIntersections<T1, T2>(ea,aa, *result);
+    bool intersected = this->getLineIntersection<T1, T2>(ea,aa, *result);
     if (!intersected)
         return;
 
@@ -75,6 +78,14 @@ void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::
         }
         else
             doPickCanvas(*result);
+        break;
+    case dureu::MOUSE_ERASE:
+        if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH)
+            doEraseStroke(*result, dureu::EVENT_PRESSED);
+        else if (ea.getEventType() ==osgGA::GUIEventAdapter::DRAG)
+            doEraseStroke(*result, dureu::EVENT_DRAGGED);
+        else
+            doEraseStroke(*result, dureu::EVENT_RELEASED);
         break;
     case dureu::MOUSE_DELETE:
         doDelete(*result);
@@ -112,11 +123,6 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_CANVAS_ROTATE:
             doEditCanvasRotate(ea.getX(), ea.getY(), dureu::EVENT_PRESSED);
             break;
-        case dureu::MOUSE_ERASE:
-            if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
-                return;
-            doErase(u,v,0);
-            break;
         default:
             break;
         }
@@ -137,11 +143,6 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
         case dureu::MOUSE_CANVAS_ROTATE:
             doEditCanvasRotate(ea.getX(), ea.getY(), dureu::EVENT_RELEASED);
             break;
-        case dureu::MOUSE_ERASE:
-            if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
-                return;
-            doErase(u,v,2);
-            break;
         default:
             break;
         }
@@ -160,11 +161,6 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
             break;
         case dureu::MOUSE_CANVAS_ROTATE:
             doEditCanvasRotate(ea.getX(), ea.getY(), dureu::EVENT_DRAGGED);
-            break;
-        case dureu::MOUSE_ERASE:
-            if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
-                return;
-            doErase(u,v,1);
             break;
         default:
             break;
@@ -191,7 +187,7 @@ void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIAction
 
     osgUtil::LineSegmentIntersector::Intersection* result = new osgUtil::LineSegmentIntersector::Intersection;
 
-    bool intersected = this->getLineIntersections<osgUtil::LineSegmentIntersector::Intersection,
+    bool intersected = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection,
             osgUtil::LineSegmentIntersector>(ea,aa, *result);
 
     if (!intersected)
@@ -255,15 +251,24 @@ void EventHandler::doDelete(const osgUtil::LineSegmentIntersector::Intersection 
     //std::cout << "doDelete(): success is " << success << std::endl;
 }
 
-void EventHandler::doErase(double u, double v, int mouse)
+/* Algorithm:
+ * Get closest line segment out of Stroke
+ * Pass that line segment to split stroke
+ * That line segment will be deleted from stroke, and,
+ * depending on its location inside the stroke, it will either
+ * split the stroke, or it will erase one of its ends.
+ * When stroke is split, need to see if both substrokes are long
+ * enough to continue to exist.
+*/
+void EventHandler::doEraseStroke(const osgUtil::LineSegmentIntersector::Intersection &result, dureu::EVENT event)
 {
-    // Algorithm. For a center with 3d local [u,v,0],
-    // check if there are any strokes whose points are from the center
-    // within radius of ERASER_MIN;
-    // If yes, mark those points and pass their coords into splitStroke
-    // remove those points from each of the strokes, split strokes if needed
-    // read more on point selection in OSG cookbook, Chapter 3 "Selection a point
-    // of the model".
+    entity::Stroke* stroke = this->getStroke(result);
+    if (!stroke){
+        outErrMsg("doEraseStroke: could not obtain stroke");
+        return;
+    }
+    osg::Vec3d hit = result.getLocalIntersectPoint();
+    m_scene->eraseStroke(stroke, hit, event);
 }
 
 // see https://www.opengl.org/sdk/docs/man2/xhtml/gluUnProject.xml
@@ -325,13 +330,13 @@ entity::Photo *EventHandler::getPhoto(const osgUtil::LineSegmentIntersector::Int
 }
 
 template <typename T1, typename T2>
-bool EventHandler::getLineIntersections(const osgGA::GUIEventAdapter &ea,
+bool EventHandler::getLineIntersection(const osgGA::GUIEventAdapter &ea,
                                         osgGA::GUIActionAdapter &aa,
                                         T1& result)
 {
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (!viewer){
-        outErrMsg("getLineIntersections(): could not retrieve viewer");
+        outErrMsg("getLineIntersection(): could not retrieve viewer");
         return false;
     }
     osg::ref_ptr<T2> intersector = new T2(osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
@@ -339,12 +344,12 @@ bool EventHandler::getLineIntersections(const osgGA::GUIEventAdapter &ea,
     osgUtil::IntersectionVisitor iv(intersector);
     osg::Camera* cam = viewer->getCamera();
     if (!cam){
-        std::cerr << "getLineIntersections(): could not read camera" << std::endl;
+        std::cerr << "getLineIntersection(): could not read camera" << std::endl;
         return false;
     }
     cam->accept(iv);
     if (!intersector->containsIntersections()){
-        outLogMsg("getLineIntersections(): no intersections found");
+        outLogMsg("getLineIntersection(): no intersections found");
         this->finishAll();
         return false;
     }
@@ -547,4 +552,35 @@ void EventHandler::finishAll()
     default:
         break;
     }
+}
+
+bool EventHandler::getStrokesIntersections(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa,
+                                          StrokeIntersector::Intersection& result)
+{
+    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
+    if (!viewer){
+        outErrMsg("getLineIntersection(): could not retrieve viewer");
+        return false;
+    }
+
+    osg::ref_ptr<StrokeIntersector> intersector = new StrokeIntersector(osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
+
+    osgUtil::IntersectionVisitor iv(intersector);
+    osg::Camera* cam = viewer->getCamera();
+    if (!cam){
+        std::cerr << "getLineIntersection(): could not read camera" << std::endl;
+        return false;
+    }
+    cam->accept(iv);
+    if (!intersector->containsIntersections()){
+        outLogMsg("getLineIntersection(): no intersections found");
+        this->finishAll();
+        return false;
+    }
+    //auto results = intersector->getIntersections();
+    //auto it = results.const_iterator;
+
+    //result = results.begin();
+    result = *(intersector->getIntersections().begin());
+    return true;
 }

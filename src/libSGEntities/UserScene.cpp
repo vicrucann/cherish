@@ -144,6 +144,32 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
     stack->push(cmd);
 }
 
+void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, const osg::Vec3d &hit, dureu::EVENT event)
+{
+    if (!stack){
+        fatalMsg("eraseStroke(): undo stack is NULL, it is not initialized. "
+                 "Erase is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
+    }
+
+    switch (event){
+    case dureu::EVENT_OFF:
+        outLogMsg("EVENT_OFF");
+        break;
+    case dureu::EVENT_PRESSED:
+        outLogMsg("EVENT_PRESSED");
+        break;
+    case dureu::EVENT_DRAGGED:
+        break;
+    case dureu::EVENT_RELEASED:
+        outLogMsg("EVENT_RELEASED");
+        break;
+    default:
+        break;
+    }
+}
+
 entity::Canvas* entity::UserScene::getCanvas(unsigned int id)
 {
     //return dynamic_cast<entity::Canvas*>(this->getChild(id));
@@ -475,6 +501,30 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
 bool entity::UserScene::strokeValid() const
 {
     return m_canvasCurrent->getStrokeCurrent();
+}
+
+void entity::UserScene::eraseStart(entity::Stroke *stroke, osg::Vec3d &hit)
+{
+
+}
+
+void entity::UserScene::eraseAppend(entity::Stroke *stroke, osg::Vec3d &hit)
+{
+
+}
+
+void entity::UserScene::eraseFinish(QUndoStack *stack, entity::Stroke *stroke)
+{
+    if (!this->eraseValid(stroke)){
+        outErrMsg("eraseFinish: stroke ptr is NULL, impossible to finish erase");
+        return;
+    }
+
+}
+
+bool entity::UserScene::eraseValid(Stroke *stroke) const
+{
+    return stroke;
 }
 
 void entity::UserScene::canvasOffsetStart()

@@ -55,5 +55,6 @@
         <file>scene-select-24px.svg</file>
         <file>viewer-bookmark-24px.svg</file>
         <file>scene-newcanvas-set-24px.svg</file>
+        <file>scene-eraser-cursor-24px.svg</file>
     </qresource>
 </RCC>
