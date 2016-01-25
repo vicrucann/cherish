@@ -28,6 +28,7 @@ entity::Canvas::Canvas()
     , m_norm(new osg::Geometry)
 
     , m_strokeCurrent(0)
+    , m_strokesSelected(NULL)
     , m_strokeSelected(0)
     , m_photoCurrent(0)
 
@@ -67,6 +68,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_norm(cnv.m_norm)
 
     , m_strokeCurrent(0)
+    , m_strokesSelected(NULL)
     , m_strokeSelected(0)
     , m_photoCurrent(0)
 
@@ -342,7 +344,7 @@ void entity::Canvas::unselectAll()
 
 void entity::Canvas::unselectStrokes()
 {
-    this->setStrokeSelected(false);
+    this->resetStrokesSelected();
 }
 
 void entity::Canvas::setStrokeCurrent(entity::Stroke *stroke)
@@ -365,12 +367,35 @@ entity::Stroke *entity::Canvas::getStrokeCurrent() const
     return m_strokeCurrent.get();
 }
 
+void entity::Canvas::addStrokesSelected(entity::Stroke* stroke)
+{
+    if (!stroke)
+        return;
+    this->setStrokeSelected(stroke);
+    m_strokesSelected.push_back(stroke);
+}
+
+void entity::Canvas::resetStrokesSelected()
+{
+    for (unsigned int i = 0; i < m_strokesSelected.size(); ++i){
+        entity::Stroke* stroke = m_strokesSelected.at(i);
+        this->setStrokeSelected(stroke);
+        this->setStrokeSelected(false);
+    }
+    m_strokesSelected.clear();
+}
+
+const std::vector<entity::Stroke* >& entity::Canvas::getStrokesSelected() const
+{
+    return m_strokesSelected;
+}
+
 void entity::Canvas::setStrokeSelected(entity::Stroke *stroke)
 {
     if (m_strokeSelected.get() == stroke)
         return;
-    if (m_strokeSelected.get() != 0)
-        this->setStrokeSelected(false);
+    //if (m_strokeSelected.get() != 0)
+    //    this->setStrokeSelected(false);
     m_strokeSelected = stroke;
     this->setStrokeSelected(true);
 }

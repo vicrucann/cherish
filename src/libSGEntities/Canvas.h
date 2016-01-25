@@ -93,9 +93,9 @@ public:
     void setStrokeCurrent(bool current);
     entity::Stroke* getStrokeCurrent() const;
 
-    void setStrokeSelected(entity::Stroke* stroke);
-    void setStrokeSelected(bool selected);
-    entity::Stroke* getStrokeSelected() const;
+    void addStrokesSelected(entity::Stroke* stroke);
+    void resetStrokesSelected();
+    const std::vector< entity::Stroke* >& getStrokesSelected() const;
 
     void setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);
@@ -114,6 +114,10 @@ public:
 protected:
     ~Canvas();
 
+    void setStrokeSelected(entity::Stroke* stroke);
+    void setStrokeSelected(bool selected);
+    entity::Stroke* getStrokeSelected() const;
+
     void updateTransforms();
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
 private:
@@ -128,6 +132,7 @@ private:
     osg::ref_ptr<osg::Geometry> m_norm;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
+    std::vector<entity::Stroke*> m_strokesSelected;
     osg::observer_ptr<entity::Stroke> m_strokeSelected; /* for stroke editing, e.g., push, delete, copy, cut */
     osg::observer_ptr<entity::Photo> m_photoCurrent; /* for editing photo position and properties*/
 

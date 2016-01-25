@@ -32,6 +32,8 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 
     if (m_mode == dureu::MOUSE_SELECT || m_mode == dureu::MOUSE_DELETE){
         if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL){
+            if (ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN)
+                m_scene->getCanvasCurrent()->resetStrokesSelected();
             doByLineIntersector<StrokeIntersector::Intersection, StrokeIntersector>(ea, aa);
         }
         else
@@ -68,8 +70,9 @@ void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::
 
     switch (m_mode) {
     case dureu::MOUSE_SELECT:
-        if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL)
+        if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL){
             doPickStroke(*result);
+        }
         else
             doPickCanvas(*result);
         break;
@@ -225,7 +228,8 @@ void EventHandler::doPickStroke(const StrokeIntersector::Intersection &result)
         std::cerr << "doPickStroke(): could not dynamic_cast<Stroke*>" << std::endl;
         return;
     }
-    m_scene->getCanvasCurrent()->setStrokeSelected(stroke);
+    m_scene->getCanvasCurrent()->addStrokesSelected(stroke);
+    //m_scene->getCanvasCurrent()->setStrokeSelected(stroke);
 }
 
 void EventHandler::doPickCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
