@@ -70,9 +70,23 @@ GLWidget::~GLWidget()
 
 osg::Camera *GLWidget::getCamera() const
 {
-    std::vector<osg::Camera*> cameras;
-    m_Viewer->getCameras(cameras);
-    return cameras.at(0);
+    if (!m_Viewer.get()){
+        std::cerr << "GLWindget getCamera: could not obtain viewer" << std::endl;
+        return NULL;
+    }
+
+    if (!m_Viewer->getView(0))
+    {
+        std::cerr << "GLWindget getCamera: could not obtain view" << std::endl;
+        return NULL;
+    }
+    return m_Viewer->getView(0)->getCamera();
+    /*std::vector<osg::Camera*> cameras;
+    this->m_Viewer->getCameras(cameras);
+    if (cameras.empty())
+        return NULL;
+    else
+        return cameras.at(0);*/
 }
 
 void GLWidget::getTabletActivity(bool active)

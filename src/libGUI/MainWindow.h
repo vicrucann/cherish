@@ -83,7 +83,6 @@ private:
 
     QDesktopWidget* m_desktop;
     QMdiArea*       m_mdiArea;
-    GLWidget*       m_glWidget;
 
     // http://doc.qt.io/qt-5/qtwidgets-tools-undoframework-example.html
     QUndoStack*     m_undoStack;
@@ -91,6 +90,7 @@ private:
 
     QMenuBar*       m_menuBar;
     osg::ref_ptr<RootScene> m_rootScene; // main scene graph
+    GLWidget*       m_glWidget;
 
     // FILE actions
     QAction * m_actionNewFile, * m_actionClose, * m_actionExit,

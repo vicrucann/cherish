@@ -22,15 +22,22 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
     , m_desktop(0)
     , m_mdiArea(new QMdiArea(this))
-    , m_glWidget(0)
     , m_undoStack(new QUndoStack(this))
     , m_undoView(new QUndoView(m_undoStack))
     , m_menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
     , m_rootScene(new RootScene(m_undoStack))
+    , m_glWidget(new GLWidget(m_rootScene.get(), this))
 {
-
     this->setMenuBar(m_menuBar);
-    this->onCreateViewer();
+    //this->onCreateViewer();
+    QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
+                     m_glWidget, SLOT(getTabletActivity(bool)));
+    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)),
+                     m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
+    QMdiSubWindow* subwin = m_mdiArea->addSubWindow(m_glWidget);
+    subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    m_glWidget->showMaximized();
+    subwin->show();
 
     m_undoView->setWindowTitle(tr("Command List"));
     m_undoView->show();
@@ -40,6 +47,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     this->initializeActions();
     this->initializeMenus();
     this->initializeToolbars();
+
+    this->onSketch();
 }
 
 MainWindow::~MainWindow(){
@@ -349,7 +358,12 @@ void MainWindow::onStrokesPush()
 {
     m_mdiArea->setCursor(Qt::CrossCursor);
     osg::Camera* camera = m_glWidget->getCamera();
-    m_rootScene->editStrokesPush(camera);
+    if (!camera)
+    {
+        std::cerr << "could not obtain camera" << std::endl;
+        return;
+    }
+    m_rootScene->editStrokesPush(m_undoStack, camera);
 }
 
 GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
