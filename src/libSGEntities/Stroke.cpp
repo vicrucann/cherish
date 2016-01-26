@@ -1,5 +1,7 @@
 #include "Stroke.h"
 
+#include <assert.h>
+
 #include <osg/LineWidth>
 #include <osg/StateSet>
 #include <osg/BlendFunc>
@@ -105,7 +107,6 @@ bool entity::Stroke::isLengthy() const
 {
     return this->getLength()>dureu::STROKE_MINL;
 }
-
 
 /* for serialization of stroke type
  * for more info, see OSG beginner's guide, or

@@ -479,14 +479,16 @@ void entity::Canvas::setPhotoCurrent(bool current)
 
 void entity::Canvas::updateFrame()
 {
-    osg::BoundingBox bb = m_geodeData->getBoundingBox();
-    assert(bb.valid());
-    float dx = 0.5*(bb.xMax()-bb.xMin());
-    float dy = 0.5*(bb.yMax()-bb.yMin());
-    float szX = std::max(dx, dureu::CANVAS_MINW);
-    float szY = std::max(dy, dureu::CANVAS_MINW);
+    if (m_geodeData->getNumChildren() > 0){
+        osg::BoundingBox bb = m_geodeData->getBoundingBox();
+        assert(bb.valid());
+        float dx = 0.5*(bb.xMax()-bb.xMin());
+        float dy = 0.5*(bb.yMax()-bb.yMin());
+        float szX = std::max(dx, dureu::CANVAS_MINW);
+        float szY = std::max(dy, dureu::CANVAS_MINW);
 
-    this->setVertices(bb.center(), szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+        this->setVertices(bb.center(), szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+    }
 }
 
 // we have to separate updateData() from updateFrame because:

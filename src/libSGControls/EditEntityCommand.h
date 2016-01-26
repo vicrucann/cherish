@@ -1,12 +1,15 @@
 #ifndef EDITENTITYCOMMAND_H
 #define EDITENTITYCOMMAND_H
 
+#include <vector>
+
 #include <QUndoCommand>
 
 #include <osg/observer_ptr>
 
 #include "Canvas.h"
 #include "Photo.h"
+#include "Stroke.h"
 
 class EditCanvasOffsetCommand : public QUndoCommand
 {
@@ -48,6 +51,24 @@ public:
 protected:
     osg::observer_ptr<entity::Canvas> m_canvas;
     double m_u0, m_v0, m_u1, m_v1;
+};
+
+class EditStrokesPushCommand : public QUndoCommand
+{
+public:
+    EditStrokesPushCommand(const std::vector<entity::Stroke*>& strokes, entity::Canvas* current, entity::Canvas* target,
+                           const osg::Vec3f& eye, QUndoCommand* parent = 0);
+    ~EditStrokesPushCommand() {}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+
+    const std::vector<entity::Stroke*>& m_strokes;
+    osg::observer_ptr<entity::Canvas> m_canvasCurrent;
+    osg::observer_ptr<entity::Canvas> m_canvasTarget;
+    osg::Vec3f m_eye;
 };
 
 #endif // EDITENTITYCOMMAND_H

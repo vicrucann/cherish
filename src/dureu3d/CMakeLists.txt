@@ -12,6 +12,8 @@ set(DureuApplication_SRCS
     Settings.h
     Data.h
     Data.cpp
+    Utilities.h
+    Utilities.cpp
 )
 
 qt5_add_resources(IMG_RSC_ADDED

@@ -3,6 +3,7 @@
 #include "UserScene.h"
 
 #include "Settings.h"
+#include "Utilities.h"
 #include "AddEntityCommand.h"
 #include "EditEntityCommand.h"
 #include "FindNodeVisitor.h"
@@ -392,23 +393,26 @@ void entity::UserScene::editPhotoMove(QUndoStack* stack, const double u, const d
     }
 }
 
-void entity::UserScene::editStrokesPush(osg::Camera *camera)
+void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
 {
-    const std::vector<entity::Stroke*>& strokes = this->getCanvasCurrent()->getStrokesSelected();
-    if (strokes.empty()){
-        outErrMsg("Before performing push strokes, select a set of strokes");
-        return;
-    }
-    if (!m_canvasPrevious.get()){
-        outErrMsg("There must be at least two canvases to perform push of strokes");
-        return;
-    }
-    if (!camera){
-        outErrMsg("editStrokesPush: camera is NULL");
+    if (!stack){
+        outErrMsg("editStrokesPush: stack is NULL");
         return;
     }
     outLogMsg("Pushing strokes to previously selected canvas (highlighted violet)");
+    osg::Vec3f eye, c, u;
+    camera->getViewMatrixAsLookAt(eye, c, u);
 
+    const std::vector<entity::Stroke*>& strokes = this->getCanvasCurrent()->getStrokesSelected();
+
+    //bool projectable = Utilities::areStrokesProjectable(strokes, m_canvasCurrent.get(), m_canvasPrevious.get(), eye);
+    //if (!projectable) return;
+    EditStrokesPushCommand* cmd = new EditStrokesPushCommand(strokes, m_canvasCurrent.get(), m_canvasPrevious.get(), eye);
+    if (!cmd){
+        outErrMsg("editStrokePush: undo/redo command is NULL");
+        return;
+    }
+    stack->push(cmd);
 }
 
 bool entity::UserScene::isEmptyScene() const

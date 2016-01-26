@@ -262,7 +262,7 @@ void RootScene::editPhotoMove(const double u, const double v, dureu::EVENT event
 
 void RootScene::editStrokesPush(QUndoStack *stack, osg::Camera* camera)
 {
-    const std::vector<entity::Stroke*>& strokes = this->getCanvasCurrent()->getStrokesSelected();
+    /* const std::vector<entity::Stroke*>& strokes = this->getCanvasCurrent()->getStrokesSelected();
     osg::Vec3 eye,c,up;
     camera->getViewMatrixAsLookAt(eye, c, up);
     osg::Matrix M = this->getCanvasCurrent()->getTransform()->getMatrix();
@@ -280,7 +280,7 @@ void RootScene::editStrokesPush(QUndoStack *stack, osg::Camera* camera)
             osg::Vec3 P = p * M; // 3d global
             osg::Vec3 dir = P - eye; // look direction for a point
 
-            /* plane intersection part */
+
             if (! plane.dotProductNormal(dir)){ // denominator
                 std::cerr << "projected line is parallel to the canvas plane" << std::endl;
                 return;
@@ -303,9 +303,11 @@ void RootScene::editStrokesPush(QUndoStack *stack, osg::Camera* camera)
             s1->appendPoint(p_.x(), p_.y());
         }
         this->getCanvasPrevious()->getGeodeData()->addChild(s1);
-    }
-
+    }*/
     //m_userScene->editStrokesPush(stack);
+
+    m_userScene->editStrokesPush(stack, camera);
+
     m_saved = false;
 }
 
