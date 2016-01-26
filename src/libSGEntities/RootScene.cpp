@@ -260,9 +260,52 @@ void RootScene::editPhotoMove(const double u, const double v, dureu::EVENT event
     m_userScene->editPhotoMove(m_undoStack, u, v, event);
 }
 
-void RootScene::editStrokesPush(osg::Camera *camera)
+void RootScene::editStrokesPush(QUndoStack *stack, osg::Camera* camera)
 {
-    m_userScene->editStrokesPush(camera);
+    const std::vector<entity::Stroke*>& strokes = this->getCanvasCurrent()->getStrokesSelected();
+    osg::Vec3 eye,c,up;
+    camera->getViewMatrixAsLookAt(eye, c, up);
+    osg::Matrix M = this->getCanvasCurrent()->getTransform()->getMatrix();
+    osg::Matrix invM = osg::Matrix::inverse(this->getCanvasPrevious()->getTransform()->getMatrix());
+
+    const osg::Plane plane = this->getCanvasPrevious()->getPlane();
+    const osg::Vec3 center = this->getCanvasPrevious()->getCenter();
+
+    for (unsigned int i=0; i<strokes.size(); ++i){
+        entity::Stroke* s1 = new entity::Stroke();
+        entity::Stroke* s0 = strokes.at(i);
+        osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(s0->getVertexArray());
+        for (unsigned int j=0; j<verts->size(); ++j){
+            osg::Vec3 p = (*verts)[j]; // local point at current canvas
+            osg::Vec3 P = p * M; // 3d global
+            osg::Vec3 dir = P - eye; // look direction for a point
+
+            /* plane intersection part */
+            if (! plane.dotProductNormal(dir)){ // denominator
+                std::cerr << "projected line is parallel to the canvas plane" << std::endl;
+                return;
+            }
+            if (! plane.dotProductNormal(center-P)){
+                std::cerr << "plane contains the line, so no single intersection can be defined" << std::endl;
+                return;
+            }
+
+            double len = plane.dotProductNormal(center-P) / plane.dotProductNormal(dir);
+            osg::Vec3 P_ = dir * len + P;
+
+            osg::Vec3 p_ = P_ * invM;
+            if (std::fabs(p_.z())>dureu::EPSILON){
+                std::cerr << "error while projecting point from global 3D to local 3D, z-coordinate is not zero" << std::endl;
+                outLogVec("P_", P_.x(), P_.y(), P_.z());
+                outLogVec("p_", p_.x(), p_.y(), p_.z());
+                std::cout << std::endl;
+            }
+            s1->appendPoint(p_.x(), p_.y());
+        }
+        this->getCanvasPrevious()->getGeodeData()->addChild(s1);
+    }
+
+    //m_userScene->editStrokesPush(stack);
     m_saved = false;
 }
 
