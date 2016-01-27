@@ -65,7 +65,9 @@ public:
 
 protected:
 
-    const std::vector<entity::Stroke*>& m_strokes;
+    void doPushStrokes(entity::Canvas& source, entity::Canvas& target);
+
+    const std::vector<entity::Stroke*> m_strokes;
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
     osg::observer_ptr<entity::Canvas> m_canvasTarget;
     osg::Vec3f m_eye;

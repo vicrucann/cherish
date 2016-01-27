@@ -101,7 +101,7 @@ AddStrokeCommand::~AddStrokeCommand()
 
 void AddStrokeCommand::undo()
 {
-    if (!m_canvas->getGeodeData()->removeChild(m_stroke))
+    if (!m_canvas->getGeodeData()->removeDrawable(m_stroke))
         outErrMsg("undo(): problem while removing stroke from a canvas");
     // update GLWidgets or set canvas' geometry dirty
 }

@@ -381,6 +381,10 @@ void entity::Canvas::addStrokesSelected(entity::Stroke* stroke)
 {
     if (!stroke)
         return;
+    if (!m_geodeData->containsDrawable(stroke)){
+        outErrMsg("The stroke does not belong to Canvas, selection is impossible");
+        return;
+    }
     if (!this->isStrokeSelected(stroke)){
         this->setStrokeSelected(stroke);
         m_strokesSelected.push_back(stroke);

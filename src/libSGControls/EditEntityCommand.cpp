@@ -103,39 +103,21 @@ EditStrokesPushCommand::EditStrokesPushCommand(const std::vector<entity::Stroke 
 
 void EditStrokesPushCommand::undo()
 {
-    osg::Matrix M = m_canvasTarget->getTransform()->getMatrix();
-    osg::Matrix invM = osg::Matrix::inverse(m_canvasCurrent->getTransform()->getMatrix());
-
-    const osg::Plane plane = m_canvasCurrent->getPlane();
-    const osg::Vec3f center = m_canvasCurrent->getCenter();
-
-    for (unsigned int i=0; i<m_strokes.size(); ++i){
-        entity::Stroke* s = m_strokes.at(i);
-        osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(s->getVertexArray());
-        for (unsigned int j=0; j<verts->size(); ++j){
-            osg::Vec3f p = (*verts)[j];
-            osg::Vec3f P = p * M;
-            osg::Vec3f dir = -P + m_eye;
-            double len = plane.dotProductNormal(center-P) / plane.dotProductNormal(dir);
-            osg::Vec3f P_ = dir * len + P;
-            osg::Vec3f p_ = P_ * invM;
-            (*verts)[j] = osg::Vec3f(p_.x(), p_.y(), 0.f);
-        }
-        m_canvasCurrent->getGeodeData()->addChild(s);
-        m_canvasTarget->getGeodeData()->removeChild(s);
-        verts->dirty();
-    }
-    m_canvasTarget->updateFrame();
-    m_canvasCurrent->updateFrame();
+    this->doPushStrokes(*(m_canvasTarget.get()), *(m_canvasCurrent.get()));
 }
 
 void EditStrokesPushCommand::redo()
 {
-    osg::Matrix M = m_canvasCurrent->getTransform()->getMatrix();
-    osg::Matrix invM = osg::Matrix::inverse(m_canvasTarget->getTransform()->getMatrix());
+    this->doPushStrokes(*(m_canvasCurrent.get()), *(m_canvasTarget.get()));
+}
 
-    const osg::Plane plane = m_canvasTarget->getPlane();
-    const osg::Vec3f center = m_canvasTarget->getCenter();
+void EditStrokesPushCommand::doPushStrokes(entity::Canvas& source, entity::Canvas& target)
+{
+    osg::Matrix M = source.getTransform()->getMatrix();
+    osg::Matrix invM = osg::Matrix::inverse(target.getTransform()->getMatrix());
+
+    const osg::Plane plane = target.getPlane();
+    const osg::Vec3f center = target.getCenter();
 
     for (unsigned int i=0; i<m_strokes.size(); ++i){
         entity::Stroke* s = m_strokes.at(i);
@@ -149,10 +131,11 @@ void EditStrokesPushCommand::redo()
             osg::Vec3f p_ = P_ * invM;
             (*verts)[j] = osg::Vec3f(p_.x(), p_.y(), 0.f);
         }
-        m_canvasTarget->getGeodeData()->addChild(s);
-        m_canvasCurrent->getGeodeData()->removeChild(s);
+        target.getGeodeData()->addDrawable(s);
+        source.getGeodeData()->removeDrawable(s);
+
         verts->dirty();
+        s->dirtyBound();
     }
-    m_canvasTarget->updateFrame();
-    m_canvasCurrent->updateFrame();
+    target.updateFrame();
 }
