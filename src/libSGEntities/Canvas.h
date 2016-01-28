@@ -65,6 +65,9 @@ public:
     void setNorm(osg::Geometry* n);
     const osg::Geometry* getNorm() const;
 
+    void setIntersection(osg::Geometry* i);
+    const osg::Geometry* getIntersection() const;
+
     void setGeodeData(osg::Geode* geode);
     const osg::Geode* getGeodeData() const;
     osg::Geode* getGeodeData();
@@ -105,7 +108,7 @@ public:
 
     // recalculate frame's geometry based on strokes
     void updateFrame();
-    void updateData(); // update centroid as well
+    void updateData(); // update centroid as well, degenerated for the moment
 
     void setModeEdit(bool on); // changes certain colors, shows or hides normal
     bool getModeEdit() const;
@@ -133,6 +136,7 @@ private:
     osg::ref_ptr<osg::Geometry> m_pickable; // to select canvas by mouse
     osg::ref_ptr<osg::Geometry> m_axis; // local coordinate axis
     osg::ref_ptr<osg::Geometry> m_norm;
+    osg::ref_ptr<osg::Geometry> m_intersection;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
     std::vector<entity::Stroke*> m_strokesSelected;

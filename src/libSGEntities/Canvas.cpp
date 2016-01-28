@@ -26,6 +26,7 @@ entity::Canvas::Canvas()
     , m_pickable(new osg::Geometry)
     , m_axis(new osg::Geometry)
     , m_norm(new osg::Geometry)
+    , m_intersection(new osg::Geometry)
 
     , m_strokeCurrent(0)
     , m_strokesSelected(NULL)
@@ -66,6 +67,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_pickable(cnv.m_pickable)
     , m_axis(cnv.m_axis)
     , m_norm(cnv.m_norm)
+    , m_intersection(new osg::Geometry)
 
     , m_strokeCurrent(0)
     , m_strokesSelected(NULL)
@@ -88,6 +90,7 @@ void entity::Canvas::initializeSG()
     osg::Geode* geodeFrame = new osg::Geode;
     osg::Geode* geodeNormal = new osg::Geode;
     osg::Geode* geodeAxis = new osg::Geode;
+    osg::Geode* geodeIntersection = new osg::Geode;
     this->addChild(m_transform.get());
     m_transform->setName("Transform");
     m_transform->addChild(m_switch.get());
@@ -95,6 +98,7 @@ void entity::Canvas::initializeSG()
     m_switch->addChild(geodeFrame, true); // child #0
     m_switch->addChild(geodeAxis, true); // #1
     m_switch->addChild(geodeNormal, false); // #2
+    m_switch->addChild(geodeIntersection, false); // #3
     m_switch->addChild(m_geodeData.get(), true); // _geodeData is  empty, it is for user input: strokes
 
     geodeFrame->setName("GeodeFrame");
@@ -104,6 +108,8 @@ void entity::Canvas::initializeSG()
     geodeNormal->addDrawable(m_norm.get());
     geodeAxis->setName("GeodeAxis");
     geodeAxis->addDrawable(m_axis.get());
+    geodeIntersection->setName("GeodeIntersection");
+    geodeIntersection->addDrawable(m_intersection.get());
 
     osg::Vec3Array* vFrame = new osg::Vec3Array(4);
     m_frame->setVertexArray(vFrame);
@@ -116,34 +122,31 @@ void entity::Canvas::initializeSG()
     osg::Vec3Array* vAxis = new osg::Vec3Array(4);
     m_axis->setVertexArray(vAxis);
     m_axis->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,4));
-    osg::Vec4Array* colorAxis = new osg::Vec4Array(4);
-    (*colorAxis)[0] = solarized::base2;
-    (*colorAxis)[1] = solarized::base2;
-    (*colorAxis)[2] = solarized::base2;
-    (*colorAxis)[3] = solarized::base2;
-    m_axis->setColorArray(colorAxis, osg::Array::BIND_PER_VERTEX);
+    osg::Vec4Array* colorAxis = new osg::Vec4Array;
+    colorAxis->push_back(solarized::base2);
+    m_axis->setColorArray(colorAxis, osg::Array::BIND_OVERALL);
 
     osg::Vec3Array* vNormal = new osg::Vec3Array(2);
     m_norm->setVertexArray(vNormal);
     m_norm->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,2));
-    osg::Vec4Array* colorNormal = new osg::Vec4Array(2);
-    (*colorNormal)[0] = dureu::CANVAS_CLR_EDIT;
-    (*colorNormal)[1] = dureu::CANVAS_CLR_EDIT;
-    m_norm->setColorArray(colorNormal, osg::Array::BIND_PER_VERTEX);
+    osg::Vec4Array* colorNormal = new osg::Vec4Array;
+    colorNormal->push_back(dureu::CANVAS_CLR_EDIT);
+    m_norm->setColorArray(colorNormal, osg::Array::BIND_OVERALL);
+
+    osg::Vec3Array* vIntersection = new osg::Vec3Array(2);
+    m_intersection->setVertexArray(vIntersection);
+    m_intersection->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, 2));
+    osg::Vec4Array* colorIntersection = new osg::Vec4Array;
+    colorIntersection->push_back(m_color);
+    m_intersection->setColorArray(colorIntersection, osg::Array::BIND_OVERALL);
 
     osg::Vec4Array* colorFrame = new osg::Vec4Array;
     colorFrame->push_back(m_color);
-    colorFrame->push_back(m_color);
-    colorFrame->push_back(m_color);
-    colorFrame->push_back(m_color);
-    m_frame->setColorArray(colorFrame, osg::Array::BIND_PER_VERTEX);
+    m_frame->setColorArray(colorFrame, osg::Array::BIND_OVERALL);
 
     osg::Vec4Array* colorPick = new osg::Vec4Array;
     colorPick->push_back(m_color);
-    colorPick->push_back(m_color);
-    colorPick->push_back(m_color);
-    colorPick->push_back(m_color);
-    m_pickable->setColorArray(colorPick, osg::Array::BIND_PER_VERTEX);
+    m_pickable->setColorArray(colorPick, osg::Array::BIND_OVERALL);
 
     this->updateTransforms();
     this->setColor(m_color);
@@ -172,6 +175,9 @@ const osg::Matrix&entity::Canvas::getMatrixTranslation() const
     return m_mT;
 }
 
+/* This method should never be called directly.
+ * It is here only to comply with serializer interface.
+*/
 void entity::Canvas::setTransform(osg::MatrixTransform* t)
 {
     m_transform = t;
@@ -237,6 +243,16 @@ const osg::Geometry* entity::Canvas::getNorm() const
     return m_norm.get();
 }
 
+void entity::Canvas::setIntersection(osg::Geometry *i)
+{
+    m_intersection = i;
+}
+
+const osg::Geometry *entity::Canvas::getIntersection() const
+{
+    return m_intersection.get();
+}
+
 void entity::Canvas::setGeodeData(osg::Geode* geode)
 {
     m_geodeData = geode;
@@ -282,17 +298,11 @@ void entity::Canvas::setColor(const osg::Vec4f &color)
     m_color = color;
     osg::Vec4Array* colorFrame = static_cast<osg::Vec4Array*>(m_frame->getColorArray());
     (*colorFrame)[0] = m_color;
-    (*colorFrame)[1] = m_color;
-    (*colorFrame)[2] = m_color;
-    (*colorFrame)[3] = m_color;
     m_frame->dirtyDisplayList();
     m_frame->dirtyBound();
 
     osg::Vec4Array* colorPick = static_cast<osg::Vec4Array*>(m_pickable->getColorArray());
     (*colorPick)[0] = m_color;
-    (*colorPick)[1] = m_color;
-    (*colorPick)[2] = m_color;
-    (*colorPick)[3] = m_color;
     m_pickable->dirtyDisplayList();
     m_pickable->dirtyBound();
 }
@@ -626,6 +636,7 @@ REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
     ADD_OBJECT_SERIALIZER(Pickable, osg::Geometry, NULL);
     ADD_OBJECT_SERIALIZER(Axis, osg::Geometry, NULL);
     ADD_OBJECT_SERIALIZER(Norm, osg::Geometry, NULL);
+    ADD_OBJECT_SERIALIZER(Intersection, osg::Geometry, NULL);
 
     ADD_VEC3F_SERIALIZER(Center, osg::Vec3f());
     ADD_VEC3F_SERIALIZER(Normal, osg::Vec3f());
