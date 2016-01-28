@@ -34,6 +34,7 @@ public:
     inline const osg::Vec4f& getColor() const;
 
     void appendPoint(const float u, const float v);
+    void removePoints(unsigned int index_start, unsigned int index_end);
     float getLength() const;
     bool isLengthy() const;
 

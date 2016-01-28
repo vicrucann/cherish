@@ -1,6 +1,8 @@
 #ifndef STROKEINTERSECTOR_H
 #define STROKEINTERSECTOR_H
 
+#include <vector>
+
 #include <osg/ref_ptr>
 #include <osgUtil/LineSegmentIntersector>
 
@@ -13,6 +15,7 @@ public:
 
     void setOffset(float offset);
     float getOffset() const;
+    void getHitIndices(int& first, int& last) const;
 
     virtual Intersector* clone( osgUtil::IntersectionVisitor& iv );
     virtual void intersect( osgUtil::IntersectionVisitor& iv, osg::Drawable* drawable );
@@ -22,6 +25,7 @@ protected:
 
 private:
     float m_offset;
+    std::vector<unsigned int> m_hitIndices;
 };
 
 #endif // STROKEINTERSECTOR_H

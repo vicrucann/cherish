@@ -91,6 +91,40 @@ void entity::Stroke::appendPoint(const float u, const float v)
     // read more: http://forum.openscenegraph.org/viewtopic.php?t=2190&postdays=0&postorder=asc&start=15
 }
 
+void entity::Stroke::removePoints(unsigned int index_start, unsigned int index_end)
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+
+    if (index_start > verts->size()-1 || index_end > verts->size()-1){
+        outErrMsg("Stroke remove edge: indices to remove are out of range");
+        return;
+    }
+    if (index_end == verts->size()-1){
+        for (unsigned int i = index_start; i<=index_end; ++i)
+            verts->pop_back();
+    }
+    else if (index_start == 0){
+        //verts->erase(verts->begin(), verts->begin()+index_end);
+        for (unsigned int i = index_start; i<=index_end; ++i){
+            verts->pop_back();
+            colors->pop_back();
+        }
+
+    }
+    else{ // to define later - what to do when it is erased in the middle
+        return;
+    }
+
+    unsigned int sz = verts->size();
+    m_lines->setFirst(0);
+    m_lines->setCount(sz);
+
+    verts->dirty();
+    colors->dirty();
+    this->dirtyBound();
+}
+
 float entity::Stroke::getLength() const
 {
     osg::BoundingBox bb = this->getBoundingBox();

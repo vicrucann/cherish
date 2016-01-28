@@ -40,7 +40,7 @@ public:
 
     void doDelete(const osgUtil::LineSegmentIntersector::Intersection& result);
 
-    void doEraseStroke(const StrokeIntersector::Intersection& result, dureu::EVENT event = dureu::EVENT_DRAGGED);
+    void doEraseStroke(entity::Stroke *stroke, int first, int last, dureu::EVENT event = dureu::EVENT_DRAGGED);
 
     void doSketch(double u, double v, dureu::EVENT event);
 

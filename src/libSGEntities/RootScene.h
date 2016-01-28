@@ -73,7 +73,7 @@ public:
     void addStroke(float u, float v, dureu::EVENT event);
     void selectAllStrokes();
     void addPhoto(const std::string& fname);
-    void eraseStroke(entity::Stroke* stroke, const osg::Vec3d& hit, dureu::EVENT event);
+    void eraseStroke(entity::Stroke* stroke, int first, int last, dureu::EVENT event);
 
     void setCanvasSelected(entity::Canvas* cnv);
     bool setCanvasCurrent(entity::Canvas* cnv);

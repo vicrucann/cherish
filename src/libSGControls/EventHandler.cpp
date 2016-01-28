@@ -67,8 +67,7 @@ template <typename T1, typename T2>
 void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     // proceed only if it is release of left mouse button
-    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE ||
-            ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
         return;
 
     T1* result = new T1;
@@ -86,11 +85,14 @@ void EventHandler::doByLineIntersector(const osgGA::GUIEventAdapter &ea, osgGA::
         break;
     case dureu::MOUSE_ERASE:
         if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH)
-            doEraseStroke(*result, dureu::EVENT_PRESSED);
+            doEraseStroke(this->getStroke(*result), 0, 3, dureu::EVENT_PRESSED);
         else if (ea.getEventType() ==osgGA::GUIEventAdapter::DRAG)
-            doEraseStroke(*result, dureu::EVENT_DRAGGED);
+            doEraseStroke(this->getStroke(*result), 0, 3, dureu::EVENT_DRAGGED);
+        else if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE)
+            doEraseStroke(this->getStroke(*result), 0, 3, dureu::EVENT_RELEASED);
         else
-            doEraseStroke(*result, dureu::EVENT_RELEASED);
+            return;
+
         break;
     case dureu::MOUSE_DELETE:
         doDelete(*result);
@@ -265,15 +267,13 @@ void EventHandler::doDelete(const osgUtil::LineSegmentIntersector::Intersection 
  * When stroke is split, need to see if both substrokes are long
  * enough to continue to exist.
 */
-void EventHandler::doEraseStroke(const osgUtil::LineSegmentIntersector::Intersection &result, dureu::EVENT event)
+void EventHandler::doEraseStroke(entity::Stroke* stroke, int first, int last, dureu::EVENT event)
 {
-    entity::Stroke* stroke = this->getStroke(result);
     if (!stroke){
         outErrMsg("doEraseStroke: could not obtain stroke");
         return;
     }
-    osg::Vec3d hit = result.getLocalIntersectPoint();
-    m_scene->eraseStroke(stroke, hit, event);
+    m_scene->eraseStroke(stroke, first, last, event);
 }
 
 // see https://www.opengl.org/sdk/docs/man2/xhtml/gluUnProject.xml

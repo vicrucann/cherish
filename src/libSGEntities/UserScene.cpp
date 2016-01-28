@@ -145,7 +145,7 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
     stack->push(cmd);
 }
 
-void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, const osg::Vec3d &hit, dureu::EVENT event)
+void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, int first, int last, dureu::EVENT event)
 {
     if (!stack){
         fatalMsg("eraseStroke(): undo stack is NULL, it is not initialized. "
@@ -153,6 +153,8 @@ void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, c
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
+
+    stroke->removePoints(first, last);
 
     switch (event){
     case dureu::EVENT_OFF:

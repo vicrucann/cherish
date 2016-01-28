@@ -207,9 +207,9 @@ void RootScene::addPhoto(const std::string& fname)
     m_saved = false;
 }
 
-void RootScene::eraseStroke(entity::Stroke *stroke, const osg::Vec3d &hit, dureu::EVENT event)
+void RootScene::eraseStroke(entity::Stroke *stroke, int first, int last, dureu::EVENT event)
 {
-    m_userScene->eraseStroke(m_undoStack, stroke, hit, event);
+    m_userScene->eraseStroke(m_undoStack, stroke, first, last, event);
     m_saved = false;
 }
 

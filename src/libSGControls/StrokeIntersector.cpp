@@ -11,21 +11,21 @@ StrokeIntersector::StrokeIntersector()
     : osgUtil::LineSegmentIntersector(MODEL, 0.f, 0.f)
     , m_offset(0.05f)
 {
-
+    m_hitIndices.clear();
 }
 
 StrokeIntersector::StrokeIntersector(const osg::Vec3 &start, const osg::Vec3 &end)
     : osgUtil::LineSegmentIntersector(start, end)
     , m_offset(0.05f)
 {
-
+    m_hitIndices.clear();
 }
 
 StrokeIntersector::StrokeIntersector(osgUtil::Intersector::CoordinateFrame cf, double x, double y)
     : osgUtil::LineSegmentIntersector(cf, x, y)
     , m_offset(0.05f)
 {
-
+    m_hitIndices.clear();
 }
 
 void StrokeIntersector::setOffset(float offset)
@@ -36,6 +36,18 @@ void StrokeIntersector::setOffset(float offset)
 float StrokeIntersector::getOffset() const
 {
     return m_offset;
+}
+
+void StrokeIntersector::getHitIndices(int &first,int &last) const
+{
+    if (m_hitIndices.empty()){
+        first = -1;
+        last = -1;
+    }
+    else {
+        first = m_hitIndices.front();
+        last = m_hitIndices.back();
+    }
 }
 
 osgUtil::Intersector *StrokeIntersector::clone(osgUtil::IntersectionVisitor &iv)
@@ -109,6 +121,7 @@ void StrokeIntersector::intersect(osgUtil::IntersectionVisitor &iv, osg::Drawabl
             hit.drawable = drawable;
             hit.matrix = iv.getModelMatrix();
             hit.localIntersectionPoint = (*vertices)[i];
+            m_hitIndices.push_back(i);
             insertIntersection(hit);
         }
     }
