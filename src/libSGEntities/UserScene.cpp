@@ -373,9 +373,11 @@ void entity::UserScene::editPhotoMove(QUndoStack* stack, const double u, const d
     }
     switch (event){
     case dureu::EVENT_OFF:
+        outLogMsg("EditPhotoMove: event off called");
         this->photoMoveFinish(stack, u, v);
         break;
     case dureu::EVENT_PRESSED:
+        outLogMsg("EditPhotoMove: event pressed called");
         this->photoMoveStart();
         this->photoMoveAppend(u,v);
         break;
@@ -387,12 +389,37 @@ void entity::UserScene::editPhotoMove(QUndoStack* stack, const double u, const d
     case dureu::EVENT_RELEASED:
         if (!this->photoEditValid())
             break;
+        outLogMsg("EditPhotoMove: event release called");
         this->photoMoveAppend(u,v);
         this->photoMoveFinish(stack, u, v);
         break;
     default:
         break;
     }
+}
+
+void entity::UserScene::editPhotoFlip(QUndoStack* stack, bool horizontal)
+{
+    if (!stack){
+        fatalMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
+                 "Editing is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
+    }
+    entity::Canvas* canvas = this->getCanvasCurrent();
+    if (!canvas)
+        return;
+    entity::Photo* photo = canvas->getPhotoCurrent();
+    if (!photo)
+        return;
+
+    EditPhotoFlipCommand* cmd = new EditPhotoFlipCommand(canvas, horizontal);
+    if (!cmd){
+        outErrMsg("EditPhotoFlip: could not initiate undo/redo command");
+        return;
+    }
+    stack->push(cmd);
+    this->getCanvasCurrent()->setPhotoCurrent(false);
 }
 
 void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
@@ -666,6 +693,7 @@ void entity::UserScene::photoMoveFinish(QUndoStack *stack, const double u, const
     stack->push(cmd);
     m_u = 0;
     m_v = 0;
+    this->getCanvasCurrent()->setPhotoCurrent(false);
 }
 
 bool entity::UserScene::photoEditValid() const

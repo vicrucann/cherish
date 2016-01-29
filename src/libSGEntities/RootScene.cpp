@@ -260,6 +260,11 @@ void RootScene::editPhotoMove(const double u, const double v, dureu::EVENT event
     m_userScene->editPhotoMove(m_undoStack, u, v, event);
 }
 
+void RootScene::editPhotoFlip(bool horizontal)
+{
+    m_userScene->editPhotoFlip(m_undoStack, horizontal);
+}
+
 void RootScene::editStrokesPush(QUndoStack *stack, osg::Camera* camera)
 {
     m_userScene->editStrokesPush(stack, camera);

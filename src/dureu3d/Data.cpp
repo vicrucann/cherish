@@ -419,3 +419,9 @@ const QPixmap &Data::sceneImageFlipVPixmap()
     return pmap;
 }
 
+const QPixmap &Data::sceneImageMovePixmap()
+{
+    static QPixmap pmap(":/scene-image-move-24px.svg");
+    return pmap;
+}
+

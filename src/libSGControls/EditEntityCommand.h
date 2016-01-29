@@ -50,7 +50,23 @@ public:
 
 protected:
     osg::observer_ptr<entity::Canvas> m_canvas;
+    osg::observer_ptr<entity::Photo> m_photo;
     double m_u0, m_v0, m_u1, m_v1;
+};
+
+class EditPhotoFlipCommand : public QUndoCommand
+{
+public:
+    EditPhotoFlipCommand(entity::Canvas* canvas, bool horizontal, QUndoCommand* parent = 0);
+    ~EditPhotoFlipCommand(){}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    osg::observer_ptr<entity::Photo> m_photo;
+    bool m_horizontal;
 };
 
 class EditStrokesPushCommand : public QUndoCommand

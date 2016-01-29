@@ -30,6 +30,20 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     if (!m_scene->getCanvasCurrent())
         return false;
 
+    switch (m_mode){
+    case dureu::MOUSE_PHOTO_FLIPH:
+        this->doEditPhotoFlip<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa, true);
+        break;
+    case dureu::MOUSE_PHOTO_FLIPV:
+        this->doEditPhotoFlip<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa, false);
+        break;
+    case dureu::MOUSE_PHOTO_MOVE:
+        this->doEditPhotoMove<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
+        break;
+    default:
+        break;
+    }
+
     if (m_mode == dureu::MOUSE_SELECT)
     {
         if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL){
@@ -42,9 +56,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     }
     else if (m_mode == dureu::MOUSE_ERASE)
         doByLineIntersector<StrokeIntersector::Intersection, StrokeIntersector>(ea, aa);
-    else if (m_mode == dureu::MOUSE_PHOTO_MOVE)
-        doByHybrid(ea, aa);
-    else
+    else if (m_mode == dureu::MOUSE_SKETCH)
         doByRaytrace(ea, aa);
     return false;
 }
@@ -318,6 +330,90 @@ void EventHandler::doEditPhotoMove(const osgUtil::LineSegmentIntersector::Inters
     m_scene->setCanvasCurrent(cnv);
     m_scene->getCanvasCurrent()->setPhotoCurrent(photo);
     m_scene->editPhotoMove(u, v, event);
+}
+
+template <typename T1, typename T2>
+void EventHandler::doEditPhotoMove(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           ))
+        return;
+
+    T1* result = new T1;
+    if (!this->getLineIntersection<T1, T2>(ea,aa, *result))
+        return;
+
+    double u=0, v=0;
+    if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        return;
+
+    entity::Photo* photo = getPhoto(*result);
+    if (!photo){
+        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Photo*>" << std::endl;
+        return;
+    }
+
+    entity::Canvas* cnv = getCanvas(*result);
+    if (!cnv){
+        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Canvas*>" << std::endl;
+        return;
+    }
+
+    if (m_scene->getCanvasCurrent() != cnv){
+        outErrMsg("You can only edit photo within current canvas");
+        return;
+    }
+
+    m_scene->getCanvasCurrent()->setPhotoCurrent(photo);
+
+
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        std::cout << "doByHybrid(): push button" << std::endl;
+        outLogVec("u v", u, v, 0);
+        m_scene->editPhotoMove(u, v, dureu::EVENT_PRESSED);
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        std::cout << "doByHybrid(): release button" << std::endl;
+        outLogVec("u v", u, v, 0);
+        m_scene->editPhotoMove(u, v, dureu::EVENT_RELEASED);
+        break;
+    case osgGA::GUIEventAdapter::DRAG:
+        m_scene->editPhotoMove(u, v, dureu::EVENT_DRAGGED);
+        break;
+    default:
+        break;
+    }
+}
+
+template <typename T1, typename T2>
+void EventHandler::doEditPhotoFlip(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, bool horizontal)
+{
+    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+        return;
+
+    T1* result = new T1;
+    if (!this->getLineIntersection<T1, T2>(ea,aa, *result))
+        return;
+
+    entity::Photo* photo = getPhoto(*result);
+    if (!photo){
+        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Photo*>" << std::endl;
+        return;
+    }
+
+    entity::Canvas* cnv = getCanvas(*result);
+    if (!cnv){
+        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Canvas*>" << std::endl;
+        return;
+    }
+
+    m_scene->setCanvasCurrent(cnv);
+    m_scene->getCanvasCurrent()->setPhotoCurrent(photo);
+    m_scene->editPhotoFlip(horizontal);
+    m_scene->getCanvasCurrent()->setPhotoCurrent(false);
 }
 
 entity::Stroke *EventHandler::getStroke(const StrokeIntersector::Intersection &result)
