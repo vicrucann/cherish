@@ -11,6 +11,7 @@ entity::Photo::Photo()
     , m_center(osg::Vec3f(0.f,0.f,0.f))
     , m_width(0)
     , m_height(0)
+    , m_angle(0)
     , m_edit(false)
 {
     this->setName("Photo");
@@ -23,53 +24,10 @@ entity::Photo::Photo(const entity::Photo& photo, const osg::CopyOp& copyop)
     , m_center(photo.m_center)
     , m_width(photo.m_width)
     , m_height(photo.m_height)
+    , m_angle(photo.m_angle)
     , m_edit(photo.m_edit)
 {
 }
-
-/*entity::Photo::Photo(const std::string &fname)
-    : osg::Geometry()
-    , m_texture(new osg::Texture2D)
-    , m_center(osg::Vec3f(0.f,0.f,0.f))
-    , m_width(dureu::PHOTO_MINW)
-    , m_height(dureu::PHOTO_MINH)
-{
-    osg::Image* image = osgDB::readImageFile(fname);
-    float aspectRatio = static_cast<float>(image->s()) / static_cast<float>(image->t());
-    outLogVal("Image height", image->t());
-    outLogVal("Image width", image->s());
-
-    // half sizes based on aspect ratio
-    m_width = 2.f * (dureu::PHOTO_MINW);
-    m_height = m_width * aspectRatio;
-    outLogVal("Photo(): width", m_width);
-    outLogVal("Photo(): height", m_height);
-
-    osg::Vec3Array* verts = new osg::Vec3Array;
-    verts->push_back(m_center + osg::Vec3(m_width/2.f, m_height/2.f, 0.f));
-    verts->push_back(m_center + osg::Vec3(-m_width/2.f, m_height/2.f, 0.f));
-    verts->push_back(m_center + osg::Vec3(-m_width/2.f, -m_height/2.f, 0.f));
-    verts->push_back(m_center + osg::Vec3(m_width/2.f, -m_height/2.f, 0.f));
-
-    osg::Vec3Array* normals = new osg::Vec3Array;
-    normals->push_back(dureu::NORMAL);
-
-    // we use W because the image was scaled to be normalized
-    osg::Vec2Array* texcoords = new osg::Vec2Array;
-    texcoords->push_back( osg::Vec2(m_width, m_width) );
-    texcoords->push_back( osg::Vec2(m_width, 0.0f) );
-    texcoords->push_back( osg::Vec2(0.0f, 0.0f) );
-    texcoords->push_back( osg::Vec2(0.0f, m_width) );
-
-    this->setVertexArray(verts);
-    this->setNormalArray(normals);
-    this->setTexCoordArray(0, texcoords);
-    this->setNormalBinding(osg::Geometry::BIND_OVERALL);
-    this->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
-
-    m_texture->setImage(image);
-    this->setFrameColor(dureu::PHOTO_CLR_REST);
-}*/
 
 void entity::Photo::setTexture(osg::Texture2D* texture)
 {
@@ -111,47 +69,48 @@ const osg::Vec3f& entity::Photo::getCenter() const
     return m_center;
 }
 
+void entity::Photo::setAngle(float a)
+{
+    m_angle = a;
+}
+
+float entity::Photo::getAngle() const
+{
+    return m_angle;
+}
+
+/* width and height represent half size width and height
+*/
 void entity::Photo::loadImage(const std::string& fname)
 {
     osg::Image* image = osgDB::readImageFile(fname);
     m_texture->setImage(image);
 
     float aspectRatio = static_cast<float>(image->s()) / static_cast<float>(image->t());
-    outLogVal("Image height", image->t());
-    outLogVal("Image width", image->s());
-    // half sizes based on aspect ratio
-    m_width = 2.f * (dureu::PHOTO_MINW);
-    m_height = m_width * aspectRatio;
-    outLogVal("Photo(): width", m_width);
-    outLogVal("Photo(): height", m_height);
+    m_width = dureu::PHOTO_MINW;
+    m_height = m_width / aspectRatio;
 
-    osg::Vec3Array* verts = new osg::Vec3Array;
-    verts->push_back(m_center + osg::Vec3(m_width/2.f, m_height/2.f, 0.f));
-    verts->push_back(m_center + osg::Vec3(-m_width/2.f, m_height/2.f, 0.f));
-    verts->push_back(m_center + osg::Vec3(-m_width/2.f, -m_height/2.f, 0.f));
-    verts->push_back(m_center + osg::Vec3(m_width/2.f, -m_height/2.f, 0.f));
+    osg::Vec3Array* verts = new osg::Vec3Array(4);
+    this->setVertexArray(verts);
+    this->updateVertices();
+    this->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
 
     osg::Vec3Array* normals = new osg::Vec3Array;
     normals->push_back(dureu::NORMAL);
-
-    osg::Vec2Array* texcoords = new osg::Vec2Array;
-    texcoords->push_back( osg::Vec2(m_width, m_width) );
-    texcoords->push_back( osg::Vec2(m_width, 0.0f) );
-    texcoords->push_back( osg::Vec2(0.0f, 0.0f) );
-    texcoords->push_back( osg::Vec2(0.0f, m_width) );
-
-    this->setVertexArray(verts);
     this->setNormalArray(normals);
-    this->setTexCoordArray(0, texcoords);
     this->setNormalBinding(osg::Geometry::BIND_OVERALL);
-    this->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
+
+    osg::Vec2Array* texcoords = new osg::Vec2Array(4);
+    this->setTexCoordArray(0, texcoords);
+    double x = m_width;
+    (*texcoords)[0] = osg::Vec2(0, 0);
+    (*texcoords)[1] = osg::Vec2(x, 0);
+    (*texcoords)[2] = osg::Vec2(x, x);
+    (*texcoords)[3] = osg::Vec2(0, x);
 
     osg::Vec4Array* colors = new osg::Vec4Array;
     colors->push_back(dureu::PHOTO_CLR_REST);
-    colors->push_back(dureu::PHOTO_CLR_REST);
-    colors->push_back(dureu::PHOTO_CLR_REST);
-    colors->push_back(dureu::PHOTO_CLR_REST);
-    this->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
+    this->setColorArray(colors, osg::Array::BIND_OVERALL);
 }
 
 osg::StateAttribute* entity::Photo::getTextureAsAttribute() const
@@ -163,10 +122,7 @@ void entity::Photo::setFrameColor(const osg::Vec4 color)
 {
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
     (*colors)[0] = color;
-    (*colors)[1] = color;
-    (*colors)[2] = color;
-    (*colors)[3] = color;
-    this->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
+    colors->dirty();
     this->dirtyDisplayList();
     this->dirtyBound();
 }
@@ -187,14 +143,76 @@ bool entity::Photo::getModeEdit() const
 
 void entity::Photo::move(const double u, const double v)
 {
-    m_center = osg::Vec3f(u,v,0.f);
+    m_center = osg::Vec3f(u, v, 0.f);
+    this->updateVertices();
+}
 
+/* The angle must be provided in radiants, and it is
+ * a incremental angle, not an angle from origin.
+*/
+void entity::Photo::rotate(double angle)
+{
+    m_angle += angle;
+    this->updateVertices();
+}
+
+/* When performing a flip, we do not touch vertex coordinates,
+ * but rather the sequence of texture coordinates which is
+ * mapped to QUAD object.
+*/
+void entity::Photo::flipH()
+{
+    osg::Vec2Array* texcoords = static_cast<osg::Vec2Array*>(this->getTexCoordArray(0));
+    if (!texcoords){
+        outErrMsg("Could not extract texcoords of Photo");
+        return;
+    }
+    std::swap((*texcoords)[0], (*texcoords)[1]);
+    std::swap((*texcoords)[2], (*texcoords)[3]);
+    this->dirtyDisplayList();
+    this->dirtyBound();
+}
+
+void entity::Photo::flipV()
+{
+    osg::Vec2Array* texcoords = static_cast<osg::Vec2Array*>(this->getTexCoordArray(0));
+    if (!texcoords){
+        outErrMsg("Could not extract texcoords of Photo");
+        return;
+    }
+    std::swap((*texcoords)[0], (*texcoords)[3]);
+    std::swap((*texcoords)[1], (*texcoords)[2]);
+    this->dirtyDisplayList();
+    this->dirtyBound();
+}
+
+void entity::Photo::scale(double timesX, double timesY)
+{
+    m_width *= timesX;
+    m_height *= timesY;
+    this->updateVertices();
+}
+
+/* Since the Photo is represented by Quad, we can use parameters
+ * such as width, height, center and angle to control its position
+ * in local coordinates (canvas coordinates)
+*/
+void entity::Photo::updateVertices()
+{
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    (*verts)[0] = m_center + osg::Vec3(m_width/2.f, m_height/2.f, 0.f);
-    (*verts)[1] = m_center + osg::Vec3(-m_width/2.f, m_height/2.f, 0.f);
-    (*verts)[2] = m_center + osg::Vec3(-m_width/2.f, -m_height/2.f, 0.f);
-    (*verts)[3] = m_center + osg::Vec3(m_width/2.f, -m_height/2.f, 0.f);
+    if (!verts){
+        outErrMsg("Could not extract vertices of Photo");
+        return;
+    }
 
+    (*verts)[0] = m_center +  osg::Vec3(-m_width * std::cos(m_angle) + m_height * std::sin(m_angle),
+                                        -m_width * std::sin(m_angle) - m_height * std::cos(m_angle), 0);
+    (*verts)[1] = m_center +  osg::Vec3(m_width * std::cos(m_angle) + m_height * std::sin(m_angle),
+                                        m_width * std::sin(m_angle) - m_height * std::cos(m_angle), 0);
+    (*verts)[2] = m_center +  osg::Vec3(m_width * std::cos(m_angle) - m_height * std::sin(m_angle),
+                                        m_width * std::sin(m_angle) + m_height * std::cos(m_angle), 0);
+    (*verts)[3] = m_center +  osg::Vec3(-m_width * std::cos(m_angle) - m_height * std::sin(m_angle),
+                                        -m_width * std::sin(m_angle) + m_height * std::cos(m_angle), 0);
     this->dirtyDisplayList();
     this->dirtyBound();
 }
@@ -208,4 +226,5 @@ REGISTER_OBJECT_WRAPPER(Photo_Wrapper
     ADD_VEC3F_SERIALIZER(Center, osg::Vec3f());
     ADD_FLOAT_SERIALIZER(Width, 0.f);
     ADD_FLOAT_SERIALIZER(Height, 0.f);
+    ADD_FLOAT_SERIALIZER(Angle, 0.f);
 }
