@@ -58,8 +58,8 @@ public:
 
     void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event);
-    void editPhotoMove(QUndoStack* stack, const double u, const double v, dureu::EVENT event);
-    void editPhotoFlip(QUndoStack* stack, bool horizontal);
+    void editPhotoMove(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
+    void editPhotoFlip(QUndoStack* stack, entity::Photo* photo, bool horizontal);
     void editStrokesPush(QUndoStack* stack, osg::Camera* camera);
 
     bool isEmptyScene() const;
@@ -92,7 +92,7 @@ protected:
     void canvasRotateAppend(const osg::Quat& r);
     void canvasRotateFinish(QUndoStack* stack);
 
-    void photoMoveStart();
+    void photoMoveStart(entity::Photo* photo);
     void photoMoveAppend(const double u, const double v);
     void photoMoveFinish(QUndoStack* stack, const double u, const double v);
     bool photoEditValid() const;

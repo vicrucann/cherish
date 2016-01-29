@@ -29,7 +29,7 @@ entity::Canvas::Canvas()
     , m_intersection(new osg::Geometry)
 
     , m_strokeCurrent(0)
-    , m_strokesSelected(NULL)
+    , m_strokesSelected(0)
     , m_strokeSelected(0)
     , m_photoCurrent(0)
 
@@ -70,7 +70,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_intersection(new osg::Geometry)
 
     , m_strokeCurrent(0)
-    , m_strokesSelected(NULL)
+    , m_strokesSelected(0)
     , m_strokeSelected(0)
     , m_photoCurrent(0)
 
@@ -468,14 +468,17 @@ entity::Stroke *entity::Canvas::getStrokeSelected() const
     return m_strokeSelected.get();
 }
 
-void entity::Canvas::setPhotoCurrent(entity::Photo *photo)
+bool entity::Canvas::setPhotoCurrent(entity::Photo *photo)
 {
     if (m_photoCurrent.get() == photo)
-        return;
+        return true;
+    if (!this->getGeodeData()->containsNode(photo))
+        return false;
     if (m_photoCurrent.get()!=0)
         this->setPhotoCurrent(false);
     m_photoCurrent = photo;
     this->setPhotoCurrent(true);
+    return true;
 }
 
 // changes photo frame color based on bool varialbe

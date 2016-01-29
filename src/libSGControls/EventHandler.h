@@ -33,7 +33,6 @@ public:
     void doByLineIntersector(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     void doByRaytrace(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-    void doByHybrid(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     void doPickStroke(const StrokeIntersector::Intersection& result);
     void doPickCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
@@ -46,8 +45,6 @@ public:
 
     void doEditCanvasOffset(osg::Vec3f XC, dureu::EVENT event);
     void doEditCanvasRotate(int x, int y, dureu::EVENT event);
-    void doEditPhotoMove(const osgUtil::LineSegmentIntersector::Intersection& result,
-                            double u, double v, dureu::EVENT event);
 
     template <typename T1, typename T2>
     void doEditPhotoMove(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);

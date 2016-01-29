@@ -102,7 +102,7 @@ public:
     void resetStrokeSelected(entity::Stroke* stroke);
     const std::vector< entity::Stroke* >& getStrokesSelected() const;
 
-    void setPhotoCurrent(entity::Photo* photo);
+    bool setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);
     entity::Photo* getPhotoCurrent() const;
 

@@ -255,14 +255,14 @@ void RootScene::editCanvasRotate(const osg::Quat &rotation, dureu::EVENT event)
     m_saved = false;
 }
 
-void RootScene::editPhotoMove(const double u, const double v, dureu::EVENT event)
+void RootScene::editPhotoMove(entity::Photo *photo, const double u, const double v, dureu::EVENT event)
 {
-    m_userScene->editPhotoMove(m_undoStack, u, v, event);
+    m_userScene->editPhotoMove(m_undoStack, photo, u, v, event);
 }
 
-void RootScene::editPhotoFlip(bool horizontal)
+void RootScene::editPhotoFlip(entity::Photo *photo, bool horizontal)
 {
-    m_userScene->editPhotoFlip(m_undoStack, horizontal);
+    m_userScene->editPhotoFlip(m_undoStack, photo, horizontal);
 }
 
 void RootScene::editStrokesPush(QUndoStack *stack, osg::Camera* camera)

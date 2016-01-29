@@ -191,51 +191,6 @@ void EventHandler::doByRaytrace(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
     }
 }
 
-// First it uses intersector to select a drawable, if there is
-// no current drawable already (no drawable selected already);
-// Then it uses operator to find intersection with canvas plane manually;
-// For intersector, we can set a mask so that it only selects within current canvas,
-// or we may switch the current canvas where the selected drawable belongs to;
-void EventHandler::doByHybrid(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
-{
-    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-           ))
-        return;
-
-    osgUtil::LineSegmentIntersector::Intersection* result = new osgUtil::LineSegmentIntersector::Intersection;
-
-    bool intersected = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection,
-            osgUtil::LineSegmentIntersector>(ea,aa, *result);
-
-    if (!intersected)
-        return;
-
-    double u=0, v=0;
-    if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
-        return;
-
-    switch (ea.getEventType()){
-    case osgGA::GUIEventAdapter::PUSH:
-        std::cout << "doByHybrid(): push button" << std::endl;
-        outLogVec("u v", u, v, 0);
-        doEditPhotoMove(*result, u, v, dureu::EVENT_PRESSED);
-        break;
-    case osgGA::GUIEventAdapter::RELEASE:
-        std::cout << "doByHybrid(): release button" << std::endl;
-        outLogVec("u v", u, v, 0);
-        doEditPhotoMove(*result, u, v, dureu::EVENT_RELEASED);
-        break;
-    case osgGA::GUIEventAdapter::DRAG:
-        doEditPhotoMove(*result, u, v, dureu::EVENT_DRAGGED);
-        break;
-    default: // scrolling, doubleclick, move, keydown, keyup, resize
-        // frame, pen_pressure, pen_..., ...
-        break;
-    }
-}
-
 void EventHandler::doPickStroke(const StrokeIntersector::Intersection &result)
 {
     entity::Stroke* stroke = this->getStroke(result);
@@ -310,28 +265,11 @@ void EventHandler::doEditCanvasRotate(int x, int y, dureu::EVENT event)
     m_scene->editCanvasRotate(rot, event);
 }
 
-// Pick photo
-// Obtain canvas that contains that photo
-// Make that canvas current
-// Change photo coordinates to [x, y]
-// Change photo colors when pushed (edit color) and released (no color)
-void EventHandler::doEditPhotoMove(const osgUtil::LineSegmentIntersector::Intersection &result, double u, double v, dureu::EVENT event)
-{
-    entity::Photo* photo = getPhoto(result);
-    if (!photo){
-        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Photo*>" << std::endl;
-        return;
-    }
-    entity::Canvas* cnv = getCanvas(result);
-    if (!cnv){
-        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Canvas*>" << std::endl;
-        return;
-    }
-    m_scene->setCanvasCurrent(cnv);
-    m_scene->getCanvasCurrent()->setPhotoCurrent(photo);
-    m_scene->editPhotoMove(u, v, event);
-}
-
+/* Pick photo, obtain canvas that contains that photo;
+ * Make that canvas current;
+ * Change photo coordinates to [x, y];
+ * Change photo colors when pushed (edit color) and released (no color)
+*/
 template <typename T1, typename T2>
 void EventHandler::doEditPhotoMove(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
@@ -361,27 +299,21 @@ void EventHandler::doEditPhotoMove(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
         return;
     }
 
-    if (m_scene->getCanvasCurrent() != cnv){
-        outErrMsg("You can only edit photo within current canvas");
-        return;
-    }
-
-    m_scene->getCanvasCurrent()->setPhotoCurrent(photo);
-
+    m_scene->setCanvasCurrent(cnv); /* subjec to change : only track photos within current canvas */
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         std::cout << "doByHybrid(): push button" << std::endl;
         outLogVec("u v", u, v, 0);
-        m_scene->editPhotoMove(u, v, dureu::EVENT_PRESSED);
+        m_scene->editPhotoMove(photo, u, v, dureu::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         std::cout << "doByHybrid(): release button" << std::endl;
         outLogVec("u v", u, v, 0);
-        m_scene->editPhotoMove(u, v, dureu::EVENT_RELEASED);
+        m_scene->editPhotoMove(photo, u, v, dureu::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        m_scene->editPhotoMove(u, v, dureu::EVENT_DRAGGED);
+        m_scene->editPhotoMove(photo, u, v, dureu::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -410,10 +342,8 @@ void EventHandler::doEditPhotoFlip(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
         return;
     }
 
-    m_scene->setCanvasCurrent(cnv);
-    m_scene->getCanvasCurrent()->setPhotoCurrent(photo);
-    m_scene->editPhotoFlip(horizontal);
-    m_scene->getCanvasCurrent()->setPhotoCurrent(false);
+    m_scene->setCanvasCurrent(cnv); /* subjec to change : only track photos within current canvas */
+    m_scene->editPhotoFlip(photo, horizontal);
 }
 
 entity::Stroke *EventHandler::getStroke(const StrokeIntersector::Intersection &result)
@@ -649,7 +579,7 @@ void EventHandler::finishAll()
         m_scene->editCanvasOffset(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
         break;
     case dureu::MOUSE_PHOTO_MOVE:
-        m_scene->editPhotoMove(0,0, dureu::EVENT_OFF);
+        m_scene->editPhotoMove(0,0,0, dureu::EVENT_OFF);
     default:
         break;
     }
