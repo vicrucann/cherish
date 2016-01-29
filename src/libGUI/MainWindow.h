@@ -70,7 +70,8 @@ private slots:
     void onImageMove();
     void onImageRotate();
     void onImageScale();
-    void onImageFlip();
+    void onImageFlipH();
+    void onImageFlipV();
     void onImagePush();
 
     void onStrokesPush();
@@ -111,7 +112,8 @@ private:
             // Edit Canvas
             , * m_actionCanvasOffset, * m_actionCanvasRotate
             // Edit Image
-            , * m_actionImageMove, * m_actionImageRotate, * m_actionImageScale, * m_actionImageFlip, * m_actionImagePush
+            , * m_actionImageMove, * m_actionImageRotate, * m_actionImageScale, * m_actionImageFlipV
+            , * m_actionImageFlipH, * m_actionImagePush
             // Edit Strokes
             , * m_actionStrokesPush
     ;

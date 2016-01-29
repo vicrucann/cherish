@@ -243,7 +243,9 @@ void MainWindow::onCameraPan(){
 }
 
 void MainWindow::onSelect(){
-    m_mdiArea->setCursor(Qt::ArrowCursor);
+
+    QCursor* cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
+    m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_SELECT);
 }
 
@@ -270,35 +272,40 @@ void MainWindow::onSketch()
 void MainWindow::onNewCanvasClone()
 {
     m_mdiArea->setCursor(Qt::ArrowCursor);
+    //
+    this->onSketch();
 }
 
 void MainWindow::onNewCanvasXY()
 {
     m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::identity(), osg::Matrix::translate(0,0,0));
+    this->onSketch();
 }
 
 void MainWindow::onNewCanvasYZ()
 {
     m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
+    this->onSketch();
 }
 
 void MainWindow::onNewCanvasXZ()
 {
     m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, -1, 0, 0), osg::Matrix::translate(0,0,0));
+    this->onSketch();
 }
 
 void MainWindow::onNewCanvasStandard()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::identity(),
+                           osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
+    m_rootScene->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 1, 0),
                            osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0),
                            osg::Matrix::translate(0.f, 0.f, 0.f));
-    m_rootScene->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 1, 0),
-                           osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
+    this->onSketch();
 }
 
 void MainWindow::onNewCanvasCoaxial()
@@ -344,9 +351,18 @@ void MainWindow::onImageScale()
     m_mdiArea->setCursor(Qt::ArrowCursor);
 }
 
-void MainWindow::onImageFlip()
+void MainWindow::onImageFlipH()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
+    QCursor* cur = new QCursor(Data::sceneImageFlipHPixmap(), -1, -1);
+    m_mdiArea->setCursor(*cur);
+    emit sendMouseMode(dureu::MOUSE_PHOTO_FLIPH);
+}
+
+void MainWindow::onImageFlipV()
+{
+    QCursor* cur = new QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
+    m_mdiArea->setCursor(*cur);
+    emit sendMouseMode(dureu::MOUSE_PHOTO_FLIPV);
 }
 
 void MainWindow::onImagePush()
@@ -488,8 +504,11 @@ void MainWindow::initializeActions()
     m_actionImageScale = new QAction(Data::sceneImageScaleIcon(), tr("Scale Image"), this);
     this->connect(m_actionImageScale, SIGNAL(triggered(bool)), this, SLOT(onImageScale()));
 
-    m_actionImageFlip = new QAction(Data::sceneImageFlipIcon(), tr("Flip Image"), this);
-    this->connect(m_actionImageFlip, SIGNAL(triggered(bool)), this, SLOT(onImageFlip()));
+    m_actionImageFlipV = new QAction(Data::sceneImageFlipVIcon(), tr("Flip Image"), this);
+    this->connect(m_actionImageFlipV, SIGNAL(triggered(bool)), this, SLOT(onImageFlipV()));
+
+    m_actionImageFlipH = new QAction(Data::sceneImageFlipHIcon(), tr("Flip Image"), this);
+    this->connect(m_actionImageFlipH, SIGNAL(triggered(bool)), this, SLOT(onImageFlipH()));
 
     m_actionImagePush = new QAction(Data::sceneImagePushIcon(), tr("Push Image"), this);
     this->connect(m_actionImagePush, SIGNAL(triggered(bool)), this, SLOT(onImagePush()));
@@ -554,7 +573,8 @@ void MainWindow::initializeMenus()
     submenuEI->addAction(m_actionImageMove);
     submenuEI->addAction(m_actionImageRotate);
     submenuEI->addAction(m_actionImageScale);
-    submenuEI->addAction(m_actionImageFlip);
+    submenuEI->addAction(m_actionImageFlipH);
+    submenuEI->addAction(m_actionImageFlipV);
     submenuEI->addAction(m_actionImagePush);
     QMenu* submenuES = menuScene->addMenu("Edit Strokes");
     submenuES->addAction(m_actionStrokesPush);
@@ -626,7 +646,8 @@ void MainWindow::initializeToolbars()
     tbEntity->addAction(m_actionImageMove);
     tbEntity->addAction(m_actionImageRotate);
     tbEntity->addAction(m_actionImageScale);
-    tbEntity->addAction(m_actionImageFlip);
+    tbEntity->addAction(m_actionImageFlipH);
+    tbEntity->addAction(m_actionImageFlipV);
     tbEntity->addAction(m_actionImagePush);
     tbEntity->addSeparator();
     tbEntity->addAction(m_actionStrokesPush);

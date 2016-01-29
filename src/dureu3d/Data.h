@@ -50,7 +50,8 @@ public:
     static const QIcon& sceneImageMoveIcon();
     static const QIcon& sceneImageRotateIcon();
     static const QIcon& sceneImageScaleIcon();
-    static const QIcon& sceneImageFlipIcon();
+    static const QIcon& sceneImageFlipVIcon();
+    static const QIcon& sceneImageFlipHIcon();
     static const QIcon& sceneImagePushIcon();
 
     static const QIcon& sceneRectangleIcon();
@@ -73,8 +74,11 @@ public:
     static const QIcon& viewerVirtualIcon();
 
     /* Cursors */
+    static const QPixmap& sceneSelectPixmap();
     static const QPixmap& sceneSketchPixmap();
     static const QPixmap& sceneEraserPixmap();
+    static const QPixmap& sceneImageFlipHPixmap();
+    static const QPixmap& sceneImageFlipVPixmap();
 
 private:
 

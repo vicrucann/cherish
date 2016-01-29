@@ -249,10 +249,17 @@ const QIcon &Data::sceneImageScaleIcon()
     return icon;
 }
 
-const QIcon &Data::sceneImageFlipIcon()
+const QIcon &Data::sceneImageFlipVIcon()
 {
     Q_ASSERT_X(!QPixmap(":/scene-image-fliph-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(QPixmap(":/scene-image-fliph-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::sceneImageFlipHIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-image-flipv-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/scene-image-flipv-24px.svg"));
     return icon;
 }
 
@@ -382,17 +389,33 @@ const QIcon &Data::viewerVirtualIcon()
     return icon;
 }
 
+const QPixmap &Data::sceneSelectPixmap()
+{
+    static QPixmap pmap(":/scene-select-24px.svg");
+    return pmap;
+}
+
 const QPixmap &Data::sceneSketchPixmap()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-sketch-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QPixmap pmap(":/scene-sketch-24px.svg");
     return pmap;
 }
 
 const QPixmap &Data::sceneEraserPixmap()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-eraser-cursor-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QPixmap pmap(":/scene-eraser-cursor-24px.svg");
+    return pmap;
+}
+
+const QPixmap &Data::sceneImageFlipHPixmap()
+{
+    static QPixmap pmap(":/scene-image-flipv-24px.svg");
+    return pmap;
+}
+
+const QPixmap &Data::sceneImageFlipVPixmap()
+{
+    static QPixmap pmap(":/scene-image-fliph-24px.svg");
     return pmap;
 }
 
