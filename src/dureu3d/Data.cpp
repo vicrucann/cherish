@@ -389,6 +389,24 @@ const QIcon &Data::viewerVirtualIcon()
     return icon;
 }
 
+const QPixmap &Data::sceneOrbitPixmap()
+{
+    static QPixmap pmap(":/scene-orbit-24px.svg");
+    return pmap;
+}
+
+const QPixmap &Data::scenePanPixmap()
+{
+    static QPixmap pmap(":/scene-pan-24px.svg");
+    return pmap;
+}
+
+const QPixmap &Data::sceneZoomPixmap()
+{
+    static QPixmap pmap(":/scene-zoom-24px.svg");
+    return pmap;
+}
+
 const QPixmap &Data::sceneSelectPixmap()
 {
     static QPixmap pmap(":/scene-select-24px.svg");

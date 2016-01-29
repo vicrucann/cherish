@@ -398,6 +398,41 @@ void entity::UserScene::editPhotoMove(QUndoStack* stack, Photo *photo, const dou
     }
 }
 
+void entity::UserScene::editPhotoScale(QUndoStack *stack, entity::Photo *photo, const double u, const double v, dureu::EVENT event)
+{
+    if (!stack){
+        fatalMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
+                 "Editing is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
+    }
+    switch (event){
+    case dureu::EVENT_OFF:
+        outLogMsg("EditPhotoMove: event off called");
+        //this->photoMoveFinish(stack, u, v);
+        break;
+    case dureu::EVENT_PRESSED:
+        outLogMsg("EditPhotoMove: event pressed called");
+        //this->photoMoveStart(photo);
+        //this->photoMoveAppend(u,v);
+        break;
+    case dureu::EVENT_DRAGGED:
+        //if (!this->photoEditValid())
+        //    this->photoMoveStart(photo);
+        //this->photoMoveAppend(u,v);
+        break;
+    case dureu::EVENT_RELEASED:
+        //if (!this->photoEditValid())
+        //    break;
+        outLogMsg("EditPhotoMove: event release called");
+        //this->photoMoveAppend(u,v);
+        //this->photoMoveFinish(stack, u, v);
+        break;
+    default:
+        break;
+    }
+}
+
 void entity::UserScene::editPhotoFlip(QUndoStack* stack, entity::Photo *photo, bool horizontal)
 {
     if (!stack){

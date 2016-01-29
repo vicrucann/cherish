@@ -74,6 +74,11 @@ public:
     static const QIcon& viewerVirtualIcon();
 
     /* Cursors */
+
+    static const QPixmap& sceneOrbitPixmap();
+    static const QPixmap& scenePanPixmap();
+    static const QPixmap& sceneZoomPixmap();
+
     static const QPixmap& sceneSelectPixmap();
     static const QPixmap& sceneSketchPixmap();
     static const QPixmap& sceneEraserPixmap();

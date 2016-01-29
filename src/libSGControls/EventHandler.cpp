@@ -40,6 +40,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     case dureu::MOUSE_PHOTO_MOVE:
         this->doEditPhotoMove<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
         break;
+    case dureu::MOUSE_PHOTO_SCALE:
+        this->doEditPhotoScale<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
+        break;
     default:
         break;
     }
@@ -580,6 +583,56 @@ void EventHandler::finishAll()
         break;
     case dureu::MOUSE_PHOTO_MOVE:
         m_scene->editPhotoMove(0,0,0, dureu::EVENT_OFF);
+    case dureu::MOUSE_PHOTO_SCALE:
+        m_scene->editPhotoScale(0,0,0, dureu::EVENT_OFF);
+    default:
+        break;
+    }
+}
+
+template <typename T1, typename T2>
+void EventHandler::doEditPhotoScale(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           ))
+        return;
+
+    T1* result = new T1;
+    if (!this->getLineIntersection<T1, T2>(ea,aa, *result))
+        return;
+
+    double u=0, v=0;
+    if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        return;
+
+    entity::Photo* photo = getPhoto(*result);
+    if (!photo){
+        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Photo*>" << std::endl;
+        return;
+    }
+
+    entity::Canvas* cnv = getCanvas(*result);
+    if (!cnv){
+        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Canvas*>" << std::endl;
+        return;
+    }
+
+    m_scene->setCanvasCurrent(cnv); /* subjec to change : only track photos within current canvas */
+
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        std::cout << "scale: push button" << std::endl;
+        m_scene->editPhotoScale(photo, u, v, dureu::EVENT_PRESSED);
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        std::cout << "scale: release button" << std::endl;
+        m_scene->editPhotoScale(photo, u, v, dureu::EVENT_RELEASED);
+        break;
+    case osgGA::GUIEventAdapter::DRAG:
+        m_scene->editPhotoScale(photo, u, v, dureu::EVENT_DRAGGED);
+        break;
     default:
         break;
     }

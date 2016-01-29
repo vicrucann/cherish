@@ -228,17 +228,20 @@ void MainWindow::onPaste()
 }
 
 void MainWindow::onCameraOrbit(){
-    m_mdiArea->setCursor(Qt::ArrowCursor);
+    QCursor* cur = new QCursor(Data::sceneOrbitPixmap(), 0, 0);
+    m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_ORBIT);
 }
 
 void MainWindow::onCameraZoom(){
-    m_mdiArea->setCursor(Qt::ArrowCursor);
+    QCursor* cur = new QCursor(Data::sceneZoomPixmap(), 0, 0);
+    m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_ZOOM);
 }
 
 void MainWindow::onCameraPan(){
-    m_mdiArea->setCursor(Qt::ArrowCursor);
+    QCursor* cur = new QCursor(Data::scenePanPixmap(), 0, 0);
+    m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_PAN);
 }
 
@@ -349,7 +352,9 @@ void MainWindow::onImageRotate()
 
 void MainWindow::onImageScale()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
+    QCursor* cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
+    m_mdiArea->setCursor(*cur);
+    emit sendMouseMode(dureu::MOUSE_PHOTO_SCALE);
 }
 
 void MainWindow::onImageFlipH()

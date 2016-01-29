@@ -52,6 +52,9 @@ public:
     template <typename T1, typename T2>
     void doEditPhotoFlip(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, bool horizontal);
 
+    template <typename T1, typename T2>
+    void doEditPhotoScale(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
 protected:
     entity::Stroke* getStroke(const StrokeIntersector::Intersection& result);
     entity::Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
