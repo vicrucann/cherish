@@ -265,6 +265,11 @@ void RootScene::editPhotoScale(entity::Photo *photo, const double u, const doubl
     m_userScene->editPhotoScale(m_undoStack, photo, u, v, event);
 }
 
+void RootScene::editPhotoRotate(entity::Photo *photo, const double u, const double v, dureu::EVENT event)
+{
+    m_userScene->editPhotoRotate(m_undoStack, photo, u, v, event);
+}
+
 void RootScene::editPhotoFlip(entity::Photo *photo, bool horizontal)
 {
     m_userScene->editPhotoFlip(m_undoStack, photo, horizontal);

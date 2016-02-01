@@ -60,6 +60,7 @@ public:
     void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event);
     void editPhotoMove(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoScale(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
+    void editPhotoRotate(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoFlip(QUndoStack* stack, entity::Photo* photo, bool horizontal);
     void editStrokesPush(QUndoStack* stack, osg::Camera* camera);
 
@@ -102,6 +103,10 @@ protected:
     void photoScaleAppend(double u, double v);
     void photoScaleFinish(QUndoStack* stack, double u, double v);
 
+    void photoRotateStart(entity::Photo* photo);
+    void photoRotateAppend(double u, double v);
+    void photoRotateFinish(QUndoStack* stack, double u, double v);
+
 private:
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
     osg::observer_ptr<entity::Canvas> m_canvasPrevious;
@@ -111,6 +116,7 @@ private:
     osg::Quat m_deltaR; /* for edit operation: rotate */
     double m_u, m_v; /* move photo */
     double m_scale; /* scale photo */
+    double m_rotate;
     unsigned int m_idCanvas;
     unsigned int m_idPhoto;
     std::string m_filePath;

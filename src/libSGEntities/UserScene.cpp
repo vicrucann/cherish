@@ -21,6 +21,7 @@ entity::UserScene::UserScene()
     , m_u(0)
     , m_v(0)
     , m_scale(1)
+    , m_rotate(0)
     , m_idCanvas(0)
     , m_idPhoto(0)
     , m_filePath("")
@@ -38,6 +39,7 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_u(scene.m_u)
     , m_v(scene.m_v)
     , m_scale(scene.m_scale)
+    , m_rotate(scene.m_rotate)
     , m_idCanvas(scene.m_idCanvas)
     , m_idPhoto(scene.m_idPhoto)
     , m_filePath(scene.m_filePath)
@@ -431,8 +433,45 @@ void entity::UserScene::editPhotoScale(QUndoStack *stack, entity::Photo *photo, 
         if (!this->photoEditValid())
             break;
         outLogMsg("EditPhotoScale: event release called");
-        //this->photoScaleAppend(u,v);
+        this->photoScaleAppend(u,v);
         this->photoScaleFinish(stack, u, v);
+        break;
+    default:
+        break;
+    }
+}
+
+void entity::UserScene::editPhotoRotate(QUndoStack *stack, entity::Photo *photo, const double u, const double v, dureu::EVENT event)
+{
+    if (!stack){
+        fatalMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
+                 "Editing is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
+    }
+    switch (event){
+    case dureu::EVENT_OFF:
+        outLogMsg("EditPhotoRotate: event off called");
+        if (this->photoEditValid())
+            this->photoRotateFinish(stack, this->getCanvasCurrent()->getPhotoCurrent()->getWidth(),
+                                   this->getCanvasCurrent()->getPhotoCurrent()->getHeight() );
+        break;
+    case dureu::EVENT_PRESSED:
+        outLogMsg("EditPhotoRotate: event pressed called");
+        this->photoRotateStart(photo);
+        this->photoRotateAppend(u,v);
+        break;
+    case dureu::EVENT_DRAGGED:
+        if (!this->photoEditValid())
+            this->photoRotateStart(photo);
+        this->photoRotateAppend(u,v);
+        break;
+    case dureu::EVENT_RELEASED:
+        if (!this->photoEditValid())
+            break;
+        outLogMsg("EditPhotoRotate: event release called");
+        this->photoRotateAppend(u,v);
+        this->photoRotateFinish(stack, u, v);
         break;
     default:
         break;
@@ -806,6 +845,50 @@ void entity::UserScene::photoScaleFinish(QUndoStack *stack, double u, double v)
         return;
     }
     stack->push(cmd);
+}
+
+void entity::UserScene::photoRotateStart(entity::Photo *photo)
+{
+    if (this->canvasEditValid()){
+        outErrMsg("photoScaleStart: cannot start editing since the photo is already in edit mode");
+        return;
+    }
+    if (!photo){
+        outErrMsg("photoScaleStart: photo ptr is NULL");
+        return;
+    }
+    this->getCanvasCurrent()->setPhotoCurrent(photo);
+    photo->setModeEdit(true);
+    m_rotate = 0;
+}
+
+void entity::UserScene::photoRotateAppend(double u, double v)
+{
+    entity::Photo* photo = this->getCanvasCurrent()->getPhotoCurrent();
+    if (!photo){
+        outErrMsg("photoScaleAppend(): photo pointer is NULL");
+        return;
+    }
+    double theta = dureu::PI/36;
+
+    m_rotate += theta;
+    photo->rotate(theta);
+}
+
+void entity::UserScene::photoRotateFinish(QUndoStack *stack, double u, double v)
+{
+    entity::Photo* photo = this->getCanvasCurrent()->getPhotoCurrent();
+    if (!photo){
+        outErrMsg("photoScaleFinish(): photo pointer is NULL");
+        return;
+    }
+    photo->setModeEdit(false);
+    photo->rotate(-m_rotate);
+    /* create command */
+
+    this->getCanvasCurrent()->setPhotoCurrent(false);
+    /* push to stack */
+
 }
 
 REGISTER_OBJECT_WRAPPER(UserScene_Wrapper

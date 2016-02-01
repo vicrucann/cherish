@@ -86,6 +86,7 @@ public:
     void editCanvasRotate(const osg::Quat& rotation, dureu::EVENT event);
     void editPhotoMove(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoScale(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
+    void editPhotoRotate(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoFlip(entity::Photo* photo, bool horizontal);
     void editStrokesPush(QUndoStack* stack, osg::Camera *camera);
 

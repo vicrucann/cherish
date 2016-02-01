@@ -55,6 +55,9 @@ public:
     template <typename T1, typename T2>
     void doEditPhotoScale(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
+    template <typename T1, typename T2>
+    void doEditPhotoRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
 protected:
     entity::Stroke* getStroke(const StrokeIntersector::Intersection& result);
     entity::Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);

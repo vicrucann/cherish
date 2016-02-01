@@ -43,6 +43,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     case dureu::MOUSE_PHOTO_SCALE:
         this->doEditPhotoScale<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
         break;
+    case dureu::MOUSE_PHOTO_ROTATE:
+        this->doEditPhotoRotate<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
+        break;
     default:
         break;
     }
@@ -582,6 +585,9 @@ void EventHandler::finishAll()
     case dureu::MOUSE_PHOTO_SCALE:
         m_scene->editPhotoScale(0,0,0, dureu::EVENT_OFF);
         break;
+    case dureu::MOUSE_PHOTO_ROTATE:
+        m_scene->editPhotoRotate(0,0,0, dureu::EVENT_OFF);
+        break;
     default:
         break;
     }
@@ -632,4 +638,46 @@ void EventHandler::doEditPhotoScale(const osgGA::GUIEventAdapter &ea, osgGA::GUI
     default:
         break;
     }
+}
+
+template <typename T1, typename T2>
+void EventHandler::doEditPhotoRotate(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           ))
+        return;
+
+    T1* result = new T1;
+    bool intersects = this->getLineIntersection<T1, T2>(ea,aa, *result);
+
+    /* pick photo to track */
+    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH){
+        if (!intersects)
+            return;
+        m_photo = this->getPhoto(*result);
+    }
+
+    double u=0, v=0;
+    if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        return;
+
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        std::cout << "scale: push button" << std::endl;
+        m_scene->editPhotoRotate(m_photo.get(), u, v, dureu::EVENT_PRESSED);
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        std::cout << "scale: release button" << std::endl;
+        m_scene->editPhotoRotate(m_photo.get(), u, v, dureu::EVENT_RELEASED);
+        this->finishAll();
+        break;
+    case osgGA::GUIEventAdapter::DRAG:
+        m_scene->editPhotoRotate(m_photo.get(), u, v, dureu::EVENT_DRAGGED);
+        break;
+    default:
+        break;
+    }
+
 }
