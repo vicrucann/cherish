@@ -449,3 +449,9 @@ const QPixmap &Data::sceneImageScalePixmap()
     return pmap;
 }
 
+const QPixmap &Data::sceneImageRotatePixmap()
+{
+    static QPixmap pmap(":/scene-image-rotate-24px.svg");
+    return pmap;
+}
+

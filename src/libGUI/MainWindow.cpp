@@ -347,7 +347,9 @@ void MainWindow::onImageMove()
 
 void MainWindow::onImageRotate()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
+    QCursor* cur = new QCursor(Data::sceneImageRotatePixmap(), -1, -1);
+    m_mdiArea->setCursor(*cur);
+    emit sendMouseMode(dureu::MOUSE_PHOTO_ROTATE);
 }
 
 void MainWindow::onImageScale()
