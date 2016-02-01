@@ -20,6 +20,7 @@ entity::UserScene::UserScene()
     , m_deltaR(osg::Quat(0,0,0,1))
     , m_u(0)
     , m_v(0)
+    , m_scale(1)
     , m_idCanvas(0)
     , m_idPhoto(0)
     , m_filePath("")
@@ -36,6 +37,7 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_deltaR(scene.m_deltaR)
     , m_u(scene.m_u)
     , m_v(scene.m_v)
+    , m_scale(scene.m_scale)
     , m_idCanvas(scene.m_idCanvas)
     , m_idPhoto(scene.m_idPhoto)
     , m_filePath(scene.m_filePath)
@@ -410,25 +412,27 @@ void entity::UserScene::editPhotoScale(QUndoStack *stack, entity::Photo *photo, 
     }
     switch (event){
     case dureu::EVENT_OFF:
-        outLogMsg("EditPhotoMove: event off called");
-        //this->photoMoveFinish(stack, u, v);
+        outLogMsg("EditPhotoScale: event off called");
+        if (this->photoEditValid())
+            this->photoScaleFinish(stack, this->getCanvasCurrent()->getPhotoCurrent()->getWidth(),
+                                   this->getCanvasCurrent()->getPhotoCurrent()->getHeight() );
         break;
     case dureu::EVENT_PRESSED:
-        outLogMsg("EditPhotoMove: event pressed called");
-        //this->photoMoveStart(photo);
-        //this->photoMoveAppend(u,v);
+        outLogMsg("EditPhotoScale: event pressed called");
+        this->photoScaleStart(photo);
+        this->photoScaleAppend(u,v);
         break;
     case dureu::EVENT_DRAGGED:
-        //if (!this->photoEditValid())
-        //    this->photoMoveStart(photo);
-        //this->photoMoveAppend(u,v);
+        if (!this->photoEditValid())
+            this->photoScaleStart(photo);
+        this->photoScaleAppend(u,v);
         break;
     case dureu::EVENT_RELEASED:
-        //if (!this->photoEditValid())
-        //    break;
-        outLogMsg("EditPhotoMove: event release called");
-        //this->photoMoveAppend(u,v);
-        //this->photoMoveFinish(stack, u, v);
+        if (!this->photoEditValid())
+            break;
+        outLogMsg("EditPhotoScale: event release called");
+        //this->photoScaleAppend(u,v);
+        this->photoScaleFinish(stack, u, v);
         break;
     default:
         break;
@@ -745,6 +749,57 @@ bool entity::UserScene::photoEditValid() const
             return false;
     }
     return this->getCanvasCurrent()->getPhotoCurrent()->getModeEdit();
+}
+
+void entity::UserScene::photoScaleStart(entity::Photo *photo)
+{
+    if (this->canvasEditValid()){
+        outErrMsg("photoScaleStart: cannot start editing since the photo is already in edit mode");
+        return;
+    }
+    if (!photo){
+        outErrMsg("photoScaleStart: photo ptr is NULL");
+        return;
+    }
+    this->getCanvasCurrent()->setPhotoCurrent(photo);
+    photo->setModeEdit(true);
+    m_scale = 1;
+    m_u = photo->getWidth();
+    m_v = photo->getHeight();
+}
+
+void entity::UserScene::photoScaleAppend(double u, double v)
+{
+    entity::Photo* photo = this->getCanvasCurrent()->getPhotoCurrent();
+    if (!photo){
+        outErrMsg("photoScaleAppend(): photo pointer is NULL");
+        return;
+    }
+    double s = 1;
+
+    /* make sure the scaling down does not exceed the minimal photo size */
+    if (u > photo->getCenter().x() - photo->getWidth() &&
+            std::fabs(u - photo->getCenter().x() + photo->getWidth()) >= dureu::PHOTO_MINW)
+        s = std::fabs(u - photo->getCenter().x() + photo->getWidth()) / std::fabs(2.f*photo->getWidth());
+    m_scale *= s;
+    photo->scale(s, s);
+    //this->getCanvasCurrent()->updateFrame();
+}
+
+void entity::UserScene::photoScaleFinish(QUndoStack *stack, double u, double v)
+{
+    entity::Photo* photo = this->getCanvasCurrent()->getPhotoCurrent();
+    if (!photo){
+        outErrMsg("photoScaleFinish(): photo pointer is NULL");
+        return;
+    }
+    photo->setModeEdit(false);
+    photo->setWidth(m_u);
+    photo->setHeight(m_v);
+    this->getCanvasCurrent()->updateFrame(); // delete later
+    /* push to stack */
+    m_u = m_v = 0;
+    this->getCanvasCurrent()->setPhotoCurrent(false);
 }
 
 REGISTER_OBJECT_WRAPPER(UserScene_Wrapper

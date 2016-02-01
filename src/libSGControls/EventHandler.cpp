@@ -380,7 +380,6 @@ bool EventHandler::getLineIntersection(const osgGA::GUIEventAdapter &ea,
     cam->accept(iv);
     if (!intersector->containsIntersections()){
         outLogMsg("getLineIntersection(): no intersections found");
-        this->finishAll();
         return false;
     }
     result = *(intersector->getIntersections().begin());
@@ -599,38 +598,36 @@ void EventHandler::doEditPhotoScale(const osgGA::GUIEventAdapter &ea, osgGA::GUI
         return;
 
     T1* result = new T1;
-    if (!this->getLineIntersection<T1, T2>(ea,aa, *result))
+    bool intersects = this->getLineIntersection<T1, T2>(ea,aa, *result);
+
+    /* pick photo to track */
+    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH){
+        if (!intersects)
+            return;
+        m_photo = this->getPhoto(*result);
+    }
+
+    if (!m_photo){
+        std::cerr << "doEditPhotoScale(): no selected photo" << std::endl;
         return;
+    }
 
     double u=0, v=0;
     if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
         return;
 
-    entity::Photo* photo = getPhoto(*result);
-    if (!photo){
-        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Photo*>" << std::endl;
-        return;
-    }
-
-    entity::Canvas* cnv = getCanvas(*result);
-    if (!cnv){
-        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Canvas*>" << std::endl;
-        return;
-    }
-
-    m_scene->setCanvasCurrent(cnv); /* subjec to change : only track photos within current canvas */
-
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         std::cout << "scale: push button" << std::endl;
-        m_scene->editPhotoScale(photo, u, v, dureu::EVENT_PRESSED);
+        m_scene->editPhotoScale(m_photo.get(), u, v, dureu::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         std::cout << "scale: release button" << std::endl;
-        m_scene->editPhotoScale(photo, u, v, dureu::EVENT_RELEASED);
+        m_scene->editPhotoScale(m_photo.get(), u, v, dureu::EVENT_RELEASED);
+        this->finishAll();
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        m_scene->editPhotoScale(photo, u, v, dureu::EVENT_DRAGGED);
+        m_scene->editPhotoScale(m_photo.get(), u, v, dureu::EVENT_DRAGGED);
         break;
     default:
         break;

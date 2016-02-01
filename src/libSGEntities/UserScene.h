@@ -98,6 +98,9 @@ protected:
     void photoMoveFinish(QUndoStack* stack, const double u, const double v);
     bool photoEditValid() const;
 
+    void photoScaleStart(entity::Photo* photo);
+    void photoScaleAppend(double u, double v);
+    void photoScaleFinish(QUndoStack* stack, double u, double v);
 
 private:
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
@@ -107,6 +110,7 @@ private:
     osg::Vec3f m_deltaT; /* for edit operations: translate */
     osg::Quat m_deltaR; /* for edit operation: rotate */
     double m_u, m_v; /* move photo */
+    double m_scale; /* scale photo */
     unsigned int m_idCanvas;
     unsigned int m_idPhoto;
     std::string m_filePath;
