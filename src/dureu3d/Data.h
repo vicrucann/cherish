@@ -85,6 +85,7 @@ public:
     static const QPixmap& sceneImageFlipHPixmap();
     static const QPixmap& sceneImageFlipVPixmap();
     static const QPixmap& sceneImageMovePixmap();
+    static const QPixmap& sceneImageScalePixmap();
 
 private:
 

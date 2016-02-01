@@ -443,3 +443,9 @@ const QPixmap &Data::sceneImageMovePixmap()
     return pmap;
 }
 
+const QPixmap &Data::sceneImageScalePixmap()
+{
+    static QPixmap pmap(":/scene-image-scale-cursor-24px.svg");
+    return pmap;
+}
+
