@@ -42,6 +42,7 @@ const osg::Texture2D*entity::Photo::getTexture() const
 void entity::Photo::setWidth(float w)
 {
     m_width = w;
+    this->updateVertices();
 }
 
 float entity::Photo::getWidth() const
@@ -52,6 +53,7 @@ float entity::Photo::getWidth() const
 void entity::Photo::setHeight(float h)
 {
     m_height = h;
+    this->updateVertices();
 }
 
 float entity::Photo::getHeight() const
@@ -62,6 +64,7 @@ float entity::Photo::getHeight() const
 void entity::Photo::setCenter(const osg::Vec3f& c)
 {
     m_center = c;
+    this->updateVertices();
 }
 
 const osg::Vec3f& entity::Photo::getCenter() const
@@ -72,6 +75,7 @@ const osg::Vec3f& entity::Photo::getCenter() const
 void entity::Photo::setAngle(float a)
 {
     m_angle = a;
+    this->updateVertices();
 }
 
 float entity::Photo::getAngle() const
