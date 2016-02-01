@@ -65,7 +65,7 @@ EditPhotoMoveCommand::EditPhotoMoveCommand(entity::Canvas *canvas, const double 
     , m_u1(u)
     , m_v1(v)
 {
-    this->setText(QObject::tr("Move photo %1 within canvas %2")
+    this->setText(QObject::tr("Move %1 within %2")
                   .arg(QString(m_photo->getName().c_str()),
                        QString(m_canvas->getName().c_str())));
 }
@@ -167,4 +167,27 @@ void EditPhotoFlipCommand::redo()
         m_photo->flipH();
     else
         m_photo->flipV();
+}
+
+EditPhotoScaleCommand::EditPhotoScaleCommand(entity::Canvas *canvas, const double scale, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_canvas(canvas)
+    , m_photo(m_canvas->getPhotoCurrent())
+    , m_scale(scale)
+{
+    this->setText(QObject::tr("Scale %1 within %2")
+                  .arg(QString(m_photo->getName().c_str()),
+                       QString(m_canvas->getName().c_str())) );
+}
+
+void EditPhotoScaleCommand::undo()
+{
+    m_photo->scale(1.f/m_scale, 1.f/m_scale);
+    m_canvas->updateFrame();
+}
+
+void EditPhotoScaleCommand::redo()
+{
+    m_photo->scale(m_scale, m_scale);
+    m_canvas->updateFrame();
 }

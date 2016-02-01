@@ -798,8 +798,14 @@ void entity::UserScene::photoScaleFinish(QUndoStack *stack, double u, double v)
     photo->setHeight(m_v);
     this->getCanvasCurrent()->updateFrame(); // delete later
     /* push to stack */
+    EditPhotoScaleCommand* cmd = new EditPhotoScaleCommand(this->getCanvasCurrent(), m_scale);
     m_u = m_v = 0;
     this->getCanvasCurrent()->setPhotoCurrent(false);
+    if (!cmd){
+        outErrMsg("photoScaleFinish(): could not allocate command");
+        return;
+    }
+    stack->push(cmd);
 }
 
 REGISTER_OBJECT_WRAPPER(UserScene_Wrapper

@@ -54,6 +54,21 @@ protected:
     double m_u0, m_v0, m_u1, m_v1;
 };
 
+class EditPhotoScaleCommand : public QUndoCommand
+{
+public:
+    EditPhotoScaleCommand(entity::Canvas* canvas, const double scale, QUndoCommand* parent = 0);
+    ~EditPhotoScaleCommand() {}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    osg::observer_ptr<entity::Photo> m_photo;
+    double m_scale;
+};
+
 class EditPhotoFlipCommand : public QUndoCommand
 {
 public:
