@@ -374,7 +374,9 @@ void entity::UserScene::editPhotoMove(QUndoStack* stack, Photo *photo, const dou
     switch (event){
     case dureu::EVENT_OFF:
         outLogMsg("EditPhotoMove: event off called");
-        this->photoMoveFinish(stack, u, v);
+        if (this->photoEditValid())
+            this->photoMoveFinish(stack, this->getCanvasCurrent()->getPhotoCurrent()->getCenter().x(),
+                                  this->getCanvasCurrent()->getPhotoCurrent()->getCenter().y());
         break;
     case dureu::EVENT_PRESSED:
         outLogMsg("EditPhotoMove: event pressed called");
@@ -538,8 +540,8 @@ std::string entity::UserScene::getPhotoName()
 std::string entity::UserScene::getEntityName(const std::string &name, unsigned int id) const
 {
     char buffer[10];
-    //sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
-    snprintf(buffer, sizeof(buffer), "%d", id);
+    sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
+    //snprintf(buffer, sizeof(buffer), "%d", id);
     //itoa(id, buffer, 10);
     return name + std::string(buffer);//std::to_string(static_cast<long double>(id));
 }
@@ -737,6 +739,11 @@ void entity::UserScene::photoMoveFinish(QUndoStack *stack, const double u, const
 
 bool entity::UserScene::photoEditValid() const
 {
+    if (this->getCanvasCurrent()){
+        entity::Photo* photo = this->getCanvasCurrent()->getPhotoCurrent();
+        if (!photo)
+            return false;
+    }
     return this->getCanvasCurrent()->getPhotoCurrent()->getModeEdit();
 }
 

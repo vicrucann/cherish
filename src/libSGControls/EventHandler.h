@@ -72,6 +72,7 @@ protected:
 
     dureu::MOUSE_MODE m_mode;
     osg::observer_ptr<RootScene> m_scene;
+    osg::observer_ptr<entity::Photo> m_photo;
 };
 
 #endif // EVENTHANDLER

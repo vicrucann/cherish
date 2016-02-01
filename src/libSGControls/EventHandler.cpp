@@ -10,7 +10,7 @@ EventHandler::EventHandler(RootScene* scene, dureu::MOUSE_MODE mode)
     : osgGA::GUIEventHandler()
     , m_mode(mode)
     , m_scene(scene)
-
+    , m_photo(0)
 {
 }
 
@@ -27,7 +27,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             m_mode == dureu::MOUSE_ZOOM || m_mode == dureu::MOUSE_FIXEDVIEW)
         return false;
 
-    if (!m_scene->getCanvasCurrent())
+    if (! m_scene->getCanvasCurrent())
         return false;
 
     switch (m_mode){
@@ -283,40 +283,36 @@ void EventHandler::doEditPhotoMove(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
         return;
 
     T1* result = new T1;
-    if (!this->getLineIntersection<T1, T2>(ea,aa, *result))
+    bool intersects = this->getLineIntersection<T1, T2>(ea,aa, *result);
+
+    /* pick photo to track */
+    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH){
+        if (!intersects)
+            return;
+        m_photo = this->getPhoto(*result);
+    }
+
+    if (!m_photo){
+        std::cerr << "doEditPhotoMove(): no selected photo" << std::endl;
         return;
+    }
 
     double u=0, v=0;
     if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
         return;
 
-    entity::Photo* photo = getPhoto(*result);
-    if (!photo){
-        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Photo*>" << std::endl;
-        return;
-    }
-
-    entity::Canvas* cnv = getCanvas(*result);
-    if (!cnv){
-        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Canvas*>" << std::endl;
-        return;
-    }
-
-    m_scene->setCanvasCurrent(cnv); /* subjec to change : only track photos within current canvas */
-
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
-        std::cout << "doByHybrid(): push button" << std::endl;
-        outLogVec("u v", u, v, 0);
-        m_scene->editPhotoMove(photo, u, v, dureu::EVENT_PRESSED);
+        std::cout << "edit photo move: push button" << std::endl;
+        m_scene->editPhotoMove(m_photo.get(), u, v, dureu::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
-        std::cout << "doByHybrid(): release button" << std::endl;
-        outLogVec("u v", u, v, 0);
-        m_scene->editPhotoMove(photo, u, v, dureu::EVENT_RELEASED);
+        std::cout << "edit photo move: release button" << std::endl;
+        m_scene->editPhotoMove(m_photo.get(), u, v, dureu::EVENT_RELEASED);
+        this->finishAll();
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        m_scene->editPhotoMove(photo, u, v, dureu::EVENT_DRAGGED);
+        m_scene->editPhotoMove(m_photo.get(), u, v, dureu::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -583,11 +579,14 @@ void EventHandler::finishAll()
         break;
     case dureu::MOUSE_PHOTO_MOVE:
         m_scene->editPhotoMove(0,0,0, dureu::EVENT_OFF);
+        break;
     case dureu::MOUSE_PHOTO_SCALE:
         m_scene->editPhotoScale(0,0,0, dureu::EVENT_OFF);
+        break;
     default:
         break;
     }
+    m_photo = 0;
 }
 
 template <typename T1, typename T2>
