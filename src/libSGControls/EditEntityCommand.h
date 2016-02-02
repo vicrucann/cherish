@@ -84,6 +84,21 @@ protected:
     bool m_horizontal;
 };
 
+class EditPhotoRotateCommand : public QUndoCommand
+{
+public:
+    EditPhotoRotateCommand(entity::Canvas* canvas, const double angle, QUndoCommand* parent = 0);
+    ~EditPhotoRotateCommand(){}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    osg::observer_ptr<entity::Photo> m_photo;
+    double m_angle;
+};
+
 class EditStrokesPushCommand : public QUndoCommand
 {
 public:

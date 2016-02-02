@@ -191,3 +191,26 @@ void EditPhotoScaleCommand::redo()
     m_photo->scale(m_scale, m_scale);
     m_canvas->updateFrame();
 }
+
+EditPhotoRotateCommand::EditPhotoRotateCommand(entity::Canvas *canvas, const double angle, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_canvas(canvas)
+    , m_photo(m_canvas->getPhotoCurrent())
+    , m_angle(angle)
+{
+    this->setText(QObject::tr("Rotate %1 within %2")
+                  .arg(QString(m_photo->getName().c_str()),
+                       QString(m_canvas->getName().c_str())) );
+}
+
+void EditPhotoRotateCommand::undo()
+{
+    m_photo->rotate(-m_angle);
+    m_canvas->updateFrame();
+}
+
+void EditPhotoRotateCommand::redo()
+{
+    m_photo->rotate(m_angle);
+    m_canvas->updateFrame();
+}

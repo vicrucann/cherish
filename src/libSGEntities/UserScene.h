@@ -103,7 +103,7 @@ protected:
     void photoScaleAppend(double u, double v);
     void photoScaleFinish(QUndoStack* stack, double u, double v);
 
-    void photoRotateStart(entity::Photo* photo);
+    void photoRotateStart(entity::Photo* photo, double u, double v);
     void photoRotateAppend(double u, double v);
     void photoRotateFinish(QUndoStack* stack, double u, double v);
 

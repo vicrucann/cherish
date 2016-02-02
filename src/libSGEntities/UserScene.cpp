@@ -458,12 +458,12 @@ void entity::UserScene::editPhotoRotate(QUndoStack *stack, entity::Photo *photo,
         break;
     case dureu::EVENT_PRESSED:
         outLogMsg("EditPhotoRotate: event pressed called");
-        this->photoRotateStart(photo);
+        this->photoRotateStart(photo,u,v);
         this->photoRotateAppend(u,v);
         break;
     case dureu::EVENT_DRAGGED:
         if (!this->photoEditValid())
-            this->photoRotateStart(photo);
+            this->photoRotateStart(photo,u,v);
         this->photoRotateAppend(u,v);
         break;
     case dureu::EVENT_RELEASED:
@@ -847,7 +847,7 @@ void entity::UserScene::photoScaleFinish(QUndoStack *stack, double u, double v)
     stack->push(cmd);
 }
 
-void entity::UserScene::photoRotateStart(entity::Photo *photo)
+void entity::UserScene::photoRotateStart(entity::Photo *photo, double u, double v)
 {
     if (this->canvasEditValid()){
         outErrMsg("photoScaleStart: cannot start editing since the photo is already in edit mode");
@@ -860,6 +860,8 @@ void entity::UserScene::photoRotateStart(entity::Photo *photo)
     this->getCanvasCurrent()->setPhotoCurrent(photo);
     photo->setModeEdit(true);
     m_rotate = 0;
+    m_u = u;
+    m_v = v;
 }
 
 void entity::UserScene::photoRotateAppend(double u, double v)
@@ -869,10 +871,46 @@ void entity::UserScene::photoRotateAppend(double u, double v)
         outErrMsg("photoScaleAppend(): photo pointer is NULL");
         return;
     }
-    double theta = dureu::PI/36;
+    double cx = photo->getCenter().x();
+    double cy = photo->getCenter().y();
+
+    osg::Vec2f P1 = osg::Vec2f(m_u - cx, m_v - cy);
+    osg::Vec2f P2 = osg::Vec2f(u - cx, v - cy);
+
+    P1.normalize();
+    P2.normalize();
+
+    double theta = 0;
+    if (P1.length()*P2.length() != 0){
+        double atheta = (P1*P2) / (P1.length()*P2.length());
+        if (atheta <-1 || atheta > 1)
+            atheta = 1;
+        theta = std::acos(atheta);
+
+        /* when moving counter clock wise, have to switch rotation direction */
+        if (u>=cx && v>=cy){
+            if (P2.y() < P1.y())
+                theta *= -1; }
+        else if (u<=cx && v>=cy){
+            if (P2.y() > P1.y())
+                theta *= -1;}
+        else if (u<=cx && v<=cy){
+            if (P2.y() > P1.y())
+                theta *= -1; }
+        else if (u>=cx && v<=cy){
+            if (P2.y() < P1.y())
+                theta *= -1; }
+    }
+
+    /* theta must be within [-PI, PI] */
+    if (theta < -dureu::PI || theta > dureu::PI)
+        theta = 0;
 
     m_rotate += theta;
     photo->rotate(theta);
+
+    m_u = u;
+    m_v = v;
 }
 
 void entity::UserScene::photoRotateFinish(QUndoStack *stack, double u, double v)
@@ -885,10 +923,15 @@ void entity::UserScene::photoRotateFinish(QUndoStack *stack, double u, double v)
     photo->setModeEdit(false);
     photo->rotate(-m_rotate);
     /* create command */
-
+    EditPhotoRotateCommand* cmd = new EditPhotoRotateCommand(this->getCanvasCurrent(), m_rotate);
+    m_u = m_v = 0;
     this->getCanvasCurrent()->setPhotoCurrent(false);
     /* push to stack */
-
+    if (!cmd){
+        outErrMsg("photoScaleFinish(): could not allocate command");
+        return;
+    }
+    stack->push(cmd);
 }
 
 REGISTER_OBJECT_WRAPPER(UserScene_Wrapper
