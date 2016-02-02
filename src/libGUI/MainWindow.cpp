@@ -111,6 +111,7 @@ void MainWindow::onCreateViewer(){
 void MainWindow::onFileNew()
 {
     this->onFileClose();
+    m_undoStack->clear();
 }
 
 /* Check whether the current scene is empty or not
