@@ -28,9 +28,9 @@ public:
 private:
     void setTextProperties(const osg::Vec3& pos, float size);
 
-    osg::observer_ptr<osg::Group> _scene;
-    osg::ref_ptr<osgText::Text> _text;
-    osg::ref_ptr<osg::Geode> _geode;
+    osg::observer_ptr<osg::Group> m_scene;
+    osg::ref_ptr<osgText::Text> m_text;
+    osg::ref_ptr<osg::Geode> m_geode;
 };
 
 #endif // OBSERVESCENECALLBACK
