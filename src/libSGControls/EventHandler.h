@@ -25,26 +25,26 @@
 class EventHandler : public osgGA::GUIEventHandler {
 public:
     EventHandler(RootScene* scene, dureu::MOUSE_MODE mode = dureu::MOUSE_SELECT);
+
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
     void setMode(dureu::MOUSE_MODE mode);
     dureu::MOUSE_MODE getMode() const;
-
-    template <typename T1, typename T2>
-    void doByLineIntersector(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-
-    void doByRaytrace(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-
-    void doPickStroke(const StrokeIntersector::Intersection& result);
-    void doPickCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
 
     void doDelete(const osgUtil::LineSegmentIntersector::Intersection& result);
 
     void doEraseStroke(entity::Stroke *stroke, int first, int last, dureu::EVENT event = dureu::EVENT_DRAGGED);
 
-    void doSketch(double u, double v, dureu::EVENT event);
+    template <typename T1, typename T2>
+    void doSelectEntity(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
-    void doEditCanvasOffset(osg::Vec3f XC, dureu::EVENT event);
-    void doEditCanvasRotate(int x, int y, dureu::EVENT event);
+    template <typename T1, typename T2>
+    void doSelectStroke(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
+    void doSketch(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
+    void doEditCanvasOffset(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doEditCanvasRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     template <typename T1, typename T2>
     void doEditPhotoMove(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
