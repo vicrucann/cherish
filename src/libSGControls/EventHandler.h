@@ -31,8 +31,6 @@ public:
     void setMode(dureu::MOUSE_MODE mode);
     dureu::MOUSE_MODE getMode() const;
 
-    void doDelete(const osgUtil::LineSegmentIntersector::Intersection& result);
-
     void doEraseStroke(entity::Stroke *stroke, int first, int last, dureu::EVENT event = dureu::EVENT_DRAGGED);
 
     template <typename T1, typename T2>

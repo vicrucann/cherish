@@ -77,19 +77,6 @@ dureu::MOUSE_MODE EventHandler::getMode() const
     return m_mode;
 }
 
-// check nodepath to see how to go far enough so that to get canvas type
-void EventHandler::doDelete(const osgUtil::LineSegmentIntersector::Intersection &result)
-{
-    entity::Canvas* cnv = getCanvas(result);
-    if (!cnv){
-        std::cerr << "doDelete(): could not dynamic_cast<Canvas*>" << std::endl;
-        return;
-    }
-    std::cout << "doDelete(): assumed canvas with name: " << cnv->getName() << std::endl;
-    //bool success = m_scene->deleteCanvas(cnv);
-    //std::cout << "doDelete(): success is " << success << std::endl;
-}
-
 /* Algorithm:
  * Get closest line segment out of Stroke
  * Pass that line segment to split stroke
@@ -101,6 +88,7 @@ void EventHandler::doDelete(const osgUtil::LineSegmentIntersector::Intersection 
 */
 void EventHandler::doEraseStroke(entity::Stroke* stroke, int first, int last, dureu::EVENT event)
 {
+    /* THIS IS A DEBUG VERSION !!!!!!*/
     if (!stroke){
         outErrMsg("doEraseStroke: could not obtain stroke");
         return;
