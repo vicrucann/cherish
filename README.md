@@ -1,21 +1,21 @@
 # Dura-Europos In Situ - (dureu3d) 
-The **dureu3d** software is a heterogeneous framework for the modeling and representation of historical structures and archaeological sites in 3D. It is designed so that to unify the currently disparate data types available (e.g. 2D images, 3D strokes entered by user, text annotations attached to 3D locations, mesh representations of buildings) and to use the strength of each to support the others. For the data processing, rather than relying on either purely automatic approaches or human input, the framework supports speculation and reasoning in the form of both. As a result, the software is capable to take as input various raw heterogeneous data source and produce a labeled, corresponded and augmented data source that can be used in variety of applications.
+
+The **dureu3d** (name is subject to change) software is a heterogeneous framework for the modeling, design and representation of historical structures and archaeological sites in 3D. It is designed so that to unify the currently disparate data types available (e.g. 2D images, 3D strokes entered by user, text annotations attached to 3D locations, mesh representations of buildings) and to use the strength of each to support the others. 
+
+For the data processing, rather than relying on either purely automatic approaches or human input, the framework supports speculation and reasoning in the form of both. As a result, the software is capable to take as input various raw heterogeneous data source and produce a labeled, corresponded and augmented data source that can be used in variety of applications.
 
 ###### Development status
-Currently converting the prototype version into alpha version, very active development. The current state of the project is not usable yet. Planned characteristics: 
+
+Currently converting the prototype version into alpha version, very active development. **The current state of the project is not usable yet** (first official relseases are planned on end of spring - beginning of summer). Planned features:
+ 
 * Near-future steps
-    * Version control on github
     * Functional / technical specification - [manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/manual.md) file
-    * Reduce the library dependencies by using only Qt, OpenSceneGraph, OpenGL and cmake
-    * Improve GUI (replace it by using Qt only)
-    * cmake (or qmake) files, installation procedure steps (what technical expertise is required, tutorial-style examples)
-    * Better object orientation design, refactoring, graph scene, and introducing new features
-    * Unit testing, GUI testing
-    * Documentation for user (monolithic) and wiki (software set up, overview of how it works, guides to doing common tasks)
+    * Installation procedure steps
+    * Unit testing, GUI testing, improved GUI design (from user feedback)
+    * Documentation for user (monolithic): software set up, overview of how it works, guides to doing common tasks
+    * Project site so that to publish announcements and status updates
 * Far-future steps
-    * Bug database, feature requests 
-    * History of past releases 
-    * Potential developer guidelines (where documentation is incomplete, desired features, known deficiencies, etc.)
+    * Developer guideline
     * FAQ section or file
     * Demos, screen shots, videos, example outputs
 
@@ -40,23 +40,24 @@ Implementation steps:
     * (done) Select a canvas and all it contains
     * Select two or more canvases and their contents
     * Select number of entities within one canvas
+    * (done) Select number of strokes within one canvas
 * Advanced entity manipulation (**Dec 2015**)
     * (done) Create a new canvas as a copy of current
-    * Push strokes from one canvas to another
+    * (done) Push strokes from one canvas to another
     * Move a photo from one canvas to another
 * (done) Save and load of a scene graph to disk (**Dec 2015**)
 * Viewer entities (**Dec 2015**)
     * (done) Model views: built-in, second screen, detached menu, viewer splitters, viewer views setup (front, top, iso)
     * Bookmarks
 * (done) GUI integration (**Jan 2016**)
-* First user tests and feedback (**Jan 2016**)
+* (in process) First user tests and feedback (**Jan 2016**)
 * Unit tests (**Jan 2016**)
-* Configuration management (**Feb 2016**)
 * Memory leaks detection, performance measurements, optimization (threading), other improvements (**Feb 2016**)
-* Bug fixing, user feedback, tuning, refactoring (**March 2016**)
-* Prepare first official `beta` release (**March 2016**)
-* Installers and tarballs (**April 2016**)
-* User documentation (**Jan-April 2016**)
+* (in process) Bug fixing, user feedback, tuning, refactoring (**March 2016**)
+* (in process) Prepare first official `beta` release (**March 2016**)
+* Develop virtual touring methods (**March 2016**)
+* (in process) Installers and tarballs (**April 2016**)
+* (in process) User documentation (**Jan-April 2016**)
 * Advanced features (**April 2016**)
     * Path animation
     * Geographic coordinate system matching
@@ -83,10 +84,9 @@ The presented **dureu3d** software creates a heterogeneous 3D representation of 
 
 ## Features
 
-* (Automated, planned) **3D modeling**: image-based modeling, laser scan data, procedural models.
-* **Markup system**, based on 3D sketching (interpretation of 2D sketches as 3D forms): intuitive and interactive annotations, labeling and correspondence.
-* **Human input** (crowd sourcing): augmentation, labeling and alignments of the sparse, multi-scale and heterogeneous data sources. 
-* (planned) **Machine learning**: improvements of digital computation algorithms and reductions of the dependency on human computation. E.g., usage of semi-supervised learning and active learning to reduce uncertainty in the data.
+* **3D modeling**: manipulation of images in 3D space, sketch-based human input, labelling and alignment of sparse multi-scale data sources
+* **Virtual touring**
+* (far-future?) **Machine learning**: improvements of digital computation algorithms and reductions of the dependency on human computation. E.g., usage of semi-supervised learning and active learning to reduce uncertainty in the data.
 
 ## Requirements
 
@@ -94,21 +94,15 @@ The software is written on Windows 7, with QT-5.4 and OpenSceneGraph-3.4.0 libra
 
 ## Installation
 
-Can be installed using commands `qmake` and `make` (possibly `cmake` and `make`). Also project files for QT Creator and Microsoft Visual Studio will be provided. 
+Binaries and/or installers are going to be provided. It is also possible to download and compile from source. When compiling from source, you need to install the following tools and libraries:
 
-If compiling from source, make sure the dependencies are met. So far, the project relies onto the next open-source libraries:
-1. cmake
-2. Qt SDK (QtWidgets, QtOpenGL)
-3. OpenSceneGraph (core libraries, OpenGL support)
+1. CMake, version 2.8.11 or higher
+2. Qt, version 5.4 or higher
+3. OpenSceneGraph, version 3.4.0 or higher
 
-After installation of the OpenSceneGraph (OSG for short), update the environment variables so that `cmake` could find the necessary libraries. Here is the example of the set variables on Linux (same works for `cygwin`):
-```
-export OPENTHREADS_LIB_DIR="/usr/local/lib64:/usr/local/lib"  
-export PATH="$OPENTHREADS_LIB_DIR:$PATH"  
-export LD_LIBRARY_PATH="/usr/local/lib64:/usr/local/lib:$LD_LIBRARY_PATH"  
-export OSG_FILE_PATH="/usr/local/OpenSceneGraph/data:/usr/local/OpenSceneGraph/data/Images"  
-```
-Refer to the official OSG guide for more details or on how to set up the OSG using other platforms.
+Refer to each tool's official guide on how to install it. While there are binaries exist for Qt and CMake, it will, probably, be necessary to compile the OpenSceneGraph from source.
+
+To build *dureu3d*, you can either use CMake commands: `cmake` and then `make`, or you can compile using CMake GUI tool, or you can compile using Qt Designer framework. We tested compilation on Windows 7 and Ubuntu 14.04. It is unknown how it behaves on Mac machines. 
 
 ## Quick start
 
@@ -128,17 +122,19 @@ For many more details on the software features, check [User Manual](https://gith
 
 ## Development and contribution 
 
-This is far-future section. It will be filled as a need arises.
+This is far-future section. It will be filled as need arises.
 
 ## Contact and authors info
 
-The author and lab information will be added here. For the current version, feel free to contact Victoria Rudakova - victoria.rudakova(at)yale.edu ; or use [Issues](https://github.com/vicrucann/dura-europos-insitu/issues) for feature requests or bug submission.
+The software is being developed at [Yale Graphics Lab](http://graphics.cs.yale.edu/site/). The main development is performed by Victoria Rudakova under the guidance of [prof. Holly Rushmeier](http://graphics.cs.yale.edu/site/people/holly-rushmeier) and [prof. Julie Dorsey](http://graphics.cs.yale.edu/site/people/julie-dorsey).  
 
-Other contributors:
+For any questions and requests, feel free to contact Victoria Rudakova - victoria.rudakova(at)yale.edu. Or use [Issues](https://github.com/vicrucann/dura-europos-insitu/issues) for feature requests and bug submission.
+
+Other contributors (in no particular order):
 
 * Yumo Rong: user interface functionality
-* Natallia Trayan: icon designer
-
+* Natallia Trayan: icons designer
+* Wendy Chan: user testing and feedback, GUI design 
 
 ## References
 
