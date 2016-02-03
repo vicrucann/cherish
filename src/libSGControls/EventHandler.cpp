@@ -70,6 +70,18 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 void EventHandler::setMode(dureu::MOUSE_MODE mode)
 {
     m_mode = mode;
+    switch (m_mode){
+    case dureu::MOUSE_PHOTO_ROTATE:
+    case dureu::MOUSE_PHOTO_SCALE:
+    case dureu::MOUSE_PHOTO_FLIPH:
+    case dureu::MOUSE_PHOTO_FLIPV:
+    case dureu::MOUSE_PHOTO_MOVE:
+        m_scene->setCanvasesButCurrent(false);
+        break;
+    default:
+        m_scene->setCanvasesButCurrent(true);
+        break;
+    }
 }
 
 dureu::MOUSE_MODE EventHandler::getMode() const
@@ -199,6 +211,8 @@ void EventHandler::doEditPhotoMove(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
            ))
         return;
 
+    /* disable non-current canvases, set their traversals to none */
+
     T1* result = new T1;
     bool intersects = this->getLineIntersection<T1, T2>(ea,aa, *result);
 
@@ -289,6 +303,7 @@ bool EventHandler::getLineIntersection(const osgGA::GUIEventAdapter &ea,
     osg::ref_ptr<T2> intersector = new T2(osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
 
     osgUtil::IntersectionVisitor iv(intersector);
+    iv.setTraversalMask(~0x1);
     osg::Camera* cam = viewer->getCamera();
     if (!cam){
         std::cerr << "getLineIntersection(): could not read camera" << std::endl;

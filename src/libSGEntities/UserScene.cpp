@@ -286,6 +286,33 @@ void entity::UserScene::setCanvasSelected(bool selected)
     }
 }
 
+/* Sets the traversal mask so that all the canvases (but current)
+ * would not be traversable if enabled variable is false.
+ * It sets them back to traversable if enabled is true.
+ */
+void entity::UserScene::setCanvasesButCurrent(bool enabled)
+{
+    outLogVal("setCanvasesButCurrent to ", enabled);
+    if (!m_canvasCurrent.get()){
+        std::cerr << "setCanvasesButCurrent(): No current canvas on scene" << std::endl;
+        return;
+    }
+
+    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+        entity::Canvas* cnv = this->getCanvas(i);
+        if (!cnv){
+            outErrMsg("setCanvasesButCurrent(): Could not obtain one of the canvases");
+            return;
+        }
+        if (cnv != m_canvasCurrent.get()){
+            if (enabled)
+                cnv->setNodeMask(~0x0);
+            else
+                cnv->setNodeMask(0x1); // see EventHandler when we set iv.setTraversalMask(~0x1);
+        }
+    }
+}
+
 entity::Canvas*entity::UserScene::getCanvasCurrent() const
 {
     return m_canvasCurrent.get();

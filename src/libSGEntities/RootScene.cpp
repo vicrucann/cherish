@@ -228,6 +228,11 @@ bool RootScene::setCanvasPrevious(entity::Canvas* cnv)
     return m_userScene->setCanvasPrevious(cnv);
 }
 
+void RootScene::setCanvasesButCurrent(bool enable)
+{
+    m_userScene->setCanvasesButCurrent(enable);
+}
+
 entity::Canvas *RootScene::getCanvasSelected() const
 {
     return m_userScene->getCanvasSelected();

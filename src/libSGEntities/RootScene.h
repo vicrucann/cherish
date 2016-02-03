@@ -78,6 +78,7 @@ public:
     void setCanvasSelected(entity::Canvas* cnv);
     bool setCanvasCurrent(entity::Canvas* cnv);
     bool setCanvasPrevious(entity::Canvas* cnv);
+    void setCanvasesButCurrent(bool enable);
     entity::Canvas* getCanvasSelected() const;
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
