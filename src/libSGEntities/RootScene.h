@@ -85,6 +85,7 @@ public:
 
     void editCanvasOffset(const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasRotate(const osg::Quat& rotation, dureu::EVENT event);
+    void editCanvasClone(const osg::Vec3f& translate, dureu::EVENT event);
     void editPhotoMove(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoScale(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoRotate(entity::Photo* photo, const double u, const double v, dureu::EVENT event);

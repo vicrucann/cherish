@@ -16,6 +16,7 @@ entity::UserScene::UserScene()
     , m_canvasCurrent(NULL)
     , m_canvasPrevious(NULL)
     , m_canvasSelected(NULL)
+    , m_canvasClone(0)
     , m_deltaT(osg::Vec3f(0.f,0.f,0.f))
     , m_deltaR(osg::Quat(0,0,0,1))
     , m_u(0)
@@ -34,6 +35,7 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_canvasCurrent(scene.m_canvasCurrent)
     , m_canvasPrevious(scene.m_canvasPrevious)
     , m_canvasSelected(NULL)
+    , m_canvasClone(0)
     , m_deltaT(scene.m_deltaT)
     , m_deltaR(scene.m_deltaR)
     , m_u(scene.m_u)
@@ -394,6 +396,39 @@ void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rot
     }
 }
 
+void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &translate, dureu::EVENT event)
+{
+    if (!stack){
+        fatalMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
+                 "Editing is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
+    }
+
+    switch (event){
+    case dureu::EVENT_OFF:
+        this->canvasCloneFinish(stack);
+        break;
+    case dureu::EVENT_PRESSED:
+        this->canvasCloneStart();
+        this->canvasCloneAppend(translate);
+        break;
+    case dureu::EVENT_DRAGGED:
+        if (!this->canvasCloneValid())
+            this->canvasCloneStart();
+        this->canvasCloneAppend(translate);
+        break;
+    case dureu::EVENT_RELEASED:
+        if (!this->canvasCloneValid())
+            break;
+        this->canvasCloneAppend(translate);
+        this->canvasCloneFinish(stack);
+        break;
+    default:
+        break;
+    }
+}
+
 void entity::UserScene::editPhotoMove(QUndoStack* stack, Photo *photo, const double u, const double v, dureu::EVENT event)
 {
     if (!stack){
@@ -737,6 +772,77 @@ void entity::UserScene::canvasOffsetFinish(QUndoStack *stack)
 bool entity::UserScene::canvasEditValid() const
 {
     return this->getCanvasCurrent()->getModeEdit();
+}
+
+void entity::UserScene::canvasCloneStart()
+{
+    //m_canvasCurrent->setColor(dureu::CANVAS_CLR_REST);
+    entity::Canvas* cnv = new entity::Canvas;
+    cnv->initializeSG();
+    cnv->setName(this->getCanvasName());
+    cnv->setMatrixRotation(m_canvasCurrent->getMatrixRotation());
+    cnv->setMatrixTranslation(m_canvasCurrent->getMatrixTranslation());
+
+    //entity::Canvas* cnv = new entity::Canvas(*(m_canvasCurrent.get()), osg::CopyOp::DEEP_COPY_ALL);
+    //cnv->setName(this->getCanvasName());
+    //m_canvasCurrent->setColor(dureu::CANVAS_CLR_CURRENT);
+    /*if (!cnv){
+        outErrMsg("canvasCloneStart: could not clone the canvas, ptr is NULL");
+        return;
+    }*/
+    m_canvasClone = cnv;
+
+    this->addChild(m_canvasClone.get());
+    this->setCanvasCurrent(m_canvasClone.get());
+
+    /*if (!this->addChild(m_canvasClone.get())){
+        outErrMsg("canvasCloneStart: could not add clone as a child");
+        return;
+    }*/
+
+    /* have to set the clone as current so that to calculate offset correctly */
+    /*if (!this->setCanvasCurrent(m_canvasClone.get())){
+        outErrMsg("canvasCloneStart: could not set clone as current");
+        this->removeChild(m_canvasClone.get());
+        m_canvasClone = 0;
+        return;
+    }*/
+}
+
+void entity::UserScene::canvasCloneAppend(const osg::Vec3f &t)
+{
+    if (!this->canvasCloneValid()){
+        outErrMsg("canvasCloneAppend: clone is not valid");
+        return;
+    }
+    m_canvasCurrent->translate(osg::Matrix::translate(t.x(), t.y(), t.z()));
+    outLogVal("Current canvas", m_canvasCurrent->getName());
+    this->updateWidgets();
+}
+
+void entity::UserScene::canvasCloneFinish(QUndoStack *stack)
+{
+    if (!this->canvasCloneValid()){
+        outErrMsg("canvasCloneFinish: clone is not valid");
+        return;
+    }
+
+    //this->setCanvasCurrent(m_canvasPrevious.get());
+    //m_canvasClone->setColor(dureu::CANVAS_CLR_REST);
+
+    /*AddCanvasCommand* cmd = new AddCanvasCommand(this, *(m_canvasClone.get()));
+    this->removeChild(m_canvasClone.get());
+    m_canvasClone = 0;
+    if (!cmd){
+        outErrMsg("canvasCloneFinish: could not allocated AddCanvasCommand");
+        return;
+    }
+    stack->push(cmd); */
+}
+
+bool entity::UserScene::canvasCloneValid() const
+{
+    return m_canvasClone.get();
 }
 
 void entity::UserScene::canvasRotateStart()

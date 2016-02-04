@@ -75,23 +75,24 @@ enum APPMODE{
     SCREEN_DETACHED = 4
 };
 
-enum MOUSE_MODE {
-    MOUSE_SELECT, // for selection and delete
-    MOUSE_SKETCH, // to draw strokes and 2D geometric shapes
-    MOUSE_CANVAS_OFFSET,
-    MOUSE_CANVAS_ROTATE,
-    MOUSE_PHOTO_MOVE,
-    MOUSE_PHOTO_FLIPH,
-    MOUSE_PHOTO_FLIPV,
-    MOUSE_PHOTO_SCALE,
-    MOUSE_PHOTO_ROTATE,
-    MOUSE_BOOKMARK, // create bookmark (take a snapshot of a selected viewer)
-    MOUSE_ERASE, // deletes entyties from scene
-    MOUSE_DELETE, // remove the selected element completely (photo or canvas)
-    MOUSE_ORBIT,
-    MOUSE_ZOOM,
-    MOUSE_PAN,
-    MOUSE_FIXEDVIEW
+enum MOUSE_MODE
+{     MOUSE_SELECT // for selection and delete
+    , MOUSE_SKETCH // to draw strokes and 2D geometric shapes
+    , MOUSE_CANVAS_OFFSET
+    , MOUSE_CANVAS_ROTATE
+    , MOUSE_CANVAS_CLONE
+    , MOUSE_PHOTO_MOVE
+    , MOUSE_PHOTO_FLIPH
+    , MOUSE_PHOTO_FLIPV
+    , MOUSE_PHOTO_SCALE
+    , MOUSE_PHOTO_ROTATE
+    , MOUSE_BOOKMARK // create bookmark (take a snapshot of a selected viewer)
+    , MOUSE_ERASE // deletes entyties from scene
+    , MOUSE_DELETE // remove the selected element completely (photo or canvas)
+    , MOUSE_ORBIT
+    , MOUSE_ZOOM
+    , MOUSE_PAN
+    , MOUSE_FIXEDVIEW
 };
 
 enum EVENT {

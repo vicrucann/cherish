@@ -64,6 +64,7 @@ public:
 
     void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event);
+    void editCanvasClone(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editPhotoMove(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoScale(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoRotate(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
@@ -100,6 +101,11 @@ protected:
     void canvasOffsetFinish(QUndoStack* stack);
     bool canvasEditValid() const;
 
+    void canvasCloneStart();
+    void canvasCloneAppend(const osg::Vec3f& t);
+    void canvasCloneFinish(QUndoStack* stack);
+    bool canvasCloneValid() const;
+
     void canvasRotateStart();
     void canvasRotateAppend(const osg::Quat& r);
     void canvasRotateFinish(QUndoStack* stack);
@@ -122,6 +128,7 @@ private:
     osg::observer_ptr<entity::Canvas> m_canvasPrevious;
     osg::observer_ptr<entity::Canvas> m_canvasSelected;
     osg::observer_ptr<entity::Canvas> m_canvasTarget; /* for push operations */
+    osg::observer_ptr<entity::Canvas> m_canvasClone; /* for clone current canvas */
     osg::Vec3f m_deltaT; /* for edit operations: translate */
     osg::Quat m_deltaR; /* for edit operation: rotate */
     double m_u, m_v; /* move photo */

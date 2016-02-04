@@ -20,7 +20,7 @@ AddCanvasCommand::AddCanvasCommand(entity::UserScene* scene, const entity::Canva
     , m_scene(scene)
     , m_canvas(new entity::Canvas(copy, osg::CopyOp::DEEP_COPY_ALL))
 {
-    this->setText(QObject::tr("Add %1")
+    this->setText(QObject::tr("Clone to %1")
                   .arg(QString(m_canvas->getName().c_str())));
 }
 

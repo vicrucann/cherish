@@ -260,24 +260,34 @@ void RootScene::editCanvasRotate(const osg::Quat &rotation, dureu::EVENT event)
     m_saved = false;
 }
 
+void RootScene::editCanvasClone(const osg::Vec3f &translate, dureu::EVENT event)
+{
+    m_userScene->editCanvasClone(m_undoStack, translate, event);
+    m_saved = false;
+}
+
 void RootScene::editPhotoMove(entity::Photo *photo, const double u, const double v, dureu::EVENT event)
 {
     m_userScene->editPhotoMove(m_undoStack, photo, u, v, event);
+    m_saved = false;
 }
 
 void RootScene::editPhotoScale(entity::Photo *photo, const double u, const double v, dureu::EVENT event)
 {
     m_userScene->editPhotoScale(m_undoStack, photo, u, v, event);
+    m_saved = false;
 }
 
 void RootScene::editPhotoRotate(entity::Photo *photo, const double u, const double v, dureu::EVENT event)
 {
     m_userScene->editPhotoRotate(m_undoStack, photo, u, v, event);
+    m_saved = false;
 }
 
 void RootScene::editPhotoFlip(entity::Photo *photo, bool horizontal)
 {
     m_userScene->editPhotoFlip(m_undoStack, photo, horizontal);
+    m_saved = false;
 }
 
 void RootScene::editStrokesPush(QUndoStack *stack, osg::Camera* camera)

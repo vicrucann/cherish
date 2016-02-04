@@ -46,6 +46,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     case dureu::MOUSE_CANVAS_ROTATE:
         this->doEditCanvasRotate(ea, aa);
         break;
+    case dureu::MOUSE_CANVAS_CLONE:
+        this->doCanvasClone(ea, aa);
+        break;
     case dureu::MOUSE_PHOTO_FLIPH:
         this->doEditPhotoFlip<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa, true);
         break;
@@ -191,6 +194,35 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     case osgGA::GUIEventAdapter::DRAG:
         //if (!this->getRaytraceNormalProjection(ea,aa,XC))return;
         m_scene->editCanvasRotate(rot, dureu::EVENT_DRAGGED);
+        break;
+    default:
+        break;
+    }
+}
+
+void EventHandler::doCanvasClone(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           ))
+        return;
+
+    osg::Vec3f XC = osg::Vec3f(0.f,0.f,0.f);
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        if (!this->getRaytraceNormalProjection(ea,aa,XC)) return;
+        m_scene->editCanvasClone(XC, dureu::EVENT_PRESSED);
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        if (!this->getRaytraceNormalProjection(ea,aa,XC))
+            this->finishAll();
+        m_scene->editCanvasClone(XC, dureu::EVENT_RELEASED);
+        break;
+    case osgGA::GUIEventAdapter::DRAG:
+        if (!this->getRaytraceNormalProjection(ea,aa,XC))
+            this->finishAll();
+        m_scene->editCanvasClone(XC, dureu::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -507,6 +539,9 @@ void EventHandler::finishAll()
         break;
     case dureu::MOUSE_CANVAS_ROTATE:
         m_scene->editCanvasOffset(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
+        break;
+    case dureu::MOUSE_CANVAS_CLONE:
+        m_scene->editCanvasClone(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
         break;
     case dureu::MOUSE_PHOTO_MOVE:
         m_scene->editPhotoMove(0,0,0, dureu::EVENT_OFF);

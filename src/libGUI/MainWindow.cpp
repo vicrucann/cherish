@@ -291,8 +291,9 @@ void MainWindow::onSketch()
 void MainWindow::onNewCanvasClone()
 {
     m_mdiArea->setCursor(Qt::ArrowCursor);
-    //
-    this->onSketch();
+    emit sendMouseMode(dureu::MOUSE_CANVAS_CLONE);
+    this->statusBar()->showMessage(tr("Click to start displaying the position of clonned canvas, drag the new position "
+                                      "and release to fixate the position."), 20000);
 }
 
 void MainWindow::onNewCanvasXY()
