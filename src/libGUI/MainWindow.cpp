@@ -29,20 +29,30 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_glWidget(new GLWidget(m_rootScene.get(), this))
 {
     this->setMenuBar(m_menuBar);
+
+    /* Create GLWidgets */
     //this->onCreateViewer();
-    QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
-                     m_glWidget, SLOT(getTabletActivity(bool)));
-    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)),
-                     m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
+    QObject::connect(this, SIGNAL(sendTabletActivity(bool)), m_glWidget, SLOT(getTabletActivity(bool)));
+    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)), m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
     QMdiSubWindow* subwin = m_mdiArea->addSubWindow(m_glWidget);
     subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     m_glWidget->showMaximized();
     subwin->show();
 
+    /* connect MainWindow with UserScene*/
+    entity::UserScene* scene = m_rootScene->getUserScene();
+    if (!scene){
+        outErrMsg("MainWindow ctor: UserScene is NULL");
+        this->close();
+    }
+    QObject::connect(scene, SIGNAL(sendRequestUpdate()), this, SLOT(recievedRequestUpdate()));
+
+    /* undo/redo widget */
     m_undoView->setWindowTitle(tr("Command List"));
     m_undoView->show();
     m_undoView->setAttribute(Qt::WA_QuitOnClose, false);
 
+    /* actions, menu, toolbars initialization */
     this->setCentralWidget(m_mdiArea);
     this->initializeActions();
     this->initializeMenus();
@@ -91,6 +101,11 @@ void MainWindow::getTabletActivity(bool active){
     emit sendTabletActivity(active);
 }
 
+void MainWindow::recievedRequestUpdate()
+{
+    m_glWidget->update();
+}
+
 /* Create an ordinary single view window on the scene _root
  * To create outside viewer, use:
  * GLWidget* vwid = createViewer(Qt::Window);
@@ -135,7 +150,7 @@ void MainWindow::onFileOpen()
     }
     else
         this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
-    //m_glWidget->forceUpdate();
+    m_glWidget->update();
 }
 
 /* Take content of scene graph

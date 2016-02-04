@@ -39,6 +39,7 @@ public:
     void redo() Q_DECL_OVERRIDE;
 
 private:
+    osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::ref_ptr<entity::Photo> m_photo;
 };
@@ -53,6 +54,7 @@ public:
     void redo() Q_DECL_OVERRIDE;
 
 private:
+    osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::ref_ptr<entity::Stroke> m_stroke;
 };

@@ -27,6 +27,7 @@ public:
 
 public slots:
     void getTabletActivity(bool active);
+    void recievedRequestUpdate();
 
 signals:
     void sendTabletActivity(bool active);

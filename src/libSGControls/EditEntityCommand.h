@@ -7,6 +7,7 @@
 
 #include <osg/observer_ptr>
 
+#include "UserScene.h"
 #include "Canvas.h"
 #include "Photo.h"
 #include "Stroke.h"
@@ -14,13 +15,14 @@
 class EditCanvasOffsetCommand : public QUndoCommand
 {
 public:
-    EditCanvasOffsetCommand(entity::Canvas* canvas, const osg::Vec3f& translate, QUndoCommand* parent = 0);
+    EditCanvasOffsetCommand(entity::UserScene* scene, const osg::Vec3f& translate, QUndoCommand* parent = 0);
     ~EditCanvasOffsetCommand();
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
 
 protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::Vec3f m_translate;
 };
@@ -28,13 +30,14 @@ protected:
 class EditCanvasRotateCommand : public QUndoCommand
 {
 public:
-    EditCanvasRotateCommand(entity::Canvas* canvas, const osg::Quat& rotate, QUndoCommand* parent = 0);
+    EditCanvasRotateCommand(entity::UserScene* scene, const osg::Quat& rotate, QUndoCommand* parent = 0);
     ~EditCanvasRotateCommand();
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
 
 protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::Quat m_rotate;
 };
@@ -42,13 +45,14 @@ protected:
 class EditPhotoMoveCommand : public QUndoCommand
 {
 public:
-    EditPhotoMoveCommand(entity::Canvas* canvas, const double u, const double v, QUndoCommand* parent = 0);
+    EditPhotoMoveCommand(entity::UserScene* scene, const double u, const double v, QUndoCommand* parent = 0);
     ~EditPhotoMoveCommand();
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
 
 protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::observer_ptr<entity::Photo> m_photo;
     double m_u0, m_v0, m_u1, m_v1;
@@ -57,13 +61,14 @@ protected:
 class EditPhotoScaleCommand : public QUndoCommand
 {
 public:
-    EditPhotoScaleCommand(entity::Canvas* canvas, const double scale, QUndoCommand* parent = 0);
+    EditPhotoScaleCommand(entity::UserScene* scene, const double scale, QUndoCommand* parent = 0);
     ~EditPhotoScaleCommand() {}
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
 
 protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::observer_ptr<entity::Photo> m_photo;
     double m_scale;
@@ -72,13 +77,14 @@ protected:
 class EditPhotoFlipCommand : public QUndoCommand
 {
 public:
-    EditPhotoFlipCommand(entity::Canvas* canvas, bool horizontal, QUndoCommand* parent = 0);
+    EditPhotoFlipCommand(entity::UserScene* scene, bool horizontal, QUndoCommand* parent = 0);
     ~EditPhotoFlipCommand(){}
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
 
 protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::observer_ptr<entity::Photo> m_photo;
     bool m_horizontal;
@@ -87,13 +93,14 @@ protected:
 class EditPhotoRotateCommand : public QUndoCommand
 {
 public:
-    EditPhotoRotateCommand(entity::Canvas* canvas, const double angle, QUndoCommand* parent = 0);
+    EditPhotoRotateCommand(entity::UserScene* scene, const double angle, QUndoCommand* parent = 0);
     ~EditPhotoRotateCommand(){}
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
 
 protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::observer_ptr<entity::Photo> m_photo;
     double m_angle;
@@ -102,7 +109,7 @@ protected:
 class EditStrokesPushCommand : public QUndoCommand
 {
 public:
-    EditStrokesPushCommand(const std::vector<entity::Stroke*>& strokes, entity::Canvas* current, entity::Canvas* target,
+    EditStrokesPushCommand(entity::UserScene* scene, const std::vector<entity::Stroke*>& strokes, entity::Canvas* current, entity::Canvas* target,
                            const osg::Vec3f& eye, QUndoCommand* parent = 0);
     ~EditStrokesPushCommand() {}
 
@@ -113,6 +120,7 @@ protected:
 
     void doPushStrokes(entity::Canvas& source, entity::Canvas& target);
 
+    osg::observer_ptr<entity::UserScene> m_scene;
     const std::vector<entity::Stroke*> m_strokes;
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
     osg::observer_ptr<entity::Canvas> m_canvasTarget;

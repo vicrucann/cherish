@@ -516,14 +516,13 @@ void entity::UserScene::editPhotoFlip(QUndoStack* stack, entity::Photo *photo, b
     if (!photo)
         return;
 
-    entity::Canvas* canvas = this->getCanvasCurrent();
-    if (!canvas)
+    if (!this->getCanvasCurrent())
         return;
 
     if (!this->getCanvasCurrent()->setPhotoCurrent(photo))
         return;
 
-    EditPhotoFlipCommand* cmd = new EditPhotoFlipCommand(canvas, horizontal);
+    EditPhotoFlipCommand* cmd = new EditPhotoFlipCommand(this, horizontal);
     if (!cmd){
         outErrMsg("EditPhotoFlip: could not initiate undo/redo command");
         return;
@@ -549,7 +548,10 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
         return;
     }
 
-    EditStrokesPushCommand* cmd = new EditStrokesPushCommand(strokes, m_canvasCurrent.get(), m_canvasPrevious.get(), eye);
+    EditStrokesPushCommand* cmd = new EditStrokesPushCommand(this, strokes,
+                                                             m_canvasCurrent.get(),
+                                                             m_canvasPrevious.get(),
+                                                             eye);
     if (!cmd){
         outErrMsg("editStrokePush: undo/redo command is NULL");
         return;
@@ -597,6 +599,11 @@ bool entity::UserScene::printScene()
     return true;
 }
 
+void entity::UserScene::updateWidgets()
+{
+    emit sendRequestUpdate();
+}
+
 std::string entity::UserScene::getCanvasName()
 {
     return this->getEntityName(dureu::NAME_CANVAS, m_idCanvas++);
@@ -635,6 +642,7 @@ void entity::UserScene::strokeAppend(float u, float v)
         entity::Stroke* stroke = m_canvasCurrent->getStrokeCurrent();
         stroke->appendPoint(u, v);
         m_canvasCurrent->updateFrame();
+        this->updateWidgets();
     }
     else
         outErrMsg("strokeAppend: pointer is NULL");
@@ -710,6 +718,7 @@ void entity::UserScene::canvasOffsetAppend(const osg::Vec3f &t)
     }
     m_canvasCurrent->translate(osg::Matrix::translate(t.x(), t.y(), t.z()));
     m_deltaT = m_deltaT + t;
+    this->updateWidgets();
 }
 
 void entity::UserScene::canvasOffsetFinish(QUndoStack *stack)
@@ -720,7 +729,7 @@ void entity::UserScene::canvasOffsetFinish(QUndoStack *stack)
     }
     m_canvasCurrent->setModeEdit(false);
     m_canvasCurrent->translate(osg::Matrix::translate(-m_deltaT.x(), -m_deltaT.y(), -m_deltaT.z()));
-    EditCanvasOffsetCommand* cmd = new EditCanvasOffsetCommand(m_canvasCurrent.get(), m_deltaT);
+    EditCanvasOffsetCommand* cmd = new EditCanvasOffsetCommand(this, m_deltaT);
     stack->push(cmd);
     m_deltaT = osg::Vec3f(0.f,0.f,0.f);
 }
@@ -748,6 +757,7 @@ void entity::UserScene::canvasRotateAppend(const osg::Quat &r)
     }
     m_canvasCurrent->rotate(osg::Matrix::rotate(r));
     m_deltaR = r * m_deltaR;
+    this->updateWidgets();
 }
 
 void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
@@ -758,7 +768,7 @@ void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
     }
     m_canvasCurrent->setModeEdit(false);
     m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()));
-    EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(m_canvasCurrent.get(), m_deltaR);
+    EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(this, m_deltaR);
     stack->push(cmd);
     m_deltaR = osg::Quat();
 }
@@ -789,6 +799,7 @@ void entity::UserScene::photoMoveAppend(const double u, const double v)
     }
     photo->move(u,v);
     this->getCanvasCurrent()->updateFrame();
+    this->updateWidgets();
 }
 
 void entity::UserScene::photoMoveFinish(QUndoStack *stack, const double u, const double v)
@@ -800,7 +811,7 @@ void entity::UserScene::photoMoveFinish(QUndoStack *stack, const double u, const
     }
     photo->setModeEdit(false);
     photo->move(m_u, m_v);
-    EditPhotoMoveCommand* cmd = new EditPhotoMoveCommand(m_canvasCurrent.get(), u, v);
+    EditPhotoMoveCommand* cmd = new EditPhotoMoveCommand(this, u, v);
     stack->push(cmd);
     m_u = 0;
     m_v = 0;
@@ -849,6 +860,7 @@ void entity::UserScene::photoScaleAppend(double u, double v)
         s = std::fabs(u - photo->getCenter().x() + photo->getWidth()) / std::fabs(2.f*photo->getWidth());
     m_scale *= s;
     photo->scale(s, s);
+    this->updateWidgets();
     //this->getCanvasCurrent()->updateFrame();
 }
 
@@ -864,7 +876,7 @@ void entity::UserScene::photoScaleFinish(QUndoStack *stack, double u, double v)
     photo->setHeight(m_v);
     this->getCanvasCurrent()->updateFrame(); // delete later
     /* push to stack */
-    EditPhotoScaleCommand* cmd = new EditPhotoScaleCommand(this->getCanvasCurrent(), m_scale);
+    EditPhotoScaleCommand* cmd = new EditPhotoScaleCommand(this, m_scale);
     m_u = m_v = 0;
     this->getCanvasCurrent()->setPhotoCurrent(false);
     if (!cmd){
@@ -938,6 +950,7 @@ void entity::UserScene::photoRotateAppend(double u, double v)
 
     m_u = u;
     m_v = v;
+    this->updateWidgets();
 }
 
 void entity::UserScene::photoRotateFinish(QUndoStack *stack, double u, double v)
@@ -950,7 +963,7 @@ void entity::UserScene::photoRotateFinish(QUndoStack *stack, double u, double v)
     photo->setModeEdit(false);
     photo->rotate(-m_rotate);
     /* create command */
-    EditPhotoRotateCommand* cmd = new EditPhotoRotateCommand(this->getCanvasCurrent(), m_rotate);
+    EditPhotoRotateCommand* cmd = new EditPhotoRotateCommand(this, m_rotate);
     m_u = m_v = 0;
     this->getCanvasCurrent()->setPhotoCurrent(false);
     /* push to stack */

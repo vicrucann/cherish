@@ -4,6 +4,7 @@
 #include <string>
 
 #include <QUndoStack>
+#include <QObject>
 
 #include <osg/Group>
 #include <osg/ref_ptr>
@@ -14,9 +15,13 @@
 #include "Stroke.h"
 #include "Photo.h"
 
+// multiple inheritance requires QObject to be first,
+// for more, see:
+// http://www.setnode.com/blog/qt-staticmetaobject-is-not-a-member-of/
 namespace entity {
-class UserScene : public osg::Group
+class UserScene : public QObject, public osg::Group
 {
+    Q_OBJECT
 public:
     /* ctors and initializers */
     UserScene();
@@ -68,6 +73,10 @@ public:
     bool isEmptyScene() const;
     bool clearUserData();
     bool printScene();
+    void updateWidgets();
+
+signals:
+    void sendRequestUpdate();
 
 protected:
     ~UserScene();

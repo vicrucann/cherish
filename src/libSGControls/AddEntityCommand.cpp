@@ -46,16 +46,19 @@ void AddCanvasCommand::undo()
     }
     // now delete the canvas
     m_scene->removeChild(m_canvas);
+    m_scene->updateWidgets();
 }
 
 void AddCanvasCommand::redo()
 {
     m_scene->addChild(m_canvas);
     m_scene->setCanvasCurrent(m_canvas);
+    m_scene->updateWidgets();
 }
 
 AddPhotoCommand::AddPhotoCommand(entity::UserScene* scene, const std::string& fname, const std::string &ename, QUndoCommand* parent)
     : QUndoCommand(parent)
+    , m_scene(scene)
     , m_canvas(scene->getCanvasCurrent())
     , m_photo(new entity::Photo)
 {
@@ -74,6 +77,7 @@ void AddPhotoCommand::undo()
 {
     if (!m_canvas->getGeodeData()->removeChild(m_photo.get()))
         outErrMsg("Could not remove photo from current canvas");
+    m_scene->updateWidgets();
 }
 
 void AddPhotoCommand::redo()
@@ -83,11 +87,13 @@ void AddPhotoCommand::redo()
     m_canvas->getGeodeData()->getOrCreateStateSet()->
             setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
     m_canvas->updateFrame();
+    m_scene->updateWidgets();
 }
 
 
 AddStrokeCommand::AddStrokeCommand(entity::UserScene* scene, entity::Stroke* stroke, QUndoCommand* parent)
     : QUndoCommand(parent)
+    , m_scene(scene)
     , m_canvas(scene->getCanvasCurrent())
     , m_stroke(stroke)
 {
@@ -103,12 +109,12 @@ void AddStrokeCommand::undo()
 {
     if (!m_canvas->getGeodeData()->removeDrawable(m_stroke))
         outErrMsg("undo(): problem while removing stroke from a canvas");
-    // update GLWidgets or set canvas' geometry dirty
+    m_scene->updateWidgets();
 }
 
 void AddStrokeCommand::redo()
 {
     if (!m_canvas->getGeodeData()->addDrawable(m_stroke))
         outErrMsg("redo(): problem while adding stroke to a canvas");
-    // update GLWidgets or set canvas' geometry dirty
+    m_scene->updateWidgets();
 }
