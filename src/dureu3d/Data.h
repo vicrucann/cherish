@@ -4,26 +4,48 @@
 #include <QIcon>
 #include <QPixmap>
 
+class QIcon;
+class QPixmap;
+
 class Data
 {
 public:
-    static const QIcon& fileNewSceneIcon();
-    static const QIcon& fileCloseIcon();
-    static const QIcon& fileExitIcon();
-    static const QIcon& fileImageIcon();
-    static const QIcon& fileOpenIcon();
-    static const QIcon& fileSaveIcon();
+    Data()
+        : m_fileNewScene(QPixmap(":/file-newscene-24px.svg"))
+        , m_fileClose(QPixmap(":file-close-24px.svg"))
+        , m_fileExit(QPixmap(":/file-exit-24px.svg"))
+        , m_fileImage(QPixmap(":/file-image-24px.svg"))
+        , m_fileOpen(QPixmap(":/file-open-24px.svg"))
+        , m_fileSave(QPixmap(":/file-save-24px.svg"))
+        , m_editUndo(QPixmap(":/edit-undo-24px.svg"))
+        , m_editRedo(QPixmap(":/edit-redo-24px.svg"))
+        , m_editCut(QPixmap(":/edit-cut-24px.svg"))
+        , m_editCopy(QPixmap(":/edit-copy-24px.svg"))
+        , m_editPaste(QPixmap(":/edit-paste-24px.svg"))
+        , m_editDelete(QPixmap(":/edit-delete-24px.svg"))
+        , m_sceneSelect(QPixmap(":/scene-select-24px.svg"))
+    {
+    }
+
+    //QIcon getTestIcon(){ return m_iconTest; }
+
+    const QIcon& fileNewSceneIcon();
+    const QIcon& fileCloseIcon();
+    const QIcon& fileExitIcon();
+    const QIcon& fileImageIcon();
+    const QIcon& fileOpenIcon();
+    const QIcon& fileSaveIcon();
 
 
-    static const QIcon& editUndoIcon();
-    static const QIcon& editRedoIcon();
-    static const QIcon& editCutIcon();
-    static const QIcon& editCopyIcon();
-    static const QIcon& editPasteIcon();
-    static const QIcon& editDeleteIcon();
+    const QIcon& editUndoIcon();
+    const QIcon& editRedoIcon();
+    const QIcon& editCutIcon();
+    const QIcon& editCopyIcon();
+    const QIcon& editPasteIcon();
+    const QIcon& editDeleteIcon();
 
 
-    static const QIcon& sceneSelectIcon();
+    const QIcon& sceneSelectIcon();
     static const QIcon& sceneSketchIcon();
     static const QIcon& sceneEraserIcon();
     static const QIcon& sceneOrbitIcon();
@@ -89,6 +111,13 @@ public:
     static const QPixmap& sceneImageRotatePixmap();
 
 private:
+    QIcon m_fileNewScene, m_fileClose, m_fileExit, m_fileImage,
+    m_fileOpen, m_fileSave;
+
+    QIcon m_editUndo, m_editRedo, m_editCut, m_editCopy, m_editPaste,
+    m_editDelete;
+
+    QIcon m_sceneSelect;
 
 };
 

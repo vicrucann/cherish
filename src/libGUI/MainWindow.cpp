@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
     , m_rootScene(new RootScene(m_undoStack))
     , m_glWidget(new GLWidget(m_rootScene.get(), this))
+    , m_data(Data())
 {
     this->setMenuBar(m_menuBar);
 
@@ -420,53 +421,53 @@ GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
 void MainWindow::initializeActions()
 {
     // FILE
-    m_actionNewFile = new QAction(Data::fileNewSceneIcon(), tr("&New..."), this);
+    m_actionNewFile = new QAction(m_data.fileNewSceneIcon(), tr("&New..."), this);
     this->connect(m_actionNewFile, SIGNAL(triggered(bool)), this, SLOT(onFileNew()));
     m_actionNewFile->setShortcut(tr("Ctrl+N"));
 
-    m_actionClose = new QAction(Data::fileCloseIcon(), tr("&Close"), this);
+    m_actionClose = new QAction(m_data.fileCloseIcon(), tr("&Close"), this);
     this->connect(m_actionClose, SIGNAL(triggered(bool)), this, SLOT(onFileClose()));
     m_actionClose->setShortcut(tr("Ctrl+W"));
 
-    m_actionExit = new QAction(Data::fileExitIcon(), tr("&Exit"), this);
+    m_actionExit = new QAction(m_data.fileExitIcon(), tr("&Exit"), this);
     this->connect(m_actionExit, SIGNAL(triggered(bool)), this, SLOT(onFileExit()));
     m_actionExit->setShortcut(tr("Ctrl+Q"));
 
-    m_actionImportImage = new QAction(Data::fileImageIcon(), tr("Import &Image..."), this);
+    m_actionImportImage = new QAction(m_data.fileImageIcon(), tr("Import &Image..."), this);
     this->connect(m_actionImportImage, SIGNAL(triggered(bool)), this, SLOT(onFileImage()));
     m_actionImportImage->setShortcut(tr("Ctrl+I"));
 
-    m_actionOpenFile = new QAction(Data::fileOpenIcon(), tr("&Open..."), this);
+    m_actionOpenFile = new QAction(m_data.fileOpenIcon(), tr("&Open..."), this);
     this->connect(m_actionOpenFile, SIGNAL(triggered(bool)), this, SLOT(onFileOpen()));
     m_actionOpenFile->setShortcut(tr("Ctrl+O"));
 
-    m_actionSaveFile = new QAction(Data::fileSaveIcon(), tr("&Save..."), this);
+    m_actionSaveFile = new QAction(m_data.fileSaveIcon(), tr("&Save..."), this);
     this->connect(m_actionSaveFile, SIGNAL(triggered(bool)), this, SLOT(onFileSave()));
     m_actionSaveFile->setShortcut(tr("Ctrl+S"));
 
     // EDIT
 
     m_actionUndo = m_undoStack->createUndoAction(this, tr("&Undo"));
-    m_actionUndo->setIcon(Data::editUndoIcon());
+    m_actionUndo->setIcon(m_data.editUndoIcon());
     m_actionUndo->setShortcut(QKeySequence::Undo);
 
     m_actionRedo = m_undoStack->createRedoAction(this, tr("&Redo"));
-    m_actionRedo->setIcon(Data::editRedoIcon());
+    m_actionRedo->setIcon(m_data.editRedoIcon());
     m_actionRedo->setShortcut(tr("Ctrl+R"));
 
-    m_actionCut = new QAction(Data::editCutIcon(), tr("&Cut"), this);
+    m_actionCut = new QAction(m_data.editCutIcon(), tr("&Cut"), this);
     this->connect(m_actionCut, SIGNAL(triggered(bool)), this, SLOT(onCut()));
     m_actionCut->setShortcut(tr("Ctrl+X"));
 
-    m_actionCopy = new QAction(Data::editCopyIcon(), tr("C&opy"), this);
+    m_actionCopy = new QAction(m_data.editCopyIcon(), tr("C&opy"), this);
     this->connect(m_actionCopy, SIGNAL(triggered(bool)), this, SLOT(onCopy()));
     m_actionCopy->setShortcut(tr("Ctrl+C"));
 
-    m_actionPaste = new QAction(Data::editPasteIcon(), tr("&Paste"), this);
+    m_actionPaste = new QAction(m_data.editPasteIcon(), tr("&Paste"), this);
     this->connect(m_actionPaste, SIGNAL(triggered(bool)), this, SLOT(onPaste()));
     m_actionPaste->setShortcut(tr("Ctrl+V"));
 
-    m_actionDelete = new QAction(Data::editDeleteIcon(), tr("&Delete"), this);
+    m_actionDelete = new QAction(m_data.editDeleteIcon(), tr("&Delete"), this);
     this->connect(m_actionDelete, SIGNAL(triggered(bool)), this, SLOT(onDelete()));
     m_actionDelete->setShortcut(Qt::Key_Delete);
 
@@ -478,7 +479,7 @@ void MainWindow::initializeActions()
     m_actionEraser = new QAction(Data::sceneEraserIcon(), tr("&Eraser"), this);
     this->connect(m_actionEraser, SIGNAL(triggered(bool)), this, SLOT(onErase()));
 
-    m_actionSelect = new QAction(Data::sceneSelectIcon(), tr("S&elect"), this);
+    m_actionSelect = new QAction(m_data.sceneSelectIcon(), tr("S&elect"), this);
     this->connect(m_actionSelect, SIGNAL(triggered(bool)), this, SLOT(onSelect()));
 
     m_actionOrbit = new QAction(Data::sceneOrbitIcon(), tr("&Orbit"), this);

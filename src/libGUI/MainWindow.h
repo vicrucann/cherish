@@ -16,6 +16,7 @@
 #include "RootScene.h"
 #include "Settings.h"
 #include "glwidget.h"
+#include "Data.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -119,6 +120,7 @@ private:
             , * m_actionStrokesPush
     ;
 
+    Data m_data;
 
     // QToolButton *select;
     // QWidgetAction* selectAction;

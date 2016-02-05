@@ -2,6 +2,8 @@
 project(dureu3d)
 cmake_minimum_required(VERSION 2.8.11)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
+set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
+message(STATUS "Building in ${CMAKE_BUILD_TYPE} mode")
 
 ## Compiler settings
 if(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")

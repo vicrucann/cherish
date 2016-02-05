@@ -6,93 +6,67 @@
 
 const QIcon &Data::fileNewSceneIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/file-newscene-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/file-newscene-24px.svg"));
-    return icon;
+    return m_fileNewScene;
 }
 
 const QIcon &Data::fileCloseIcon()
 {
-    Q_ASSERT_X(!QPixmap(":file-close-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/file-close-24px.svg"));
-    return icon;
+    return m_fileClose;
 }
 
 const QIcon &Data::fileExitIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/file-exit-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/file-exit-24px.svg"));
-    return icon;
+    return m_fileExit;
 }
 
 const QIcon &Data::fileImageIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/file-image-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/file-image-24px.svg"));
-    return icon;
+    return m_fileImage;
 }
 
 const QIcon &Data::fileOpenIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/file-open-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/file-open-24px.svg"));
-    return icon;
+    return m_fileOpen;
 }
 
 const QIcon &Data::fileSaveIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/file-save-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/file-save-24px.svg"));
-    return icon;
+    return m_fileSave;
 }
 
 const QIcon &Data::editUndoIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/edit-undo-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/edit-undo-24px.svg"));
-    return icon;
+    return m_editUndo;
 }
 
 const QIcon &Data::editRedoIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/edit-redo-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/edit-redo-24px.svg"));
-    return icon;
+    return m_editRedo;
 }
 
 const QIcon &Data::editCutIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/edit-cut-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/edit-cut-24px.svg"));
-    return icon;
+    return m_editCut;
 }
 
 const QIcon &Data::editCopyIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/edit-copy-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/edit-copy-24px.svg"));
-    return icon;
+    return m_editCopy;
 }
 
 const QIcon &Data::editPasteIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/edit-paste-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/edit-paste-24px.svg"));
-    return icon;
+    return m_editPaste;
 }
 
 const QIcon &Data::editDeleteIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/edit-delete-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/edit-delete-24px.svg"));
-    return icon;
+    return m_editDelete;
 }
 
 const QIcon &Data::sceneSelectIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-select-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-select-24px.svg"));
-    return icon;
+   return m_sceneSelect;
 }
 
 const QIcon &Data::sceneSketchIcon()
