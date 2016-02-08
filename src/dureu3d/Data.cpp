@@ -71,177 +71,127 @@ const QIcon &Data::sceneSelectIcon()
 
 const QIcon &Data::sceneSketchIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-sketch-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-sketch-24px.svg"));
-    return icon;
+    return m_sceneSketch;
 }
 
 const QIcon &Data::sceneEraserIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-eraser-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-eraser-24px.svg"));
-    return icon;
+    return m_sceneEraser;
 }
 
 const QIcon &Data::sceneOrbitIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-orbit-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-orbit-24px.svg"));
-    return icon;
+    return m_sceneOrbit;
 }
 
 const QIcon &Data::scenePanIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-pan-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-pan-24px.svg"));
-    return icon;
+    return m_scenePan;
 }
 
 const QIcon &Data::sceneZoomIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-zoom-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-zoom-24px.svg"));
-    return icon;
+    return m_sceneZoom;
 }
 
 const QIcon &Data::sceneNewCanvasIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-newcanvas-24px.svg"));
-    return icon;
+    return m_sceneNewCanvas;
 }
 
 const QIcon &Data::sceneNewCanvasCloneIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-clone-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-newcanvas-clone-24px.svg"));
-    return icon;
+    return m_sceneNewCanvasClone;
 }
 
 const QIcon &Data::sceneNewCanvasXYIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-xy-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-newcanvas-xy-24px.svg"));
-    return icon;
+    return m_sceneNewCanvasXY;
 }
 
 const QIcon &Data::sceneNewCanvasYZIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-yz-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-newcanvas-yz-24px.svg"));
-    return icon;
+    return m_sceneNewCanvasYZ;
 }
 
 const QIcon &Data::sceneNewCanvasXZIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-xz-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-newcanvas-xz-24px.svg"));
-    return icon;
+    return m_sceneNewCanvasXZ;
 }
 
 const QIcon &Data::sceneNewCanvasSetIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-set-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-newcanvas-set-24px.svg"));
-    return icon;
+    return m_sceneNewCanvasSet;
 }
 
 const QIcon &Data::sceneNewCanvasSetParallelIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-parallel-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-newcanvas-parallel-24px.svg"));
-    return icon;
+    return m_sceneNewCanvasSet;
 }
 
 const QIcon &Data::sceneNewCanvasSetCoaxialIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-coaxial-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-newcanvas-coaxial-24px.svg"));
-    return icon;
+    return m_sceneNewCanvasSetCoaxial;
 }
 
 const QIcon &Data::sceneNewCanvasSetRingIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-ring-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-newcanvas-ring-24px.svg"));
-    return icon;
+    return m_sceneNewCanvasSetRing;
 }
 
 const QIcon &Data::sceneNewCanvasSetStandardIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-standard-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-newcanvas-standard-24px.svg"));
-    return icon;
+    return m_sceneNewCanvasSetStandard;
 }
 
 const QIcon &Data::scenePushStrokesIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-push-strokes-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-push-strokes-24px.svg"));
-    return icon;
+    return m_scenePushStrokes;
 }
 
 const QIcon &Data::scenePushImagesIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-image-push-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-image-push-24px.svg"));
-    return icon;
+    return m_scenePushImages;
 }
 
 const QIcon &Data::sceneCanvasOffsetIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-canvas-offset-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-canvas-offset-24px.svg"));
-    return icon;
+    return m_sceneCanvasOffset;
 }
 
 const QIcon &Data::sceneCanvasRotateIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-canvas-rotate-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-canvas-rotate-24px.svg"));
-    return icon;
+    return m_sceneCanvasRotate;
 }
 
 const QIcon &Data::sceneImageMoveIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-image-move-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-image-move-24px.svg"));
-    return icon;
+    return m_sceneImageMove;
 }
 
 const QIcon &Data::sceneImageRotateIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-image-rotate-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-image-rotate-24px.svg"));
-    return icon;
+    return m_sceneImageRotate;
 }
 
 const QIcon &Data::sceneImageScaleIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-image-scale-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-image-scale-24px.svg"));
-    return icon;
+    return m_sceneImageScale;
 }
 
 const QIcon &Data::sceneImageFlipVIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-image-fliph-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-image-fliph-24px.svg"));
-    return icon;
+    return m_sceneImageFlipV;
 }
 
 const QIcon &Data::sceneImageFlipHIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-image-flipv-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-image-flipv-24px.svg"));
-    return icon;
+    return m_sceneImageFlipH;
 }
 
 const QIcon &Data::sceneImagePushIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-image-push-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/scene-image-push-24px.svg"));
-    return icon;
+    return m_scenePushImages;
 }
 
 const QIcon &Data::sceneRectangleIcon()

@@ -652,8 +652,8 @@ std::string entity::UserScene::getPhotoName()
 std::string entity::UserScene::getEntityName(const std::string &name, unsigned int id) const
 {
     char buffer[10];
-    sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
-    //snprintf(buffer, sizeof(buffer), "%d", id);
+    //sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
+    snprintf(buffer, sizeof(buffer), "%d", id);
     //itoa(id, buffer, 10);
     return name + std::string(buffer);//std::to_string(static_cast<long double>(id));
 }
