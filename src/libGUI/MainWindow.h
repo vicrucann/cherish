@@ -120,8 +120,6 @@ private:
             , * m_actionStrokesPush
     ;
 
-    Data m_data;
-
     // QToolButton *select;
     // QWidgetAction* selectAction;
 };
