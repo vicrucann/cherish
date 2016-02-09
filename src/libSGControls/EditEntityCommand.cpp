@@ -236,3 +236,38 @@ void EditPhotoRotateCommand::redo()
     m_canvas->updateFrame();
     m_scene->updateWidgets();
 }
+
+EditCanvasDeleteCommand::EditCanvasDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_canvas(canvas)
+{
+this->setText(QObject::tr("Delete %1")
+              .arg(QString(m_canvas->getName().c_str())));
+}
+
+void EditCanvasDeleteCommand::undo()
+{
+    m_scene->addChild(m_canvas);
+    m_scene->setCanvasCurrent(m_canvas);
+    m_scene->updateWidgets();
+}
+
+void EditCanvasDeleteCommand::redo()
+{
+    if (m_canvas == m_scene->getCanvasCurrent())
+        m_scene->setCanvasCurrent(m_scene->getCanvasPrevious());
+    if (m_canvas == m_scene->getCanvasPrevious() ||
+            m_scene->getCanvasCurrent() == m_scene->getCanvasPrevious()){
+        for (unsigned int i = 0; i < m_scene->getNumChildren(); ++i){
+            entity::Canvas* cnvi = dynamic_cast<entity::Canvas*>( m_scene->getChild(i));
+            if (cnvi != NULL && cnvi != m_scene->getCanvasCurrent() && cnvi != m_canvas){
+                m_scene->setCanvasPrevious(cnvi);
+                break;
+            }
+        }
+    }
+    // now delete the canvas
+    m_scene->removeChild(m_canvas);
+    m_scene->updateWidgets();
+}

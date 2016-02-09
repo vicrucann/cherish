@@ -266,6 +266,11 @@ void RootScene::editCanvasClone(const osg::Vec3f &translate, dureu::EVENT event)
     m_saved = false;
 }
 
+void RootScene::editCanvasDelete(entity::Canvas *canvas)
+{
+    m_userScene->editCanvasDelete(m_undoStack, canvas);
+}
+
 void RootScene::editPhotoMove(entity::Photo *photo, const double u, const double v, dureu::EVENT event)
 {
     m_userScene->editPhotoMove(m_undoStack, photo, u, v, event);

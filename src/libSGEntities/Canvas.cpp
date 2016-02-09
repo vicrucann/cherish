@@ -52,6 +52,7 @@ entity::Canvas::Canvas()
 
     m_transform->setName("Transform");
     m_switch->setName("Switch");
+    m_pickable->setName("Pickable");
 
     outLogMsg("New Canvas ctor complete");
 }

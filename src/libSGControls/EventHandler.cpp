@@ -40,6 +40,12 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     case dureu::MOUSE_SKETCH:
         this->doSketch(ea, aa);
         break;
+    case dureu::MOUSE_DELETE:
+        if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL)
+            this->doDeleteEntity(ea, aa);
+        else
+            this->doDeleteCanvas<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
+        break;
     case dureu::MOUSE_CANVAS_OFFSET:
         this->doEditCanvasOffset(ea, aa);
         break;
@@ -139,6 +145,31 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
     default:
         break;
     }
+}
+
+void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+
+}
+
+template <typename T1, typename T2>
+void EventHandler::doDeleteCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+        return;
+    outLogMsg("doDeleteCanvas called");
+
+    T1* result = new T1;
+    bool intersected = this->getLineIntersection<T1, T2>(ea,aa, *result);
+    if (!intersected)
+        return;
+
+    entity::Canvas* cnv = this->getCanvas(*result);
+    if (!cnv){
+        std::cerr << "doDeleteCanvas(): could not dynamic_cast<Canvas*>" << std::endl;
+        return;
+    }
+    m_scene->editCanvasDelete(cnv);
 }
 
 void EventHandler::doEditCanvasOffset(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
@@ -314,6 +345,8 @@ entity::Stroke *EventHandler::getStroke(const StrokeIntersector::Intersection &r
 }
 
 entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
+    if (result.drawable->getName() != "Pickable")
+        return NULL;
     return dynamic_cast<entity::Canvas*>(result.nodePath.at(m_scene->getCanvasLevel()));
 }
 

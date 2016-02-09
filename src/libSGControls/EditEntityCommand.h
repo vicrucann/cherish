@@ -42,6 +42,20 @@ protected:
     osg::Quat m_rotate;
 };
 
+class EditCanvasDeleteCommand : public QUndoCommand
+{
+public:
+    EditCanvasDeleteCommand(entity::UserScene* scene, entity::Canvas* canvas, QUndoCommand* parent = 0);
+    ~EditCanvasDeleteCommand() {}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::ref_ptr<entity::Canvas> m_canvas;
+};
+
 class EditPhotoMoveCommand : public QUndoCommand
 {
 public:
