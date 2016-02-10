@@ -149,7 +149,30 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
 
 void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+        return;
 
+    /* see if there is a stroke or photo selected */
+    osgUtil::LineSegmentIntersector::Intersection* result_photo = new osgUtil::LineSegmentIntersector::Intersection;
+    StrokeIntersector::Intersection* result_stroke = new StrokeIntersector::Intersection;
+    bool inter_photo = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
+            (ea,aa, *result_photo);
+    bool inter_stroke = this->getLineIntersection<StrokeIntersector::Intersection, StrokeIntersector>
+            (ea,aa, *result_stroke);
+    if (!inter_photo && !inter_stroke) {return;}
+    if (inter_photo){
+        outLogMsg("About to delete photo");
+
+    }
+    else{
+        outLogMsg("About to delete stroke");
+        entity::Stroke* stroke = this->getStroke(*result_stroke);
+        if (!stroke){
+            std::cerr << "doDeleteEntity(): could not dynamic_cast<Stroke*>" << std::endl;
+            return;
+        }
+        m_scene->editStrokeDelete(stroke);
+    }
 }
 
 template <typename T1, typename T2>

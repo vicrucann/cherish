@@ -141,4 +141,18 @@ protected:
     osg::Vec3f m_eye;
 };
 
+class EditStrokeDeleteCommand : public QUndoCommand
+{
+public:
+    EditStrokeDeleteCommand(entity::UserScene* scene, entity::Canvas* canvas, entity::Stroke* stroke, QUndoCommand* parent = 0);
+    ~EditStrokeDeleteCommand() {}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    osg::ref_ptr<entity::Stroke> m_stroke;
+};
+
 #endif // EDITENTITYCOMMAND_H

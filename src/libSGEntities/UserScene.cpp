@@ -615,6 +615,29 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
     stack->push(cmd);
 }
 
+void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stroke)
+{
+    if (!stack){
+        outErrMsg("editStrokeDelete: stack is NULL");
+        return;
+    }
+    if (!stroke){
+        outErrMsg("editStrokeDelete: stroke is NULL");
+        return;
+    }
+    if (!this->getCanvasCurrent()->getGeodeData()->containsDrawable(stroke)){
+        outErrMsg("editStrokeDelete: current canvas does not contain that stroke."
+                  "Deletion is not possible.");
+        return;
+    }
+    EditStrokeDeleteCommand* cmd = new EditStrokeDeleteCommand(this, m_canvasCurrent.get(), stroke);
+    if (!cmd){
+        outErrMsg("editStrokeDelete: undo/redo command is NULL");
+        return;
+    }
+    stack->push(cmd);
+}
+
 bool entity::UserScene::isEmptyScene() const
 {
     return this->getNumChildren()==0? true : false;

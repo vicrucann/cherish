@@ -71,6 +71,7 @@ public:
     void editPhotoRotate(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoFlip(QUndoStack* stack, entity::Photo* photo, bool horizontal);
     void editStrokesPush(QUndoStack* stack, osg::Camera* camera);
+    void editStrokeDelete(QUndoStack* stack, entity::Stroke* stroke);
 
     bool isEmptyScene() const;
     bool clearUserData();

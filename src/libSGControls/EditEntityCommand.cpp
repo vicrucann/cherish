@@ -271,3 +271,25 @@ void EditCanvasDeleteCommand::redo()
     m_scene->removeChild(m_canvas);
     m_scene->updateWidgets();
 }
+
+EditStrokeDeleteCommand::EditStrokeDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, entity::Stroke *stroke, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_canvas(canvas)
+    , m_stroke(stroke)
+{
+    this->setText(QObject::tr("Delete stroke from %1")
+                  .arg(QString(m_canvas->getName().c_str())));
+}
+
+void EditStrokeDeleteCommand::undo()
+{
+    m_canvas->getGeodeData()->addDrawable(m_stroke.get());
+    m_scene->updateWidgets();
+}
+
+void EditStrokeDeleteCommand::redo()
+{
+    m_canvas->getGeodeData()->removeDrawable(m_stroke.get());
+    m_scene->updateWidgets();
+}

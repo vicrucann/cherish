@@ -91,7 +91,8 @@ public:
     void editPhotoScale(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoRotate(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoFlip(entity::Photo* photo, bool horizontal);
-    void editStrokesPush(QUndoStack* stack, osg::Camera *camera);
+    void editStrokesPush(osg::Camera *camera);
+    void editStrokeDelete(entity::Stroke* stroke);
 
 protected:
     ~RootScene();

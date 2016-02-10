@@ -404,7 +404,7 @@ void MainWindow::onStrokesPush()
         std::cerr << "could not obtain camera" << std::endl;
         return;
     }
-    m_rootScene->editStrokesPush(m_undoStack, camera);
+    m_rootScene->editStrokesPush(camera);
 }
 
 GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)

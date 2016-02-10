@@ -295,9 +295,15 @@ void RootScene::editPhotoFlip(entity::Photo *photo, bool horizontal)
     m_saved = false;
 }
 
-void RootScene::editStrokesPush(QUndoStack *stack, osg::Camera* camera)
+void RootScene::editStrokesPush(osg::Camera* camera)
 {
-    m_userScene->editStrokesPush(stack, camera);
+    m_userScene->editStrokesPush(m_undoStack, camera);
+    m_saved = false;
+}
+
+void RootScene::editStrokeDelete(entity::Stroke *stroke)
+{
+    m_userScene->editStrokeDelete(m_undoStack, stroke);
     m_saved = false;
 }
 
