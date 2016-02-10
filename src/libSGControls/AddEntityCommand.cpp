@@ -18,7 +18,7 @@ AddCanvasCommand::AddCanvasCommand(entity::UserScene* scene, const osg::Matrix& 
 AddCanvasCommand::AddCanvasCommand(entity::UserScene* scene, const entity::Canvas& copy, QUndoCommand* parent)
     : QUndoCommand(parent)
     , m_scene(scene)
-    , m_canvas(new entity::Canvas(copy, osg::CopyOp::DEEP_COPY_ALL))
+    , m_canvas(copy.clone())
 {
     this->setText(QObject::tr("Clone to %1")
                   .arg(QString(m_canvas->getName().c_str())));

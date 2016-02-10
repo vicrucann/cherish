@@ -405,17 +405,7 @@ void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &tra
         return;
     }
 
-    /* debug version */
-    if (event == dureu::EVENT_RELEASED){
-        entity::Canvas* clone_canvas = m_canvasCurrent->clone();
-        clone_canvas->setName(this->getCanvasName());
-        clone_canvas->translate(osg::Matrix::translate(translate.x(), translate.y(), translate.z()));
-        this->addChild(clone_canvas);
-        this->setCanvasCurrent(clone_canvas);
-        this->updateWidgets();
-    }
-
-    /*switch (event){
+    switch (event){
     case dureu::EVENT_OFF:
         this->canvasCloneFinish(stack);
         break;
@@ -436,7 +426,7 @@ void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &tra
         break;
     default:
         break;
-    }*/
+    }
 }
 
 void entity::UserScene::editCanvasDelete(QUndoStack *stack, entity::Canvas *canvas)
@@ -807,37 +797,26 @@ bool entity::UserScene::canvasEditValid() const
 
 void entity::UserScene::canvasCloneStart()
 {
-    //m_canvasCurrent->setColor(dureu::CANVAS_CLR_REST);
-    entity::Canvas* cnv = new entity::Canvas;
-    cnv->initializeSG();
+    entity::Canvas* cnv = m_canvasCurrent->clone();
     cnv->setName(this->getCanvasName());
-    cnv->setMatrixRotation(m_canvasCurrent->getMatrixRotation());
-    cnv->setMatrixTranslation(m_canvasCurrent->getMatrixTranslation());
-
-    //entity::Canvas* cnv = new entity::Canvas(*(m_canvasCurrent.get()), osg::CopyOp::DEEP_COPY_ALL);
-    //cnv->setName(this->getCanvasName());
-    //m_canvasCurrent->setColor(dureu::CANVAS_CLR_CURRENT);
-    /*if (!cnv){
+    if (!cnv){
         outErrMsg("canvasCloneStart: could not clone the canvas, ptr is NULL");
         return;
-    }*/
+    }
     m_canvasClone = cnv;
 
-    this->addChild(m_canvasClone.get());
-    this->setCanvasCurrent(m_canvasClone.get());
-
-    /*if (!this->addChild(m_canvasClone.get())){
+    if (!this->addChild(m_canvasClone.get())){
         outErrMsg("canvasCloneStart: could not add clone as a child");
         return;
-    }*/
+    }
 
     /* have to set the clone as current so that to calculate offset correctly */
-    /*if (!this->setCanvasCurrent(m_canvasClone.get())){
+    if (!this->setCanvasCurrent(m_canvasClone.get())){
         outErrMsg("canvasCloneStart: could not set clone as current");
         this->removeChild(m_canvasClone.get());
         m_canvasClone = 0;
         return;
-    }*/
+    }
 }
 
 void entity::UserScene::canvasCloneAppend(const osg::Vec3f &t)
@@ -846,8 +825,9 @@ void entity::UserScene::canvasCloneAppend(const osg::Vec3f &t)
         outErrMsg("canvasCloneAppend: clone is not valid");
         return;
     }
+
+    /* clone is also current */
     m_canvasCurrent->translate(osg::Matrix::translate(t.x(), t.y(), t.z()));
-    outLogVal("Current canvas", m_canvasCurrent->getName());
     this->updateWidgets();
 }
 
@@ -858,17 +838,16 @@ void entity::UserScene::canvasCloneFinish(QUndoStack *stack)
         return;
     }
 
-    //this->setCanvasCurrent(m_canvasPrevious.get());
-    //m_canvasClone->setColor(dureu::CANVAS_CLR_REST);
+    this->setCanvasCurrent(m_canvasPrevious.get());
 
-    /*AddCanvasCommand* cmd = new AddCanvasCommand(this, *(m_canvasClone.get()));
+    AddCanvasCommand* cmd = new AddCanvasCommand(this, *(m_canvasClone.get()));
     this->removeChild(m_canvasClone.get());
     m_canvasClone = 0;
     if (!cmd){
         outErrMsg("canvasCloneFinish: could not allocated AddCanvasCommand");
         return;
     }
-    stack->push(cmd); */
+    stack->push(cmd);
 }
 
 bool entity::UserScene::canvasCloneValid() const
