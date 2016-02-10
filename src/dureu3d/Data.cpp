@@ -7,7 +7,7 @@
 const QIcon &Data::fileNewSceneIcon()
 {
     Q_ASSERT_X(!QPixmap(":/file-newscene-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/file-newscene-24px.png"));
+    static QIcon icon(QPixmap(":/file-newscene-24px.svg"));
     return icon;
 }
 

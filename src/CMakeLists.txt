@@ -33,11 +33,15 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Svg REQUIRED)
+find_package(Qt5Xml REQUIRED)
 set(QT_LIBRARIES
     ${Qt5Core_LIBRARIES}
     ${Qt5Gui_LIBRARIES}
     ${Qt5OpenGL_LIBRARIES}
     ${Qt5Widgets_LIBRARIES}
+    ${Qt5Svg_LIBRARIES}
+    ${Qt5Xml_LIBRARIES}
 )
 
 ## Required OSG packages
