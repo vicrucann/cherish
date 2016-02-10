@@ -513,7 +513,7 @@ void entity::Canvas::updateFrame()
 // we do not want to update data during certain operations, such as
 // moving photo within the canvas, or adding a stroke to a canvas
 // updateData should be called on release button for the mentioned cases
-void entity::Canvas::updateData()
+/*void entity::Canvas::updateData()
 {
     osg::BoundingBox bb = m_geodeData->getBoundingBox();
     assert(bb.valid());
@@ -524,7 +524,7 @@ void entity::Canvas::updateData()
     M.makeTranslate(bb.center() - m_center);
     m_mT = M;
     this->updateTransforms();
-}
+}*/
 
 void entity::Canvas::setModeEdit(bool on)
 {
@@ -556,6 +556,33 @@ osg::Plane entity::Canvas::getPlane() const
 osg::MatrixTransform* entity::Canvas::getMatrixTransform() const
 {
     return m_transform.get();
+}
+
+entity::Canvas *entity::Canvas::clone() const
+{
+    osg::ref_ptr<entity::Canvas> clone = new Canvas;
+    if (!clone.get()) return NULL;
+    clone->initializeSG();
+    clone->setMatrixRotation(this->getMatrixRotation());
+    clone->setMatrixTranslation(this->getMatrixTranslation());
+    clone->setName(this->getName());
+
+    for (unsigned int i=0; i<m_geodeData->getNumChildren(); ++i){
+        if (m_geodeData->getChild(i)->getName() == "Stroke"){
+            entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_geodeData->getChild(i));
+            if (stroke){
+                entity::Stroke* si = new entity::Stroke(*stroke, osg::CopyOp::DEEP_COPY_ALL);
+                if (si){
+                    if (!clone->getGeodeData()->addDrawable(si)) outErrMsg("canvas clone: could not add stroke as drawable");
+                }
+                else outErrMsg("canvas clone: coult not clone the stroke");
+            }
+            else outErrMsg("canvas clone: could not dynamic_cast<Stroke>");
+        }
+    }
+    clone->updateFrame();
+
+    return clone.release();
 }
 
 entity::Photo* entity::Canvas::getPhotoCurrent() const

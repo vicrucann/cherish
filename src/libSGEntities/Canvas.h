@@ -34,6 +34,8 @@ namespace entity {
 class Canvas : public osg::Group {
 public:
     Canvas();
+
+    /* ctor to be used only within serializer, do not use it anywhere else */
     Canvas(const Canvas& cnv, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
 
     virtual void initializeSG();
@@ -108,13 +110,14 @@ public:
 
     // recalculate frame's geometry based on strokes
     void updateFrame();
-    void updateData(); // update centroid as well, degenerated for the moment
+    //void updateData(); // update centroid as well, degenerated for the moment
 
     void setModeEdit(bool on); // changes certain colors, shows or hides normal
     bool getModeEdit() const;
 
     osg::Plane getPlane() const;
     osg::MatrixTransform* getMatrixTransform() const;
+    entity::Canvas* clone() const;
 
 protected:
     ~Canvas();

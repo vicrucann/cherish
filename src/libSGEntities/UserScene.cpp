@@ -405,7 +405,17 @@ void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &tra
         return;
     }
 
-    switch (event){
+    /* debug version */
+    if (event == dureu::EVENT_RELEASED){
+        entity::Canvas* clone_canvas = m_canvasCurrent->clone();
+        clone_canvas->setName(this->getCanvasName());
+        clone_canvas->translate(osg::Matrix::translate(translate.x(), translate.y(), translate.z()));
+        this->addChild(clone_canvas);
+        this->setCanvasCurrent(clone_canvas);
+        this->updateWidgets();
+    }
+
+    /*switch (event){
     case dureu::EVENT_OFF:
         this->canvasCloneFinish(stack);
         break;
@@ -426,7 +436,7 @@ void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &tra
         break;
     default:
         break;
-    }
+    }*/
 }
 
 void entity::UserScene::editCanvasDelete(QUndoStack *stack, entity::Canvas *canvas)
