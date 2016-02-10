@@ -3,10 +3,13 @@
 #include <QtWidgets>
 
 #include "DureuApplication.h"
+#include "Settings.h"
 
 DureuApplication::DureuApplication(int &argv, char **argc):
     QApplication(argv, argc)
-{}
+{
+    Q_INIT_RESOURCE(Actions);
+}
 
 DureuApplication::~DureuApplication(){}
 
