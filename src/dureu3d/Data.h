@@ -78,6 +78,8 @@ public:
 
     /* Cursors */
 
+    static const QPixmap&  editDeleteCursor();
+
     static const QPixmap& sceneOrbitPixmap();
     static const QPixmap& scenePanPixmap();
     static const QPixmap& sceneZoomPixmap();

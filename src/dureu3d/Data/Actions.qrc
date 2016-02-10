@@ -57,5 +57,6 @@
         <file>scene-newcanvas-set-24px.svg</file>
         <file>scene-eraser-cursor-24px.svg</file>
         <file>scene-image-scale-cursor-24px.svg</file>
+        <file>edit-delete-cursor-24px.svg</file>
     </qresource>
 </RCC>

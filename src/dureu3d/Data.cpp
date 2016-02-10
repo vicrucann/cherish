@@ -389,6 +389,12 @@ const QIcon &Data::viewerVirtualIcon()
     return icon;
 }
 
+const QPixmap &Data::editDeleteCursor()
+{
+    static QPixmap pmap(":/edit-delete-cursor-24px.svg");
+    return pmap;
+}
+
 const QPixmap &Data::sceneOrbitPixmap()
 {
     static QPixmap pmap(":/scene-orbit-24px.svg");

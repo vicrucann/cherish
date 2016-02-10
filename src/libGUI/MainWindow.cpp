@@ -277,7 +277,11 @@ void MainWindow::onErase()
 
 void MainWindow::onDelete()
 {
-    m_mdiArea->setCursor(Qt::CrossCursor);
+    QCursor* cur = new QCursor(Data::editDeleteCursor(), 0, 0);
+    m_mdiArea->setCursor(*cur);
+    this->statusBar()->showMessage(tr("To delete canvas, click by mouse on pickable; "
+                                      "to delete stroke or photo within CURRENT canvas, "
+                                      "hold <CTRL> and click on desired entity"), 20000);
     emit sendMouseMode(dureu::MOUSE_DELETE);
 }
 
