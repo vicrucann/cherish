@@ -162,7 +162,12 @@ void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
     if (!inter_photo && !inter_stroke) {return;}
     if (inter_photo){
         outLogMsg("About to delete photo");
-
+        entity::Photo* photo = this->getPhoto(*result_photo);
+        if (!photo){
+            outErrMsg("doDeleteEntity: could not obtain photo");
+            return;
+        }
+        m_scene->editPhotoDelete(photo);
     }
     else{
         outLogMsg("About to delete stroke");

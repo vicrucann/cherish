@@ -70,6 +70,7 @@ public:
     void editPhotoScale(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoRotate(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoFlip(QUndoStack* stack, entity::Photo* photo, bool horizontal);
+    void editPhotoDelete(QUndoStack* stack, entity::Photo* photo);
     void editStrokesPush(QUndoStack* stack, osg::Camera* camera);
     void editStrokeDelete(QUndoStack* stack, entity::Stroke* stroke);
 

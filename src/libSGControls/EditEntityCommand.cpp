@@ -293,3 +293,25 @@ void EditStrokeDeleteCommand::redo()
     m_canvas->getGeodeData()->removeDrawable(m_stroke.get());
     m_scene->updateWidgets();
 }
+
+EditPhotoDeleteCommand::EditPhotoDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, entity::Photo *photo, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_canvas(canvas)
+    , m_photo(photo)
+{
+this->setText(QObject::tr("Delete photo from %1")
+              .arg(QString(m_canvas->getName().c_str())));
+}
+
+void EditPhotoDeleteCommand::undo()
+{
+    m_canvas->getGeodeData()->addDrawable(m_photo.get());
+    m_scene->updateWidgets();
+}
+
+void EditPhotoDeleteCommand::redo()
+{
+    m_canvas->getGeodeData()->removeDrawable(m_photo.get());
+    m_scene->updateWidgets();
+}

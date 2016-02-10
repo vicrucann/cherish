@@ -120,6 +120,21 @@ protected:
     double m_angle;
 };
 
+class EditPhotoDeleteCommand : public QUndoCommand
+{
+public:
+    EditPhotoDeleteCommand(entity::UserScene* scene, entity::Canvas* canvas, entity::Photo* photo, QUndoCommand* parent = 0);
+    ~EditPhotoDeleteCommand() {}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    osg::ref_ptr<entity::Photo> m_photo;
+};
+
 class EditStrokesPushCommand : public QUndoCommand
 {
 public:

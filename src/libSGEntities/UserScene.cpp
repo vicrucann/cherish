@@ -587,6 +587,28 @@ void entity::UserScene::editPhotoFlip(QUndoStack* stack, entity::Photo *photo, b
     this->getCanvasCurrent()->setPhotoCurrent(false);
 }
 
+void entity::UserScene::editPhotoDelete(QUndoStack *stack, entity::Photo *photo)
+{
+    if (!stack){
+        outErrMsg("editPhotoDelete(): undo stack is NULL.");
+        return;
+    }
+    if (!photo)
+        return;
+
+    if (!this->getCanvasCurrent()->getGeodeData()->containsDrawable(photo)){
+        outErrMsg("editPhotoDelete: current canvas does not contain that photo."
+                  "Deletion is not possible.");
+        return;
+    }
+    EditPhotoDeleteCommand* cmd = new EditPhotoDeleteCommand(this, m_canvasCurrent.get(), photo);
+    if (!cmd){
+        outErrMsg("editPhotoDelete: undo/redo command is NULL");
+        return;
+    }
+    stack->push(cmd);
+}
+
 void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
 {
     if (!stack){
