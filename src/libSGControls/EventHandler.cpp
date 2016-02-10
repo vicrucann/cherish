@@ -329,13 +329,6 @@ void EventHandler::doEditPhotoFlip(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
         return;
     }
 
-    entity::Canvas* cnv = getCanvas(*result);
-    if (!cnv){
-        std::cerr << "doEditPhotoMove(): could not dynamic_cast<Canvas*>" << std::endl;
-        return;
-    }
-
-    m_scene->setCanvasCurrent(cnv); /* subjec to change : only track photos within current canvas */
     m_scene->editPhotoFlip(photo, horizontal);
 }
 
