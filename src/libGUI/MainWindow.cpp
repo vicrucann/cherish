@@ -193,6 +193,10 @@ void MainWindow::onFileSaveAs()
 
 void MainWindow::onFileImage()
 {
+    if (m_rootScene->isEmptyScene()){
+        QMessageBox::information(this, tr("Scene is empty"), tr("Create a canvas to load an image to"));
+        return;
+    }
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load an Image File"), QString(),
             tr("Image Files (*.bmp)"));
     if (!fileName.isEmpty()) {
