@@ -84,6 +84,9 @@ public:
     static const QPixmap& scenePanPixmap();
     static const QPixmap& sceneZoomPixmap();
 
+    static const QPixmap& sceneCanvasOffsetCursor();
+    static const QPixmap& sceneCanvasRotateCursor();
+
     static const QPixmap& sceneSelectPixmap();
     static const QPixmap& sceneSketchPixmap();
     static const QPixmap& sceneEraserPixmap();

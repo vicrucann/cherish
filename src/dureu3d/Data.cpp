@@ -413,6 +413,18 @@ const QPixmap &Data::sceneZoomPixmap()
     return pmap;
 }
 
+const QPixmap &Data::sceneCanvasOffsetCursor()
+{
+    static QPixmap pmap(":/scene-canvas-offset-cursor-24px.svg");
+    return pmap;
+}
+
+const QPixmap &Data::sceneCanvasRotateCursor()
+{
+    static QPixmap pmap(":/scene-canvas-rotate-cursor-24px.svg");
+    return pmap;
+}
+
 const QPixmap &Data::sceneSelectPixmap()
 {
     static QPixmap pmap(":/scene-select-24px.svg");

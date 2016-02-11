@@ -353,13 +353,15 @@ void MainWindow::onNewCanvasRing()
 
 void MainWindow::onCanvasOffset()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
+    QCursor* cur = new QCursor(Data::sceneCanvasOffsetCursor(), -1, -1);
+    m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_CANVAS_OFFSET);
 }
 
 void MainWindow::onCanvasRotate()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
+    QCursor* cur = new QCursor(Data::sceneCanvasRotateCursor(), -1, -1);
+    m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_CANVAS_ROTATE);
 }
 
