@@ -105,8 +105,11 @@ public:
     void resetStrokeSelected(entity::Stroke* stroke);
     const std::vector< entity::Stroke* >& getStrokesSelected() const;
     int getStrokesSelectedSize() const;
+    osg::Vec3f getStrokesSelectedCenter() const;
     void moveStrokes(std::vector<Stroke *> &strokes, double du, double dv);
     void moveStrokesSelected(double du, double dv);
+    void scaleStrokes(std::vector<Stroke *> &strokes, double s);
+    void scaleStrokesSelected(double s);
 
     bool setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);

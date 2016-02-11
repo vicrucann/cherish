@@ -155,6 +155,17 @@ void entity::Stroke::moveDelta(double du, double dv)
     this->dirtyBound();
 }
 
+void entity::Stroke::scale(double s)
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    for (unsigned int i=0; i<verts->size(); ++i){
+        osg::Vec3f vi = (*verts)[i];
+        (*verts)[i] = osg::Vec3f(s*vi.x(), s*vi.y(), 0);
+    }
+    verts->dirty();
+    this->dirtyBound();
+}
+
 /* for serialization of stroke type
  * for more info, see OSG beginner's guide, or
  * OSG cookbook. In both, there is a section on serialization.

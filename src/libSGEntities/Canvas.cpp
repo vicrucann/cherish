@@ -453,6 +453,28 @@ int entity::Canvas::getStrokesSelectedSize() const
     return m_strokesSelected.size();
 }
 
+osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
+{
+    double mu = 0, mv = 0;
+    for (unsigned int i=0; i<m_strokesSelected.size(); ++i)
+    {
+        entity::Stroke* stroke = m_strokesSelected.at(i);
+        if (!stroke){
+            outErrMsg("getStrokesSelecterCenter: one of strokes ptr is NULL");
+            break;
+        }
+        osg::BoundingSphere bs = stroke->getBound();
+        osg::BoundingBox bb = stroke->getBoundingBox();
+        mu += bb.center().x();
+        mv += bb.center().y();
+    }
+    if (m_strokesSelected.size() > 0){
+        mu /= m_strokesSelected.size();
+        mv /= m_strokesSelected.size();
+    }
+    return osg::Vec3f(mu, mv, 0);
+}
+
 void entity::Canvas::moveStrokes(std::vector<entity::Stroke *>& strokes, double du, double dv)
 {
     for (unsigned int i=0; i<strokes.size(); ++i){
@@ -467,14 +489,24 @@ void entity::Canvas::moveStrokes(std::vector<entity::Stroke *>& strokes, double 
 
 void entity::Canvas::moveStrokesSelected(double du, double dv)
 {
-    for (unsigned int i=0; i<m_strokesSelected.size(); ++i){
-        entity::Stroke* stroke = m_strokesSelected.at(i);
+    this->moveStrokes(m_strokesSelected, du, dv);
+}
+
+void entity::Canvas::scaleStrokes(std::vector<entity::Stroke *> &strokes, double s)
+{
+    for (unsigned int i=0; i<strokes.size(); ++i){
+        entity::Stroke* stroke = strokes.at(i);
         if (!stroke){
-            outErrMsg("one of selected strokes ptr is NULL");
+            outErrMsg("moveStrokes: one of strokes ptr is NULL");
             break;
         }
-        stroke->moveDelta(du,dv);
+        stroke->scale(s);
     }
+}
+
+void entity::Canvas::scaleStrokesSelected(double s)
+{
+    this->scaleStrokes(m_strokesSelected, s);
 }
 
 void entity::Canvas::setStrokeSelected(entity::Stroke *stroke)

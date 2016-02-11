@@ -87,13 +87,16 @@ public:
     void editCanvasRotate(const osg::Quat& rotation, dureu::EVENT event);
     void editCanvasClone(const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasDelete(entity::Canvas* canvas);
+
     void editPhotoMove(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoScale(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoRotate(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoFlip(entity::Photo* photo, bool horizontal);
     void editPhotoDelete(entity::Photo* photo);
+
     void editStrokesPush(osg::Camera *camera);
     void editStrokesMove(double u, double v, dureu::EVENT event);
+    void editStrokesScale(double u, double v, dureu::EVENT event);
     void editStrokeDelete(entity::Stroke* stroke);
 
 protected:

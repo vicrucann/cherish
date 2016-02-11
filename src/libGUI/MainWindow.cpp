@@ -383,7 +383,7 @@ void MainWindow::onImageScale()
 {
     QCursor* cur = new QCursor(Data::sceneImageScalePixmap(), 0, 0);
     m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_PHOTO_SCALE);
+    emit sendMouseMode(dureu::MOUSE_ENTITY_SCALE);
 }
 
 void MainWindow::onImageFlipH()

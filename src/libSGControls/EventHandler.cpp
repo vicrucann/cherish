@@ -65,13 +65,16 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         this->doEditPhotoFlip<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa, false);
         break;
     case dureu::MOUSE_ENTITY_MOVE:
-        if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL)
+        if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() > 0)
             this->doEditStrokesMove(ea, aa);
         else
             this->doEditPhotoMove<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
         break;
-    case dureu::MOUSE_PHOTO_SCALE:
-        this->doEditPhotoScale<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
+    case dureu::MOUSE_ENTITY_SCALE:
+        if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() > 0)
+            this->doEditStrokesScale(ea, aa);
+        else
+            this->doEditPhotoScale<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
         break;
     case dureu::MOUSE_PHOTO_ROTATE:
         this->doEditPhotoRotate<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
@@ -87,7 +90,7 @@ void EventHandler::setMode(dureu::MOUSE_MODE mode)
     m_mode = mode;
     switch (m_mode){
     case dureu::MOUSE_PHOTO_ROTATE:
-    case dureu::MOUSE_PHOTO_SCALE:
+    case dureu::MOUSE_ENTITY_SCALE:
     case dureu::MOUSE_PHOTO_FLIPH:
     case dureu::MOUSE_PHOTO_FLIPV:
     case dureu::MOUSE_ENTITY_MOVE:
@@ -307,10 +310,12 @@ void EventHandler::doEditStrokesMove(const osgGA::GUIEventAdapter &ea, osgGA::GU
         outErrMsg("doEditStrokesMove: there are no strokes to move");
         return;
     }
+
     /* if no strokes are selected, return */
     if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0)
         return;
 
+    /* get mouse ray intersection with canvas plane */
     double u=0, v=0;
     if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
         return;
@@ -333,6 +338,47 @@ void EventHandler::doEditStrokesMove(const osgGA::GUIEventAdapter &ea, osgGA::GU
     }
 }
 
+void EventHandler::doEditStrokesScale(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           ))
+        return;
+
+    /* if there are no strokes in canvas, return*/
+    if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0){
+        outErrMsg("doEditStrokesMove: there are no strokes to move");
+        return;
+    }
+
+    /* if no strokes are selected, return */
+    if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0)
+        return;
+
+    /* get mouse ray intersection with canvas plane */
+    double u=0, v=0;
+    if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        return;
+
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        std::cout << "edit strokes scale: push button" << std::endl;
+        m_scene->editStrokesScale(u, v, dureu::EVENT_PRESSED);
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        std::cout << "edit strokes scale: release button" << std::endl;
+        m_scene->editStrokesScale(u, v, dureu::EVENT_RELEASED);
+        this->finishAll();
+        break;
+    case osgGA::GUIEventAdapter::DRAG:
+        m_scene->editStrokesScale(u,v,dureu::EVENT_DRAGGED);
+        break;
+    default:
+        break;
+    }
+}
+
 /* Pick photo, obtain canvas that contains that photo;
  * Make that canvas current;
  * Change photo coordinates to [x, y];
@@ -346,8 +392,6 @@ void EventHandler::doEditPhotoMove(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            ))
         return;
-
-    /* disable non-current canvases, set their traversals to none */
 
     T1* result = new T1;
     bool intersects = this->getLineIntersection<T1, T2>(ea,aa, *result);
@@ -646,8 +690,9 @@ void EventHandler::finishAll()
         m_scene->editPhotoMove(0,0,0, dureu::EVENT_OFF);
         m_scene->editStrokesMove(0,0, dureu::EVENT_OFF);
         break;
-    case dureu::MOUSE_PHOTO_SCALE:
+    case dureu::MOUSE_ENTITY_SCALE:
         m_scene->editPhotoScale(0,0,0, dureu::EVENT_OFF);
+        m_scene->editStrokesScale(0,0, dureu::EVENT_OFF);
         break;
     case dureu::MOUSE_PHOTO_ROTATE:
         m_scene->editPhotoRotate(0,0,0, dureu::EVENT_OFF);

@@ -313,6 +313,12 @@ void RootScene::editStrokesMove(double u, double v, dureu::EVENT event)
     m_saved = false;
 }
 
+void RootScene::editStrokesScale(double u, double v, dureu::EVENT event)
+{
+    m_userScene->editStrokesScale(m_undoStack, u, v, event);
+    m_saved = false;
+}
+
 void RootScene::editStrokeDelete(entity::Stroke *stroke)
 {
     m_userScene->editStrokeDelete(m_undoStack, stroke);

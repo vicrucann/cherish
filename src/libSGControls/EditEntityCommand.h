@@ -174,6 +174,23 @@ protected:
     double m_dv;
 };
 
+class EditStrokesScaleCommand : public QUndoCommand
+{
+public:
+    EditStrokesScaleCommand(entity::UserScene* scene, const std::vector<entity::Stroke*>& strokes, entity::Canvas* canvas,
+                            double scale, QUndoCommand* parent = 0);
+    ~EditStrokesScaleCommand() {}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    std::vector<entity::Stroke*> m_strokes;
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    double m_scale;
+};
+
 class EditStrokeDeleteCommand : public QUndoCommand
 {
 public:

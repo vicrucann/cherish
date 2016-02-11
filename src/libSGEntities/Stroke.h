@@ -38,6 +38,7 @@ public:
     float getLength() const;
     bool isLengthy() const;
     void moveDelta(double du, double dv);
+    void scale(double s);
 
 private:
     osg::ref_ptr<osg::DrawArrays> m_lines;

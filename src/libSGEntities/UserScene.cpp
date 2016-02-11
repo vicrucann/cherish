@@ -21,6 +21,7 @@ entity::UserScene::UserScene()
     , m_deltaR(osg::Quat(0,0,0,1))
     , m_u(0)
     , m_v(0)
+    , m_inits(false)
     , m_du(0)
     , m_dv(0)
     , m_scale(1)
@@ -42,6 +43,7 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_deltaR(scene.m_deltaR)
     , m_u(scene.m_u)
     , m_v(scene.m_v)
+    , m_inits(scene.m_inits)
     , m_du(scene.m_du)
     , m_dv(scene.m_dv)
     , m_scale(scene.m_scale)
@@ -675,6 +677,42 @@ void entity::UserScene::editStrokesMove(QUndoStack *stack, double u, double v, d
     }
 }
 
+void entity::UserScene::editStrokesScale(QUndoStack *stack, double u, double v, dureu::EVENT event)
+{
+    if (!stack){
+        fatalMsg("editStrokesScale(): undo stack is NULL.");
+        return;
+    }
+    switch (event){
+    case dureu::EVENT_OFF:
+        outLogMsg("EditStrokesScale: event off called");
+        if (this->strokesSelectedValid()){
+            outLogMsg("EditStrokesScale: event off performed");
+            this->strokesScaleFinish(stack);
+        }
+        break;
+    case dureu::EVENT_PRESSED:
+        outLogMsg("EditStrokesScale: event pressed called");
+        this->strokesScaleStart(u,v);
+        this->strokesScaleAppend(u,v);
+        break;
+    case dureu::EVENT_DRAGGED:
+        if (!this->strokesSelectedValid())
+            this->strokesScaleStart(u,v);
+        this->strokesScaleAppend(u,v);
+        break;
+    case dureu::EVENT_RELEASED:
+        if (!this->strokesSelectedValid())
+            break;
+        outLogMsg("EditStrokesScale: event release called");
+        this->strokesScaleAppend(u,v);
+        this->strokesScaleFinish(stack);
+        break;
+    default:
+        break;
+    }
+}
+
 void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stroke)
 {
     if (!stack){
@@ -820,6 +858,7 @@ void entity::UserScene::strokesMoveStart(double u, double v)
     m_u = u;
     m_v = v;
     m_du = m_dv = 0;
+    m_inits = true;
 }
 
 void entity::UserScene::strokesMoveAppend(double u, double v)
@@ -857,11 +896,56 @@ void entity::UserScene::strokesMoveFinish(QUndoStack *stack)
     m_u = m_v = 0;
     m_du = m_dv = 0;
     m_canvasCurrent->resetStrokesSelected();
+    m_inits = false;
 }
 
 bool entity::UserScene::strokesSelectedValid() const
 {
-    return m_canvasCurrent->getStrokesSelectedSize() > 0? true : false;
+    return ((m_canvasCurrent->getStrokesSelectedSize() > 0? true : false) && m_inits);
+}
+
+void entity::UserScene::strokesScaleStart(double u, double v)
+{
+    osg::Vec3f center = m_canvasCurrent->getCenter();
+    m_v = center.x();
+    outLogVal("initial center.x", center.x());
+    m_scale = 1;
+    m_u = std::fabs(u-m_v);
+    m_inits = true;
+}
+
+void entity::UserScene::strokesScaleAppend(double u, double v)
+{
+    double s = 1;
+    // make sure it's not smaller than allowed
+    if (m_u != 0)
+        s = std::fabs(u-m_v) / m_u;
+
+    m_scale *= s;
+    m_canvasCurrent->scaleStrokesSelected(s);
+
+    this->updateWidgets();
+    m_u = std::fabs(u-m_v);
+}
+
+void entity::UserScene::strokesScaleFinish(QUndoStack *stack)
+{
+    m_canvasCurrent->scaleStrokesSelected(1/m_scale);
+
+    EditStrokesScaleCommand* cmd = new EditStrokesScaleCommand(this,
+                                                               m_canvasCurrent->getStrokesSelected(),
+                                                               m_canvasCurrent.get(),
+                                                               m_scale);
+    if (!cmd){
+        outErrMsg("strokeScaleFinish: Could not allocate command");
+        m_canvasCurrent->updateFrame();
+        return;
+    }
+    stack->push(cmd);
+
+    m_u = m_v = 0;
+    m_inits = false;
+    m_scale = 1;
 }
 
 void entity::UserScene::eraseStart(entity::Stroke *stroke, osg::Vec3d &hit)

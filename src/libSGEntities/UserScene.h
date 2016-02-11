@@ -66,13 +66,16 @@ public:
     void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event);
     void editCanvasClone(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasDelete(QUndoStack* stack, entity::Canvas* canvas);
+
     void editPhotoMove(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoScale(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoRotate(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoFlip(QUndoStack* stack, entity::Photo* photo, bool horizontal);
     void editPhotoDelete(QUndoStack* stack, entity::Photo* photo);
+
     void editStrokesPush(QUndoStack* stack, osg::Camera* camera);
     void editStrokesMove(QUndoStack* stack, double u, double v, dureu::EVENT event);
+    void editStrokesScale(QUndoStack* stack, double u, double v, dureu::EVENT event);
     void editStrokeDelete(QUndoStack* stack, entity::Stroke* stroke);
 
     bool isEmptyScene() const;
@@ -99,6 +102,10 @@ protected:
     void strokesMoveAppend(double u, double v);
     void strokesMoveFinish(QUndoStack* stack);
     bool strokesSelectedValid() const;
+
+    void strokesScaleStart(double u, double v);
+    void strokesScaleAppend(double u, double v);
+    void strokesScaleFinish(QUndoStack* stack);
 
     void eraseStart(entity::Stroke* stroke, osg::Vec3d& hit);
     void eraseAppend(entity::Stroke* stroke, osg::Vec3d& hit);
@@ -141,6 +148,7 @@ private:
     osg::Vec3f m_deltaT; /* for edit operations: translate */
     osg::Quat m_deltaR; /* for edit operation: rotate */
     double m_u, m_v; /* move photo */
+    bool m_inits;
     double m_du, m_dv; /* move strokes */
     double m_scale; /* scale photo */
     double m_rotate;
