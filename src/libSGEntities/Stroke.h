@@ -37,6 +37,7 @@ public:
     void removePoints(unsigned int index_start, unsigned int index_end);
     float getLength() const;
     bool isLengthy() const;
+    void moveDelta(double du, double dv);
 
 private:
     osg::ref_ptr<osg::DrawArrays> m_lines;

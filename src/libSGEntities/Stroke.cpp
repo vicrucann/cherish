@@ -13,6 +13,7 @@ entity::Stroke::Stroke()
     , m_color(osg::Vec4f(0.f, 0.f, 0.f, 1.f))
 {
     osg::Vec4Array* colors = new osg::Vec4Array;
+    colors->push_back(dureu::STROKE_CLR_NORMAL);
     osg::Vec3Array* verts = new osg::Vec3Array;
 
     this->addPrimitiveSet(m_lines.get());
@@ -61,10 +62,11 @@ void entity::Stroke::setColor(const osg::Vec4f &color)
 {
     m_color = color;
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+    //(*colors)[0] = color;
     colors->front() = m_color;
     colors->dirty();
-    /*for (unsigned int i = 0; i<mColors->size(); ++i)
-        (*mColors)[i] = color;*/
+    this->dirtyDisplayList();
+    this->dirtyBound();
 }
 
 const osg::Vec4f&entity::Stroke::getColor() const
@@ -74,11 +76,11 @@ const osg::Vec4f&entity::Stroke::getColor() const
 
 void entity::Stroke::appendPoint(const float u, const float v)
 {
-    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+    //osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
 
-    colors->push_back(dureu::STROKE_CLR_NORMAL);
-    colors->dirty();
+    //colors->push_back(dureu::STROKE_CLR_NORMAL);
+    //colors->dirty();
 
     verts->push_back(osg::Vec3f(u,v,0.f));
     unsigned int sz = verts->size();
@@ -140,6 +142,17 @@ float entity::Stroke::getLength() const
 bool entity::Stroke::isLengthy() const
 {
     return this->getLength()>dureu::STROKE_MINL;
+}
+
+void entity::Stroke::moveDelta(double du, double dv)
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    for (unsigned int i=0; i<verts->size(); ++i){
+        osg::Vec3f vi = (*verts)[i];
+        (*verts)[i] = osg::Vec3f(du+vi.x(), dv+vi.y(), 0);
+    }
+    verts->dirty();
+    this->dirtyBound();
 }
 
 /* for serialization of stroke type

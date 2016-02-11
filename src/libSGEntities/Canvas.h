@@ -99,10 +99,14 @@ public:
     void setStrokeCurrent(bool current);
     entity::Stroke* getStrokeCurrent() const;
 
+    void addStrokesSelectedAll();
     void addStrokesSelected(entity::Stroke* stroke);
     void resetStrokesSelected();
     void resetStrokeSelected(entity::Stroke* stroke);
     const std::vector< entity::Stroke* >& getStrokesSelected() const;
+    int getStrokesSelectedSize() const;
+    void moveStrokes(std::vector<Stroke *> &strokes, double du, double dv);
+    void moveStrokesSelected(double du, double dv);
 
     bool setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);

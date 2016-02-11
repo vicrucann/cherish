@@ -315,3 +315,29 @@ void EditPhotoDeleteCommand::redo()
     m_canvas->getGeodeData()->removeDrawable(m_photo.get());
     m_scene->updateWidgets();
 }
+
+EditStrokesMoveCommand::EditStrokesMoveCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes, entity::Canvas *canvas, double du, double dv, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_strokes(strokes)
+    , m_canvas(canvas)
+    , m_du(du)
+    , m_dv(dv)
+{
+    this->setText(QObject::tr("Move strokes within %1")
+                  .arg(QString(m_canvas->getName().c_str())));
+}
+
+void EditStrokesMoveCommand::undo()
+{
+    m_canvas->moveStrokes(m_strokes, -m_du, -m_dv);
+    m_canvas->updateFrame();
+    m_scene->updateWidgets();
+}
+
+void EditStrokesMoveCommand::redo()
+{
+    m_canvas->moveStrokes(m_strokes, m_du, m_dv);
+    m_canvas->updateFrame();
+    m_scene->updateWidgets();
+}

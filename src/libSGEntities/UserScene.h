@@ -72,6 +72,7 @@ public:
     void editPhotoFlip(QUndoStack* stack, entity::Photo* photo, bool horizontal);
     void editPhotoDelete(QUndoStack* stack, entity::Photo* photo);
     void editStrokesPush(QUndoStack* stack, osg::Camera* camera);
+    void editStrokesMove(QUndoStack* stack, double u, double v, dureu::EVENT event);
     void editStrokeDelete(QUndoStack* stack, entity::Stroke* stroke);
 
     bool isEmptyScene() const;
@@ -93,6 +94,11 @@ protected:
     void strokeAppend(float u, float v);
     void strokeFinish(QUndoStack* stack);
     bool strokeValid() const;
+
+    void strokesMoveStart(double u, double v);
+    void strokesMoveAppend(double u, double v);
+    void strokesMoveFinish(QUndoStack* stack);
+    bool strokesSelectedValid() const;
 
     void eraseStart(entity::Stroke* stroke, osg::Vec3d& hit);
     void eraseAppend(entity::Stroke* stroke, osg::Vec3d& hit);
@@ -135,6 +141,7 @@ private:
     osg::Vec3f m_deltaT; /* for edit operations: translate */
     osg::Quat m_deltaR; /* for edit operation: rotate */
     double m_u, m_v; /* move photo */
+    double m_du, m_dv; /* move strokes */
     double m_scale; /* scale photo */
     double m_rotate;
     unsigned int m_idCanvas;

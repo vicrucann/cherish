@@ -388,20 +388,36 @@ entity::Stroke *entity::Canvas::getStrokeCurrent() const
     return m_strokeCurrent.get();
 }
 
+void entity::Canvas::addStrokesSelectedAll()
+{
+    this->resetStrokesSelected();
+    for (unsigned int i = 0; i < m_geodeData->getNumChildren(); i++){
+        if (m_geodeData->getChild(i)->getName() == "Stroke"){
+            entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_geodeData->getChild(i));
+            this->addStrokesSelected(stroke);
+        }
+    }
+}
+
 void entity::Canvas::addStrokesSelected(entity::Stroke* stroke)
 {
-    if (!stroke)
+    if (!stroke){
+        outErrMsg("addStrokesSelected: stroke ptr is NULL");
         return;
+    }
     if (!m_geodeData->containsDrawable(stroke)){
         outErrMsg("The stroke does not belong to Canvas, selection is impossible");
         return;
     }
     if (!this->isStrokeSelected(stroke)){
+        outLogMsg("stroke is unselected, do select");
         this->setStrokeSelected(stroke);
         m_strokesSelected.push_back(stroke);
     }
-    else
+    else{
+        outLogMsg("stroke is already selected, do unselect");
         this->resetStrokeSelected(stroke);
+    }
 }
 
 void entity::Canvas::resetStrokesSelected()
@@ -432,6 +448,35 @@ const std::vector<entity::Stroke* >& entity::Canvas::getStrokesSelected() const
     return m_strokesSelected;
 }
 
+int entity::Canvas::getStrokesSelectedSize() const
+{
+    return m_strokesSelected.size();
+}
+
+void entity::Canvas::moveStrokes(std::vector<entity::Stroke *>& strokes, double du, double dv)
+{
+    for (unsigned int i=0; i<strokes.size(); ++i){
+        entity::Stroke* stroke = strokes.at(i);
+        if (!stroke){
+            outErrMsg("moveStrokes: one of strokes ptr is NULL");
+            break;
+        }
+        stroke->moveDelta(du, dv);
+    }
+}
+
+void entity::Canvas::moveStrokesSelected(double du, double dv)
+{
+    for (unsigned int i=0; i<m_strokesSelected.size(); ++i){
+        entity::Stroke* stroke = m_strokesSelected.at(i);
+        if (!stroke){
+            outErrMsg("one of selected strokes ptr is NULL");
+            break;
+        }
+        stroke->moveDelta(du,dv);
+    }
+}
+
 void entity::Canvas::setStrokeSelected(entity::Stroke *stroke)
 {
     if (m_strokeSelected.get() == stroke){
@@ -450,9 +495,12 @@ void entity::Canvas::setStrokeSelected(bool selected)
     if (!selected){
         m_strokeSelected->setColor(dureu::STROKE_CLR_NORMAL);
         m_strokeSelected = 0;
+        outLogMsg("normal color is set");
     }
-    else
+    else{
         m_strokeSelected->setColor(dureu::STROKE_CLR_SELECTED);
+        outLogMsg("selected color is set");
+    }
 }
 
 bool entity::Canvas::isStrokeSelected(entity::Stroke *stroke) const

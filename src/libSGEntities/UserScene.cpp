@@ -21,6 +21,8 @@ entity::UserScene::UserScene()
     , m_deltaR(osg::Quat(0,0,0,1))
     , m_u(0)
     , m_v(0)
+    , m_du(0)
+    , m_dv(0)
     , m_scale(1)
     , m_rotate(0)
     , m_idCanvas(0)
@@ -40,6 +42,8 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_deltaR(scene.m_deltaR)
     , m_u(scene.m_u)
     , m_v(scene.m_v)
+    , m_du(scene.m_du)
+    , m_dv(scene.m_dv)
     , m_scale(scene.m_scale)
     , m_rotate(scene.m_rotate)
     , m_idCanvas(scene.m_idCanvas)
@@ -637,6 +641,40 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
     stack->push(cmd);
 }
 
+void entity::UserScene::editStrokesMove(QUndoStack *stack, double u, double v, dureu::EVENT event)
+{
+    if (!stack){
+        fatalMsg("editStrokesMove(): undo stack is NULL.");
+        return;
+    }
+    switch (event){
+    case dureu::EVENT_OFF:
+        outLogMsg("EditStrokesMove: event off called");
+        if (this->strokesSelectedValid())
+            this->strokesMoveFinish(stack);
+        break;
+    case dureu::EVENT_PRESSED:
+        outLogMsg("EditStrokesMove: event pressed called");
+        this->strokesMoveStart(u,v);
+        this->strokesMoveAppend(u,v);
+        break;
+    case dureu::EVENT_DRAGGED:
+        if (!this->strokesSelectedValid())
+            this->strokesMoveStart(u,v);
+        this->strokesMoveAppend(u,v);
+        break;
+    case dureu::EVENT_RELEASED:
+        if (!this->strokesSelectedValid())
+            break;
+        outLogMsg("EditStrokesMove: event release called");
+        this->strokesMoveAppend(u,v);
+        this->strokesMoveFinish(stack);
+        break;
+    default:
+        break;
+    }
+}
+
 void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stroke)
 {
     if (!stack){
@@ -775,6 +813,55 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
 bool entity::UserScene::strokeValid() const
 {
     return m_canvasCurrent->getStrokeCurrent();
+}
+
+void entity::UserScene::strokesMoveStart(double u, double v)
+{
+    m_u = u;
+    m_v = v;
+    m_du = m_dv = 0;
+}
+
+void entity::UserScene::strokesMoveAppend(double u, double v)
+{
+    double du = u - m_u;
+    double dv = v - m_v;
+
+    /* perform delta movement */
+    m_canvasCurrent->moveStrokesSelected(du, dv);
+
+    m_canvasCurrent->updateFrame();
+    this->updateWidgets();
+    m_du += du;
+    m_dv += dv;
+    m_u = u;
+    m_v = v;
+}
+
+void entity::UserScene::strokesMoveFinish(QUndoStack *stack)
+{
+    /* move things back so that to perform this operation in undo/redo FW */
+    m_canvasCurrent->moveStrokesSelected(-m_du, -m_dv);
+
+    EditStrokesMoveCommand* cmd = new EditStrokesMoveCommand(this,
+                                                             m_canvasCurrent->getStrokesSelected(),
+                                                             m_canvasCurrent.get(),
+                                                             m_du, m_dv);
+    if (!cmd){
+        outErrMsg("strokeMoveFinish: Could not allocate command");
+        m_canvasCurrent->updateFrame();
+        return;
+    }
+    stack->push(cmd);
+
+    m_u = m_v = 0;
+    m_du = m_dv = 0;
+    m_canvasCurrent->resetStrokesSelected();
+}
+
+bool entity::UserScene::strokesSelectedValid() const
+{
+    return m_canvasCurrent->getStrokesSelectedSize() > 0? true : false;
 }
 
 void entity::UserScene::eraseStart(entity::Stroke *stroke, osg::Vec3d &hit)

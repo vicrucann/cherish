@@ -307,6 +307,12 @@ void RootScene::editStrokesPush(osg::Camera* camera)
     m_saved = false;
 }
 
+void RootScene::editStrokesMove(double u, double v, dureu::EVENT event)
+{
+    m_userScene->editStrokesMove(m_undoStack, u, v, event);
+    m_saved = false;
+}
+
 void RootScene::editStrokeDelete(entity::Stroke *stroke)
 {
     m_userScene->editStrokeDelete(m_undoStack, stroke);

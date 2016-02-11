@@ -156,6 +156,24 @@ protected:
     osg::Vec3f m_eye;
 };
 
+class EditStrokesMoveCommand : public QUndoCommand
+{
+public:
+    EditStrokesMoveCommand(entity::UserScene* scene, const std::vector<entity::Stroke*>& strokes, entity::Canvas* canvas,
+                           double du, double dv, QUndoCommand* parent = 0);
+    ~EditStrokesMoveCommand() {}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    std::vector<entity::Stroke*> m_strokes;
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    double m_du;
+    double m_dv;
+};
+
 class EditStrokeDeleteCommand : public QUndoCommand
 {
 public:

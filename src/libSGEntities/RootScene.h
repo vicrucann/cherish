@@ -93,6 +93,7 @@ public:
     void editPhotoFlip(entity::Photo* photo, bool horizontal);
     void editPhotoDelete(entity::Photo* photo);
     void editStrokesPush(osg::Camera *camera);
+    void editStrokesMove(double u, double v, dureu::EVENT event);
     void editStrokeDelete(entity::Stroke* stroke);
 
 protected:
