@@ -918,7 +918,7 @@ void entity::UserScene::strokesScaleAppend(double u, double v)
 {
     double s = 1;
     // make sure it's not smaller than allowed
-    if (m_u != 0)
+    if (m_u != 0 && u > m_v && std::fabs(u-m_v) >= 0.2)
         s = std::fabs(u-m_v) / m_u;
 
     m_scale *= s;
