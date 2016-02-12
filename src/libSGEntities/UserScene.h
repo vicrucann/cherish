@@ -76,6 +76,7 @@ public:
     void editStrokesPush(QUndoStack* stack, osg::Camera* camera);
     void editStrokesMove(QUndoStack* stack, double u, double v, dureu::EVENT event);
     void editStrokesScale(QUndoStack* stack, double u, double v, dureu::EVENT event);
+    void editStrokesRotate(QUndoStack* stack, double u, double v, dureu::EVENT event);
     void editStrokeDelete(QUndoStack* stack, entity::Stroke* stroke);
 
     bool isEmptyScene() const;
@@ -106,6 +107,10 @@ protected:
     void strokesScaleStart(double u, double v);
     void strokesScaleAppend(double u, double v);
     void strokesScaleFinish(QUndoStack* stack);
+
+    void strokesRotateStart(double u, double v);
+    void strokesRotateAppend(double u, double v);
+    void strokesRotateFinish(QUndoStack* stack);
 
     void eraseStart(entity::Stroke* stroke, osg::Vec3d& hit);
     void eraseAppend(entity::Stroke* stroke, osg::Vec3d& hit);

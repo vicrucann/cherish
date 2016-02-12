@@ -39,6 +39,7 @@ public:
     bool isLengthy() const;
     void moveDelta(double du, double dv);
     void scale(double s);
+    void rotate(double theta, osg::Vec3f center);
 
 private:
     osg::ref_ptr<osg::DrawArrays> m_lines;

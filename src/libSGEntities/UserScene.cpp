@@ -713,6 +713,42 @@ void entity::UserScene::editStrokesScale(QUndoStack *stack, double u, double v, 
     }
 }
 
+void entity::UserScene::editStrokesRotate(QUndoStack *stack, double u, double v, dureu::EVENT event)
+{
+    if (!stack){
+        fatalMsg("editStrokesScale(): undo stack is NULL.");
+        return;
+    }
+    switch (event){
+    case dureu::EVENT_OFF:
+        outLogMsg("EditStrokesScale: event off called");
+        if (this->strokesSelectedValid()){
+            outLogMsg("EditStrokesScale: event off performed");
+            this->strokesRotateFinish(stack);
+        }
+        break;
+    case dureu::EVENT_PRESSED:
+        outLogMsg("EditStrokesScale: event pressed called");
+        this->strokesRotateStart(u,v);
+        this->strokesRotateAppend(u,v);
+        break;
+    case dureu::EVENT_DRAGGED:
+        if (!this->strokesSelectedValid())
+            this->strokesRotateStart(u,v);
+        this->strokesRotateAppend(u,v);
+        break;
+    case dureu::EVENT_RELEASED:
+        if (!this->strokesSelectedValid())
+            break;
+        outLogMsg("EditStrokesScale: event release called");
+        this->strokesRotateAppend(u,v);
+        this->strokesRotateFinish(stack);
+        break;
+    default:
+        break;
+    }
+}
+
 void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stroke)
 {
     if (!stack){
@@ -908,7 +944,7 @@ void entity::UserScene::strokesScaleStart(double u, double v)
 {
     osg::Vec3f center = m_canvasCurrent->getCenter();
     m_v = center.x();
-    outLogVal("initial center.x", center.x());
+
     m_scale = 1;
     m_u = std::fabs(u-m_v);
     m_inits = true;
@@ -946,6 +982,66 @@ void entity::UserScene::strokesScaleFinish(QUndoStack *stack)
     m_u = m_v = 0;
     m_inits = false;
     m_scale = 1;
+}
+
+void entity::UserScene::strokesRotateStart(double u, double v)
+{
+    m_u = u;
+    m_v = v;
+    m_rotate = 0;
+    m_inits = true;
+}
+
+void entity::UserScene::strokesRotateAppend(double u, double v)
+{
+    osg::Vec3f center = m_canvasCurrent->getCenter();
+    double cx = center.x();
+    double cy = center.y();
+
+    osg::Vec2f P1 = osg::Vec2f(m_u - cx, m_v - cy);
+    osg::Vec2f P2 = osg::Vec2f(u - cx, v - cy);
+    P1.normalize();
+    P2.normalize();
+
+    double theta = 0;
+    if (P1.length()*P2.length() != 0){
+        double atheta = (P1*P2) / (P1.length()*P2.length());
+        if (atheta <-1 || atheta > 1)
+            atheta = 1;
+        theta = std::acos(atheta);
+
+        /* when moving counter clock wise, have to switch rotation direction */
+        if (u>=cx && v>=cy){
+            if (P2.y() < P1.y())
+                theta *= -1; }
+        else if (u<=cx && v>=cy){
+            if (P2.y() > P1.y())
+                theta *= -1;}
+        else if (u<=cx && v<=cy){
+            if (P2.y() > P1.y())
+                theta *= -1; }
+        else if (u>=cx && v<=cy){
+            if (P2.y() < P1.y())
+                theta *= -1; }
+    }
+
+    /* theta must be within [-PI, PI] */
+    if (theta < -dureu::PI || theta > dureu::PI)
+        theta = 0;
+
+    /* now rotate stroke on theta */
+
+    m_rotate += theta;
+    m_u = u;
+    m_v = v;
+    this->updateWidgets();
+}
+
+void entity::UserScene::strokesRotateFinish(QUndoStack *stack)
+{
+    m_u = m_v = 0;
+    m_rotate = 0;
+    m_inits = false;
 }
 
 void entity::UserScene::eraseStart(entity::Stroke *stroke, osg::Vec3d &hit)

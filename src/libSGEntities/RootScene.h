@@ -97,6 +97,7 @@ public:
     void editStrokesPush(osg::Camera *camera);
     void editStrokesMove(double u, double v, dureu::EVENT event);
     void editStrokesScale(double u, double v, dureu::EVENT event);
+    void editStrokesRotate(double u, double v, dureu::EVENT event);
     void editStrokeDelete(entity::Stroke* stroke);
 
 protected:

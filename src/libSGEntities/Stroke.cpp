@@ -166,6 +166,18 @@ void entity::Stroke::scale(double s)
     this->dirtyBound();
 }
 
+void entity::Stroke::rotate(double theta, osg::Vec3f center)
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    for (unsigned int i=0; i<verts->size(); ++i){
+        osg::Vec3f vi = (*verts)[i];
+        (*verts)[i] = center + osg::Vec3f(vi.x() * std::cos(theta) - vi.y() * std::sin(theta),
+                                          -vi.x() * std::sin(theta) + vi.y() * std::cos(theta), 0);
+    }
+    verts->dirty();
+    this->dirtyBound();
+}
+
 /* for serialization of stroke type
  * for more info, see OSG beginner's guide, or
  * OSG cookbook. In both, there is a section on serialization.
