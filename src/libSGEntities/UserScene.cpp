@@ -931,7 +931,7 @@ void entity::UserScene::strokesMoveFinish(QUndoStack *stack)
 
     m_u = m_v = 0;
     m_du = m_dv = 0;
-    m_canvasCurrent->resetStrokesSelected();
+    //m_canvasCurrent->resetStrokesSelected();
     m_inits = false;
 }
 
@@ -942,7 +942,9 @@ bool entity::UserScene::strokesSelectedValid() const
 
 void entity::UserScene::strokesScaleStart(double u, double v)
 {
-    osg::Vec3f center = m_canvasCurrent->getCenter();
+    osg::Vec3f center = m_canvasCurrent->getGeodeData()->getBoundingBox().center(); //m_canvasCurrent->getCenter();
+    m_du = center.x();
+    m_dv = center.y();
     m_v = center.x();
 
     m_scale = 1;
@@ -958,7 +960,7 @@ void entity::UserScene::strokesScaleAppend(double u, double v)
         s = std::fabs(u-m_v) / m_u;
 
     m_scale *= s;
-    m_canvasCurrent->scaleStrokesSelected(s);
+    m_canvasCurrent->scaleStrokesSelected(s, osg::Vec3f(m_du, m_dv, 0));
 
     this->updateWidgets();
     m_u = std::fabs(u-m_v);
@@ -966,37 +968,46 @@ void entity::UserScene::strokesScaleAppend(double u, double v)
 
 void entity::UserScene::strokesScaleFinish(QUndoStack *stack)
 {
-    m_canvasCurrent->scaleStrokesSelected(1/m_scale);
+    m_canvasCurrent->scaleStrokesSelected(1/m_scale, osg::Vec3f(m_du, m_dv, 0));
 
-    EditStrokesScaleCommand* cmd = new EditStrokesScaleCommand(this,
+    /*EditStrokesScaleCommand* cmd = new EditStrokesScaleCommand(this,
                                                                m_canvasCurrent->getStrokesSelected(),
                                                                m_canvasCurrent.get(),
                                                                m_scale);
+    m_u = m_v = 0;
+    m_du = m_dv = 0;
+    m_inits = false;
+    m_scale = 1;
+
     if (!cmd){
         outErrMsg("strokeScaleFinish: Could not allocate command");
         m_canvasCurrent->updateFrame();
         return;
     }
     stack->push(cmd);
-
-    m_u = m_v = 0;
-    m_inits = false;
-    m_scale = 1;
+*/
 }
 
 void entity::UserScene::strokesRotateStart(double u, double v)
 {
+    osg::Vec3f center = m_canvasCurrent->getGeodeData()->getBoundingBox().center();
+    if (center.z() > dureu::EPSILON){
+        outLogVec("center", center.x(), center.y(), center.z());
+        outErrMsg("strokesRotateStart: z coordiante is not close to zero");
+    }
+
     m_u = u;
     m_v = v;
+    m_du = center.x();
+    m_dv = center.y();
     m_rotate = 0;
     m_inits = true;
 }
 
 void entity::UserScene::strokesRotateAppend(double u, double v)
 {
-    osg::Vec3f center = m_canvasCurrent->getCenter();
-    double cx = center.x();
-    double cy = center.y();
+    double cx = m_du;
+    double cy = m_dv;
 
     osg::Vec2f P1 = osg::Vec2f(m_u - cx, m_v - cy);
     osg::Vec2f P2 = osg::Vec2f(u - cx, v - cy);
@@ -1029,19 +1040,37 @@ void entity::UserScene::strokesRotateAppend(double u, double v)
     if (theta < -dureu::PI || theta > dureu::PI)
         theta = 0;
 
-    /* now rotate stroke on theta */
+    outLogVal("theta", theta);
+
+    /* now rotate stroke on theta around center of coords [m_du m_dv] */
+    m_canvasCurrent->rotateStrokesSelected(theta, osg::Vec3f(m_du, m_dv, 0));
 
     m_rotate += theta;
     m_u = u;
     m_v = v;
+
     this->updateWidgets();
 }
 
 void entity::UserScene::strokesRotateFinish(QUndoStack *stack)
 {
+    m_canvasCurrent->rotateStrokesSelected(-m_rotate, osg::Vec3f(m_du, m_dv, 0));
+
+    EditStrokesRotateCommand* cmd = new EditStrokesRotateCommand(this,
+                                                                 m_canvasCurrent->getStrokesSelected(),
+                                                                 m_canvasCurrent.get(),
+                                                                 m_rotate, osg::Vec3f(m_du, m_dv, 0));
     m_u = m_v = 0;
+    m_du = m_dv = 0;
     m_rotate = 0;
     m_inits = false;
+
+    if (!cmd){
+        outErrMsg("strokesRotateFinish: Could not allocate command");
+        m_canvasCurrent->updateFrame();
+        return;
+    }
+    stack->push(cmd);
 }
 
 void entity::UserScene::eraseStart(entity::Stroke *stroke, osg::Vec3d &hit)

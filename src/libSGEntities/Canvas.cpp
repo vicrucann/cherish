@@ -492,7 +492,7 @@ void entity::Canvas::moveStrokesSelected(double du, double dv)
     this->moveStrokes(m_strokesSelected, du, dv);
 }
 
-void entity::Canvas::scaleStrokes(std::vector<entity::Stroke *> &strokes, double s)
+void entity::Canvas::scaleStrokes(std::vector<entity::Stroke *> &strokes, double s, osg::Vec3f center)
 {
     for (unsigned int i=0; i<strokes.size(); ++i){
         entity::Stroke* stroke = strokes.at(i);
@@ -500,13 +500,30 @@ void entity::Canvas::scaleStrokes(std::vector<entity::Stroke *> &strokes, double
             outErrMsg("moveStrokes: one of strokes ptr is NULL");
             break;
         }
-        stroke->scale(s);
+        stroke->scale(s, center);
     }
 }
 
-void entity::Canvas::scaleStrokesSelected(double s)
+void entity::Canvas::scaleStrokesSelected(double s, osg::Vec3f center)
 {
-    this->scaleStrokes(m_strokesSelected, s);
+    this->scaleStrokes(m_strokesSelected, s, center);
+}
+
+void entity::Canvas::rotateStrokes(std::vector<entity::Stroke *> strokes, double theta, osg::Vec3f center)
+{
+    for (unsigned int i=0; i<strokes.size(); ++i){
+        entity::Stroke* stroke = strokes.at(i);
+        if (!stroke){
+            outErrMsg("moveStrokes: one of strokes ptr is NULL");
+            break;
+        }
+        stroke->rotate(theta, center);
+    }
+}
+
+void entity::Canvas::rotateStrokesSelected(double theta, osg::Vec3f center)
+{
+    this->rotateStrokes(m_strokesSelected, theta, center);
 }
 
 void entity::Canvas::setStrokeSelected(entity::Stroke *stroke)

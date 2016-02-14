@@ -108,8 +108,10 @@ public:
     osg::Vec3f getStrokesSelectedCenter() const;
     void moveStrokes(std::vector<Stroke *> &strokes, double du, double dv);
     void moveStrokesSelected(double du, double dv);
-    void scaleStrokes(std::vector<Stroke *> &strokes, double s);
-    void scaleStrokesSelected(double s);
+    void scaleStrokes(std::vector<Stroke *> &strokes, double s, osg::Vec3f center);
+    void scaleStrokesSelected(double s, osg::Vec3f center);
+    void rotateStrokes(std::vector<entity::Stroke*> strokes, double theta, osg::Vec3f center);
+    void rotateStrokesSelected(double theta, osg::Vec3f center);
 
     bool setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);

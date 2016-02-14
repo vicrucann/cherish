@@ -189,6 +189,25 @@ protected:
     std::vector<entity::Stroke*> m_strokes;
     osg::observer_ptr<entity::Canvas> m_canvas;
     double m_scale;
+    osg::Vec3f m_center;
+};
+
+class EditStrokesRotateCommand : public QUndoCommand
+{
+public:
+    EditStrokesRotateCommand(entity::UserScene* scene, const std::vector<entity::Stroke*>& strokes, entity::Canvas* canvas,
+                             double theta, osg::Vec3f center, QUndoCommand* parent = 0);
+    ~EditStrokesRotateCommand() {}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    std::vector<entity::Stroke*> m_strokes;
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    double m_theta;
+    osg::Vec3f m_center;
 };
 
 class EditStrokeDeleteCommand : public QUndoCommand

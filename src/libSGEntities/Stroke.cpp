@@ -155,12 +155,12 @@ void entity::Stroke::moveDelta(double du, double dv)
     this->dirtyBound();
 }
 
-void entity::Stroke::scale(double s)
+void entity::Stroke::scale(double s, osg::Vec3f center)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
     for (unsigned int i=0; i<verts->size(); ++i){
-        osg::Vec3f vi = (*verts)[i];
-        (*verts)[i] = osg::Vec3f(s*vi.x(), s*vi.y(), 0);
+        osg::Vec3f vi = (*verts)[i] - center;
+        (*verts)[i] = center + osg::Vec3f(s*vi.x(), s*vi.y(), 0);
     }
     verts->dirty();
     this->dirtyBound();
@@ -170,9 +170,9 @@ void entity::Stroke::rotate(double theta, osg::Vec3f center)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
     for (unsigned int i=0; i<verts->size(); ++i){
-        osg::Vec3f vi = (*verts)[i];
+        osg::Vec3f vi = (*verts)[i] - center;
         (*verts)[i] = center + osg::Vec3f(vi.x() * std::cos(theta) - vi.y() * std::sin(theta),
-                                          -vi.x() * std::sin(theta) + vi.y() * std::cos(theta), 0);
+                                          vi.x() * std::sin(theta) + vi.y() * std::cos(theta), 0);
     }
     verts->dirty();
     this->dirtyBound();

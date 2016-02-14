@@ -355,14 +355,40 @@ EditStrokesScaleCommand::EditStrokesScaleCommand(entity::UserScene *scene, const
 
 void EditStrokesScaleCommand::undo()
 {
-    m_canvas->scaleStrokes(m_strokes, 1/m_scale);
+    m_canvas->scaleStrokes(m_strokes, 1/m_scale, m_center);
     m_canvas->updateFrame();
     m_scene->updateWidgets();
 }
 
 void EditStrokesScaleCommand::redo()
 {
-    m_canvas->scaleStrokes(m_strokes, m_scale);
+    m_canvas->scaleStrokes(m_strokes, m_scale, m_center);
+    m_canvas->updateFrame();
+    m_scene->updateWidgets();
+}
+
+EditStrokesRotateCommand::EditStrokesRotateCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes, entity::Canvas *canvas, double theta, osg::Vec3f center, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_strokes(strokes)
+    , m_canvas(canvas)
+    , m_theta(theta)
+    , m_center(center)
+{
+    this->setText(QObject::tr("Rotate strokes within %1")
+                  .arg(QString(m_canvas->getName().c_str())));
+}
+
+void EditStrokesRotateCommand::undo()
+{
+    m_canvas->rotateStrokes(m_strokes, -m_theta, m_center);
+    m_canvas->updateFrame();
+    m_scene->updateWidgets();
+}
+
+void EditStrokesRotateCommand::redo()
+{
+    m_canvas->rotateStrokes(m_strokes, m_theta, m_center);
     m_canvas->updateFrame();
     m_scene->updateWidgets();
 }
