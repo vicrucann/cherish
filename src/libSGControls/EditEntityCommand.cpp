@@ -342,12 +342,13 @@ void EditStrokesMoveCommand::redo()
     m_scene->updateWidgets();
 }
 
-EditStrokesScaleCommand::EditStrokesScaleCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes, entity::Canvas *canvas, double scale, QUndoCommand *parent)
+EditStrokesScaleCommand::EditStrokesScaleCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes, entity::Canvas *canvas, double scale, osg::Vec3f center, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_strokes(strokes)
     , m_canvas(canvas)
     , m_scale(scale)
+    , m_center(center)
 {
     this->setText(QObject::tr("Scale strokes within %1")
                   .arg(QString(m_canvas->getName().c_str())));

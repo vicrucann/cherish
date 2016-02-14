@@ -956,8 +956,10 @@ void entity::UserScene::strokesScaleAppend(double u, double v)
 {
     double s = 1;
     // make sure it's not smaller than allowed
-    if (m_u != 0 && u > m_v && std::fabs(u-m_v) >= 0.2)
-        s = std::fabs(u-m_v) / m_u;
+    if (m_u != 0 && std::fabs(u-m_v) >= 0.1)
+        s = std::fabs(u-m_v)/m_u;
+
+    outLogVal("s", s);
 
     m_scale *= s;
     m_canvasCurrent->scaleStrokesSelected(s, osg::Vec3f(m_du, m_dv, 0));
@@ -970,10 +972,10 @@ void entity::UserScene::strokesScaleFinish(QUndoStack *stack)
 {
     m_canvasCurrent->scaleStrokesSelected(1/m_scale, osg::Vec3f(m_du, m_dv, 0));
 
-    /*EditStrokesScaleCommand* cmd = new EditStrokesScaleCommand(this,
+    EditStrokesScaleCommand* cmd = new EditStrokesScaleCommand(this,
                                                                m_canvasCurrent->getStrokesSelected(),
                                                                m_canvasCurrent.get(),
-                                                               m_scale);
+                                                               m_scale, osg::Vec3f(m_du, m_dv, 0));
     m_u = m_v = 0;
     m_du = m_dv = 0;
     m_inits = false;
@@ -985,7 +987,7 @@ void entity::UserScene::strokesScaleFinish(QUndoStack *stack)
         return;
     }
     stack->push(cmd);
-*/
+
 }
 
 void entity::UserScene::strokesRotateStart(double u, double v)

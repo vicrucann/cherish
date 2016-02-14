@@ -178,7 +178,7 @@ class EditStrokesScaleCommand : public QUndoCommand
 {
 public:
     EditStrokesScaleCommand(entity::UserScene* scene, const std::vector<entity::Stroke*>& strokes, entity::Canvas* canvas,
-                            double scale, QUndoCommand* parent = 0);
+                            double scale, osg::Vec3f center, QUndoCommand* parent = 0);
     ~EditStrokesScaleCommand() {}
 
     void undo() Q_DECL_OVERRIDE;
