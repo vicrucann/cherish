@@ -603,6 +603,7 @@ void entity::Canvas::updateFrame()
         float szY = std::max(dy, dureu::CANVAS_MINW);
 
         this->setVertices(bb.center(), szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+        this->translate(osg::Matrix::translate(bb.center().x()-m_center.x(), bb.center().y()-m_center.y(), bb.center().z()-m_center.z()));
     }
 }
 
@@ -694,9 +695,11 @@ entity::Canvas::~Canvas()
 // updates internals from m_r and m_t
 void entity::Canvas::updateTransforms()
 {
+    /* update how the drawables look */
     osg::Matrix M = m_mR * m_mT;
     m_transform->setMatrix(M);
 
+    /* update plane parameters */
     m_normal = dureu::NORMAL;
     m_center = osg::Vec3(0,0,0);
     osg::Plane plane(m_normal, m_center);
