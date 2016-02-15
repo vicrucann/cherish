@@ -9,9 +9,9 @@
 class Utilities
 {
 public:
-    static bool areStrokesProjectable(const std::vector<entity::Stroke *> &strokes, entity::Canvas *source, entity::Canvas *target, const osg::Vec3f &eye)
+    static bool areStrokesProjectable(const std::vector<entity::Stroke *> &strokes, entity::Canvas *source, entity::Canvas *target, osg::Camera* camera)
     {
-        if (!target || !source || strokes.empty()) {
+        if (!target || !source || strokes.empty() || !camera) {
             std::cerr << "push strokes: one of the pointers is NULL " << std::endl;
             return false;
         }
@@ -25,6 +25,18 @@ public:
         const osg::Plane plane = target->getPlane();
         const osg::Vec3 center = target->getCenter();
 
+        /* get camera matrices and other data */
+        osg::Vec3f eye, c, u;
+        camera->getViewMatrixAsLookAt(eye, c, u);
+        osg::Matrix VPW = camera->getViewMatrix() * camera->getProjectionMatrix() * camera->getViewport()->computeWindowMatrix();
+        osg::Matrix invVPW;
+        if (!invVPW.invert(VPW)){
+            std::cerr << "areStrokesProjectable(): could not invert View-projection-world matrix for ray casting" << std::endl;
+            return false;
+        }
+
+        std::vector<osg::Vec3f> ray(2);
+
         for (unsigned int i=0; i<strokes.size(); ++i){
             entity::Stroke* s0 = strokes.at(i);
             osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(s0->getVertexArray());
@@ -32,6 +44,17 @@ public:
                 osg::Vec3 p = (*verts)[j];
                 osg::Vec3 P = p * M;
                 osg::Vec3 dir = P - eye;
+                osg::Vec3f screen = P * VPW;
+                osg::Vec3f nearPoint = osg::Vec3f(screen.x(), screen.y(), 0.f) * invVPW;
+                osg::Vec3f farPoint = osg::Vec3f(screen.x(), screen.y(), 1.f) * invVPW;
+                ray[0] = nearPoint;
+                ray[1] = farPoint;
+
+                if (plane.intersect(ray)){
+                    outErrMsg("push strokes: some point projections do not intersect the target canvas plane."
+                              "To resolve, change the camera view");
+                    return false;
+                }
 
                 if (! plane.dotProductNormal(dir)){ // denominator
                     std::cerr << "push strokes: one of the points of projected stroke forms parallel projection to the canvas plane."
@@ -54,6 +77,7 @@ public:
                 }
             }
         }
+        outLogMsg("strokes are projectable");
         return true;
     }
 
