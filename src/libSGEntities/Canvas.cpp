@@ -40,7 +40,7 @@ entity::Canvas::Canvas()
 {
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
-    linewidth->setWidth(1.5);
+    linewidth->setWidth(dureu::CANVAS_LINE_WIDTH);
     osg::BlendFunc* blendfunc = new osg::BlendFunc();
     //blendfunc->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ANTIALIAS);
     stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);

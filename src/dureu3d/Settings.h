@@ -125,6 +125,7 @@ const float CANVAS_MINH = 1.0f; // half height
 const float CANVAS_MINB = 0.1f; // bound
 const float CANVAS_CORNER = 0.3f; // corner size
 const float CANVAS_AXIS = 0.5f; // loxal axis size
+const float CANVAS_LINE_WIDTH = 1.5f;
 
 const float PHOTO_MINW = 1; // half width
 const float PHOTO_MINH = 1; // half height
