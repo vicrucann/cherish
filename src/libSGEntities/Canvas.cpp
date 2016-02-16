@@ -603,7 +603,7 @@ void entity::Canvas::updateFrame()
         float szY = std::max(dy, dureu::CANVAS_MINW);
 
         this->setVertices(bb.center(), szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
-        this->translate(osg::Matrix::translate(bb.center().x()-m_center.x(), bb.center().y()-m_center.y(), bb.center().z()-m_center.z()));
+        //this->translate(osg::Matrix::translate(bb.center().x()-m_center.x(), bb.center().y()-m_center.y(), bb.center().z()-m_center.z()));
     }
 }
 
