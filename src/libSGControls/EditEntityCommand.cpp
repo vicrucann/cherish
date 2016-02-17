@@ -199,14 +199,14 @@ EditPhotoScaleCommand::EditPhotoScaleCommand(entity::UserScene *scene, const dou
 
 void EditPhotoScaleCommand::undo()
 {
-    m_photo->scale(1.f/m_scale, 1.f/m_scale);
+    m_photo->scale(1.f/m_scale, 1.f/m_scale, m_photo->getCenter());
     m_canvas->updateFrame();
     m_scene->updateWidgets();
 }
 
 void EditPhotoScaleCommand::redo()
 {
-    m_photo->scale(m_scale, m_scale);
+    m_photo->scale(m_scale, m_scale, m_photo->getCenter());
     m_canvas->updateFrame();
     m_scene->updateWidgets();
 }

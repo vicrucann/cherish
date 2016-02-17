@@ -49,7 +49,6 @@ public:
     void rotate(double theta, osg::Vec3f center);
     void flipH();
     void flipV();
-    void scale(double timesX, double timesY);
     void scale(double scale, osg::Vec3f center);
     void scale(double scaleX, double scaleY, osg::Vec3f center);
 

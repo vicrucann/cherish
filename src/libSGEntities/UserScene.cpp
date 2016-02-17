@@ -1318,7 +1318,7 @@ void entity::UserScene::photoScaleAppend(double u, double v)
             std::fabs(u - photo->getCenter().x() + photo->getWidth()) >= dureu::PHOTO_MINW)
         s = std::fabs(u - photo->getCenter().x() + photo->getWidth()) / std::fabs(2.f*photo->getWidth());
     m_scale *= s;
-    photo->scale(s, s);
+    photo->scale(s, s, photo->getCenter());
     this->updateWidgets();
     //this->getCanvasCurrent()->updateFrame();
 }

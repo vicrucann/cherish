@@ -14,7 +14,7 @@ entity::Photo::Photo()
     , m_angle(0)
     , m_edit(false)
 {
-    this->setName("Photo");
+    this->getOrCreateStateSet()->setTextureAttributeAndModes(0, this->getTextureAsAttribute());
     outLogMsg("New Photo ctor complete");
 }
 
@@ -153,7 +153,8 @@ void entity::Photo::move(const double u, const double v)
 
 void entity::Photo::moveDelta(double du, double dv)
 {
-
+    m_center += osg::Vec3f(du,dv,0.f);
+    this->updateVertices();
 }
 
 /* The angle must be provided in radiants, and it is
@@ -167,7 +168,9 @@ void entity::Photo::rotate(double angle)
 
 void entity::Photo::rotate(double theta, osg::Vec3f center)
 {
-
+    m_angle += theta;
+    m_center = center;
+    this->updateVertices();
 }
 
 /* When performing a flip, we do not touch vertex coordinates,
@@ -200,21 +203,20 @@ void entity::Photo::flipV()
     this->dirtyBound();
 }
 
-void entity::Photo::scale(double timesX, double timesY)
-{
-    m_width *= timesX;
-    m_height *= timesY;
-    this->updateVertices();
-}
-
 void entity::Photo::scale(double scale, osg::Vec3f center)
 {
-
+    m_width *= scale;
+    m_height *= scale;
+    m_center = center;
+    this->updateVertices();
 }
 
 void entity::Photo::scale(double scaleX, double scaleY, osg::Vec3f center)
 {
-
+    m_width *= scaleX;
+    m_height *= scaleY;
+    m_center = center;
+    this->updateVertices();
 }
 
 dureu::ENTITY_TYPE entity::Photo::getEntityType() const
