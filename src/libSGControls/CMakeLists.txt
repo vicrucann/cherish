@@ -12,8 +12,6 @@ set (libSGControls_SRCS
     EventHandler.cpp
     Manipulator.h
     Manipulator.cpp
-    DeleteStrokeCommand.h
-    DeleteStrokeCommand.cpp
     AddEntityCommand.h
     AddEntityCommand.cpp
     EditEntityCommand.h
