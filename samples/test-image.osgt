@@ -1,0 +1,989 @@
+#Ascii Scene 
+#Version 130 
+#Generator OpenSceneGraph 3.4.0 
+
+entity::UserScene {
+  UniqueID 1 
+  Name "UserScene" 
+  Children 3 {
+    entity::Canvas {
+      UniqueID 2 
+      Name "Canvas0" 
+      Children 1 {
+        osg::MatrixTransform {
+          UniqueID 3 
+          Name "Transform" 
+          Children 1 {
+            osg::Switch {
+              UniqueID 4 
+              Name "Switch" 
+              Children 5 {
+                osg::Geode {
+                  UniqueID 5 
+                  Name "GeodeFrame" 
+                  Drawables 2 {
+                    osg::Geometry {
+                      UniqueID 6 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 7 
+                          Mode LINE_LOOP 
+                          Count 4 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 8 
+                          Binding BIND_PER_VERTEX 
+                          vector 4 {
+                            1.2 1 0 
+                            -1.2 1 0 
+                            -1.2 -1 0 
+                            1.2 -1 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 9 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.576471 0.631373 0.631373 1 
+                          }
+                        }
+                      }
+                    }
+                    osg::Geometry {
+                      UniqueID 10 
+                      Name "Pickable" 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 11 
+                          Mode QUADS 
+                          Count 4 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 12 
+                          Binding BIND_PER_VERTEX 
+                          vector 4 {
+                            1.2 1 0 
+                            0.9 1 0 
+                            0.9 0.7 0 
+                            1.2 0.7 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 13 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.576471 0.631373 0.631373 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 14 
+                  Name "GeodeAxis" 
+                  Drawables 1 {
+                    osg::Geometry {
+                      UniqueID 15 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 16 
+                          Mode LINES 
+                          Count 4 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 17 
+                          Binding BIND_PER_VERTEX 
+                          vector 4 {
+                            0 0 0 
+                            0.5 0 0 
+                            0 0 0 
+                            0 0.5 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 18 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.933333 0.909804 0.835294 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 19 
+                  Name "GeodeNormal" 
+                  Drawables 1 {
+                    osg::Geometry {
+                      UniqueID 20 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 21 
+                          Mode LINES 
+                          Count 2 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 22 
+                          Binding BIND_PER_VERTEX 
+                          vector 2 {
+                            0 0 0 
+                            0 0 1.2 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 23 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.164706 0.631373 0.596078 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 24 
+                  Name "GeodeIntersection" 
+                  Drawables 1 {
+                    osg::Geometry {
+                      UniqueID 25 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 26 
+                          Mode LINES 
+                          Count 2 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 27 
+                          Binding BIND_PER_VERTEX 
+                          vector 2 {
+                            0 0 0 
+                            0 0 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 28 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.576471 0.631373 0.631373 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 29 
+                }
+              }
+              ValueList 5 {
+                TRUE FALSE FALSE FALSE TRUE 
+              }
+            }
+          }
+          Matrix {
+            1 0 0 0 
+            0 1 0 0 
+            0 0 1 0 
+            0 0.6 0 1 
+          }
+          
+        }
+      }
+      MatrixTranslation {
+        1 0 0 0 
+        0 1 0 0 
+        0 0 1 0 
+        0 0.6 0 1 
+      }
+      
+      Transform TRUE {
+        osg::MatrixTransform {
+          UniqueID 3 
+        }
+      }
+      Switch TRUE {
+        osg::Switch {
+          UniqueID 4 
+        }
+      }
+      GeodeData TRUE {
+        osg::Geode {
+          UniqueID 29 
+        }
+      }
+      Frame TRUE {
+        osg::Geometry {
+          UniqueID 6 
+        }
+      }
+      Pickable TRUE {
+        osg::Geometry {
+          UniqueID 10 
+        }
+      }
+      Axis TRUE {
+        osg::Geometry {
+          UniqueID 15 
+        }
+      }
+      Norm TRUE {
+        osg::Geometry {
+          UniqueID 20 
+        }
+      }
+      Intersection TRUE {
+        osg::Geometry {
+          UniqueID 25 
+        }
+      }
+      Center 0 0.6 0 
+      Normal 0 0 1 
+      Color 0.576471 0.631373 0.631373 1 
+    }
+    entity::Canvas {
+      UniqueID 30 
+      Name "Canvas1" 
+      Children 1 {
+        osg::MatrixTransform {
+          UniqueID 31 
+          Name "Transform" 
+          Children 1 {
+            osg::Switch {
+              UniqueID 32 
+              Name "Switch" 
+              Children 5 {
+                osg::Geode {
+                  UniqueID 33 
+                  Name "GeodeFrame" 
+                  Drawables 2 {
+                    osg::Geometry {
+                      UniqueID 34 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 35 
+                          Mode LINE_LOOP 
+                          Count 4 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 36 
+                          Binding BIND_PER_VERTEX 
+                          vector 4 {
+                            1.2 1 0 
+                            -1.2 1 0 
+                            -1.2 -1 0 
+                            1.2 -1 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 37 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.423529 0.443137 0.768627 1 
+                          }
+                        }
+                      }
+                    }
+                    osg::Geometry {
+                      UniqueID 38 
+                      Name "Pickable" 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 39 
+                          Mode QUADS 
+                          Count 4 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 40 
+                          Binding BIND_PER_VERTEX 
+                          vector 4 {
+                            1.2 1 0 
+                            0.9 1 0 
+                            0.9 0.7 0 
+                            1.2 0.7 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 41 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.423529 0.443137 0.768627 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 42 
+                  Name "GeodeAxis" 
+                  Drawables 1 {
+                    osg::Geometry {
+                      UniqueID 43 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 44 
+                          Mode LINES 
+                          Count 4 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 45 
+                          Binding BIND_PER_VERTEX 
+                          vector 4 {
+                            0 0 0 
+                            0.5 0 0 
+                            0 0 0 
+                            0 0.5 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 46 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.933333 0.909804 0.835294 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 47 
+                  Name "GeodeNormal" 
+                  Drawables 1 {
+                    osg::Geometry {
+                      UniqueID 48 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 49 
+                          Mode LINES 
+                          Count 2 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 50 
+                          Binding BIND_PER_VERTEX 
+                          vector 2 {
+                            0 0 0 
+                            0 0 1.2 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 51 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.164706 0.631373 0.596078 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 52 
+                  Name "GeodeIntersection" 
+                  Drawables 1 {
+                    osg::Geometry {
+                      UniqueID 53 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 54 
+                          Mode LINES 
+                          Count 2 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 55 
+                          Binding BIND_PER_VERTEX 
+                          vector 2 {
+                            0 0 0 
+                            0 0 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 56 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.576471 0.631373 0.631373 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 57 
+                }
+              }
+              ValueList 5 {
+                TRUE FALSE FALSE FALSE TRUE 
+              }
+            }
+          }
+          Matrix {
+            -1.03473e-013 0 1 0 
+            0 1 0 0 
+            -1 0 -1.03473e-013 0 
+            0 0.6 0 1 
+          }
+          
+        }
+      }
+      MatrixRotation {
+        -1.03473e-013 0 1 0 
+        0 1 0 0 
+        -1 0 -1.03473e-013 0 
+        0 0 0 1 
+      }
+      
+      MatrixTranslation {
+        1 0 0 0 
+        0 1 0 0 
+        0 0 1 0 
+        0 0.6 0 1 
+      }
+      
+      Transform TRUE {
+        osg::MatrixTransform {
+          UniqueID 31 
+        }
+      }
+      Switch TRUE {
+        osg::Switch {
+          UniqueID 32 
+        }
+      }
+      GeodeData TRUE {
+        osg::Geode {
+          UniqueID 57 
+        }
+      }
+      Frame TRUE {
+        osg::Geometry {
+          UniqueID 34 
+        }
+      }
+      Pickable TRUE {
+        osg::Geometry {
+          UniqueID 38 
+        }
+      }
+      Axis TRUE {
+        osg::Geometry {
+          UniqueID 43 
+        }
+      }
+      Norm TRUE {
+        osg::Geometry {
+          UniqueID 48 
+        }
+      }
+      Intersection TRUE {
+        osg::Geometry {
+          UniqueID 53 
+        }
+      }
+      Center 0 0.6 0 
+      Normal -1 0 -1.03473e-013 
+      Color 0.423529 0.443137 0.768627 1 
+    }
+    entity::Canvas {
+      UniqueID 58 
+      Name "Canvas2" 
+      Children 1 {
+        osg::MatrixTransform {
+          UniqueID 59 
+          Name "Transform" 
+          Children 1 {
+            osg::Switch {
+              UniqueID 60 
+              Name "Switch" 
+              Children 5 {
+                osg::Geode {
+                  UniqueID 61 
+                  Name "GeodeFrame" 
+                  Drawables 2 {
+                    osg::Geometry {
+                      UniqueID 62 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 63 
+                          Mode LINE_LOOP 
+                          Count 4 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 64 
+                          Binding BIND_PER_VERTEX 
+                          vector 4 {
+                            1.95661 1.22578 0 
+                            -1.18001 1.22578 0 
+                            -1.18001 -1.17422 0 
+                            1.95661 -1.17422 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 65 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.827451 0.211765 0.509804 1 
+                          }
+                        }
+                      }
+                    }
+                    osg::Geometry {
+                      UniqueID 66 
+                      Name "Pickable" 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 67 
+                          Mode QUADS 
+                          Count 4 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 68 
+                          Binding BIND_PER_VERTEX 
+                          vector 4 {
+                            1.95661 1.22578 0 
+                            1.65661 1.22578 0 
+                            1.65661 0.925777 0 
+                            1.95661 0.925777 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 69 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.827451 0.211765 0.509804 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 70 
+                  Name "GeodeAxis" 
+                  Drawables 1 {
+                    osg::Geometry {
+                      UniqueID 71 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 72 
+                          Mode LINES 
+                          Count 4 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 73 
+                          Binding BIND_PER_VERTEX 
+                          vector 4 {
+                            0.3883 0.025777 0 
+                            0.8883 0.025777 0 
+                            0.3883 0.025777 0 
+                            0.3883 0.525777 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 74 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.933333 0.909804 0.835294 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 75 
+                  Name "GeodeNormal" 
+                  Drawables 1 {
+                    osg::Geometry {
+                      UniqueID 76 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 77 
+                          Mode LINES 
+                          Count 2 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 78 
+                          Binding BIND_PER_VERTEX 
+                          vector 2 {
+                            0.3883 0.025777 0 
+                            0.3883 0.025777 1.56831 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 79 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.164706 0.631373 0.596078 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 80 
+                  Name "GeodeIntersection" 
+                  Drawables 1 {
+                    osg::Geometry {
+                      UniqueID 81 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 82 
+                          Mode LINES 
+                          Count 2 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 83 
+                          Binding BIND_PER_VERTEX 
+                          vector 2 {
+                            0 0 0 
+                            0 0 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 84 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0.576471 0.631373 0.631373 1 
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                osg::Geode {
+                  UniqueID 85 
+                  StateSet TRUE {
+                    osg::StateSet {
+                      UniqueID 86 
+                      TextureModeList 1 {
+                        Data 1 {
+                          GL_TEXTURE_2D ON 
+                        }
+                      }
+                      TextureAttributeList 1 {
+                        Data 1 {
+                          osg::Texture2D {
+                            UniqueID 87 
+                            WRAP_S CLAMP 
+                            WRAP_T CLAMP 
+                            WRAP_R CLAMP 
+                            MIN_FILTER LINEAR_MIPMAP_LINEAR 
+                            MAG_FILTER LINEAR 
+                            Swizzle RGBA 
+                            Image TRUE {
+                              ClassName osg::Image 
+                              UniqueID 88 
+                              FileName "C:/cygwin64/home/vr267/github/dura-europos-insitu/samples/ds-32.bmp" 
+                              WriteHint 0 2 
+                              DataVariance STATIC 
+                            }
+                            TextureWidth 1024 
+                            TextureHeight 1024 
+                          }
+                          Value OFF 
+                        }
+                      }
+                    }
+                  }
+                  Drawables 3 {
+                    entity::Stroke {
+                      UniqueID 89 
+                      Name "Stroke" 
+                      DataVariance DYNAMIC 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 90 
+                          Mode LINE_STRIP 
+                          Count 15 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 91 
+                          Binding BIND_PER_VERTEX 
+                          vector 15 {
+                            -0.767582 0.260634 0 
+                            -0.77331 0.254906 0 
+                            -0.779038 0.243449 0 
+                            -0.790495 0.191895 0 
+                            -0.824864 0.123157 0 
+                            -0.876418 0.0372334 0 
+                            -0.939428 -0.0716028 0 
+                            -0.99671 -0.174711 0 
+                            -1.04826 -0.254906 0 
+                            -1.09982 -0.335101 0 
+                            -1.12846 -0.392383 0 
+                            -1.15137 -0.415296 0 
+                            -1.1571 -0.426752 0 
+                            -1.16283 -0.432481 0 
+                            -1.16283 -0.432481 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 92 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0 0.168627 0.211765 1 
+                          }
+                        }
+                      }
+                      Lines TRUE {
+                        osg::DrawArrays {
+                          UniqueID 93 
+                          Mode LINE_STRIP 
+                          Count 15 
+                        }
+                      }
+                      Color 0 0.168627 0.211765 1 
+                    }
+                    entity::Stroke {
+                      UniqueID 94 
+                      Name "Stroke" 
+                      DataVariance DYNAMIC 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 95 
+                          Mode LINE_STRIP 
+                          Count 14 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 96 
+                          Binding BIND_PER_VERTEX 
+                          vector 14 {
+                            -1.18001 0.14607 0 
+                            -1.18001 0.140341 0 
+                            -1.16283 0.0945157 0 
+                            -1.12846 0.025777 0 
+                            -1.06545 -0.0830592 0 
+                            -0.968069 -0.203352 0 
+                            -0.876418 -0.340829 0 
+                            -0.801951 -0.40384 0 
+                            -0.750397 -0.46685 0 
+                            -0.716028 -0.518404 0 
+                            -0.698843 -0.541317 0 
+                            -0.687387 -0.547045 0 
+                            -0.681658 -0.552773 0 
+                            -0.681658 -0.552773 0 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 97 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0 0.168627 0.211765 1 
+                          }
+                        }
+                      }
+                      Lines TRUE {
+                        osg::DrawArrays {
+                          UniqueID 98 
+                          Mode LINE_STRIP 
+                          Count 14 
+                        }
+                      }
+                      Color 0 0.168627 0.211765 1 
+                    }
+                    entity::Photo {
+                      UniqueID 99 
+                      Name "Photo0" 
+                      PrimitiveSetList 1 {
+                        osg::DrawArrays {
+                          UniqueID 100 
+                          Mode QUADS 
+                          Count 4 
+                        }
+                      }
+                      VertexArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 101 
+                          Binding BIND_PER_VERTEX 
+                          vector 4 {
+                            -0.0433871 -0.603554 0 
+                            1.95661 -0.603554 0 
+                            1.95661 0.655108 0 
+                            -0.0433871 0.655108 0 
+                          }
+                        }
+                      }
+                      NormalArray TRUE {
+                        osg::Vec3Array {
+                          UniqueID 102 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            0 0 1 
+                          }
+                        }
+                      }
+                      ColorArray TRUE {
+                        osg::Vec4Array {
+                          UniqueID 103 
+                          Binding BIND_OVERALL 
+                          vector 1 {
+                            1 1 1 1 
+                          }
+                        }
+                      }
+                      TexCoordArrayList 1 {
+                        osg::Vec2Array {
+                          UniqueID 104 
+                          Binding BIND_PER_VERTEX 
+                          vector 4 {
+                            0 0 
+                            1 0 
+                            1 1 
+                            0 1 
+                          }
+                        }
+                      }
+                      Texture TRUE {
+                        osg::Texture2D {
+                          UniqueID 87 
+                        }
+                      }
+                      Center 0.956613 0.025777 0 
+                      Width 1 
+                      Height 0.629331 
+                    }
+                  }
+                }
+              }
+              ValueList 5 {
+                TRUE TRUE FALSE FALSE TRUE 
+              }
+            }
+          }
+          Matrix {
+            1 0 0 0 
+            0 -1.03473e-013 1 0 
+            0 -1 -1.03473e-013 0 
+            0 0 0 1 
+          }
+          
+        }
+      }
+      MatrixRotation {
+        1 0 0 0 
+        0 -1.03473e-013 1 0 
+        0 -1 -1.03473e-013 0 
+        0 0 0 1 
+      }
+      
+      Transform TRUE {
+        osg::MatrixTransform {
+          UniqueID 59 
+        }
+      }
+      Switch TRUE {
+        osg::Switch {
+          UniqueID 60 
+        }
+      }
+      GeodeData TRUE {
+        osg::Geode {
+          UniqueID 85 
+        }
+      }
+      Frame TRUE {
+        osg::Geometry {
+          UniqueID 62 
+        }
+      }
+      Pickable TRUE {
+        osg::Geometry {
+          UniqueID 66 
+        }
+      }
+      Axis TRUE {
+        osg::Geometry {
+          UniqueID 71 
+        }
+      }
+      Norm TRUE {
+        osg::Geometry {
+          UniqueID 76 
+        }
+      }
+      Intersection TRUE {
+        osg::Geometry {
+          UniqueID 81 
+        }
+      }
+      Normal 0 -1 -1.03473e-013 
+      Color 0.827451 0.211765 0.509804 1 
+    }
+  }
+  IdCanvas 3 
+  IdPhoto 1 
+  FilePath "C:/cygwin64/home/vr267/github/dura-europos-insitu/samples/test-image.osgt" 
+}

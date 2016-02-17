@@ -4,6 +4,8 @@
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
 #include <osg/Image>
+#include <osg/StateSet>
+#include <osg/TexMat>
 
 entity::Photo::Photo()
     : entity::Entity2D()
@@ -14,7 +16,6 @@ entity::Photo::Photo()
     , m_angle(0)
     , m_edit(false)
 {
-    this->getOrCreateStateSet()->setTextureAttributeAndModes(0, this->getTextureAsAttribute());
     outLogMsg("New Photo ctor complete");
 }
 
@@ -27,6 +28,7 @@ entity::Photo::Photo(const entity::Photo& photo, const osg::CopyOp& copyop)
     , m_angle(photo.m_angle)
     , m_edit(photo.m_edit)
 {
+    outLogMsg("New Photo ctor by copy complete");
 }
 
 void entity::Photo::setTexture(osg::Texture2D* texture)

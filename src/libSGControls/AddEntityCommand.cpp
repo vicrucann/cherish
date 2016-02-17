@@ -64,6 +64,9 @@ AddPhotoCommand::AddPhotoCommand(entity::UserScene* scene, const std::string& fn
 {
     m_photo->setName(ename);
     m_photo->loadImage(fname);
+
+    m_canvas->getGeodeData()->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute() );
+
     this->setText(QObject::tr("Add photo to %1")
                   .arg(QString(m_canvas->getName().c_str())));
 }
@@ -77,6 +80,7 @@ void AddPhotoCommand::undo()
 {
     if (!m_canvas->getGeodeData()->removeChild(m_photo.get()))
         outErrMsg("Could not remove photo from current canvas");
+    m_canvas->updateFrame();
     m_scene->updateWidgets();
 }
 
@@ -84,7 +88,7 @@ void AddPhotoCommand::redo()
 {
     if (!m_canvas->getGeodeData()->addDrawable(m_photo.get()))
         outErrMsg("Could not add photo to current canvas");
-    m_photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
+
     m_canvas->updateFrame();
     m_scene->updateWidgets();
 }

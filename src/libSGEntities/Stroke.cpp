@@ -6,6 +6,7 @@
 #include <osg/StateSet>
 #include <osg/BlendFunc>
 #include <osg/Point>
+#include <osg/Texture2D>
 
 entity::Stroke::Stroke()
     : entity::Entity2D()
@@ -28,6 +29,7 @@ entity::Stroke::Stroke()
     stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
     stateset->setAttributeAndModes(blendfunc, osg::StateAttribute::ON);
     stateset->setAttributeAndModes(new osg::Point(dureu::STROKE_LINE_WIDTH));
+    stateset->setTextureAttributeAndModes(0, new osg::Texture2D, osg::StateAttribute::OFF);
     stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);

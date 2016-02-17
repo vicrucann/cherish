@@ -127,6 +127,7 @@ void MainWindow::onFileNew()
 {
     this->onFileClose();
     m_undoStack->clear();
+    this->recievedRequestUpdate();
 }
 
 /* Check whether the current scene is empty or not
