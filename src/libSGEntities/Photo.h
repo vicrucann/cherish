@@ -6,13 +6,15 @@
 #ifndef PHOTO
 #define PHOTO
 
+#include "Entity2D.h"
+
 #include <osg/Geometry>
 #include <osg/ref_ptr>
 #include <osg/Texture2D>
 #include <osgDB/ObjectWrapper>
 
 namespace entity {
-class Photo: public osg::Geometry{
+class Photo: public entity::Entity2D{
 public:
     Photo();
     Photo(const Photo& photo, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
@@ -42,10 +44,16 @@ public:
     bool getModeEdit() const;
 
     void move(const double u, const double v);
+    void moveDelta(double du, double dv);
     void rotate(double angle);
+    void rotate(double theta, osg::Vec3f center);
     void flipH();
     void flipV();
     void scale(double timesX, double timesY);
+    void scale(double scale, osg::Vec3f center);
+    void scale(double scaleX, double scaleY, osg::Vec3f center);
+
+    dureu::ENTITY_TYPE getEntityType() const;
 
 protected:
     void updateVertices();

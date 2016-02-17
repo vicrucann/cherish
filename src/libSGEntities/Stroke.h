@@ -16,11 +16,12 @@
 #define STROKE
 
 #include "Settings.h"
+#include "Entity2D.h"
 #include <osg/Geometry>
 #include <osgDB/ObjectWrapper>
 
 namespace entity {
-class Stroke : public osg::Geometry {
+class Stroke : public entity::Entity2D {
 public:
     Stroke();
     Stroke(const Stroke& copy, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
@@ -38,8 +39,11 @@ public:
     float getLength() const;
     bool isLengthy() const;
     void moveDelta(double du, double dv);
-    void scale(double s, osg::Vec3f center);
+    void scale(double scaleX, double scaleY, osg::Vec3f center);
+    void scale(double scale, osg::Vec3f center);
     void rotate(double theta, osg::Vec3f center);
+
+    dureu::ENTITY_TYPE getEntityType() const;
 
 private:
     osg::ref_ptr<osg::DrawArrays> m_lines;

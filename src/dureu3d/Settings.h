@@ -67,6 +67,12 @@ namespace dureu{
 const double PI = 3.14159265359;
 const double EPSILON = 0.00001;
 
+enum ENTITY_TYPE
+{
+    ENTITY_STROKE
+    , ENTITY_PHOTO
+};
+
 enum APPMODE{
     SCREEN_MAX = 0,
     SCREEN_MIN = 1,

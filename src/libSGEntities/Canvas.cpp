@@ -397,8 +397,17 @@ void entity::Canvas::addStrokesSelectedAll()
 {
     this->resetStrokesSelected();
     for (unsigned int i = 0; i < m_geodeData->getNumChildren(); i++){
-        if (m_geodeData->getChild(i)->getName() == "Stroke"){
-            entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_geodeData->getChild(i));
+        entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
+        if (!entity){
+            outErrMsg("addStrokesSelectedAll: could not dynamic_cast to Entity2D*");
+            continue;
+        }
+        if (entity->getEntityType() == dureu::ENTITY_STROKE){
+            entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(entity);
+            if (!stroke){
+                outErrMsg("addStrokesSelectedAll: could not dynamic_cast to Stroke*");
+                continue;
+            }
             this->addStrokesSelected(stroke);
         }
     }
@@ -657,7 +666,10 @@ entity::Canvas *entity::Canvas::clone() const
     clone->setName(this->getName());
 
     for (unsigned int i=0; i<m_geodeData->getNumChildren(); ++i){
-        if (m_geodeData->getChild(i)->getName() == "Stroke"){
+        entity::Entity2D* entcopy = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
+        switch(entcopy->getEntityType()){
+        case dureu::ENTITY_STROKE:
+        {
             entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_geodeData->getChild(i));
             if (stroke){
                 entity::Stroke* si = new entity::Stroke(*stroke, osg::CopyOp::DEEP_COPY_ALL);
@@ -667,6 +679,12 @@ entity::Canvas *entity::Canvas::clone() const
                 else outErrMsg("canvas clone: coult not clone the stroke");
             }
             else outErrMsg("canvas clone: could not dynamic_cast<Stroke>");
+            break;
+        }
+        case dureu::ENTITY_PHOTO:
+            break;
+        default:
+            break;
         }
     }
     clone->updateFrame();

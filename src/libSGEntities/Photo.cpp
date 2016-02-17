@@ -6,7 +6,7 @@
 #include <osg/Image>
 
 entity::Photo::Photo()
-    : osg::Geometry()
+    : entity::Entity2D()
     , m_texture(new osg::Texture2D)
     , m_center(osg::Vec3f(0.f,0.f,0.f))
     , m_width(0)
@@ -19,7 +19,7 @@ entity::Photo::Photo()
 }
 
 entity::Photo::Photo(const entity::Photo& photo, const osg::CopyOp& copyop)
-    : osg::Geometry(photo, copyop)
+    : entity::Entity2D(photo, copyop)
     , m_texture(photo.m_texture)
     , m_center(photo.m_center)
     , m_width(photo.m_width)
@@ -151,6 +151,11 @@ void entity::Photo::move(const double u, const double v)
     this->updateVertices();
 }
 
+void entity::Photo::moveDelta(double du, double dv)
+{
+
+}
+
 /* The angle must be provided in radiants, and it is
  * a incremental angle, not an angle from origin.
 */
@@ -158,6 +163,11 @@ void entity::Photo::rotate(double angle)
 {
     m_angle += angle;
     this->updateVertices();
+}
+
+void entity::Photo::rotate(double theta, osg::Vec3f center)
+{
+
 }
 
 /* When performing a flip, we do not touch vertex coordinates,
@@ -195,6 +205,21 @@ void entity::Photo::scale(double timesX, double timesY)
     m_width *= timesX;
     m_height *= timesY;
     this->updateVertices();
+}
+
+void entity::Photo::scale(double scale, osg::Vec3f center)
+{
+
+}
+
+void entity::Photo::scale(double scaleX, double scaleY, osg::Vec3f center)
+{
+
+}
+
+dureu::ENTITY_TYPE entity::Photo::getEntityType() const
+{
+    return dureu::ENTITY_PHOTO;
 }
 
 /* Since the Photo is represented by Quad, we can use parameters

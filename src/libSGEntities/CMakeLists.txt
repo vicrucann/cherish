@@ -22,6 +22,8 @@ set (libSGEntities_SRCS
     Photo.cpp
     UserScene.h
     UserScene.cpp
+    Entity2D.h
+    Entity2D.cpp
 )
 
 add_library(libSGEntities

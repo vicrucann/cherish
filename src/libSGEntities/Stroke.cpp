@@ -8,7 +8,7 @@
 #include <osg/Point>
 
 entity::Stroke::Stroke()
-    : osg::Geometry()
+    : entity::Entity2D()
     , m_lines(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP))
     , m_color(osg::Vec4f(0.f, 0.f, 0.f, 1.f))
 {
@@ -42,7 +42,7 @@ entity::Stroke::Stroke()
 }
 
 entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
-    : osg::Geometry(copy, copyop)
+    : entity::Entity2D(copy, copyop)
     , m_lines(copy.m_lines)
     , m_color(copy.m_color)
 {
@@ -155,12 +155,23 @@ void entity::Stroke::moveDelta(double du, double dv)
     this->dirtyBound();
 }
 
-void entity::Stroke::scale(double s, osg::Vec3f center)
+void entity::Stroke::scale(double scaleX, double scaleY, osg::Vec3f center)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
     for (unsigned int i=0; i<verts->size(); ++i){
         osg::Vec3f vi = (*verts)[i] - center;
-        (*verts)[i] = center + osg::Vec3f(s*vi.x(), s*vi.y(), 0);
+        (*verts)[i] = center + osg::Vec3f(scaleX*vi.x(), scaleY*vi.y(), 0);
+    }
+    verts->dirty();
+    this->dirtyBound();
+}
+
+void entity::Stroke::scale(double scale, osg::Vec3f center)
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    for (unsigned int i=0; i<verts->size(); ++i){
+        osg::Vec3f vi = (*verts)[i] - center;
+        (*verts)[i] = center + osg::Vec3f(scale*vi.x(), scale*vi.y(), 0);
     }
     verts->dirty();
     this->dirtyBound();
@@ -176,6 +187,11 @@ void entity::Stroke::rotate(double theta, osg::Vec3f center)
     }
     verts->dirty();
     this->dirtyBound();
+}
+
+dureu::ENTITY_TYPE entity::Stroke::getEntityType() const
+{
+    return dureu::ENTITY_STROKE;
 }
 
 /* for serialization of stroke type
