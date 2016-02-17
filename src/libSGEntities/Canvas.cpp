@@ -346,6 +346,11 @@ void entity::Canvas::rotate(const osg::Matrix& mr)
     this->updateTransforms();
 }
 
+void entity::Canvas::rotate(const osg::Matrix &mr, const osg::Vec3f &center, const osg::Vec3f &axis)
+{
+
+}
+
 void entity::Canvas::unselectAll()
 {
     this->setPhotoCurrent(false);
@@ -597,32 +602,18 @@ void entity::Canvas::updateFrame()
     if (m_geodeData->getNumChildren() > 0){
         osg::BoundingBox bb = m_geodeData->getBoundingBox();
         assert(bb.valid());
+
+        //this->updateCentroid(bb.center());
+
         float dx = 0.5*(bb.xMax()-bb.xMin());
         float dy = 0.5*(bb.yMax()-bb.yMin());
         float szX = std::max(dx, dureu::CANVAS_MINW);
         float szY = std::max(dy, dureu::CANVAS_MINW);
 
         this->setVertices(bb.center(), szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
-        //this->translate(osg::Matrix::translate(bb.center().x()-m_center.x(), bb.center().y()-m_center.y(), bb.center().z()-m_center.z()));
+
     }
 }
-
-// we have to separate updateData() from updateFrame because:
-// we do not want to update data during certain operations, such as
-// moving photo within the canvas, or adding a stroke to a canvas
-// updateData should be called on release button for the mentioned cases
-/*void entity::Canvas::updateData()
-{
-    osg::BoundingBox bb = m_geodeData->getBoundingBox();
-    assert(bb.valid());
-
-    outLogVec("_center", m_center.x(), m_center.y(), m_center.z());
-    outLogVec("bb.center", bb.center().x(), bb.center().y(), bb.center().z());
-    osg::Matrix M;
-    M.makeTranslate(bb.center() - m_center);
-    m_mT = M;
-    this->updateTransforms();
-}*/
 
 void entity::Canvas::setModeEdit(bool on)
 {
@@ -709,6 +700,35 @@ void entity::Canvas::updateTransforms()
     if (!plane.valid()){
         outErrMsg("Error while transforming internal canvas data");
     }
+}
+
+// we have to separate updateCentroid() from updateFrame() because:
+// we do not want to update data during certain operations, such as
+// moving photo within the canvas, or adding a stroke to a canvas
+// updateData should be called on release button for the mentioned cases
+void entity::Canvas::updateCentroid(const osg::Vec3f &center2d)
+{
+    //osg::Vec3f center3d = center2d * m_transform;
+    for (unsigned int i=0; i<m_geodeData->getNumChildren(); ++i){
+        if (m_geodeData->getName() == "Stroke"){
+            entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_geodeData->getChild(i));
+            if (!stroke){
+                outErrMsg("updateCentroid(): could not dynamic_cast<Stroke*>");
+                continue;
+            }
+            //stroke->moveDelta();
+        }
+        else {
+            entity::Photo* photo = dynamic_cast<entity::Photo*>(m_geodeData->getChild(i));
+            if (!photo){
+                outErrMsg("updateCentroid(): could not dynamic_cast<Photo*>");
+                continue;
+            }
+
+        }
+    }
+
+    this->translate(osg::Matrix::translate(center2d.x()-m_center.x(), center2d.y()-m_center.y(), center2d.z()-m_center.z()));
 }
 
 void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)

@@ -90,6 +90,7 @@ public:
 
     void translate(const osg::Matrix& mt);
     void rotate(const osg::Matrix& mr);
+    void rotate(const osg::Matrix& mr, const osg::Vec3f& center, const osg::Vec3f& axis);
 
     void unselectAll();
     void unselectStrokes();
@@ -117,9 +118,9 @@ public:
     void setPhotoCurrent(bool current);
     entity::Photo* getPhotoCurrent() const;
 
-    // recalculate frame's geometry based on strokes
+    /* re-calculate frame's geometry and plane center transform
+     * based on canvas content location */
     void updateFrame();
-    //void updateData(); // update centroid as well, degenerated for the moment
 
     void setModeEdit(bool on); // changes certain colors, shows or hides normal
     bool getModeEdit() const;
@@ -137,27 +138,29 @@ protected:
     entity::Stroke* getStrokeSelected() const;
 
     void updateTransforms();
+    void updateCentroid(const osg::Vec3f& center2d);
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
+
 private:
-    osg::Matrix m_mR;
-    osg::Matrix m_mT;
-    osg::ref_ptr<osg::MatrixTransform> m_transform; // matrix transform in 3D space
-    osg::ref_ptr<osg::Switch> m_switch; // inisible or not, the whole canvas
-    osg::ref_ptr<osg::Geode> m_geodeData; // keeps user canvas drawables such as strokes
-    osg::ref_ptr<osg::Geometry> m_frame; // frame drawables
-    osg::ref_ptr<osg::Geometry> m_pickable; // to select canvas by mouse
-    osg::ref_ptr<osg::Geometry> m_axis; // local coordinate axis
-    osg::ref_ptr<osg::Geometry> m_norm;
-    osg::ref_ptr<osg::Geometry> m_intersection;
+    osg::Matrix m_mR; /* part of m_transform */
+    osg::Matrix m_mT; /* part of m_transform */
+    osg::ref_ptr<osg::MatrixTransform> m_transform; /* matrix transform in 3D space */
+    osg::ref_ptr<osg::Switch> m_switch; /* inisible or not, the whole canvas */
+    osg::ref_ptr<osg::Geode> m_geodeData; /* keeps user canvas drawables such as strokes and photos */
+    osg::ref_ptr<osg::Geometry> m_frame; /* frame drawables */
+    osg::ref_ptr<osg::Geometry> m_pickable; /* to select canvas by mouse */
+    osg::ref_ptr<osg::Geometry> m_axis; /* local coordinate axis drawable only */
+    osg::ref_ptr<osg::Geometry> m_norm; /* canvas normal drawable */
+    osg::ref_ptr<osg::Geometry> m_intersection; /* canvas intersection drawable */
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
     std::vector<entity::Stroke*> m_strokesSelected;
     osg::observer_ptr<entity::Stroke> m_strokeSelected; /* for stroke editing, e.g., push, delete, copy, cut */
     osg::observer_ptr<entity::Photo> m_photoCurrent; /* for editing photo position and properties*/
 
-    osg::Vec3f m_center;
-    osg::Vec3f m_normal;
-    osg::Vec4f m_color; // display color for canvas drawables
+    osg::Vec3f m_center; /* 3D global */
+    osg::Vec3f m_normal; /* 3D global */
+    osg::Vec4f m_color; /* display color for canvas drawables */
 
     bool m_edit;
 

@@ -854,7 +854,7 @@ void entity::UserScene::strokeAppend(float u, float v)
     if (this->strokeValid()){
         entity::Stroke* stroke = m_canvasCurrent->getStrokeCurrent();
         stroke->appendPoint(u, v);
-        m_canvasCurrent->updateFrame();
+        //m_canvasCurrent->updateFrame();
         this->updateWidgets();
     }
     else
