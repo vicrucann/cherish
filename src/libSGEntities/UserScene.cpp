@@ -854,7 +854,6 @@ void entity::UserScene::strokeAppend(float u, float v)
     if (this->strokeValid()){
         entity::Stroke* stroke = m_canvasCurrent->getStrokeCurrent();
         stroke->appendPoint(u, v);
-        //m_canvasCurrent->updateFrame();
         this->updateWidgets();
     }
     else
@@ -905,7 +904,6 @@ void entity::UserScene::strokesMoveAppend(double u, double v)
     /* perform delta movement */
     m_canvasCurrent->moveStrokesSelected(du, dv);
 
-    m_canvasCurrent->updateFrame();
     this->updateWidgets();
     m_du += du;
     m_dv += dv;
@@ -924,7 +922,6 @@ void entity::UserScene::strokesMoveFinish(QUndoStack *stack)
                                                              m_du, m_dv);
     if (!cmd){
         outErrMsg("strokeMoveFinish: Could not allocate command");
-        m_canvasCurrent->updateFrame();
         return;
     }
     stack->push(cmd);
@@ -983,7 +980,6 @@ void entity::UserScene::strokesScaleFinish(QUndoStack *stack)
 
     if (!cmd){
         outErrMsg("strokeScaleFinish: Could not allocate command");
-        m_canvasCurrent->updateFrame();
         return;
     }
     stack->push(cmd);
@@ -1069,7 +1065,6 @@ void entity::UserScene::strokesRotateFinish(QUndoStack *stack)
 
     if (!cmd){
         outErrMsg("strokesRotateFinish: Could not allocate command");
-        m_canvasCurrent->updateFrame();
         return;
     }
     stack->push(cmd);
@@ -1257,7 +1252,6 @@ void entity::UserScene::photoMoveAppend(const double u, const double v)
         return;
     }
     photo->move(u,v);
-    this->getCanvasCurrent()->updateFrame();
     this->updateWidgets();
 }
 
@@ -1320,7 +1314,6 @@ void entity::UserScene::photoScaleAppend(double u, double v)
     m_scale *= s;
     photo->scale(s, s, photo->getCenter());
     this->updateWidgets();
-    //this->getCanvasCurrent()->updateFrame();
 }
 
 void entity::UserScene::photoScaleFinish(QUndoStack *stack, double u, double v)
@@ -1333,7 +1326,6 @@ void entity::UserScene::photoScaleFinish(QUndoStack *stack, double u, double v)
     photo->setModeEdit(false);
     photo->setWidth(m_u);
     photo->setHeight(m_v);
-    this->getCanvasCurrent()->updateFrame(); // delete later
     /* push to stack */
     EditPhotoScaleCommand* cmd = new EditPhotoScaleCommand(this, m_scale);
     m_u = m_v = 0;

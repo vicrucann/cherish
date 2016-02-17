@@ -609,18 +609,56 @@ void entity::Canvas::setPhotoCurrent(bool current)
 void entity::Canvas::updateFrame()
 {
     if (m_geodeData->getNumChildren() > 0){
+        /* local bounding box */
         osg::BoundingBox bb = m_geodeData->getBoundingBox();
         assert(bb.valid());
 
-        //this->updateCentroid(bb.center());
+        /* 2d <--> 2d transform matrices */
+        osg::Matrix M = m_transform->getMatrix();
+        osg::Matrix invM;
+        if (!invM.invert(M)){
+            outErrMsg("updateFrame: impossible to invert the transform matrix");
+            return;
+        }
 
+        /* old 2d local canvas center */
+        osg::Vec3f c2d_old = m_center * invM;
+        if (std::fabs(c2d_old.z()) > dureu::EPSILON){
+            outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
+            return;
+        }
+
+        /* new 2d local center */
+        osg::Vec3f c2d_new = bb.center();
+        if (std::fabs(c2d_new.z()) > dureu::EPSILON){
+            outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
+            return;
+        }
+
+        /* move every child back in local delta translation (diff between old and new centers) */
+        osg::Vec3f delta2d = c2d_old - c2d_new;
+        for (unsigned int i=0; i<m_geodeData->getNumChildren(); ++i){
+            entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
+            if (!entity){
+                outErrMsg("updateFrame: could not dynamic_cast to Entity2D*");
+                return;
+            }
+            entity->moveDelta(delta2d.x(), delta2d.y());
+        }
+
+        /* adjust the size of the canvas drawables in old location */
         float dx = 0.5*(bb.xMax()-bb.xMin());
         float dy = 0.5*(bb.yMax()-bb.yMin());
         float szX = std::max(dx, dureu::CANVAS_MINW);
         float szY = std::max(dy, dureu::CANVAS_MINW);
+        this->setVertices(c2d_old, szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
 
-        this->setVertices(bb.center(), szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+        /* new global center coordinate and delta translate in 3D */
+        osg::Vec3f c3d_new = c2d_new * M;
+        osg::Vec3f delta3d = c3d_new - m_center;
 
+        /* move whole canvas and its drawables to be positioned at new global center */
+        this->translate(osg::Matrix::translate(delta3d.x(), delta3d.y(), delta3d.z()));
     }
 }
 
@@ -718,35 +756,6 @@ void entity::Canvas::updateTransforms()
     if (!plane.valid()){
         outErrMsg("Error while transforming internal canvas data");
     }
-}
-
-// we have to separate updateCentroid() from updateFrame() because:
-// we do not want to update data during certain operations, such as
-// moving photo within the canvas, or adding a stroke to a canvas
-// updateData should be called on release button for the mentioned cases
-void entity::Canvas::updateCentroid(const osg::Vec3f &center2d)
-{
-    //osg::Vec3f center3d = center2d * m_transform;
-    for (unsigned int i=0; i<m_geodeData->getNumChildren(); ++i){
-        if (m_geodeData->getName() == "Stroke"){
-            entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_geodeData->getChild(i));
-            if (!stroke){
-                outErrMsg("updateCentroid(): could not dynamic_cast<Stroke*>");
-                continue;
-            }
-            //stroke->moveDelta();
-        }
-        else {
-            entity::Photo* photo = dynamic_cast<entity::Photo*>(m_geodeData->getChild(i));
-            if (!photo){
-                outErrMsg("updateCentroid(): could not dynamic_cast<Photo*>");
-                continue;
-            }
-
-        }
-    }
-
-    this->translate(osg::Matrix::translate(center2d.x()-m_center.x(), center2d.y()-m_center.y(), center2d.z()-m_center.z()));
 }
 
 void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)

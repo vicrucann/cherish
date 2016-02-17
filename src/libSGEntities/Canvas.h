@@ -138,7 +138,6 @@ protected:
     entity::Stroke* getStrokeSelected() const;
 
     void updateTransforms();
-    void updateCentroid(const osg::Vec3f& center2d);
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
 
 private:
@@ -158,8 +157,8 @@ private:
     osg::observer_ptr<entity::Stroke> m_strokeSelected; /* for stroke editing, e.g., push, delete, copy, cut */
     osg::observer_ptr<entity::Photo> m_photoCurrent; /* for editing photo position and properties*/
 
-    osg::Vec3f m_center; /* 3D global */
-    osg::Vec3f m_normal; /* 3D global */
+    osg::Vec3f m_center; /* 3D global - virtual plane parameter */
+    osg::Vec3f m_normal; /* 3D global - virtual plane parameter*/
     osg::Vec4f m_color; /* display color for canvas drawables */
 
     bool m_edit;

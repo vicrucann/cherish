@@ -113,7 +113,6 @@ void AddStrokeCommand::undo()
     if (!m_canvas->getGeodeData()->removeDrawable(m_stroke))
         outErrMsg("undo(): problem while removing stroke from a canvas");
     m_canvas->updateFrame();
-    //m_canvas->updateData();
     m_scene->updateWidgets();
 }
 
@@ -122,6 +121,5 @@ void AddStrokeCommand::redo()
     if (!m_canvas->getGeodeData()->addDrawable(m_stroke))
         outErrMsg("redo(): problem while adding stroke to a canvas");
     m_canvas->updateFrame();
-    //m_canvas->updateData();
     m_scene->updateWidgets();
 }
