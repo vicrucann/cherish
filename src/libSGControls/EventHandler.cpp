@@ -251,16 +251,21 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
         return;
 
     //osg::Vec3f XC = osg::Vec3f(0.f,0.f,0.f);
-    osg::Quat rot(dureu::PI/24, osg::Vec3f(0,0,1));
+    osg::Vec3f center = m_scene->getCanvasCurrent()->getCenter();
+    osg::Vec3f rotaxis = osg::Vec3f(0.f, 1.f, 0.f) * m_scene->getCanvasCurrent()->getTransform()->getMatrix() - center;
+    rotaxis.normalize();
+    osg::Quat rot(dureu::PI/48, rotaxis);
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         //if (!this->getRaytraceNormalProjection(ea,aa,XC)) return;
         m_scene->editCanvasRotate(rot, dureu::EVENT_PRESSED);
+        outLogVec("rotaxis", rotaxis.x(), rotaxis.y(), rotaxis.z());
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         //if (!this->getRaytraceNormalProjection(ea,aa,XC)) return;
         m_scene->editCanvasRotate(rot, dureu::EVENT_RELEASED);
+        outLogVec("rotaxis", rotaxis.x(), rotaxis.y(), rotaxis.z());
         break;
     case osgGA::GUIEventAdapter::DRAG:
         //if (!this->getRaytraceNormalProjection(ea,aa,XC))return;
