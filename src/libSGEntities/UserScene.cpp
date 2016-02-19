@@ -380,9 +380,11 @@ void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rot
 
     switch (event){
     case dureu::EVENT_OFF:
+        outLogMsg("editCanvasRotate: OFF");
         this->canvasRotateFinish(stack);
         break;
     case dureu::EVENT_PRESSED:
+        outLogMsg("editCanvasRotate: pressed");
         this->canvasRotateStart();
         this->canvasRotateAppend(rotation);
         break;
@@ -392,8 +394,10 @@ void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rot
         this->canvasRotateAppend(rotation);
         break;
     case dureu::EVENT_RELEASED:
+        outLogMsg("editCanvasRotate: release");
         if (!this->canvasEditValid())
             break;
+        outLogMsg("editCanvasRotate: released");
         this->canvasRotateAppend(rotation);
         this->canvasRotateFinish(stack);
         break;
@@ -1199,6 +1203,10 @@ void entity::UserScene::canvasRotateStart()
         outErrMsg("CanvasRotateStart: cannot start editing since the canvas is already in edit mode");
         return;
     }
+    if (!m_canvasCurrent.get()){
+        outErrMsg("canvasRotateStart: current canvas is NULL");
+        return;
+    }
     m_canvasCurrent->setModeEdit(true);
     m_deltaR = osg::Quat();
 }
@@ -1209,6 +1217,11 @@ void entity::UserScene::canvasRotateAppend(const osg::Quat &r)
         outErrMsg("canvasRotateAppend: canvas edit mode is not valid");
         return;
     }
+    if (!m_canvasCurrent.get()){
+        outErrMsg("canvasRotateAppend: canvas is NULL");
+        return;
+    }
+
     m_canvasCurrent->rotate(osg::Matrix::rotate(r));
     m_deltaR = r * m_deltaR;
     this->updateWidgets();
@@ -1224,7 +1237,7 @@ void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
     m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()));
     EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(this, m_deltaR);
     stack->push(cmd);
-    m_deltaR = osg::Quat();
+    m_deltaR = osg::Quat(0,0,0,1);
 }
 
 void entity::UserScene::photoMoveStart(Photo *photo)

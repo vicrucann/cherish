@@ -90,7 +90,6 @@ public:
 
     void translate(const osg::Matrix& mt);
     void rotate(const osg::Matrix& mr);
-    void rotate(const osg::Matrix& mr, const osg::Vec3f& center, const osg::Vec3f& axis);
 
     void unselectAll();
     void unselectStrokes();
@@ -138,6 +137,7 @@ protected:
     entity::Stroke* getStrokeSelected() const;
 
     void updateTransforms();
+    void resetTransforms();
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
 
 private:

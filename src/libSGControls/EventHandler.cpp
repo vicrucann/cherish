@@ -254,7 +254,8 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
 
     osg::Vec3f P = osg::Vec3f(0.f,0.f,0.f);
     osg::Vec3f center = m_scene->getCanvasCurrent()->getCenter();
-    osg::Vec3f rotaxis = osg::Vec3f(0.f, 1.f, 0.f) * m_scene->getCanvasCurrent()->getTransform()->getMatrix() - center;
+    osg::Matrix M = m_scene->getCanvasCurrent()->getTransform()->getMatrix();
+    osg::Vec3f rotaxis = osg::Vec3f(0.f, 1.f, 0.f) * M - center;
     rotaxis.normalize();
     if (!this->getRaytracePlaneIntersection(ea, aa, rotaxis, P)){
         return;
@@ -263,28 +264,42 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     n0.normalize();
     osg::Vec3f n1 = P-center;
     n1.normalize();
+    double atheta = n0 * n1;
+    double theta = std::acos(atheta); // they are already normalized
+    /*check for domain errors */
+    if (theta < 0 || theta > dureu::PI){
+        outErrMsg("doEditCanvasRotate: rotation angle domain error. Fixing.");
+        theta = 0;
+    }
 
-    outLogVal("dot product", n0 * n1);
-    outLogVal("theta", std::acos(n0*n1));
-    double theta = std::acos(n0 * n1); // they are already normalized
-
-    /* need to figure out direction of rotation */
+    /* need to figure out direction of rotation
+     * http://stackoverflow.com/questions/11022446/direction-of-shortest-rotation-between-two-vectors */
+    osg::Vec3f r = n0 ^ n1;
+    double sign = r * rotaxis;
+    theta *= (sign<0? -1 : 1);
+    if (std::fabs(theta) > dureu::PI){
+        outErrMsg("doEditCanvasRotate: theta is out of range. Fixing.");
+        theta = 0;
+    }
 
     osg::Quat rot(theta, rotaxis);
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
-        //if (!this->getRaytraceNormalProjection(ea,aa,XC)) return;
+        outLogVec("canvas-rotate pressed, rotaxis", rotaxis.x(), rotaxis.y(), rotaxis.z());
+        outLogVal("canvas-rotate pressed, theta", theta);
+        outLogVec("canvas-rotate pressed, quat", rot.x(), rot.y(), rot.z());
+        outLogVal("canvas-rotate pressed, quat.w", rot.w());
         m_scene->editCanvasRotate(rot, dureu::EVENT_PRESSED);
-        outLogVec("rotaxis", rotaxis.x(), rotaxis.y(), rotaxis.z());
         break;
     case osgGA::GUIEventAdapter::RELEASE:
-        //if (!this->getRaytraceNormalProjection(ea,aa,XC)) return;
+        outLogVec("canvas-rotate released, rotaxis", rotaxis.x(), rotaxis.y(), rotaxis.z());
+        outLogVal("canvas-rotate released, theta", theta);
+        outLogVec("canvas-rotate released, quat", rot.x(), rot.y(), rot.z());
+        outLogVal("canvas-rotate released, quat.w", rot.w());
         m_scene->editCanvasRotate(rot, dureu::EVENT_RELEASED);
-        outLogVec("rotaxis", rotaxis.x(), rotaxis.y(), rotaxis.z());
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        //if (!this->getRaytraceNormalProjection(ea,aa,XC))return;
         m_scene->editCanvasRotate(rot, dureu::EVENT_DRAGGED);
         break;
     default:
@@ -669,7 +684,7 @@ void EventHandler::finishAll()
         m_scene->editCanvasOffset(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
         break;
     case dureu::MOUSE_CANVAS_ROTATE:
-        m_scene->editCanvasOffset(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
+        m_scene->editCanvasRotate(osg::Quat(0,0,0,1), dureu::EVENT_OFF);
         break;
     case dureu::MOUSE_CANVAS_CLONE:
         m_scene->editCanvasClone(osg::Vec3f(0,0,0), dureu::EVENT_OFF);

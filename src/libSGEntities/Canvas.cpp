@@ -335,6 +335,10 @@ bool entity::Canvas::getVisibilityLocalAxis() const
 // translates the current params on mt matrix
 void entity::Canvas::translate(const osg::Matrix& mt)
 {
+    if (mt.isNaN()){
+        outErrMsg("canvas-translate: translate matrix is NAN");
+        return;
+    }
     m_mT = m_mT * mt;
     this->updateTransforms();
 }
@@ -342,13 +346,12 @@ void entity::Canvas::translate(const osg::Matrix& mt)
 // rotates the current params on mr matrix
 void entity::Canvas::rotate(const osg::Matrix& mr)
 {
+    if (mr.isNaN()){
+        outErrMsg("canvas-rotate: matrix is NAN");
+        return;
+    }
     m_mR = m_mR * mr;
     this->updateTransforms();
-}
-
-void entity::Canvas::rotate(const osg::Matrix &mr, const osg::Vec3f &center, const osg::Vec3f &axis)
-{
-
 }
 
 void entity::Canvas::unselectAll()
@@ -754,7 +757,30 @@ void entity::Canvas::updateTransforms()
     plane.transform(M);
     m_normal = plane.getNormal();
     if (!plane.valid()){
-        outErrMsg("Error while transforming internal canvas data");
+        outErrMsg("updateTransforms: Error while transforming internal canvas data. Virtual plane is not valid."
+                  "Resetting plane parameters.");
+        outLogVec("normal", plane.getNormal().x(), plane.getNormal().y(), plane.getNormal().z());
+        this->resetTransforms();
+    }
+}
+
+void entity::Canvas::resetTransforms()
+{
+    /* reset transform params */
+    m_mR = osg::Matrix::rotate(0, dureu::NORMAL);
+    m_mT = osg::Matrix::translate(0,0,0);
+    m_transform->setMatrix(m_mR * m_mT);
+
+    /* reset plane params */
+    m_normal = dureu::NORMAL;
+    m_center = osg::Vec3(0,0,0);
+    osg::Plane plane(m_normal, m_center);
+    m_center = m_center * m_mR * m_mT;
+    plane.transform(m_mR * m_mT);
+    m_normal = plane.getNormal();
+    if (!plane.valid()){
+        outErrMsg("resetTrandforms: failed. Exiting application");
+        exit(1);
     }
 }
 
