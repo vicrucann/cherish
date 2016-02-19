@@ -37,6 +37,7 @@ entity::Canvas::Canvas()
     , m_normal(dureu::NORMAL)
     , m_color(dureu::CANVAS_CLR_REST) // frame and pickable color
     , m_edit(false)
+    , m_rotaxis(osg::Vec3f(0.f, 1.f, 0.f))
 {
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
@@ -79,6 +80,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_normal(cnv.m_normal)
     , m_color(cnv.m_color)
     , m_edit(cnv.m_edit)
+    , m_rotaxis(osg::Vec3f(0.f, 1.f, 0.f))
 {
 }
 
@@ -313,6 +315,17 @@ const osg::Vec4f& entity::Canvas::getColor() const
     return m_color;
 }
 
+void entity::Canvas::setRotationAxis(const osg::Vec3f &axis)
+{
+    outLogVec("canvas setting rotation axis to", axis.x(), axis.y(), axis.z());
+    m_rotaxis = axis;
+}
+
+const osg::Vec3f &entity::Canvas::getRotationAxis() const
+{
+    return m_rotaxis;
+}
+
 void entity::Canvas::setVisibility(bool vis)
 {
     m_switch->setChildValue(m_switch->getChild(0), vis);
@@ -368,6 +381,7 @@ void entity::Canvas::unselectStrokes()
 
 void entity::Canvas::selectAllStrokes()
 {
+    this->resetStrokesSelected();
     for (unsigned int i = 0; i < m_geodeData->getNumChildren(); ++i){
         entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_geodeData->getChild(i));
         if (!stroke)

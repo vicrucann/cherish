@@ -117,6 +117,7 @@ const osg::Vec4 CANVAS_CLR_PREVIOUS = solarized::violet;
 const osg::Vec4 CANVAS_CLR_REST = solarized::base1;
 const osg::Vec4 CANVAS_CLR_SELECTED = solarized::red;
 const osg::Vec4 CANVAS_CLR_EDIT = solarized::cyan;
+const osg::Vec4 CANVAS_CLR_ROTAXIS = solarized::orange;
 
 const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
 const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;

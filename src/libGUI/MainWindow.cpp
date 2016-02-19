@@ -364,6 +364,8 @@ void MainWindow::onCanvasRotate()
     QCursor* cur = new QCursor(Data::sceneCanvasRotateCursor(), -1, -1);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_CANVAS_ROTATE);
+    this->statusBar()->showMessage(tr("To switch the axis of rotation: press 'u' for local X-axis, "
+                                      "and 'v' for local Y-axis"), 20000);
 }
 
 void MainWindow::onImageMove()

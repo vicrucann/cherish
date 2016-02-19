@@ -1,6 +1,9 @@
 #include "EventHandler.h"
 #include <iostream>
 #include <assert.h>
+#include <cerrno>
+#include <cfenv>
+
 #include <osgViewer/View>
 #include <osgUtil/LineSegmentIntersector>
 #include <osgUtil/IntersectionVisitor>
@@ -32,8 +35,14 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     if (! m_scene->getCanvasCurrent())
         return false;
 
-    if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL && ea.getKey() == 'a')
-        m_scene->getCanvasCurrent()->addStrokesSelectedAll();
+    // key calls like this shoule be processed from GLWidget KeyPressed
+    //if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL && ea.getKey() == 'a')
+    //    m_scene->getCanvasCurrent()->addStrokesSelectedAll();
+
+    if (ea.getKey() == 'u')
+        m_scene->getCanvasCurrent()->setRotationAxis(osg::Vec3f(1.f, 0.f, 0.f));
+    else if (ea.getKey() == 'v')
+        m_scene->getCanvasCurrent()->setRotationAxis(osg::Vec3f(0.f, 1.f, 0.f));
 
     switch (m_mode){
     case dureu::MOUSE_SELECT:
@@ -255,17 +264,24 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     osg::Vec3f P = osg::Vec3f(0.f,0.f,0.f);
     osg::Vec3f center = m_scene->getCanvasCurrent()->getCenter();
     osg::Matrix M = m_scene->getCanvasCurrent()->getTransform()->getMatrix();
-    osg::Vec3f rotaxis = osg::Vec3f(0.f, 1.f, 0.f) * M - center;
+    osg::Vec3f rotaxis = m_scene->getCanvasCurrent()->getRotationAxis() * M - center;
     rotaxis.normalize();
-    if (!this->getRaytracePlaneIntersection(ea, aa, rotaxis, P)){
+    if (!this->getRaytracePlaneIntersection(ea, aa, rotaxis, P))
         return;
-    }
+
     osg::Vec3f n0 = m_scene->getCanvasCurrent()->getNormal();
     n0.normalize();
     osg::Vec3f n1 = P-center;
     n1.normalize();
+
     double atheta = n0 * n1;
+    if (atheta > 1 && atheta < -1) atheta = 1;
+
+    errno = 0;
     double theta = std::acos(atheta); // they are already normalized
+    if (errno == EDOM)
+        theta = 0;
+
     /*check for domain errors */
     if (theta < 0 || theta > dureu::PI){
         outErrMsg("doEditCanvasRotate: rotation angle domain error. Fixing.");
@@ -286,15 +302,11 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
-        outLogVec("canvas-rotate pressed, rotaxis", rotaxis.x(), rotaxis.y(), rotaxis.z());
-        outLogVal("canvas-rotate pressed, theta", theta);
         outLogVec("canvas-rotate pressed, quat", rot.x(), rot.y(), rot.z());
         outLogVal("canvas-rotate pressed, quat.w", rot.w());
         m_scene->editCanvasRotate(rot, dureu::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
-        outLogVec("canvas-rotate released, rotaxis", rotaxis.x(), rotaxis.y(), rotaxis.z());
-        outLogVal("canvas-rotate released, theta", theta);
         outLogVec("canvas-rotate released, quat", rot.x(), rot.y(), rot.z());
         outLogVal("canvas-rotate released, quat.w", rot.w());
         m_scene->editCanvasRotate(rot, dureu::EVENT_RELEASED);

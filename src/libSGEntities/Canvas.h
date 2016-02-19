@@ -83,6 +83,9 @@ public:
     void setColor(const osg::Vec4f& color);
     const osg::Vec4f& getColor() const;
 
+    void setRotationAxis(const osg::Vec3f& axis);
+    const osg::Vec3f& getRotationAxis() const;
+
     void setVisibility(bool vis);
     bool getVisibility() const;
     void setVisibilityLocalAxis(bool vis);
@@ -99,7 +102,7 @@ public:
     void setStrokeCurrent(bool current);
     entity::Stroke* getStrokeCurrent() const;
 
-    void addStrokesSelectedAll();
+    void addStrokesSelectedAll(); // de-generate methods, will be removed
     void addStrokesSelected(entity::Stroke* stroke);
     void resetStrokesSelected();
     void resetStrokeSelected(entity::Stroke* stroke);
@@ -162,6 +165,7 @@ private:
     osg::Vec4f m_color; /* display color for canvas drawables */
 
     bool m_edit;
+    osg::Vec3f m_rotaxis;
 
 };
 }
