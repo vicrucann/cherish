@@ -6,6 +6,8 @@
 #include <osgUtil/IntersectionVisitor>
 #include <osg/Viewport>
 
+#include "Utilities.h"
+
 EventHandler::EventHandler(RootScene* scene, dureu::MOUSE_MODE mode)
     : osgGA::GUIEventHandler()
     , m_mode(mode)
@@ -542,171 +544,71 @@ bool EventHandler::getLineIntersection(const osgGA::GUIEventAdapter &ea,
     return true;
 }
 
+/* Algorithm:
+ * use ray-tracking techinique
+ * calcualte near and far point in global 3D
+ * intersect that segment with plane of canvas - 3D intersection point
+ * extract local 3D coords so that to create a stroke (or apprent that point to a current stroke)
+ */
 bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                                                  double &u, double &v)
 {
-    double x = ea.getX();
-    double y = ea.getY();
-
-    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
-    if (!viewer){
-        std::cerr << "getRaytraceCanvasIntersection(): could not read viewer" << std::endl;
+    /* get view-projection-world matrix and its inverse*/
+    osg::Matrix VPW, invVPW;
+    if (!Utilities::getViewProjectionWorld(ea, aa, VPW, invVPW))
         return false;
-    }
 
-    osg::Camera* camera = viewer->getCamera();
-    if (!camera){
-        std::cout << "getRaytraceCanvasIntersection(): could not read camera" << std::endl;
-        return false;
-    }
+    /* get far and near in global 3D coords */
+    osg::Vec3f nearPoint, farPoint;
+    Utilities::getFarNear(ea.getX(), ea.getY(), invVPW, nearPoint, farPoint);
 
-    if (!camera->getViewport()){
-        std::cerr << "getRaytraceIntersection(): could not read viewport" << std::endl;
-        return false;
-    }
-
-    osg::Matrix VPW = camera->getViewMatrix()
-            * camera->getProjectionMatrix()
-            * camera->getViewport()->computeWindowMatrix();
-    osg::Matrix invVPW;
-    if (!invVPW.invert(VPW)){
-        std::cerr << "getRaytraceIntersection(): could not invert View-projection-world matrix for ray casting" << std::endl;
-        return false;
-    }
-
-    // Algorithm:
-    // use ray-tracking techinique
-    // calcualte near and far point in global 3D
-    // intersect that segment with plane of canvas - 3D intersection point
-    // extract local 3D coords so that to create a stroke (or apprent that point to a current stroke)
-    osg::Vec3f nearPoint = osg::Vec3f(x, y, 0.f) * invVPW;
-    osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
-
+    /* get intersection point in global 3D coords */
+    osg::Vec3f P;
     const osg::Plane plane = m_scene->getCanvasCurrent()->getPlane();
     const osg::Vec3f center = m_scene->getCanvasCurrent()->getCenter();
-
-    assert(plane.valid());
-    std::vector<osg::Vec3f> ray(2);
-    ray[0] = nearPoint;
-    ray[1] = farPoint;
-    if (plane.intersect(ray)){ // 1 or -1: no intersection
-        std::cerr << "getRaytraceIntersection(): no intersection with the ray." << std::endl;
-        // finish the stroke if it was started
-        // this should be replaced by a function finishAll()
-        // which checks what are the current modes (sketch, photo move, etc) that are not finished
-        // and finishes each which is current
+    if (!Utilities::getRayPlaneIntersection(plane, center, nearPoint, farPoint, P))
         this->finishAll();
-        return false;
-    }
-    osg::Vec3f dir = farPoint-nearPoint;
-    if (! plane.dotProductNormal(dir)){ // denominator
-        std::cerr << "getRaytraceIntersection(): projected line is parallel to the canvas plane" << std::endl;
-        return false;
-    }
-    if (! plane.dotProductNormal(center-nearPoint)){
-        std::cerr << "getRaytraceIntersection(): plane contains the line, so no single intersection can be defined" << std::endl;
-        return false;
-    }
 
-    double len = plane.dotProductNormal(center-nearPoint) / plane.dotProductNormal(dir);
-    osg::Vec3f P = dir * len + nearPoint;
-    //outLogVec("getRaytraceIntersection(): intersect point global 3D", P.x(), P.y(), P.z());
+    /* get model matrix and its inverse */
+    osg::Matrix M, invM;
+    if (!Utilities::getModel(m_scene->getCanvasCurrent(), M, invM))
+        return false;
 
-    osg::Matrix M =  m_scene->getCanvasCurrent()->getTransform()->getMatrix();
-    osg::Matrix invM;
-    if (!invM.invert(M)){
-        std::cerr << "getRaytraceIntersection(): could not invert model matrix" << std::endl;
+    /* obtain intersection in local 2D point */
+    osg::Vec3f p;
+    if (!Utilities::getLocalFromGlobal(P, invM, p))
         return false;
-    }
-    osg::Vec3f p = P * invM;
-    if (std::fabs(p.z())>dureu::EPSILON){
-        std::cerr << "getRaytraceIntersection(): error while projecting point from global 3D to local 3D, z-coordinate is not zero" << std::endl;
-        outLogVec("p", p.x(), p.y(), p.z());
-        outLogVec("P", P.x(), P.y(), P.z());
-        outLogVec("Normal", plane.getNormal().x(), plane.getNormal().y(), plane.getNormal().z());
-        outLogVec("Center", center.x(), center.y(), center.z());
-        return false;
-    }
 
     u=p.x();
     v=p.y();
     return true;
 }
 
+/* Algorithm:
+ * Cast the ray into 3D space
+ * Make sure the ray is not parallel to the normal
+ * The new offset point will be located on the projected point
+ * between the ray and canvas normal.
+ * Ray and normal are skew lines in 3d space, so we only need
+ * to extract the projection point of the ray into the normal.
+*/
 bool EventHandler::getRaytraceNormalProjection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, osg::Vec3f& XC)
 {
-    double x = ea.getX();
-    double y = ea.getY();
-
-    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
-    if (!viewer){
-        std::cerr << "getRaytraceNormalProjection(): could not read viewer" << std::endl;
+    osg::Matrix VPW, invVPW;
+    if (!Utilities::getViewProjectionWorld(ea, aa, VPW, invVPW))
         return false;
-    }
 
-    osg::Camera* camera = viewer->getCamera();
-    if (!camera){
-        std::cout << "getRaytraceNormalProjection(): could not read camera" << std::endl;
-        return false;
-    }
+    osg::Vec3f nearPoint, farPoint;
+    Utilities::getFarNear(ea.getX(), ea.getY(), invVPW, nearPoint, farPoint);
 
-    if (!camera->getViewport()){
-        std::cerr << "getRaytraceNormalProjection(): could not read viewport" << std::endl;
-        return false;
-    }
-
-    osg::Matrix VPW = camera->getViewMatrix()
-            * camera->getProjectionMatrix()
-            * camera->getViewport()->computeWindowMatrix();
-    osg::Matrix invVPW;
-    if (!invVPW.invert(VPW)){
-        std::cerr << "getRaytraceNormalProjection(): could not invert View-projection-world matrix for ray casting" << std::endl;
-        return false;
-    }
-
-    // Algorithm:
-    // Cast the ray into 3D space
-    // Make sure the ray is not parallel to the normal
-    // The new offset point will be located on the projected point
-    // between the ray and canvas normal.
-    // Ray and normal are skew lines in 3d space, so we only need
-    // to extract the projection point of the ray into the normal.
-
-    osg::Vec3f nearPoint = osg::Vec3f(x, y, 0.f) * invVPW;
-    osg::Vec3f farPoint = osg::Vec3f(x, y, 1.f) * invVPW;
     osg::Vec3f C = m_scene->getCanvasCurrent()->getCenter();
     osg::Vec3f N = m_scene->getCanvasCurrent()->getNormal();
 
-    // algorithm for distance between skew lines:
-    //http://www2.washjeff.edu/users/mwoltermann/Dorrie/69.pdf
-    // For two points P1 and P2 on skew lines;
-    // and d - the direction vector from P1 to P2;
-    // u1 and u2 - unit direction vectors for the lines
-    osg::Vec3f P1 = C;
-    osg::Vec3f P2 = nearPoint;
-    osg::Vec3f d = P2 - P1;
-    osg::Vec3f u1 = N;
-    u1.normalize();
-    osg::Vec3f u2 = farPoint - nearPoint;
-    u2.normalize();
-    osg::Vec3f u3 = u1^u2;
-
-    if (std::fabs(u3.x())<=dureu::EPSILON && std::fabs(u3.y())<=dureu::EPSILON && std::fabs(u3.z())<=dureu::EPSILON){
-        std::cerr << "getRaytraceNormalProjection(): cast ray and normal are almost parallel. To resolve, change the camera view." << std::endl;
+    osg::Vec3f X1;
+    if (!Utilities::getSkewLinesProjection(C, farPoint, nearPoint, N, X1)){
         this->finishAll();
         return false;
     }
-
-    // X1 and X2 are the closest points on lines
-    // we want to find X1 (u1 corresponds to normal)
-    // solving the linear equation in r1 and r2: Xi = Pi + ri*ui
-    // we are only interested in X1 so we only solve for r1.
-    float a1 = u1*u1, b1 = u1*u2, c1 = u1*d;
-    float a2 = u1*u2, b2 = u2*u2, c2 = u2*d;
-    assert((std::fabs(b1) > dureu::EPSILON)); // denominator
-    assert(a2!=-1 && a2!=1); // lines are not parallel and we already checked for that
-    double r1 = (c2 - b2*c1/b1)/(a2-b2*a1/b1);
-    osg::Vec3f X1 = P1 + u1*r1;
     XC = X1 - C;
     return true;
 }
