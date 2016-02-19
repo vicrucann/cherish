@@ -126,8 +126,11 @@ void entity::Canvas::initializeSG()
     m_axis->setVertexArray(vAxis);
     m_axis->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,4));
     osg::Vec4Array* colorAxis = new osg::Vec4Array;
-    colorAxis->push_back(solarized::base2);
-    m_axis->setColorArray(colorAxis, osg::Array::BIND_OVERALL);
+    colorAxis->push_back(solarized::orange);
+    colorAxis->push_back(solarized::orange);
+    colorAxis->push_back(solarized::yellow);
+    colorAxis->push_back(solarized::yellow);
+    m_axis->setColorArray(colorAxis, osg::Array::BIND_PER_VERTEX);
 
     osg::Vec3Array* vNormal = new osg::Vec3Array(2);
     m_norm->setVertexArray(vNormal);

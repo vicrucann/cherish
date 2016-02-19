@@ -128,6 +128,7 @@ void MainWindow::onFileNew()
     this->onFileClose();
     m_undoStack->clear();
     this->recievedRequestUpdate();
+    this->statusBar()->showMessage(tr("Scene is cleared."));
 }
 
 /* Check whether the current scene is empty or not
@@ -152,6 +153,7 @@ void MainWindow::onFileOpen()
     else
         this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
     m_glWidget->update();
+    this->statusBar()->showMessage(tr("Opened file."));
 }
 
 /* Take content of scene graph
@@ -167,7 +169,7 @@ void MainWindow::onFileSave()
                                                      QString(), tr("OSG file (*.osgt)"));
         if (fname.isEmpty()){
             QMessageBox::warning(this, tr("Chosing filename"), tr("No file name is chosen. Changes were not saved."));
-            this->statusBar()->showMessage(tr("Scene was not saved to file"), 2000);
+            this->statusBar()->showMessage(tr("Scene was not saved to file"));
             return;
         }
         m_rootScene->setFilePath(fname.toStdString());
@@ -175,10 +177,10 @@ void MainWindow::onFileSave()
     if (!m_rootScene->writeScenetoFile()){
         QMessageBox::critical(this, tr("Error"), tr("Could not write scene to file"));
         m_rootScene->setFilePath("");
-        this->statusBar()->showMessage(tr("Scene was not saved to file"), 2000);
+        this->statusBar()->showMessage(tr("Scene was not saved to file"));
         return;
     }
-    this->statusBar()->showMessage(tr("Scene was successfully saved to file"), 2000);
+    this->statusBar()->showMessage(tr("Scene was successfully saved to file"));
 }
 
 /* Take content of scene graph
@@ -202,6 +204,7 @@ void MainWindow::onFileImage()
             tr("Image Files (*.bmp)"));
     if (!fileName.isEmpty()) {
         m_rootScene->addPhoto(fileName.toStdString());
+        this->statusBar()->showMessage(tr("Image loaded to current canvas."));
        /* if (!m_rootScene->loadPhotoFromFile(fileName.toStdString())){
             QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
             return;
@@ -223,7 +226,7 @@ void MainWindow::onFileClose()
             return;
     }
     m_rootScene->clearUserData();
-    this->statusBar()->showMessage(tr("Current project is closed"), 2000);
+    this->statusBar()->showMessage(tr("Current project is closed"));
 }
 
 void MainWindow::onFileExit()
@@ -235,35 +238,38 @@ void MainWindow::onFileExit()
 
 void MainWindow::onCut()
 {
-
+    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
 void MainWindow::onCopy()
 {
-
+    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
 void MainWindow::onPaste()
 {
-
+    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
 void MainWindow::onCameraOrbit(){
     QCursor* cur = new QCursor(Data::sceneOrbitPixmap(), 0, 0);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_ORBIT);
+    this->statusBar()->showMessage(tr("Camera orbit mode."));
 }
 
 void MainWindow::onCameraZoom(){
     QCursor* cur = new QCursor(Data::sceneZoomPixmap(), 0, 0);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_ZOOM);
+    this->statusBar()->showMessage(tr("Camera zoom mode."));
 }
 
 void MainWindow::onCameraPan(){
     QCursor* cur = new QCursor(Data::scenePanPixmap(), 0, 0);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_PAN);
+    this->statusBar()->showMessage(tr("Camera pan mode."));
 }
 
 void MainWindow::onSelect(){
@@ -271,6 +277,10 @@ void MainWindow::onSelect(){
     QCursor* cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_SELECT);
+    this->statusBar()->showMessage(tr("To select canvas, click on its pickable; "
+                                      "To select strokes within CURRENT canvas, "
+                                      "hold <CTRL> and click on stroke to add to selection. "
+                                      "Press <CTRL> to deselect all strokes."));
 }
 
 void MainWindow::onErase()
@@ -278,6 +288,7 @@ void MainWindow::onErase()
     QCursor* cur = new QCursor(Data::sceneEraserPixmap(), -1, -1);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_ERASE);
+    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
 void MainWindow::onDelete()
@@ -286,7 +297,7 @@ void MainWindow::onDelete()
     m_mdiArea->setCursor(*cur);
     this->statusBar()->showMessage(tr("To delete canvas, click by mouse on pickable; "
                                       "to delete stroke or photo within CURRENT canvas, "
-                                      "hold <CTRL> and click on desired entity"), 20000);
+                                      "hold <CTRL> and click on desired entity"));
     emit sendMouseMode(dureu::MOUSE_DELETE);
 }
 
@@ -295,6 +306,8 @@ void MainWindow::onSketch()
     QCursor* cur = new QCursor(Data::sceneSketchPixmap(), 0, Data::sceneSketchPixmap().height());
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_SKETCH);
+    this->statusBar()->showMessage(tr("Pressure defines a strokes. Press and drag to create new stroke."
+                                      "Release when finished."));
 }
 
 void MainWindow::onNewCanvasClone()
@@ -302,7 +315,7 @@ void MainWindow::onNewCanvasClone()
     m_mdiArea->setCursor(Qt::ArrowCursor);
     emit sendMouseMode(dureu::MOUSE_CANVAS_CLONE);
     this->statusBar()->showMessage(tr("Click to start displaying the position of clonned canvas, drag the new position "
-                                      "and release to fixate the position."), 20000);
+                                      "and release to fixate the position."));
 }
 
 void MainWindow::onNewCanvasXY()
@@ -310,6 +323,7 @@ void MainWindow::onNewCanvasXY()
     m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::identity(), osg::Matrix::translate(0,0,0));
     this->onSketch();
+    this->statusBar()->showMessage(tr("New canvas was created."));
 }
 
 void MainWindow::onNewCanvasYZ()
@@ -317,6 +331,7 @@ void MainWindow::onNewCanvasYZ()
     m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
+    this->statusBar()->showMessage(tr("New canvas was created."));
 }
 
 void MainWindow::onNewCanvasXZ()
@@ -324,6 +339,7 @@ void MainWindow::onNewCanvasXZ()
     m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, -1, 0, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
+    this->statusBar()->showMessage(tr("New canvas was created."));
 }
 
 void MainWindow::onNewCanvasStandard()
@@ -335,21 +351,25 @@ void MainWindow::onNewCanvasStandard()
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0),
                            osg::Matrix::translate(0.f, 0.f, 0.f));
     this->onSketch();
+    this->statusBar()->showMessage(tr("Set of canvases created."));
 }
 
 void MainWindow::onNewCanvasCoaxial()
 {
     m_mdiArea->setCursor(Qt::ArrowCursor);
+    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
 void MainWindow::onNewCanvasParallel()
 {
     m_mdiArea->setCursor(Qt::ArrowCursor);
+    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
 void MainWindow::onNewCanvasRing()
 {
     m_mdiArea->setCursor(Qt::ArrowCursor);
+    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
 void MainWindow::onCanvasOffset()
@@ -357,6 +377,7 @@ void MainWindow::onCanvasOffset()
     QCursor* cur = new QCursor(Data::sceneCanvasOffsetCursor(), -1, -1);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_CANVAS_OFFSET);
+    this->statusBar()->showMessage(tr("For canvas offset, use mouse and drap and drop to desired position"));
 }
 
 void MainWindow::onCanvasRotate()
@@ -364,8 +385,8 @@ void MainWindow::onCanvasRotate()
     QCursor* cur = new QCursor(Data::sceneCanvasRotateCursor(), -1, -1);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_CANVAS_ROTATE);
-    this->statusBar()->showMessage(tr("To switch the axis of rotation: press 'u' for local X-axis, "
-                                      "and 'v' for local Y-axis"), 20000);
+    this->statusBar()->showMessage(tr("To switch the axis of rotation: press 'u' for local X-axis(orange), "
+                                      "and 'v' for local Y-axis(yellow)"));
 }
 
 void MainWindow::onImageMove()
@@ -373,6 +394,8 @@ void MainWindow::onImageMove()
     QCursor* cur = new QCursor(Data::sceneImageMovePixmap(), -1, -1);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_ENTITY_MOVE);
+    this->statusBar()->showMessage(tr("To move image, click on it first, and then drag to desired position. "
+                                      "To move set of strokes, select them first, then perform move as for image."));
 }
 
 void MainWindow::onImageRotate()
@@ -380,6 +403,8 @@ void MainWindow::onImageRotate()
     QCursor* cur = new QCursor(Data::sceneImageRotatePixmap(), -1, -1);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_ENTITY_ROTATE);
+    this->statusBar()->showMessage(tr("To rotate image, click on it and drag it til it rotates to desired angle"
+                                      "To rotate set of strokes, select them first, then perform rotate as for image."));
 }
 
 void MainWindow::onImageScale()
@@ -387,6 +412,8 @@ void MainWindow::onImageScale()
     QCursor* cur = new QCursor(Data::sceneImageScalePixmap(), 0, 0);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_ENTITY_SCALE);
+    this->statusBar()->showMessage(tr("To scale image, clock on it, and then drag to get the desired size"
+                                      "To scale set of strokes, select them first, then perform scale as for image."));
 }
 
 void MainWindow::onImageFlipH()
@@ -394,6 +421,7 @@ void MainWindow::onImageFlipH()
     QCursor* cur = new QCursor(Data::sceneImageFlipHPixmap(), -1, -1);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_PHOTO_FLIPH);
+    this->statusBar()->showMessage(tr("To perform a horizontal flip, click on the image to flip."));
 }
 
 void MainWindow::onImageFlipV()
@@ -401,11 +429,13 @@ void MainWindow::onImageFlipV()
     QCursor* cur = new QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_PHOTO_FLIPV);
+    this->statusBar()->showMessage(tr("To perform the vertical flip, click on the image to flip"));
 }
 
 void MainWindow::onImagePush()
 {
     m_mdiArea->setCursor(Qt::ArrowCursor);
+    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
 void MainWindow::onStrokesPush()
@@ -418,6 +448,7 @@ void MainWindow::onStrokesPush()
         return;
     }
     m_rootScene->editStrokesPush(camera);
+    this->statusBar()->showMessage(tr("Push is performed on selected strokes from current canvas (pink) to previous canvas (violet)."));
 }
 
 GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)

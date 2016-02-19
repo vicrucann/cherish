@@ -39,11 +39,6 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     //if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL && ea.getKey() == 'a')
     //    m_scene->getCanvasCurrent()->addStrokesSelectedAll();
 
-    if (ea.getKey() == 'u')
-        m_scene->getCanvasCurrent()->setRotationAxis(osg::Vec3f(1.f, 0.f, 0.f));
-    else if (ea.getKey() == 'v')
-        m_scene->getCanvasCurrent()->setRotationAxis(osg::Vec3f(0.f, 1.f, 0.f));
-
     switch (m_mode){
     case dureu::MOUSE_SELECT:
         if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL)
