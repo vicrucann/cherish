@@ -78,6 +78,9 @@ protected:
                                  double& u, double& v);
     bool getRaytraceNormalProjection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                                      osg::Vec3f &XC);
+    bool getRaytracePlaneIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
+                                      const osg::Vec3f& axis,
+                                      osg::Vec3f& P);
 
     void finishAll();
 

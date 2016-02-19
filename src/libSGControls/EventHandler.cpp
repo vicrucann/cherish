@@ -252,11 +252,25 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
            ))
         return;
 
-    //osg::Vec3f XC = osg::Vec3f(0.f,0.f,0.f);
+    osg::Vec3f P = osg::Vec3f(0.f,0.f,0.f);
     osg::Vec3f center = m_scene->getCanvasCurrent()->getCenter();
     osg::Vec3f rotaxis = osg::Vec3f(0.f, 1.f, 0.f) * m_scene->getCanvasCurrent()->getTransform()->getMatrix() - center;
     rotaxis.normalize();
-    osg::Quat rot(dureu::PI/48, rotaxis);
+    if (!this->getRaytracePlaneIntersection(ea, aa, rotaxis, P)){
+        return;
+    }
+    osg::Vec3f n0 = m_scene->getCanvasCurrent()->getNormal();
+    n0.normalize();
+    osg::Vec3f n1 = P-center;
+    n1.normalize();
+
+    outLogVal("dot product", n0 * n1);
+    outLogVal("theta", std::acos(n0*n1));
+    double theta = std::acos(n0 * n1); // they are already normalized
+
+    /* need to figure out direction of rotation */
+
+    osg::Quat rot(theta, rotaxis);
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
@@ -566,8 +580,10 @@ bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& e
     osg::Vec3f P;
     const osg::Plane plane = m_scene->getCanvasCurrent()->getPlane();
     const osg::Vec3f center = m_scene->getCanvasCurrent()->getCenter();
-    if (!Utilities::getRayPlaneIntersection(plane, center, nearPoint, farPoint, P))
+    if (!Utilities::getRayPlaneIntersection(plane, center, nearPoint, farPoint, P)){
         this->finishAll();
+        return false;
+    }
 
     /* get model matrix and its inverse */
     osg::Matrix M, invM;
@@ -610,6 +626,27 @@ bool EventHandler::getRaytraceNormalProjection(const osgGA::GUIEventAdapter &ea,
         return false;
     }
     XC = X1 - C;
+    return true;
+}
+
+bool EventHandler::getRaytracePlaneIntersection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, const osg::Vec3f &axis, osg::Vec3f &P)
+{
+    /* get view-projection-world matrix and its inverse*/
+    osg::Matrix VPW, invVPW;
+    if (!Utilities::getViewProjectionWorld(ea, aa, VPW, invVPW))
+        return false;
+
+    /* get far and near in global 3D coords */
+    osg::Vec3f nearPoint, farPoint;
+    Utilities::getFarNear(ea.getX(), ea.getY(), invVPW, nearPoint, farPoint);
+
+    /* get intersection point in global 3D coords */
+    const osg::Vec3f center = m_scene->getCanvasCurrent()->getCenter();
+    const osg::Plane plane(axis, center);
+    if (!Utilities::getRayPlaneIntersection(plane, center, nearPoint, farPoint, P)){
+        this->finishAll();
+        return false;
+    }
     return true;
 }
 
