@@ -159,46 +159,22 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
 {
 }
 
-/* Method to initialize canvases' scene graph structure
+/* Method to initialize canvases' geometrical properties
  * must be called from AddCanvasCommand right after the canvas
  * allocated.
 */
 void entity::Canvas::initializeSG()
 {
-    //osg::Geode* geodeFrame = new osg::Geode;
-    //osg::Geode* geodeAxis = new osg::Geode;
     this->addChild(m_transform.get());
     m_transform->setName("Transform");
     m_transform->addChild(m_switch.get());
     m_switch->setName("Switch");
-    // _geodeData is  empty, it is for user input: strokes
+    /* _geodeData is  empty, it is for user input: strokes */
     m_switch->addChild(m_geodeData.get(), true);
-
-    //geodeFrame->setName("GeodeFrame");
-    //geodeFrame->addDrawable(m_frame.get());
-    //geodeFrame->addDrawable(m_pickable.get());
-
-    //osg::Vec3Array* vFrame = new osg::Vec3Array(4);
-    //m_frame->setVertexArray(vFrame);
-    //m_frame->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
-
-    //osg::Vec3Array* vPick = new osg::Vec3Array(4);
-    //m_pickable->setVertexArray(vPick);
-    //m_pickable->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
-
-    //osg::Vec4Array* colorFrame = new osg::Vec4Array;
-    //colorFrame->push_back(dureu::CANVAS_CLR_REST);
-    //m_frame->setColorArray(colorFrame, osg::Array::BIND_OVERALL);
-
-    //osg::Vec4Array* colorPick = new osg::Vec4Array;
-    //colorPick->push_back(dureu::CANVAS_CLR_REST);
-    //m_pickable->setColorArray(colorPick, osg::Array::BIND_OVERALL);
 
     this->updateTransforms();
     this->setColor(dureu::CANVAS_CLR_REST);
-    outLogMsg("Canvas vertex setting");
     this->setVertices(m_center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
-    outLogMsg("Canvas SG initialization done");
 }
 
 void entity::Canvas::setMatrixRotation(const osg::Matrix& R)
