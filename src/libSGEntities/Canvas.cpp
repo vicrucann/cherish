@@ -22,12 +22,11 @@ entity::Canvas::Canvas()
     , m_transform(new osg::MatrixTransform(m_mR * m_mT))
     , m_switch(new osg::Switch)
     , m_geodeData(new osg::Geode)
-    , m_frame(new osg::Geometry)
-    , m_pickable(new osg::Geometry)
 
     , m_transNormal(new osg::AutoTransform)
     , m_geodeNormal(new osg::Geode)
     , m_geodeAxis(new osg::Geode)
+    , m_geodeFrame(new osg::Geode)
 
     , m_strokeCurrent(0)
     , m_strokesSelected(0)
@@ -55,7 +54,6 @@ entity::Canvas::Canvas()
     /* name settings */
     m_transform->setName("Transform");
     m_switch->setName("Switch");
-    m_pickable->setName("Pickable");
 
 
     /* normal construction drawables */
@@ -100,6 +98,40 @@ entity::Canvas::Canvas()
     geomAxis->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, 4));
     m_switch->addChild(m_geodeAxis.get(), true);
 
+
+    /* canvas frame and pickable construction */
+    osg::Geometry* geomFrame = new osg::Geometry;
+    osg::Geometry* geomPick = new osg::Geometry;
+    geomPick->setName("Pickable");
+    m_geodeFrame->addDrawable(geomFrame);
+    m_geodeFrame->addDrawable(geomPick);
+    m_geodeFrame->setName("GeodeFrame");
+
+    osg::Vec3Array* vFrame = new osg::Vec3Array;
+    vFrame->push_back(m_center);
+    vFrame->push_back(m_center);
+    vFrame->push_back(m_center);
+    vFrame->push_back(m_center);
+    geomFrame->setVertexArray(vFrame);
+
+    osg::Vec3Array* vPick = new osg::Vec3Array;
+    vPick->push_back(m_center);
+    vPick->push_back(m_center);
+    vPick->push_back(m_center);
+    vPick->push_back(m_center);
+    geomPick->setVertexArray(vPick);
+
+    osg::Vec4Array* cFrame = new osg::Vec4Array;
+    cFrame->push_back(dureu::CANVAS_CLR_REST);
+    geomFrame->setColorArray(cFrame, osg::Array::BIND_OVERALL);
+    geomFrame->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
+
+    osg::Vec4Array* cPick = new osg::Vec4Array;
+    cPick->push_back(dureu::CANVAS_CLR_REST);
+    geomPick->setColorArray(cPick, osg::Array::BIND_OVERALL);
+    geomPick->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0,4));
+    m_switch->addChild(m_geodeFrame.get(), true);
+
     outLogMsg("New Canvas ctor complete");
 }
 
@@ -110,11 +142,10 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_transform(cnv.m_transform)
     , m_switch(cnv.m_switch)
     , m_geodeData(cnv.m_geodeData)
-    , m_frame(cnv.m_frame)
-    , m_pickable(cnv.m_pickable)
 
     , m_geodeNormal(cnv.m_geodeNormal)
     , m_geodeAxis(cnv.m_geodeAxis)
+    , m_geodeFrame(cnv.m_geodeFrame)
 
     , m_strokeCurrent(0)
     , m_strokesSelected(0)
@@ -134,57 +165,34 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
 */
 void entity::Canvas::initializeSG()
 {
-    osg::Geode* geodeFrame = new osg::Geode;
+    //osg::Geode* geodeFrame = new osg::Geode;
     //osg::Geode* geodeAxis = new osg::Geode;
     this->addChild(m_transform.get());
     m_transform->setName("Transform");
     m_transform->addChild(m_switch.get());
     m_switch->setName("Switch");
-    m_switch->addChild(geodeFrame, true); // child #1
-    //m_switch->addChild(geodeAxis, true); // #2
-    //m_switch->addChild(geodeNormal, false); // #3
-    m_switch->addChild(m_geodeData.get(), true); // #3 _geodeData is  empty, it is for user input: strokes
+    // _geodeData is  empty, it is for user input: strokes
+    m_switch->addChild(m_geodeData.get(), true);
 
-    geodeFrame->setName("GeodeFrame");
-    geodeFrame->addDrawable(m_frame.get());
-    geodeFrame->addDrawable(m_pickable.get());
-    //geodeNormal->setName("GeodeNormal");
-    //geodeNormal->addDrawable(m_norm.get());
-    //geodeAxis->setName("GeodeAxis");
-    //geodeAxis->addDrawable(m_axis.get());
+    //geodeFrame->setName("GeodeFrame");
+    //geodeFrame->addDrawable(m_frame.get());
+    //geodeFrame->addDrawable(m_pickable.get());
 
-    osg::Vec3Array* vFrame = new osg::Vec3Array(4);
-    m_frame->setVertexArray(vFrame);
-    m_frame->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
+    //osg::Vec3Array* vFrame = new osg::Vec3Array(4);
+    //m_frame->setVertexArray(vFrame);
+    //m_frame->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4));
 
-    osg::Vec3Array* vPick = new osg::Vec3Array(4);
-    m_pickable->setVertexArray(vPick);
-    m_pickable->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
+    //osg::Vec3Array* vPick = new osg::Vec3Array(4);
+    //m_pickable->setVertexArray(vPick);
+    //m_pickable->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
 
-    /*osg::Vec3Array* vAxis = new osg::Vec3Array(4);
-    m_axis->setVertexArray(vAxis);
-    m_axis->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,4));
-    osg::Vec4Array* colorAxis = new osg::Vec4Array;
-    colorAxis->push_back(solarized::orange);
-    colorAxis->push_back(solarized::orange);
-    colorAxis->push_back(solarized::yellow);
-    colorAxis->push_back(solarized::yellow);
-    m_axis->setColorArray(colorAxis, osg::Array::BIND_PER_VERTEX);*/
+    //osg::Vec4Array* colorFrame = new osg::Vec4Array;
+    //colorFrame->push_back(dureu::CANVAS_CLR_REST);
+    //m_frame->setColorArray(colorFrame, osg::Array::BIND_OVERALL);
 
-    /*osg::Vec3Array* vNormal = new osg::Vec3Array(2);
-    m_norm->setVertexArray(vNormal);
-    m_norm->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,2));
-    osg::Vec4Array* colorNormal = new osg::Vec4Array;
-    colorNormal->push_back(dureu::CANVAS_CLR_EDIT);
-    m_norm->setColorArray(colorNormal, osg::Array::BIND_OVERALL);*/
-
-    osg::Vec4Array* colorFrame = new osg::Vec4Array;
-    colorFrame->push_back(dureu::CANVAS_CLR_REST);
-    m_frame->setColorArray(colorFrame, osg::Array::BIND_OVERALL);
-
-    osg::Vec4Array* colorPick = new osg::Vec4Array;
-    colorPick->push_back(dureu::CANVAS_CLR_REST);
-    m_pickable->setColorArray(colorPick, osg::Array::BIND_OVERALL);
+    //osg::Vec4Array* colorPick = new osg::Vec4Array;
+    //colorPick->push_back(dureu::CANVAS_CLR_REST);
+    //m_pickable->setColorArray(colorPick, osg::Array::BIND_OVERALL);
 
     this->updateTransforms();
     this->setColor(dureu::CANVAS_CLR_REST);
@@ -243,26 +251,6 @@ const osg::Switch* entity::Canvas::getSwitch() const
     return m_switch.get();
 }
 
-void entity::Canvas::setFrame(osg::Geometry* geom)
-{
-    m_frame = geom;
-}
-
-const osg::Geometry* entity::Canvas::getFrame() const
-{
-    return m_frame.get();
-}
-
-void entity::Canvas::setPickable(osg::Geometry* geom)
-{
-    m_pickable = geom;
-}
-
-const osg::Geometry* entity::Canvas::getPickable() const
-{
-    return m_pickable.get();
-}
-
 void entity::Canvas::setGeodeData(osg::Geode* geode)
 {
     m_geodeData = geode;
@@ -305,15 +293,17 @@ void entity::Canvas::setColor(const osg::Vec4f &color)
     else
         m_switch->setChildValue(m_geodeAxis.get(), false);
 
-    osg::Vec4Array* colorFrame = static_cast<osg::Vec4Array*>(m_frame->getColorArray());
+    osg::Geometry* geomFrame = dynamic_cast<osg::Geometry*>(m_geodeFrame->getDrawable(0));
+    osg::Vec4Array* colorFrame = static_cast<osg::Vec4Array*>(geomFrame->getColorArray());
     (*colorFrame)[0] = color;
-    m_frame->dirtyDisplayList();
-    m_frame->dirtyBound();
+    geomFrame->dirtyDisplayList();
+    geomFrame->dirtyBound();
 
-    osg::Vec4Array* colorPick = static_cast<osg::Vec4Array*>(m_pickable->getColorArray());
+    osg::Geometry* geomPick = dynamic_cast<osg::Geometry*>(m_geodeFrame->getDrawable(1));
+    osg::Vec4Array* colorPick = static_cast<osg::Vec4Array*>(geomPick->getColorArray());
     (*colorPick)[0] = color;
-    m_pickable->dirtyDisplayList();
-    m_pickable->dirtyBound();
+    geomPick->dirtyDisplayList();
+    geomPick->dirtyBound();
 }
 
 void entity::Canvas::setRotationAxis(const osg::Vec3f &axis)
@@ -329,11 +319,11 @@ const osg::Vec3f &entity::Canvas::getRotationAxis() const
 
 void entity::Canvas::setVisibility(bool vis)
 {
-    m_switch->setChildValue(m_switch->getChild(0), vis);
+    m_switch->setChildValue(m_geodeFrame.get(), vis);
 }
 
 bool entity::Canvas::getVisibility() const{
-    return m_switch->getChildValue(m_switch->getChild(0));
+    return m_switch->getChildValue(m_geodeFrame.get());
 }
 
 void entity::Canvas::setVisibilityLocalAxis(bool vis)
@@ -804,25 +794,27 @@ void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY,
 {
     assert(szX>=dureu::CANVAS_MINW && szY>=dureu::CANVAS_MINH);
 
-    osg::Vec3Array* vFrame = static_cast<osg::Vec3Array*>(m_frame->getVertexArray());
+    osg::Geometry* geomFrame = dynamic_cast<osg::Geometry*>(m_geodeFrame->getDrawable(0));
+    osg::Vec3Array* vFrame = static_cast<osg::Vec3Array*>(geomFrame->getVertexArray());
     assert(vFrame->size() == 4);
     (*vFrame)[0] = center + osg::Vec3(szX,szY,0.f);
     (*vFrame)[1] = center + osg::Vec3(-szX,szY,0.f);
     (*vFrame)[2] = center + osg::Vec3(-szX,-szY,0.f);
     (*vFrame)[3] = center + osg::Vec3(szX,-szY,0.f);
-    m_frame->dirtyDisplayList();
-    m_frame->dirtyBound();
+    geomFrame->dirtyDisplayList();
+    geomFrame->dirtyBound();
 
+    osg::Geometry* geomPick = dynamic_cast<osg::Geometry*>(m_geodeFrame->getDrawable(1));
     assert(szCr >= dureu::CANVAS_CORNER);
     osg::Vec3 p0 = (*vFrame)[0];
-    osg::Vec3Array* vPick = static_cast<osg::Vec3Array*>(m_pickable->getVertexArray());
+    osg::Vec3Array* vPick = static_cast<osg::Vec3Array*>(geomPick->getVertexArray());
     assert(vPick->size() == 4);
     (*vPick)[0] = p0;
     (*vPick)[1] = p0 + osg::Vec3(-szCr, 0.f, 0.f);
     (*vPick)[2] = p0 + osg::Vec3(-szCr, -szCr, 0.f);
     (*vPick)[3] = p0 + osg::Vec3(.0f, -szCr, 0.f);
-    m_pickable->dirtyDisplayList();
-    m_pickable->dirtyBound();
+    geomPick->dirtyDisplayList();
+    geomPick->dirtyBound();
 
     assert(szAx>=dureu::CANVAS_AXIS);
     osg::Geometry* geomAxis = dynamic_cast<osg::Geometry*>(m_geodeAxis->getDrawable(0));
@@ -856,8 +848,6 @@ REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
     ADD_OBJECT_SERIALIZER(Transform, osg::MatrixTransform, NULL);
     ADD_OBJECT_SERIALIZER(Switch, osg::Switch, NULL);
     ADD_OBJECT_SERIALIZER(GeodeData, osg::Geode, NULL);
-    ADD_OBJECT_SERIALIZER(Frame, osg::Geometry, NULL);
-    ADD_OBJECT_SERIALIZER(Pickable, osg::Geometry, NULL);
 
     ADD_VEC3F_SERIALIZER(Center, osg::Vec3f());
     ADD_VEC3F_SERIALIZER(Normal, osg::Vec3f());

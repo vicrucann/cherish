@@ -56,12 +56,6 @@ public:
     void setSwitch(osg::Switch* sw);
     const osg::Switch* getSwitch() const;
 
-    void setFrame(osg::Geometry* geom);
-    const osg::Geometry* getFrame() const;
-
-    void setPickable(osg::Geometry* geom);
-    const osg::Geometry* getPickable() const;
-
     void setGeodeData(osg::Geode* geode);
     const osg::Geode* getGeodeData() const;
     osg::Geode* getGeodeData();
@@ -140,13 +134,12 @@ private:
     osg::ref_ptr<osg::MatrixTransform> m_transform; /* matrix transform in 3D space */
     osg::ref_ptr<osg::Switch> m_switch; /* inisible or not, the whole canvas */
     osg::ref_ptr<osg::Geode> m_geodeData; /* keeps user canvas drawables such as strokes and photos */
-    osg::ref_ptr<osg::Geometry> m_frame; /* frame drawables */
-    osg::ref_ptr<osg::Geometry> m_pickable; /* to select canvas by mouse */
 
     /* construction geodes */
     osg::ref_ptr<osg::AutoTransform> m_transNormal;
     osg::ref_ptr<osg::Geode> m_geodeNormal;
     osg::ref_ptr<osg::Geode> m_geodeAxis;
+    osg::ref_ptr<osg::Geode> m_geodeFrame;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
     std::vector<entity::Stroke*> m_strokesSelected;
