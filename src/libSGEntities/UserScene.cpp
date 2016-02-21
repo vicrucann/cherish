@@ -809,7 +809,7 @@ bool entity::UserScene::printScene()
         assert(sw == cnv->getSwitch());
         outLogVal("Switch name", sw->getName());
 
-        osg::Geode* data = dynamic_cast<osg::Geode*>(sw->getChild(4));
+        osg::Geode* data = dynamic_cast<osg::Geode*>(sw->getChild(3));
         assert(data == cnv->getGeodeData());
         outLogVal("Geode data name", data->getName());
     }

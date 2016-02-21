@@ -29,6 +29,7 @@
 #include <osg/MatrixTransform>
 #include <osg/Switch>
 #include <osgDB/ObjectWrapper>
+#include <osg/AutoTransform>
 
 namespace entity {
 class Canvas : public osg::Group {
@@ -64,12 +65,6 @@ public:
     void setAxis(osg::Geometry* geom);
     const osg::Geometry* getAxis() const;
 
-    void setNorm(osg::Geometry* n);
-    const osg::Geometry* getNorm() const;
-
-    void setIntersection(osg::Geometry* i);
-    const osg::Geometry* getIntersection() const;
-
     void setGeodeData(osg::Geode* geode);
     const osg::Geode* getGeodeData() const;
     osg::Geode* getGeodeData();
@@ -81,7 +76,6 @@ public:
     const osg::Vec3f& getNormal() const;
 
     void setColor(const osg::Vec4f& color);
-    const osg::Vec4f& getColor() const;
 
     void setRotationAxis(const osg::Vec3f& axis);
     const osg::Vec3f& getRotationAxis() const;
@@ -152,8 +146,10 @@ private:
     osg::ref_ptr<osg::Geometry> m_frame; /* frame drawables */
     osg::ref_ptr<osg::Geometry> m_pickable; /* to select canvas by mouse */
     osg::ref_ptr<osg::Geometry> m_axis; /* local coordinate axis drawable only */
-    osg::ref_ptr<osg::Geometry> m_norm; /* canvas normal drawable */
-    osg::ref_ptr<osg::Geometry> m_intersection; /* canvas intersection drawable */
+
+    /* construction geodes */
+    osg::ref_ptr<osg::AutoTransform> m_transNormal;
+    osg::ref_ptr<osg::Geode> m_geodeNormal;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
     std::vector<entity::Stroke*> m_strokesSelected;
@@ -162,7 +158,6 @@ private:
 
     osg::Vec3f m_center; /* 3D global - virtual plane parameter */
     osg::Vec3f m_normal; /* 3D global - virtual plane parameter*/
-    osg::Vec4f m_color; /* display color for canvas drawables */
 
     bool m_edit;
     osg::Vec3f m_rotaxis;
