@@ -24,7 +24,6 @@ entity::Canvas::Canvas()
     , m_geodeData(new osg::Geode)
     , m_frame(new osg::Geometry)
     , m_pickable(new osg::Geometry)
-    , m_axis(new osg::Geometry)
 
     , m_transNormal(new osg::AutoTransform)
     , m_geodeNormal(new osg::Geode)
@@ -113,7 +112,6 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_geodeData(cnv.m_geodeData)
     , m_frame(cnv.m_frame)
     , m_pickable(cnv.m_pickable)
-    , m_axis(cnv.m_axis)
 
     , m_geodeNormal(cnv.m_geodeNormal)
     , m_geodeAxis(cnv.m_geodeAxis)
@@ -263,16 +261,6 @@ void entity::Canvas::setPickable(osg::Geometry* geom)
 const osg::Geometry* entity::Canvas::getPickable() const
 {
     return m_pickable.get();
-}
-
-void entity::Canvas::setAxis(osg::Geometry* geom)
-{
-    m_axis = geom;
-}
-
-const osg::Geometry* entity::Canvas::getAxis() const
-{
-    return m_axis.get();
 }
 
 void entity::Canvas::setGeodeData(osg::Geode* geode)
@@ -836,22 +824,25 @@ void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY,
     m_pickable->dirtyDisplayList();
     m_pickable->dirtyBound();
 
-    /*assert(szAx>=dureu::CANVAS_AXIS);
-    osg::Vec3Array* vAxis = static_cast<osg::Vec3Array*>(m_axis->getVertexArray());
+    assert(szAx>=dureu::CANVAS_AXIS);
+    osg::Geometry* geomAxis = dynamic_cast<osg::Geometry*>(m_geodeAxis->getDrawable(0));
+    osg::Vec3Array* vAxis = static_cast<osg::Vec3Array*>(geomAxis->getVertexArray());
     assert(vAxis->size() == 4);
     (*vAxis)[0] = center;
     (*vAxis)[1] = center + osg::Vec3(szAx,0.f,0.f);
     (*vAxis)[2] = center;
     (*vAxis)[3] = center + osg::Vec3(0.f, szAx, 0.f);
-    m_axis->dirtyDisplayList();
-    m_axis->dirtyBound();
+    geomAxis->dirtyDisplayList();
+    geomAxis->dirtyBound();
 
     float szN = std::max(szX,szY);
     osg::Geometry* geomNormal = dynamic_cast<osg::Geometry*>( m_geodeNormal->getDrawable(0));
     osg::Vec3Array* vNormal = static_cast<osg::Vec3Array*>(geomNormal->getVertexArray());
     assert(vNormal->size() == 2);
     (*vNormal)[0] = center;
-    (*vNormal)[1] = center + osg::Vec3f(0.f,0.f, szN);*/
+    (*vNormal)[1] = center + osg::Vec3f(0.f,0.f, szN);
+    geomNormal->dirtyDisplayList();
+    geomNormal->dirtyBound();
 }
 
 REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
@@ -867,7 +858,6 @@ REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
     ADD_OBJECT_SERIALIZER(GeodeData, osg::Geode, NULL);
     ADD_OBJECT_SERIALIZER(Frame, osg::Geometry, NULL);
     ADD_OBJECT_SERIALIZER(Pickable, osg::Geometry, NULL);
-    ADD_OBJECT_SERIALIZER(Axis, osg::Geometry, NULL);
 
     ADD_VEC3F_SERIALIZER(Center, osg::Vec3f());
     ADD_VEC3F_SERIALIZER(Normal, osg::Vec3f());

@@ -62,9 +62,6 @@ public:
     void setPickable(osg::Geometry* geom);
     const osg::Geometry* getPickable() const;
 
-    void setAxis(osg::Geometry* geom);
-    const osg::Geometry* getAxis() const;
-
     void setGeodeData(osg::Geode* geode);
     const osg::Geode* getGeodeData() const;
     osg::Geode* getGeodeData();
@@ -145,7 +142,6 @@ private:
     osg::ref_ptr<osg::Geode> m_geodeData; /* keeps user canvas drawables such as strokes and photos */
     osg::ref_ptr<osg::Geometry> m_frame; /* frame drawables */
     osg::ref_ptr<osg::Geometry> m_pickable; /* to select canvas by mouse */
-    osg::ref_ptr<osg::Geometry> m_axis; /* local coordinate axis drawable only */
 
     /* construction geodes */
     osg::ref_ptr<osg::AutoTransform> m_transNormal;
