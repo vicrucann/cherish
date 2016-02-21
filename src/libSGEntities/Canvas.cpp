@@ -28,6 +28,7 @@ entity::Canvas::Canvas()
 
     , m_transNormal(new osg::AutoTransform)
     , m_geodeNormal(new osg::Geode)
+    , m_geodeAxis(new osg::Geode)
 
     , m_strokeCurrent(0)
     , m_strokesSelected(0)
@@ -39,6 +40,7 @@ entity::Canvas::Canvas()
     , m_edit(false)
     , m_rotaxis(osg::Vec3f(0.f, 1.f, 0.f))
 {
+    /* OpenGL state machine for the canvas */
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
     linewidth->setWidth(dureu::CANVAS_LINE_WIDTH);
@@ -51,13 +53,13 @@ entity::Canvas::Canvas()
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     this->setStateSet(stateset);
 
+    /* name settings */
     m_transform->setName("Transform");
     m_switch->setName("Switch");
     m_pickable->setName("Pickable");
 
-    /* normal construction drawables */
-    m_transNormal->setAutoScaleToScreen(true);
 
+    /* normal construction drawables */
     osg::Geometry* geomNormal = new osg::Geometry;
     m_geodeNormal->addDrawable(geomNormal);
     m_geodeNormal->setName("GeodeNormal");
@@ -72,9 +74,32 @@ entity::Canvas::Canvas()
     geomNormal->setColorArray(cNormal, osg::Array::BIND_OVERALL);
 
     geomNormal->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,2));
+    m_switch->addChild(m_geodeNormal.get(), false);
+    //m_transNormal->setAutoScaleToScreen(true);
     //m_transNormal->addChild(m_geodeData.get());
     //m_switch->addChild(m_transNormal.get(), true);
-    m_switch->addChild(m_geodeNormal.get(), false);
+
+
+    /* local axis construction drawables */
+    osg::Geometry* geomAxis = new osg::Geometry;
+    m_geodeAxis->addDrawable(geomAxis);
+    m_geodeAxis->setName("GeodeNormal");
+
+    osg::Vec3Array* vAxis = new osg::Vec3Array;
+    vAxis->push_back(m_center);
+    vAxis->push_back(m_center + osg::Vec3f(dureu::CANVAS_MINW,0.f,0.f));
+    vAxis->push_back(m_center);
+    vAxis->push_back(m_center + osg::Vec3f(0.f,dureu::CANVAS_MINH,0.f));
+    geomAxis->setVertexArray(vAxis);
+
+    osg::Vec4Array* cAxis = new osg::Vec4Array;
+    cAxis->push_back(solarized::orange);
+    cAxis->push_back(solarized::orange);
+    cAxis->push_back(solarized::yellow);
+    cAxis->push_back(solarized::yellow);
+    geomAxis->setColorArray(cAxis, osg::Array::BIND_PER_VERTEX);
+    geomAxis->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, 4));
+    m_switch->addChild(m_geodeAxis.get(), true);
 
     outLogMsg("New Canvas ctor complete");
 }
@@ -89,7 +114,9 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_frame(cnv.m_frame)
     , m_pickable(cnv.m_pickable)
     , m_axis(cnv.m_axis)
+
     , m_geodeNormal(cnv.m_geodeNormal)
+    , m_geodeAxis(cnv.m_geodeAxis)
 
     , m_strokeCurrent(0)
     , m_strokesSelected(0)
@@ -110,13 +137,13 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
 void entity::Canvas::initializeSG()
 {
     osg::Geode* geodeFrame = new osg::Geode;
-    osg::Geode* geodeAxis = new osg::Geode;
+    //osg::Geode* geodeAxis = new osg::Geode;
     this->addChild(m_transform.get());
     m_transform->setName("Transform");
     m_transform->addChild(m_switch.get());
     m_switch->setName("Switch");
     m_switch->addChild(geodeFrame, true); // child #1
-    m_switch->addChild(geodeAxis, true); // #2
+    //m_switch->addChild(geodeAxis, true); // #2
     //m_switch->addChild(geodeNormal, false); // #3
     m_switch->addChild(m_geodeData.get(), true); // #3 _geodeData is  empty, it is for user input: strokes
 
@@ -125,8 +152,8 @@ void entity::Canvas::initializeSG()
     geodeFrame->addDrawable(m_pickable.get());
     //geodeNormal->setName("GeodeNormal");
     //geodeNormal->addDrawable(m_norm.get());
-    geodeAxis->setName("GeodeAxis");
-    geodeAxis->addDrawable(m_axis.get());
+    //geodeAxis->setName("GeodeAxis");
+    //geodeAxis->addDrawable(m_axis.get());
 
     osg::Vec3Array* vFrame = new osg::Vec3Array(4);
     m_frame->setVertexArray(vFrame);
@@ -136,7 +163,7 @@ void entity::Canvas::initializeSG()
     m_pickable->setVertexArray(vPick);
     m_pickable->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
 
-    osg::Vec3Array* vAxis = new osg::Vec3Array(4);
+    /*osg::Vec3Array* vAxis = new osg::Vec3Array(4);
     m_axis->setVertexArray(vAxis);
     m_axis->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,0,4));
     osg::Vec4Array* colorAxis = new osg::Vec4Array;
@@ -144,7 +171,7 @@ void entity::Canvas::initializeSG()
     colorAxis->push_back(solarized::orange);
     colorAxis->push_back(solarized::yellow);
     colorAxis->push_back(solarized::yellow);
-    m_axis->setColorArray(colorAxis, osg::Array::BIND_PER_VERTEX);
+    m_axis->setColorArray(colorAxis, osg::Array::BIND_PER_VERTEX);*/
 
     /*osg::Vec3Array* vNormal = new osg::Vec3Array(2);
     m_norm->setVertexArray(vNormal);
@@ -163,7 +190,9 @@ void entity::Canvas::initializeSG()
 
     this->updateTransforms();
     this->setColor(dureu::CANVAS_CLR_REST);
+    outLogMsg("Canvas vertex setting");
     this->setVertices(m_center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+    outLogMsg("Canvas SG initialization done");
 }
 
 void entity::Canvas::setMatrixRotation(const osg::Matrix& R)
@@ -284,9 +313,9 @@ const osg::Vec3f& entity::Canvas::getNormal() const
 void entity::Canvas::setColor(const osg::Vec4f &color)
 {
     if (color == dureu::CANVAS_CLR_CURRENT) // hide the axis for "rest" canvases
-        m_switch->setChildValue(m_switch->getChild(2), true);
+        m_switch->setChildValue(m_geodeAxis.get(), true);
     else
-        m_switch->setChildValue(m_switch->getChild(2), false);
+        m_switch->setChildValue(m_geodeAxis.get(), false);
 
     osg::Vec4Array* colorFrame = static_cast<osg::Vec4Array*>(m_frame->getColorArray());
     (*colorFrame)[0] = color;
@@ -312,21 +341,21 @@ const osg::Vec3f &entity::Canvas::getRotationAxis() const
 
 void entity::Canvas::setVisibility(bool vis)
 {
-    m_switch->setChildValue(m_switch->getChild(1), vis);
+    m_switch->setChildValue(m_switch->getChild(0), vis);
 }
 
 bool entity::Canvas::getVisibility() const{
-    return m_switch->getChildValue(m_switch->getChild(1));
+    return m_switch->getChildValue(m_switch->getChild(0));
 }
 
 void entity::Canvas::setVisibilityLocalAxis(bool vis)
 {
-    m_switch->setChildValue(m_switch->getChild(2), vis);
+    m_switch->setChildValue(m_geodeAxis.get(), vis);
 }
 
 bool entity::Canvas::getVisibilityLocalAxis() const
 {
-    return m_switch->getChildValue(m_switch->getChild(2));
+    return m_switch->getChildValue(m_geodeAxis.get());
 }
 
 // translates the current params on mt matrix
@@ -807,7 +836,7 @@ void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY,
     m_pickable->dirtyDisplayList();
     m_pickable->dirtyBound();
 
-    assert(szAx>=dureu::CANVAS_AXIS);
+    /*assert(szAx>=dureu::CANVAS_AXIS);
     osg::Vec3Array* vAxis = static_cast<osg::Vec3Array*>(m_axis->getVertexArray());
     assert(vAxis->size() == 4);
     (*vAxis)[0] = center;
@@ -822,7 +851,7 @@ void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY,
     osg::Vec3Array* vNormal = static_cast<osg::Vec3Array*>(geomNormal->getVertexArray());
     assert(vNormal->size() == 2);
     (*vNormal)[0] = center;
-    (*vNormal)[1] = center + osg::Vec3f(0.f,0.f, szN);
+    (*vNormal)[1] = center + osg::Vec3f(0.f,0.f, szN);*/
 }
 
 REGISTER_OBJECT_WRAPPER(Canvas_Wrapper

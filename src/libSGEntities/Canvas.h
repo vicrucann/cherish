@@ -150,6 +150,7 @@ private:
     /* construction geodes */
     osg::ref_ptr<osg::AutoTransform> m_transNormal;
     osg::ref_ptr<osg::Geode> m_geodeNormal;
+    osg::ref_ptr<osg::Geode> m_geodeAxis;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
     std::vector<entity::Stroke*> m_strokesSelected;
