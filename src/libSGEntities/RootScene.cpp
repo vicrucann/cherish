@@ -153,7 +153,7 @@ bool RootScene::loadSceneFromFile()
     m_observer->setScenePointer(m_userScene.get());
     m_userScene->addUpdateCallback(m_observer.get());
 
-    /* update current/previous canvases */
+    /* load the construction tools */
     for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv){
@@ -161,6 +161,15 @@ bool RootScene::loadSceneFromFile()
             return false;
         }
         cnv->initializeTools();
+    }
+
+    /* update current/previous canvases */
+    for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){
+        entity::Canvas* cnv = m_userScene->getCanvas(i);
+        if (!cnv){
+            outErrMsg("loadSceneFromFile: could not extract a canvas from loaded scene");
+            return false;
+        }
         cnv->setColor(dureu::CANVAS_CLR_REST);
         m_userScene->setCanvasCurrent(cnv);
     }

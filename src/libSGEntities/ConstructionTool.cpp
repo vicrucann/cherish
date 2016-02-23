@@ -38,6 +38,7 @@ entity::ToolNormal::ToolNormal()
     m_geodeTool->setName("geodeNormal");
     m_geomTool->setName("geomNormal");
     this->setColor(dureu::CANVAS_CLR_EDIT);
+    this->setVertices(osg::Vec3f(0,0,0), dureu::CANVAS_MINW, dureu::CANVAS_MINH, 0, 0);
 }
 
 void entity::ToolNormal::setVertices(const osg::Vec3f &center, float szX, float szY, float , float )
@@ -59,6 +60,7 @@ entity::ToolAxisLocal::ToolAxisLocal()
     m_geodeTool->setName("geodeAxisLocal");
     m_geomTool->setName("geomAxisLocal");
     this->setColor();
+    this->setVertices(osg::Vec3f(0,0,0), 0,0,0, dureu::CANVAS_AXIS);
 }
 
 void entity::ToolAxisLocal::setColor()
@@ -103,9 +105,10 @@ entity::ToolFrame::ToolFrame()
     m_geomPick->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
 
     this->setColor(dureu::CANVAS_CLR_REST);
+    this->setVertices(osg::Vec3f(0,0,0), dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, 0);
 }
 
-void entity::ToolFrame::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
+void entity::ToolFrame::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float)
 {
     assert(szX>=dureu::CANVAS_MINW && szY>=dureu::CANVAS_MINH);
     osg::Vec3Array* vFrame = static_cast<osg::Vec3Array*>(m_geomTool->getVertexArray());

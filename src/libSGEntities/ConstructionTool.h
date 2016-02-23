@@ -44,7 +44,7 @@ class ToolFrame : public ConstructionTool
 public:
     ToolFrame();
     void setVertices(const osg::Vec3f &center, float szX, float szY,
-                     float szCr, float szAx);
+                     float szCr, float);
     void setColor(const osg::Vec4f &color);
 protected:
     osg::Geometry* m_geomPick;

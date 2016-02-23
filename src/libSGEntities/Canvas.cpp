@@ -94,7 +94,7 @@ void entity::Canvas::initializeTools()
         outLogMsg("canvas tools added");
     }
     /* remove all but geode data */
-    else if (m_switch->getNumChildren() == 4){
+    else if (m_switch->getNumChildren() == 4 || m_switch->getNumChildren() == 3 ){
 
         osg::Node* tnn = this->getTool("groupNormal");
         if (tnn) m_switch->replaceChild(tnn, m_toolNormal);
