@@ -3,6 +3,7 @@
 
 #include <QOpenGLWidget>
 #include <QTabletEvent>
+#include <QStack>
 
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
@@ -22,6 +23,9 @@ public:
     virtual ~GLWidget();
 
     osg::Camera* getCamera() const;
+    void addCameraView(const osg::Matrixd& cammat);
+    void setCameraView(const osg::Matrixd& cammat);
+    void previousCameraView();
 
 public slots:
     void getTabletActivity(bool active);
@@ -63,8 +67,10 @@ private:
     bool m_DeviceActive; // pen is in device approximation?
 
     dureu::MOUSE_MODE m_ModeMouse;
-    osg::ref_ptr<Manipulator> m_Manipulator;
+    osg::ref_ptr<Manipulator> m_manipulator;
     osg::ref_ptr<EventHandler> m_EH;
+
+    QStack<osg::Matrixd> m_stackView;
 };
 
 #endif // GLWIDGET

@@ -2,8 +2,10 @@
 #define MANIPULATOR
 
 #include "Settings.h"
+#include "RootScene.h"
 
 #include <osg/ref_ptr>
+#include <osg/observer_ptr>
 #include <osgGA/GUIEventHandler>
 #include <osgGA/GUIEventAdapter>
 #include <osgGA/GUIActionAdapter>
@@ -22,7 +24,7 @@ private:
     virtual bool wrapPan(const double eventTimeDelta, const double dx, const double dy);
     virtual bool wrapZoom(const double eventTimeDelta, const double, const double dy);
 
-    dureu::MOUSE_MODE _mode;
+    dureu::MOUSE_MODE m_mode;
 };
 
 #endif // MANIPULATOR

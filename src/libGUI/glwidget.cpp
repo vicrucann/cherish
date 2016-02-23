@@ -28,8 +28,10 @@ GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
     , m_DeviceActive(false)
     , m_ModeMouse(dureu::MOUSE_SKETCH)
 
-    , m_Manipulator(new Manipulator(m_ModeMouse))
+    , m_manipulator(new Manipulator(m_ModeMouse))
     , m_EH(new EventHandler(m_RootScene.get(), m_ModeMouse))
+
+    , m_stackView(QStack<osg::Matrixd>())
 {
     // camera settings
     float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());
@@ -48,11 +50,11 @@ GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
     osgViewer::View* view = new osgViewer::View;
     view->setCamera(camera);
     view->setSceneData(m_RootScene.get());
-    view->setCameraManipulator(m_Manipulator.get());
+    view->setCameraManipulator(m_manipulator.get());
     view->addEventHandler(m_EH.get());
 
     // manipulator settings
-    m_Manipulator->setAllowThrow(false);
+    m_manipulator->setAllowThrow(false);
 
     // viewer settings
     m_Viewer->addView(view);
@@ -89,6 +91,37 @@ osg::Camera *GLWidget::getCamera() const
         return cameras.at(0);*/
 }
 
+void GLWidget::addCameraView(const osg::Matrixd &cammat)
+{
+    if (!m_stackView.isEmpty()){
+        /* if the added view is the same as the last added, do nothing */
+        if (m_stackView.top() == cammat)
+            return;
+    }
+
+    /* otherwise, add the view to stack */
+    m_stackView.push(cammat);
+}
+
+void GLWidget::setCameraView(const osg::Matrixd &cammat)
+{
+    osg::Matrixd invM;
+    invM.invert(cammat);
+    m_manipulator->setByMatrix(invM);
+}
+
+void GLWidget::previousCameraView()
+{
+    outLogMsg("resetting camera view");
+    if (m_stackView.isEmpty()){
+        outErrMsg("previousCameraView: stack is empty");
+        return;
+    }
+
+    osg::Matrixd M = m_stackView.pop();
+    this->setCameraView(M);
+}
+
 void GLWidget::getTabletActivity(bool active)
 {
     m_DeviceActive = active;
@@ -98,7 +131,7 @@ void GLWidget::recieveMouseMode(dureu::MOUSE_MODE mode)
 {
     outLogVal("Changing mouse mode to", mode);
     m_ModeMouse = mode;
-    m_Manipulator->setMode(m_ModeMouse);
+    m_manipulator->setMode(m_ModeMouse);
     m_EH->setMode(m_ModeMouse);
 }
 
@@ -142,6 +175,10 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     case Qt::Key_V:
         if (m_RootScene->getCanvasCurrent())
             m_RootScene->getCanvasCurrent()->setRotationAxis(osg::Vec3f(0.f, 1.f, 0.f));
+        return;
+    case Qt::Key_Left:
+        if (event->modifiers() & Qt::ControlModifier)
+            this->previousCameraView();
         return;
     default:
         break;
@@ -214,6 +251,21 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
         }
         this->getEventQueue()->mouseButtonRelease(static_cast<float>(event->x()), static_cast<float>(event->y()), button);
     }
+
+    /* for view stack
+     * on each mouse release, save the camera position to stack,
+     * if the last saved position is not equal to the captured new one
+     */
+
+    outLogMsg("Qt mouse released");
+    osg::Camera* camera = this->getCamera();
+    if (!camera){
+        outErrMsg("could not obtain viewer's camera");
+        return;
+    }
+    osg::Matrixd cammat = camera->getViewMatrix();
+    this->addCameraView(cammat);
+
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event)
