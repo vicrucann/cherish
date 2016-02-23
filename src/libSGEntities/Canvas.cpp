@@ -54,11 +54,6 @@ entity::Canvas::Canvas()
     m_transform->setName("Transform");
     m_switch->setName("Switch");
 
-    /* construction tools */
-    m_switch->addChild(m_toolNormal, false);
-    m_switch->addChild(m_toolAxis, true);
-    m_switch->addChild(m_toolFrame, true);
-
     outLogMsg("New Canvas ctor complete");
 }
 
@@ -97,6 +92,11 @@ void entity::Canvas::initializeSG()
     m_transform->setName("Transform");
     m_transform->addChild(m_switch.get());
     m_switch->setName("Switch");
+
+    /* construction tools */
+    m_switch->addChild(m_toolNormal, false);
+    m_switch->addChild(m_toolAxis, true);
+    m_switch->addChild(m_toolFrame, true);
     /* _geodeData is  empty, it is for user input: strokes */
     m_switch->addChild(m_geodeData.get(), true);
 

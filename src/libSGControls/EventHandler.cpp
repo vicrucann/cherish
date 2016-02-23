@@ -2,7 +2,6 @@
 #include <iostream>
 #include <assert.h>
 #include <cerrno>
-#include <cfenv>
 
 #include <osgViewer/View>
 #include <osgUtil/LineSegmentIntersector>
