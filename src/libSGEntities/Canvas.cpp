@@ -4,6 +4,7 @@
 #include "Canvas.h"
 #include "Settings.h"
 #include "Stroke.h"
+#include "FindNodeVisitor.h"
 
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -82,6 +83,50 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     outLogMsg("new Canvas by copy ctor complete");
 }
 
+void entity::Canvas::initializeTools()
+{
+    outLogMsg("Canvas tools initialization");
+    if (m_switch->getNumChildren() == 0){
+        outLogMsg("  from scratch");
+        m_switch->addChild(m_toolFrame, true);
+        m_switch->addChild(m_toolAxis, true);
+        m_switch->addChild(m_toolNormal, false);
+        outLogMsg("canvas tools added");
+    }
+    /* remove all but geode data */
+    else if (m_switch->getNumChildren() == 4){
+
+        osg::Node* tnn = this->getTool("groupNormal");
+        if (tnn) m_switch->replaceChild(tnn, m_toolNormal);
+        else {
+            outErrMsg("normal node is null, trying to fix manually...");
+            if (m_switch->getChild(2))
+                m_switch->replaceChild(m_switch->getChild(0), m_toolNormal);
+        }
+
+        osg::Node* tan = this->getTool("groupAxisLocal");
+        if (tan) m_switch->replaceChild(tan, m_toolAxis);
+        else {
+            outErrMsg("axis node is null, trying to fix manually...");
+            if (m_switch->getChild(1))
+                m_switch->replaceChild(m_switch->getChild(1), m_toolAxis);
+        }
+
+        osg::Node* tfn = this->getTool("groupFrame");
+        if (tfn) m_switch->replaceChild(tfn, m_toolFrame);
+        else{
+            outErrMsg("framel node is null, trying to fix manually...");
+            if (m_switch->getChild(0))
+                m_switch->replaceChild(m_switch->getChild(2), m_toolFrame);
+        }
+
+        this->updateFrame();
+    }
+    else
+        outErrMsg("Canvas tool init: switch does not contain neither 0 nor 4 children. "
+                  "Tools were not initialized.");
+}
+
 /* Method to initialize canvases' geometrical properties
  * must be called from AddCanvasCommand right after the canvas
  * allocated.
@@ -93,10 +138,7 @@ void entity::Canvas::initializeSG()
     m_transform->addChild(m_switch.get());
     m_switch->setName("Switch");
 
-    /* construction tools */
-    m_switch->addChild(m_toolNormal, false);
-    m_switch->addChild(m_toolAxis, true);
-    m_switch->addChild(m_toolFrame, true);
+    this->initializeTools();
     /* _geodeData is  empty, it is for user input: strokes */
     m_switch->addChild(m_geodeData.get(), true);
 
@@ -690,6 +732,22 @@ void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY,
     m_toolNormal->setVertices(center, szX, szY, szCr, szAx);
 }
 
+osg::Node* entity::Canvas::getTool(const std::string &name)
+{
+    if (!m_switch.get()){
+        outErrMsg("getTool: switch is NULL");
+        return 0;
+    }
+
+    FindNodeVisitor fnv(name);
+    m_switch->accept(fnv);
+    if (fnv.getNode() == NULL){
+        outErrMsg("getTool: FNV returned NULL");
+        return 0;
+    }
+    return fnv.getNode();
+}
+
 REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
                         , new entity::Canvas
                         , entity::Canvas
@@ -705,3 +763,4 @@ REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
     ADD_VEC3F_SERIALIZER(Center, osg::Vec3f());
     ADD_VEC3F_SERIALIZER(Normal, osg::Vec3f());
 }
+

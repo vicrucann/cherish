@@ -160,6 +160,7 @@ bool RootScene::loadSceneFromFile()
             outErrMsg("loadSceneFromFile: could not extract a canvas from loaded scene");
             return false;
         }
+        cnv->initializeTools();
         cnv->setColor(dureu::CANVAS_CLR_REST);
         m_userScene->setCanvasCurrent(cnv);
     }

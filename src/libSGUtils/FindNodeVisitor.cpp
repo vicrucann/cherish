@@ -2,23 +2,23 @@
 
 FindNodeVisitor::FindNodeVisitor(const std::string &name):
     osg::NodeVisitor(osg::NodeVisitor::TRAVERSE_ALL_CHILDREN),
-    _name(name)
+    m_name(name)
 {
 }
 
 void FindNodeVisitor::apply(osg::Node &node)
 {
-    if (node.getName() == _name)
-        _node = &node;
+    if (node.getName() == m_name)
+        m_node = &node;
     traverse(node);
 }
 
 void FindNodeVisitor::setNameToFind(const std::string &name)
 {
-    _name = name;
+    m_name = name;
 }
 
 osg::Node *FindNodeVisitor::getNode()
 {
-    return _node.get();
+    return m_node.get();
 }

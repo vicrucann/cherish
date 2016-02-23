@@ -40,6 +40,7 @@ public:
     /* ctor to be used only within serializer, do not use it anywhere else */
     Canvas(const Canvas& cnv, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
 
+    virtual void initializeTools();
     virtual void initializeSG();
 
     META_Node(entity, Canvas)
@@ -116,6 +117,8 @@ public:
     osg::Plane getPlane() const;
     osg::MatrixTransform* getMatrixTransform() const;
     entity::Canvas* clone() const;
+
+    osg::Node* getTool(const std::string& name);
 
 protected:
     ~Canvas();
