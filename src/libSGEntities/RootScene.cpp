@@ -127,7 +127,14 @@ bool RootScene::loadSceneFromFile()
                  "Restart the program to ensure undo stack initialization.");
         return false;
     }
-    osg::ref_ptr<entity::UserScene> newscene = dynamic_cast<entity::UserScene*>(osgDB::readNodeFile(m_userScene->getFilePath()));
+    if (m_userScene->getFilePath() == "")
+        return false;
+    osg::Node* node = osgDB::readNodeFile(m_userScene->getFilePath());
+    if (!node){
+        outErrMsg("loadSceneFromFile: node is NULL");
+        return false;
+    }
+    osg::ref_ptr<entity::UserScene> newscene = dynamic_cast<entity::UserScene*>(node);
     if (!newscene.get()){
         outErrMsg("loadSceneFromFile: could not load from file, or could not perform the dynamic_cast<osg::Group*>");
         return false;

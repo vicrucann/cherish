@@ -542,7 +542,7 @@ entity::Stroke *EventHandler::getStroke(const StrokeIntersector::Intersection &r
 }
 
 entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
-    if (result.drawable->getName() != "Pickable")
+    if (result.drawable->getName() != "geomPick")
         return NULL;
     return dynamic_cast<entity::Canvas*>(result.nodePath.at(m_scene->getCanvasLevel()));
 }

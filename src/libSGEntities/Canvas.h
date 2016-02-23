@@ -20,6 +20,7 @@
 #include "Settings.h"
 #include "Stroke.h"
 #include "Photo.h"
+#include "ConstructionTool.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
@@ -136,10 +137,9 @@ private:
     osg::ref_ptr<osg::Geode> m_geodeData; /* keeps user canvas drawables such as strokes and photos */
 
     /* construction geodes */
-    osg::ref_ptr<osg::AutoTransform> m_transNormal;
-    osg::ref_ptr<osg::Geode> m_geodeNormal;
-    osg::ref_ptr<osg::Geode> m_geodeAxis;
-    osg::ref_ptr<osg::Geode> m_geodeFrame;
+    entity::ToolNormal* m_toolNormal;
+    entity::ToolAxisLocal* m_toolAxis;
+    entity::ToolFrame* m_toolFrame;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
     std::vector<entity::Stroke*> m_strokesSelected;

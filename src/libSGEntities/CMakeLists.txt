@@ -24,6 +24,8 @@ set (libSGEntities_SRCS
     UserScene.cpp
     Entity2D.h
     Entity2D.cpp
+    ConstructionTool.h
+    ConstructionTool.cpp
 )
 
 add_library(libSGEntities
