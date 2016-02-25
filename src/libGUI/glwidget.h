@@ -3,6 +3,7 @@
 
 #include <QOpenGLWidget>
 #include <QTabletEvent>
+#include <QUndoStack>
 #include <QStack>
 
 #include <osg/ref_ptr>
@@ -71,6 +72,8 @@ private:
     osg::ref_ptr<EventHandler> m_EH;
 
     QStack<osg::Matrixd> m_stackView;
+
+    osg::Matrixd m_invMViewer; /* for prev/next views */
 };
 
 #endif // GLWIDGET

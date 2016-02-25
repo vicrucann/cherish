@@ -53,6 +53,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     m_undoView->show();
     m_undoView->setAttribute(Qt::WA_QuitOnClose, false);
 
+    /* viewer stack */
+    m_viewStack->setUndoLimit(50);
+
     /* actions, menu, toolbars initialization */
     this->setCentralWidget(m_mdiArea);
     this->initializeActions();

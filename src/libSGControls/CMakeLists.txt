@@ -18,6 +18,8 @@ set (libSGControls_SRCS
     EditEntityCommand.cpp
     StrokeIntersector.h
     StrokeIntersector.cpp
+    ViewerCommand.h
+    ViewerCommand.cpp
 )
 
 add_library(libSGControls
