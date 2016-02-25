@@ -15,6 +15,8 @@
 #include <osgGA/EventQueue>
 #include <osgGA/TrackballManipulator>
 
+//#include "CameraChangeCallback.h"
+
 GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
     : QOpenGLWidget(parent, f)
 
@@ -33,7 +35,7 @@ GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
 
     , m_stackView(QStack<osg::Matrixd>())
 {
-    // camera settings
+    /* camera settings */
     float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());
     osg::Vec3 look = osg::Vec3(osg::Y_AXIS);
     osg::Vec3 up = osg::Vec3(osg::Z_AXIS);
@@ -45,16 +47,21 @@ GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
     camera->setViewMatrixAsLookAt(center-look*(radius*3.f), center, up);
     camera->setGraphicsContext(m_GraphicsWindow.get());
     camera->setClearColor(dureu::BACKGROUND_CLR);
+    camera->setName("Camera");
 
-    // view settings
+    /* view settings */
     osgViewer::View* view = new osgViewer::View;
     view->setCamera(camera);
     view->setSceneData(m_RootScene.get());
     view->setCameraManipulator(m_manipulator.get());
     view->addEventHandler(m_EH.get());
 
-    // manipulator settings
+    /* manipulator settings */
     m_manipulator->setAllowThrow(false);
+    //CameraChangeCallback* ccc = new CameraChangeCallback(m_manipulator,
+    //                                                     view->getEventQueue());
+    //camera->setUpdateCallback(ccc);
+
 
     // viewer settings
     m_Viewer->addView(view);
