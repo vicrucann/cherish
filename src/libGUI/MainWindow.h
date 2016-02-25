@@ -78,6 +78,8 @@ private slots:
 
     void onStrokesPush();
 
+    void onBookmark();
+
 private:
     GLWidget*   createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
     void        initializeActions();
@@ -119,6 +121,11 @@ private:
             // Edit Strokes
             , * m_actionStrokesPush
     ;
+
+    /* VIEWER actions */
+    QAction * m_actionPrevView, * m_actionNextView, * m_actionBookmark;
+
+    QUndoStack* m_viewStack;
 
     // QToolButton *select;
     // QWidgetAction* selectAction;

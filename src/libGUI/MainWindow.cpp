@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
     , m_rootScene(new RootScene(m_undoStack))
     , m_glWidget(new GLWidget(m_rootScene.get(), this))
+    , m_viewStack(new QUndoStack(this))
 {
     this->setMenuBar(m_menuBar);
 
@@ -127,6 +128,7 @@ void MainWindow::onFileNew()
 {
     this->onFileClose();
     m_undoStack->clear();
+    m_viewStack->clear();
     this->recievedRequestUpdate();
     this->statusBar()->showMessage(tr("Scene is cleared."));
 }
@@ -451,6 +453,11 @@ void MainWindow::onStrokesPush()
     this->statusBar()->showMessage(tr("Push is performed on selected strokes from current canvas (pink) to previous canvas (violet)."));
 }
 
+void MainWindow::onBookmark()
+{
+
+}
+
 GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
 {
     GLWidget* vwid = new GLWidget(m_rootScene.get(), this, f);
@@ -584,6 +591,17 @@ void MainWindow::initializeActions()
 
     m_actionStrokesPush = new QAction(Data::scenePushStrokesIcon(), tr("Push Strokes"), this);
     this->connect(m_actionStrokesPush, SIGNAL(triggered(bool)), this, SLOT(onStrokesPush()));
+
+    /* VIEWER actions */
+    m_actionPrevView = m_viewStack->createUndoAction(this, tr("Previous view"));
+    m_actionPrevView->setIcon(Data::viewerPreviousIcon());
+
+    m_actionNextView = m_viewStack->createRedoAction(this, tr("Next view"));
+    m_actionNextView->setIcon(Data::viewerNextIcon());
+
+    m_actionBookmark = new QAction(Data::viewerBookmarkIcon(), tr("Bookmark view"), this);
+    this->connect(m_actionBookmark, SIGNAL(triggered(bool)), this, SLOT(onBookmark()));
+
 }
 
 void MainWindow::initializeMenus()
@@ -726,4 +744,11 @@ void MainWindow::initializeToolbars()
     tbEntity->addAction(m_actionImagePush);
     tbEntity->addSeparator();
     tbEntity->addAction(m_actionStrokesPush);
+
+    /* VIEWER bar */
+    QToolBar* tbViewer = new QToolBar(tr("Viewer"));
+    this->addToolBar(Qt::BottomToolBarArea, tbViewer);
+    tbViewer->addAction(m_actionPrevView);
+    tbViewer->addAction(m_actionNextView);
+    tbViewer->addAction(m_actionBookmark);
 }
