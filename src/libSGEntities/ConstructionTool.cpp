@@ -99,7 +99,7 @@ entity::ToolFrame::ToolFrame()
     m_geomTool->setName("geomFrame");
 
     m_geodeTool->addDrawable(m_geomPick);
-    m_geomPick->setName("geomPick");
+    m_geomPick->setName("Pickable");
     m_geomPick->setVertexArray(new osg::Vec3Array(4));
     m_geomPick->setColorArray(new osg::Vec4Array(4), osg::Array::BIND_OVERALL);
     m_geomPick->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
