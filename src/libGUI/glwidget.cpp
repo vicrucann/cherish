@@ -17,7 +17,7 @@
 
 //#include "CameraChangeCallback.h"
 
-GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
+GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::WindowFlags f)
     : QOpenGLWidget(parent, f)
 
     , m_GraphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(), this->height()))
@@ -33,7 +33,7 @@ GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
     , m_manipulator(new Manipulator(m_ModeMouse))
     , m_EH(new EventHandler(m_RootScene.get(), m_ModeMouse))
 
-    , m_stackView(QStack<osg::Matrixd>())
+    , m_viewStack(stack)
 {
     /* camera settings */
     float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());
@@ -48,7 +48,6 @@ GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
     camera->setGraphicsContext(m_GraphicsWindow.get());
     camera->setClearColor(dureu::BACKGROUND_CLR);
     camera->setName("Camera");
-    m_stackView.push(camera->getViewMatrix());
 
     /* view settings */
     osgViewer::View* view = new osgViewer::View;
@@ -59,10 +58,7 @@ GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
 
     /* manipulator settings */
     m_manipulator->setAllowThrow(false);
-    //CameraChangeCallback* ccc = new CameraChangeCallback(m_manipulator,
-    //                                                     view->getEventQueue());
-    //camera->setUpdateCallback(ccc);
-
+    m_manipulator->getTransformation(m_eye, m_center, m_up);
 
     // viewer settings
     m_Viewer->addView(view);
@@ -99,35 +95,30 @@ osg::Camera *GLWidget::getCamera() const
         return cameras.at(0);*/
 }
 
-void GLWidget::addCameraView(const osg::Matrixd &cammat)
+void GLWidget::setCameraView()
 {
-    if (!m_stackView.isEmpty()){
-        /* if the added view is the same as the last added, do nothing */
-        if (m_stackView.top() == cammat)
-            return;
-    }
+    osg::Vec3d eye, center, up;
+    m_manipulator->getTransformation(eye, center, up);
+    if (eye == m_eye && center == m_center && up == m_up) return;
+    outLogMsg("change view detected");
+    outLogVec("old eye", m_eye.x(), m_eye.y(), m_eye.z());
+    outLogVec("new eye", eye.x(), eye.y(), eye.z());
+    outLogVec("old center", m_center.x(), m_center.y(), m_center.z());
+    outLogVec("new center", center.x(), center.y(), center.z());
+    outLogVec("old up", m_up.x(), m_up.y(), m_up.z());
+    outLogVec("new up", up.x(), up.y(), up.z());
 
-    /* otherwise, add the view to stack */
-    m_stackView.push(cammat);
-}
 
-void GLWidget::setCameraView(const osg::Matrixd &cammat)
-{
-    osg::Matrixd invM;
-    invM.invert(cammat);
-    m_manipulator->setByMatrix(invM);
-}
+    osg::Vec3d de = eye - m_eye;
+    osg::Vec3d dc = center - m_center;
+    osg::Vec3d du = up - m_up;
 
-void GLWidget::previousCameraView()
-{
-    outLogMsg("resetting camera view");
-    if (m_stackView.isEmpty()){
-        outErrMsg("previousCameraView: stack is empty");
-        return;
-    }
+    m_manipulator->setTransformation(m_eye, m_center, m_up);
 
-    osg::Matrixd M = m_stackView.pop();
-    this->setCameraView(M);
+    ViewerCommand* cmd = new ViewerCommand(this, m_manipulator.get(),
+                                           m_eye, m_center, m_up,
+                                           de, dc, du);
+    m_viewStack->push(cmd);
 }
 
 void GLWidget::getTabletActivity(bool active)
@@ -183,10 +174,6 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     case Qt::Key_V:
         if (m_RootScene->getCanvasCurrent())
             m_RootScene->getCanvasCurrent()->setRotationAxis(osg::Vec3f(0.f, 1.f, 0.f));
-        return;
-    case Qt::Key_Left:
-        if (event->modifiers() & Qt::ControlModifier)
-            this->previousCameraView();
         return;
     default:
         break;
@@ -260,20 +247,8 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event)
         this->getEventQueue()->mouseButtonRelease(static_cast<float>(event->x()), static_cast<float>(event->y()), button);
     }
 
-    /* for view stack
-     * on each mouse release, save the camera position to stack,
-     * if the last saved position is not equal to the captured new one
-     */
-
-    outLogMsg("Qt mouse released");
-    osg::Camera* camera = this->getCamera();
-    if (!camera){
-        outErrMsg("could not obtain viewer's camera");
-        return;
-    }
-    osg::Matrixd cammat = camera->getViewMatrix();
-    this->addCameraView(cammat);
-
+    this->setCameraView();
+    m_manipulator->getTransformation(m_eye, m_center, m_up);
 }
 
 void GLWidget::wheelEvent(QWheelEvent *event)
@@ -283,6 +258,9 @@ void GLWidget::wheelEvent(QWheelEvent *event)
     osgGA::GUIEventAdapter::ScrollingMotion motion = delta > 0 ?   osgGA::GUIEventAdapter::SCROLL_UP
                                                                  : osgGA::GUIEventAdapter::SCROLL_DOWN;
     this->getEventQueue()->mouseScroll( motion );
+
+    this->setCameraView();
+    m_manipulator->getTransformation(m_eye, m_center, m_up);
 }
 
 void GLWidget::tabletEvent(QTabletEvent *event)
@@ -324,6 +302,9 @@ void GLWidget::tabletEvent(QTabletEvent *event)
             return;
         m_DeviceDown = false;
         this->getEventQueue()->mouseButtonRelease(static_cast<float>(event->x()), static_cast<float>(event->y()), 1);
+
+        this->setCameraView();
+        m_manipulator->getTransformation(m_eye, m_center, m_up);
         break;
     case QEvent::TabletMove:
         this->getEventQueue()->mouseMotion(static_cast<float>(event->x()), static_cast<float>(event->y()));
@@ -362,6 +343,9 @@ void GLWidget::onHome()
     for (unsigned int i=0; i<views.size(); ++i){
         osgViewer::View* view = views.at(i);
         view->home();
+
+        this->setCameraView();
+        m_manipulator->getTransformation(m_eye, m_center, m_up);
     }
 }
 

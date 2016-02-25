@@ -26,8 +26,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_undoView(new QUndoView(m_undoStack))
     , m_menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
     , m_rootScene(new RootScene(m_undoStack))
-    , m_glWidget(new GLWidget(m_rootScene.get(), this))
     , m_viewStack(new QUndoStack(this))
+    , m_glWidget(new GLWidget(m_rootScene.get(), m_viewStack, this))
 {
     this->setMenuBar(m_menuBar);
 
@@ -114,14 +114,14 @@ void MainWindow::recievedRequestUpdate()
  * To create outside viewer, use:
  * GLWidget* vwid = createViewer(Qt::Window);
 */
-void MainWindow::onCreateViewer(){
+/*void MainWindow::onCreateViewer(){
     GLWidget* m_glWidget = createViewer();
     QMdiSubWindow* subwin = m_mdiArea->addSubWindow(m_glWidget);
     subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     m_glWidget->showMaximized();
     subwin->show();
     this->onSketch();
-}
+}*/
 
 /* Check whether the current scene is empty or not
  * If not - propose to save changes.
@@ -461,7 +461,7 @@ void MainWindow::onBookmark()
 
 }
 
-GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
+/*GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
 {
     GLWidget* vwid = new GLWidget(m_rootScene.get(), this, f);
     QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
@@ -469,7 +469,7 @@ GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
     QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)),
                      vwid, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
     return vwid;
-}
+}*/
 
 void MainWindow::initializeActions()
 {

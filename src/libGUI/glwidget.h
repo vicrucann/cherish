@@ -16,17 +16,16 @@
 #include "Settings.h"
 #include "../libSGControls/Manipulator.h"
 #include "../libSGControls/EventHandler.h"
+#include "../libSGControls/ViewerCommand.h"
 
 class GLWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
-    GLWidget(RootScene* root, QWidget* parent=0, Qt::WindowFlags f = 0);
+    GLWidget(RootScene* root, QUndoStack* stack, QWidget* parent=0, Qt::WindowFlags f = 0);
     virtual ~GLWidget();
 
     osg::Camera* getCamera() const;
-    void addCameraView(const osg::Matrixd& cammat);
-    void setCameraView(const osg::Matrixd& cammat);
-    void previousCameraView();
+    void setCameraView();
 
 public slots:
     void getTabletActivity(bool active);
@@ -71,9 +70,10 @@ private:
     osg::ref_ptr<Manipulator> m_manipulator;
     osg::ref_ptr<EventHandler> m_EH;
 
-    QStack<osg::Matrixd> m_stackView;
+    //QStack<osg::Matrixd> m_stackView;
 
-    osg::Matrixd m_invMViewer; /* for prev/next views */
+    QUndoStack* m_viewStack;
+    osg::Vec3d m_eye, m_center, m_up; /* for prev/next views */
 };
 
 #endif // GLWIDGET

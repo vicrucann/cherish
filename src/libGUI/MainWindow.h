@@ -35,7 +35,7 @@ signals:
     void sendMouseMode(dureu::MOUSE_MODE mode);
 
 private slots:
-    void onCreateViewer();
+    //void onCreateViewer();
 
     void onFileNew();
     void onFileOpen();
@@ -81,7 +81,7 @@ private slots:
     void onBookmark();
 
 private:
-    GLWidget*   createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
+    //GLWidget*   createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
     void        initializeActions();
     void        initializeMenus();
     void        initializeToolbars();
@@ -95,6 +95,7 @@ private:
 
     QMenuBar*       m_menuBar;
     osg::ref_ptr<RootScene> m_rootScene; // main scene graph
+    QUndoStack* m_viewStack;
     GLWidget*       m_glWidget;
 
     // FILE actions
@@ -124,8 +125,6 @@ private:
 
     /* VIEWER actions */
     QAction * m_actionPrevView, * m_actionNextView, * m_actionBookmark;
-
-    QUndoStack* m_viewStack;
 
     // QToolButton *select;
     // QWidgetAction* selectAction;
