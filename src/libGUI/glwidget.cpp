@@ -48,6 +48,7 @@ GLWidget::GLWidget(RootScene *root, QWidget *parent, Qt::WindowFlags f)
     camera->setGraphicsContext(m_GraphicsWindow.get());
     camera->setClearColor(dureu::BACKGROUND_CLR);
     camera->setName("Camera");
+    m_stackView.push(camera->getViewMatrix());
 
     /* view settings */
     osgViewer::View* view = new osgViewer::View;

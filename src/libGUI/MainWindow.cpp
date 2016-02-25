@@ -669,13 +669,17 @@ void MainWindow::initializeToolbars()
     tbEdit->addAction(m_actionDelete);
 
     // Camera navigation
-    QToolBar* tbCamera = this->addToolBar(tr("Camera"));
+    QToolBar* tbCamera = new QToolBar(tr("Camera"));
+    //QToolBar* tbCamera = this->addToolBar(tr("Camera"));
+    this->addToolBar(Qt::LeftToolBarArea, tbCamera);
     tbCamera->addAction(m_actionOrbit);
     tbCamera->addAction(m_actionZoom);
     tbCamera->addAction(m_actionPan);
 
     // Input
-    QToolBar* tbInput = this->addToolBar(tr("Input"));
+    QToolBar* tbInput = new QToolBar(tr("Input"));
+    this->addToolBar(Qt::LeftToolBarArea, tbInput);
+    //QToolBar* tbInput = this->addToolBar(tr("Input"));
     tbInput->addAction(m_actionSelect);
     tbInput->addAction(m_actionSketch);
     tbInput->addAction(m_actionEraser);
@@ -708,7 +712,9 @@ void MainWindow::initializeToolbars()
     tbInput->addAction(waNewCanvasSet);
 
     // Edit entity
-    QToolBar* tbEntity = this->addToolBar(tr("Edit entity"));
+    QToolBar* tbEntity = new QToolBar(tr("Edit entity"));
+    //QToolBar* tbEntity = this->addToolBar(tr("Edit entity"));
+    this->addToolBar(Qt::LeftToolBarArea, tbEntity);
     tbEntity->addAction(m_actionCanvasOffset);
     tbEntity->addAction(m_actionCanvasRotate);
     tbEntity->addSeparator();
