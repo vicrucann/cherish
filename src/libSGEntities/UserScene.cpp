@@ -90,6 +90,36 @@ bool entity::UserScene::isSetFilePath() const
     return m_filePath == ""? false : true;
 }
 
+void entity::UserScene::setEyes(const std::vector<osg::Vec3d> &eyes)
+{
+    m_eyes = eyes;
+}
+
+const std::vector<osg::Vec3d> &entity::UserScene::getEyes() const
+{
+    return m_eyes;
+}
+
+void entity::UserScene::setCenters(const std::vector<osg::Vec3d> &centers)
+{
+    m_centers = centers;
+}
+
+const std::vector<osg::Vec3d> &entity::UserScene::getCenters() const
+{
+    return m_centers;
+}
+
+void entity::UserScene::setUps(const std::vector<osg::Vec3d> &ups)
+{
+    m_ups = ups;
+}
+
+const std::vector<osg::Vec3d> &entity::UserScene::getUps() const
+{
+    return m_ups;
+}
+
 void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T)
 {
     this->addCanvas(stack, R,T, getEntityName(dureu::NAME_CANVAS, m_idCanvas++));
@@ -1446,4 +1476,9 @@ REGISTER_OBJECT_WRAPPER(UserScene_Wrapper
     ADD_UINT_SERIALIZER(IdCanvas, 0);
     ADD_UINT_SERIALIZER(IdPhoto, 0);
     ADD_STRING_SERIALIZER(FilePath, "");
+    ADD_LIST_SERIALIZER(Eyes, std::vector<osg::Vec3d>);
+    ADD_LIST_SERIALIZER(Centers, std::vector<osg::Vec3d>);
+    ADD_LIST_SERIALIZER(Ups, std::vector<osg::Vec3d>);
+    //ADD_LIST_SERIALIZER(Bookmarks, std::list<entity::ViewBookmark*>);
+    //ADD_LIST_SERIALIZER(List, std::list<osg::Object*>);
 }

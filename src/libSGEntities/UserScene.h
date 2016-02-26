@@ -14,6 +14,7 @@
 #include "Canvas.h"
 #include "Stroke.h"
 #include "Photo.h"
+#include "ViewBookmark.h"
 
 // multiple inheritance requires QObject to be first,
 // for more, see:
@@ -39,6 +40,15 @@ public:
     void setFilePath(const std::string& name);
     const std::string& getFilePath() const;
     bool isSetFilePath() const;
+
+    void setEyes(const std::vector<osg::Vec3d>& eyes);
+    const std::vector<osg::Vec3d>& getEyes() const;
+
+    void setCenters(const std::vector<osg::Vec3d>& centers);
+    const std::vector<osg::Vec3d>& getCenters() const;
+
+    void setUps(const std::vector<osg::Vec3d>& ups);
+    const std::vector<osg::Vec3d>& getUps() const;
 
     /* other methods */
     void addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T);
@@ -160,6 +170,14 @@ private:
     unsigned int m_idCanvas;
     unsigned int m_idPhoto;
     std::string m_filePath;
+
+    /* bookmark data */
+    std::vector<osg::Vec3d> m_eyes;
+    std::vector<osg::Vec3d> m_centers;
+    std::vector<osg::Vec3d> m_ups;
+
+    //std::list<entity::ViewBookmark*> m_bookmarks;
+    //std::list<osg::Object*> m_list;
 };
 
 }

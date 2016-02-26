@@ -26,6 +26,8 @@ set (libSGEntities_SRCS
     Entity2D.cpp
     ConstructionTool.h
     ConstructionTool.cpp
+    #ViewBookmark.h
+    #ViewBookmark.cpp
 )
 
 add_library(libSGEntities
