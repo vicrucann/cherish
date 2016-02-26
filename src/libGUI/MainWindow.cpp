@@ -692,7 +692,7 @@ void MainWindow::initializeToolbars()
     // Camera navigation
     QToolBar* tbCamera = new QToolBar(tr("Camera"));
     //QToolBar* tbCamera = this->addToolBar(tr("Camera"));
-    this->addToolBar(Qt::LeftToolBarArea, tbCamera);
+    this->addToolBar(Qt::BottomToolBarArea, tbCamera);
     tbCamera->addAction(m_actionOrbit);
     tbCamera->addAction(m_actionZoom);
     tbCamera->addAction(m_actionPan);
