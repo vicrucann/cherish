@@ -5,6 +5,8 @@
 #include <QMdiArea>
 #include <QDesktopWidget>
 #include <QTableWidget>
+#include <QTabWidget>
+#include <QListWidget>
 #include <QMenuBar>
 #include <QUndoStack>
 #include <QUndoView>
@@ -88,6 +90,10 @@ private:
 
     QDesktopWidget* m_desktop;
     QMdiArea*       m_mdiArea;
+
+    QListWidget*    m_bookmarkWidget;
+    QListWidget*    m_canvasWidget;
+
 
     // http://doc.qt.io/qt-5/qtwidgets-tools-undoframework-example.html
     QUndoStack*     m_undoStack;

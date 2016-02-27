@@ -22,9 +22,15 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
     , m_desktop(0)
     , m_mdiArea(new QMdiArea(this))
+
+    , m_bookmarkWidget(new QListWidget())
+    , m_canvasWidget(new QListWidget())
+
     , m_undoStack(new QUndoStack(this))
     , m_undoView(new QUndoView(m_undoStack))
+
     , m_menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
+
     , m_rootScene(new RootScene(m_undoStack))
     , m_viewStack(new QUndoStack(this))
     , m_glWidget(new GLWidget(m_rootScene.get(), m_viewStack, this))
@@ -47,6 +53,33 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
         this->close();
     }
     QObject::connect(scene, SIGNAL(sendRequestUpdate()), this, SLOT(recievedRequestUpdate()));
+
+    /* tab widget with bookmarks, canvases, photos, strokes, annotations */
+    QDockWidget* dockwid = new QDockWidget(this);
+    this->addDockWidget(Qt::RightDockWidgetArea, dockwid, Qt::Vertical);
+    dockwid->setFeatures(QDockWidget::DockWidgetClosable);
+    dockwid->setWindowTitle(QString("Lists of entities"));
+    dockwid->hide();
+
+    QTabWidget* tabwid = new QTabWidget();
+    tabwid->show();
+    tabwid->setAttribute(Qt::WA_QuitOnClose, false);
+    tabwid->setTabPosition(QTabWidget::West);
+    tabwid->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
+
+    m_bookmarkWidget->setViewMode(QListWidget::IconMode);
+    m_bookmarkWidget->setMovement(QListView::Free);
+    m_bookmarkWidget->setIconSize(QSize(200, 200));
+    m_bookmarkWidget->setResizeMode(QListWidget::Adjust);
+    m_bookmarkWidget->setSelectionBehavior(QAbstractItemView::SelectItems);
+    m_bookmarkWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+
+    tabwid->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
+    m_canvasWidget->setViewMode(QListWidget::ListMode);
+    m_canvasWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    m_canvasWidget->setSelectionMode(QAbstractItemView::SingleSelection);
+
+
 
     /* undo/redo widget */
     m_undoView->setWindowTitle(tr("Command List"));
@@ -80,6 +113,7 @@ void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) 
     switch (mode) {
     case dureu::SCREEN_MIN:
         this->showNormal();
+        this->move(availS.width()*scale_inv, fullS.height()-availS.height());
         break;
     case dureu::SCREEN_MAX:
         this->showMaximized();
