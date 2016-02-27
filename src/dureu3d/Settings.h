@@ -152,6 +152,7 @@ const std::string NAME_ENTITY = "Entity";
 const std::string NAME_STROKE = "Stroke";
 const std::string NAME_GEOMETRY = "Geometry";
 const std::string NAME_PHOTO = "Photo";
+const std::string NAME_BOOKMARK = "Bookmark";
 
 const float HUD_LEFT = -60.f;
 const float HUD_RIGHT = 60.f;

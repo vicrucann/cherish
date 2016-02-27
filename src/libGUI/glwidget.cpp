@@ -121,6 +121,17 @@ void GLWidget::setCameraView()
     m_viewStack->push(cmd);
 }
 
+void GLWidget::setCameraView(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+{
+    m_manipulator->setTransformation(m_eye, m_center, m_up);
+    this->setCameraView();
+}
+
+void GLWidget::getCameraView(osg::Vec3d &eye, osg::Vec3d &center, osg::Vec3d &up) const
+{
+    m_manipulator->getTransformation(eye, center, up);
+}
+
 void GLWidget::getTabletActivity(bool active)
 {
     m_DeviceActive = active;

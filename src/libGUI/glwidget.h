@@ -26,6 +26,8 @@ public:
 
     osg::Camera* getCamera() const;
     void setCameraView();
+    void setCameraView(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+    void getCameraView(osg::Vec3d& eye, osg::Vec3d& center, osg::Vec3d& up) const;
 
 public slots:
     void getTabletActivity(bool active);

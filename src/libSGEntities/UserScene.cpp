@@ -13,6 +13,7 @@
 
 entity::UserScene::UserScene()
     : osg::Group()
+    , m_bookmarks(new osg::Group)
     , m_canvasCurrent(NULL)
     , m_canvasPrevious(NULL)
     , m_canvasSelected(NULL)
@@ -28,6 +29,7 @@ entity::UserScene::UserScene()
     , m_rotate(0)
     , m_idCanvas(0)
     , m_idPhoto(0)
+    , m_idBookmark(0)
     , m_filePath("")
 {
     this->setName("UserScene");
@@ -35,6 +37,7 @@ entity::UserScene::UserScene()
 
 entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& copyop)
     : osg::Group(scene, copyop)
+    , m_bookmarks(scene.m_bookmarks)
     , m_canvasCurrent(scene.m_canvasCurrent)
     , m_canvasPrevious(scene.m_canvasPrevious)
     , m_canvasSelected(NULL)
@@ -50,9 +53,19 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_rotate(scene.m_rotate)
     , m_idCanvas(scene.m_idCanvas)
     , m_idPhoto(scene.m_idPhoto)
+    , m_idBookmark(scene.m_idBookmark)
     , m_filePath(scene.m_filePath)
 {
+}
 
+void entity::UserScene::setBookmarks(osg::Group *group)
+{
+    m_bookmarks = group;
+}
+
+const osg::Group *entity::UserScene::getBookmarks() const
+{
+    return m_bookmarks;
 }
 
 void entity::UserScene::setIdCanvas(unsigned int id)
@@ -75,6 +88,16 @@ unsigned int entity::UserScene::getIdPhoto() const
     return m_idPhoto;
 }
 
+void entity::UserScene::setIdBookmark(unsigned int id)
+{
+    m_idBookmark = id;
+}
+
+unsigned int entity::UserScene::getIdBookmark() const
+{
+    return m_idBookmark;
+}
+
 void entity::UserScene::setFilePath(const std::string &name)
 {
     m_filePath = name;
@@ -88,36 +111,6 @@ const std::string &entity::UserScene::getFilePath() const
 bool entity::UserScene::isSetFilePath() const
 {
     return m_filePath == ""? false : true;
-}
-
-void entity::UserScene::setEyes(const std::vector<osg::Vec3d> &eyes)
-{
-    m_eyes = eyes;
-}
-
-const std::vector<osg::Vec3d> &entity::UserScene::getEyes() const
-{
-    return m_eyes;
-}
-
-void entity::UserScene::setCenters(const std::vector<osg::Vec3d> &centers)
-{
-    m_centers = centers;
-}
-
-const std::vector<osg::Vec3d> &entity::UserScene::getCenters() const
-{
-    return m_centers;
-}
-
-void entity::UserScene::setUps(const std::vector<osg::Vec3d> &ups)
-{
-    m_ups = ups;
-}
-
-const std::vector<osg::Vec3d> &entity::UserScene::getUps() const
-{
-    return m_ups;
 }
 
 void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T)
@@ -185,6 +178,30 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
         return;
     }
     stack->push(cmd);
+}
+
+void entity::UserScene::addBookmark(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+{
+    if (!m_bookmarks.get()){
+        outErrMsg("addBookmark: bookmarks pointer is NULL");
+        return;
+    }
+    if (!this->containsNode(m_bookmarks)){
+        if (!this->addChild(m_bookmarks)){
+            outErrMsg("addBookmark: could not set up root pointer correctly");
+            return;
+        }
+    }
+
+    entity::ViewBookmark* vbm = new entity::ViewBookmark(eye,center,up, this->getBookmarkName());
+    if (!vbm){
+        outErrMsg("addBookmark: could not allocate bookmark");
+        return;
+    }
+    if (!m_bookmarks->addChild(vbm)){
+        outErrMsg("addBookmark: could not add to root");
+        return;
+    }
 }
 
 void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, int first, int last, dureu::EVENT event)
@@ -818,6 +835,7 @@ entity::UserScene::~UserScene()
 
 bool entity::UserScene::clearUserData()
 {
+    /* clear SG content */
     return this->removeChildren(0, this->getNumChildren());
 }
 
@@ -859,6 +877,11 @@ std::string entity::UserScene::getCanvasName()
 std::string entity::UserScene::getPhotoName()
 {
     return this->getEntityName(dureu::NAME_PHOTO, m_idPhoto++);
+}
+
+std::string entity::UserScene::getBookmarkName()
+{
+    return this->getEntityName(dureu::NAME_BOOKMARK, m_idBookmark++);
 }
 
 std::string entity::UserScene::getEntityName(const std::string &name, unsigned int id) const
@@ -1473,12 +1496,9 @@ REGISTER_OBJECT_WRAPPER(UserScene_Wrapper
                         , entity::UserScene
                         , "osg::Object osg::Group entity::UserScene")
 {
+    ADD_OBJECT_SERIALIZER(Bookmarks, osg::Group, NULL);
     ADD_UINT_SERIALIZER(IdCanvas, 0);
     ADD_UINT_SERIALIZER(IdPhoto, 0);
+    ADD_UINT_SERIALIZER(IdBookmark, 0);
     ADD_STRING_SERIALIZER(FilePath, "");
-    ADD_LIST_SERIALIZER(Eyes, std::vector<osg::Vec3d>);
-    ADD_LIST_SERIALIZER(Centers, std::vector<osg::Vec3d>);
-    ADD_LIST_SERIALIZER(Ups, std::vector<osg::Vec3d>);
-    //ADD_LIST_SERIALIZER(Bookmarks, std::list<entity::ViewBookmark*>);
-    //ADD_LIST_SERIALIZER(List, std::list<osg::Object*>);
 }

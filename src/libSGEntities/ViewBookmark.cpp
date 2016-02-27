@@ -1,7 +1,7 @@
 #include "ViewBookmark.h"
 
 entity::ViewBookmark::ViewBookmark()
-    : osg::Object()
+    : osg::Node()
     , m_eye(osg::Vec3d(0,0,0))
     , m_center(osg::Vec3d(0,0,0))
     , m_up(osg::Vec3d(0,0,0))
@@ -9,19 +9,20 @@ entity::ViewBookmark::ViewBookmark()
 }
 
 entity::ViewBookmark::ViewBookmark(const ViewBookmark &bm, const osg::CopyOp &copyop)
-    : osg::Object(bm, copyop)
+    : osg::Node(bm, copyop)
     , m_eye(bm.m_eye)
     , m_center(bm.m_center)
     , m_up(bm.m_up)
 {
 }
 
-entity::ViewBookmark::ViewBookmark(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
-    : osg::Object()
+entity::ViewBookmark::ViewBookmark(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const std::string &name)
+    : osg::Node()
     , m_eye(eye)
     , m_center(center)
     , m_up(up)
 {
+    this->setName(name);
 }
 
 void entity::ViewBookmark::setEye(const osg::Vec3d &eye)

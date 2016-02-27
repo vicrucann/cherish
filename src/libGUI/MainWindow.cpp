@@ -458,7 +458,10 @@ void MainWindow::onStrokesPush()
 
 void MainWindow::onBookmark()
 {
-
+    osg::Vec3d eye,center,up;
+    m_glWidget->getCameraView(eye, center, up);
+    m_rootScene->addBookmark(eye, center, up);
+    this->statusBar()->showMessage(tr("Current camera view is saved as a bookmark"));
 }
 
 /*GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)

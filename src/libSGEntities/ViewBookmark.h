@@ -7,15 +7,15 @@
 #include <osgDB/ObjectWrapper>
 
 namespace entity {
-class ViewBookmark : public osg::Object
+class ViewBookmark : public osg::Node
 {
 public:
     ViewBookmark();
     ViewBookmark(const ViewBookmark& bm, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
-    ViewBookmark(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+    ViewBookmark(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name);
 
     /* setters and getters for serialization */
-    META_Object(entity, ViewBookmark)
+    META_Node(entity, ViewBookmark)
 
     void setEye(const osg::Vec3d& eye);
     const osg::Vec3d& getEye() const;

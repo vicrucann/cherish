@@ -31,30 +31,28 @@ public:
     META_Node(entity, UserScene)
 
     /* setters/getters for serialization */
+    void setBookmarks(osg::Group* group);
+    const osg::Group* getBookmarks() const;
+
     void setIdCanvas(unsigned int id);
     unsigned int getIdCanvas() const;
 
     void setIdPhoto(unsigned int id);
     unsigned int getIdPhoto() const;
 
+    void setIdBookmark(unsigned int id);
+    unsigned int getIdBookmark() const;
+
     void setFilePath(const std::string& name);
     const std::string& getFilePath() const;
     bool isSetFilePath() const;
-
-    void setEyes(const std::vector<osg::Vec3d>& eyes);
-    const std::vector<osg::Vec3d>& getEyes() const;
-
-    void setCenters(const std::vector<osg::Vec3d>& centers);
-    const std::vector<osg::Vec3d>& getCenters() const;
-
-    void setUps(const std::vector<osg::Vec3d>& ups);
-    const std::vector<osg::Vec3d>& getUps() const;
 
     /* other methods */
     void addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T);
     void addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
     void addStroke(QUndoStack* stack, float u, float v, dureu::EVENT event);
     void addPhoto(QUndoStack* stack, const std::string& fname);
+    void addBookmark(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void eraseStroke(QUndoStack* stack, entity::Stroke* stroke, int first, int last, dureu::EVENT event);
 
     entity::Canvas* getCanvas(unsigned int id);
@@ -102,6 +100,7 @@ protected:
 
     std::string getCanvasName();
     std::string getPhotoName();
+    std::string getBookmarkName();
     std::string getEntityName(const std::string& name, unsigned int id) const;
 
     void strokeStart();
@@ -155,6 +154,7 @@ protected:
     void photoRotateFinish(QUndoStack* stack, double u, double v);
 
 private:
+    osg::ref_ptr<osg::Group> m_bookmarks;
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
     osg::observer_ptr<entity::Canvas> m_canvasPrevious;
     osg::observer_ptr<entity::Canvas> m_canvasSelected;
@@ -169,15 +169,8 @@ private:
     double m_rotate;
     unsigned int m_idCanvas;
     unsigned int m_idPhoto;
+    unsigned int m_idBookmark;
     std::string m_filePath;
-
-    /* bookmark data */
-    std::vector<osg::Vec3d> m_eyes;
-    std::vector<osg::Vec3d> m_centers;
-    std::vector<osg::Vec3d> m_ups;
-
-    //std::list<entity::ViewBookmark*> m_bookmarks;
-    //std::list<osg::Object*> m_list;
 };
 
 }
