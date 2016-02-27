@@ -76,6 +76,10 @@ public:
     static const QIcon& viewerTwoscreenIcon();
     static const QIcon& viewerVirtualIcon();
 
+
+    static const QIcon& controlBookmarksIcon();
+    static const QIcon& controlCanvasesIcon();
+
     /* Cursors */
 
     static const QPixmap&  editDeleteCursor();

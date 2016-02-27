@@ -389,6 +389,20 @@ const QIcon &Data::viewerVirtualIcon()
     return icon;
 }
 
+const QIcon &Data::controlBookmarksIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/control-bookmarks-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/control-bookmarks-24px.svg"));
+    return icon;
+}
+
+const QIcon &Data::controlCanvasesIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/control-canvases-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(QPixmap(":/control-canvases-24px.svg"));
+    return icon;
+}
+
 const QPixmap &Data::editDeleteCursor()
 {
     static QPixmap pmap(":/edit-delete-cursor-24px.svg");
