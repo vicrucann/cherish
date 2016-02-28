@@ -711,6 +711,7 @@ void MainWindow::initializeToolbars()
 {
     // File
     QToolBar* tbFile = this->addToolBar(tr("File"));
+    tbFile->setIconSize(QSize(60, 60));
     tbFile->addAction(m_actionNewFile);
     tbFile->addAction(m_actionOpenFile);
     tbFile->addAction(m_actionSaveFile);
