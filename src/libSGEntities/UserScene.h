@@ -15,6 +15,7 @@
 #include "Stroke.h"
 #include "Photo.h"
 #include "ViewBookmark.h"
+#include "Bookmarks.h"
 
 // multiple inheritance requires QObject to be first,
 // for more, see:
@@ -31,8 +32,8 @@ public:
     META_Node(entity, UserScene)
 
     /* setters/getters for serialization */
-    void setBookmarks(osg::Group* group);
-    const osg::Group* getBookmarks() const;
+    void setBookmarks(entitylist::Bookmarks* group);
+    const entitylist::Bookmarks* getBookmarks() const;
 
     void setIdCanvas(unsigned int id);
     unsigned int getIdCanvas() const;
@@ -155,7 +156,7 @@ protected:
     void photoRotateFinish(QUndoStack* stack, double u, double v);
 
 private:
-    osg::ref_ptr<osg::Group> m_bookmarks;
+    osg::ref_ptr<entitylist::Bookmarks> m_bookmarks;
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
     osg::observer_ptr<entity::Canvas> m_canvasPrevious;
     osg::observer_ptr<entity::Canvas> m_canvasSelected;

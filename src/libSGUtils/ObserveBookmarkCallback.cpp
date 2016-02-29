@@ -3,7 +3,7 @@
 #include "Settings.h"
 #include "ViewBookmark.h"
 
-ObserveBookmarkCallback::ObserveBookmarkCallback(osg::Group *bookmarks)
+ObserveBookmarkCallback::ObserveBookmarkCallback(entitylist::Bookmarks *bookmarks)
     : osg::NodeCallback()
     , m_bookmarks(bookmarks)
 {

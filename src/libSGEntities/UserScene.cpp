@@ -13,7 +13,7 @@
 
 entity::UserScene::UserScene()
     : osg::Group()
-    , m_bookmarks(new osg::Group)
+    , m_bookmarks(new entitylist::Bookmarks)
     , m_canvasCurrent(NULL)
     , m_canvasPrevious(NULL)
     , m_canvasSelected(NULL)
@@ -58,12 +58,12 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
 {
 }
 
-void entity::UserScene::setBookmarks(osg::Group *group)
+void entity::UserScene::setBookmarks(entitylist::Bookmarks *group)
 {
     m_bookmarks = group;
 }
 
-const osg::Group *entity::UserScene::getBookmarks() const
+const entitylist::Bookmarks *entity::UserScene::getBookmarks() const
 {
     return m_bookmarks;
 }
@@ -198,7 +198,7 @@ void entity::UserScene::addBookmark(const osg::Vec3d &eye, const osg::Vec3d &cen
         outErrMsg("addBookmark: could not allocate bookmark");
         return;
     }
-    if (!m_bookmarks->addChild(vbm)){
+    if (!m_bookmarks->addBookmark(vbm)){
         outErrMsg("addBookmark: could not add to root");
         return;
     }
@@ -1497,7 +1497,7 @@ REGISTER_OBJECT_WRAPPER(UserScene_Wrapper
                         , entity::UserScene
                         , "osg::Object osg::Group entity::UserScene")
 {
-    ADD_OBJECT_SERIALIZER(Bookmarks, osg::Group, NULL);
+    ADD_OBJECT_SERIALIZER(Bookmarks, entitylist::Bookmarks, NULL);
     ADD_UINT_SERIALIZER(IdCanvas, 0);
     ADD_UINT_SERIALIZER(IdPhoto, 0);
     ADD_UINT_SERIALIZER(IdBookmark, 0);

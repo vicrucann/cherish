@@ -28,6 +28,8 @@ set (libSGEntities_SRCS
     ConstructionTool.cpp
     ViewBookmark.h
     ViewBookmark.cpp
+    Bookmarks.h
+    Bookmarks.cpp
 )
 
 add_library(libSGEntities

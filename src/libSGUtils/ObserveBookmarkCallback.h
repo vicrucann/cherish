@@ -7,14 +7,16 @@
 #include <osg/observer_ptr>
 #include <osg/Group>
 
+#include "Bookmarks.h"
+
 class ObserveBookmarkCallback : public  osg::NodeCallback
 {
 public:
-    ObserveBookmarkCallback(osg::Group* bookmarks);
+    ObserveBookmarkCallback(entitylist::Bookmarks* bookmarks);
     virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 
 private:
-    osg::observer_ptr<osg::Group> m_bookmarks;
+    osg::observer_ptr<entitylist::Bookmarks> m_bookmarks;
 };
 
 #endif // OBSERVEBOOKMARKCALLBACK_H
