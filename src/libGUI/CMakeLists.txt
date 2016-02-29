@@ -17,6 +17,10 @@ set(libGUI_SRCS
     hudcamera.h
     glwidget.h
     glwidget.cpp
+    BookmarkWidget.h
+    BookmarkWidget.cpp
+    CanvasWidget.h
+    CanvasWidget.cpp
 )
 
 qt5_wrap_ui(UI_GENERATED_SRCS
