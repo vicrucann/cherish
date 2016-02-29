@@ -23,8 +23,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_desktop(0)
     , m_mdiArea(new QMdiArea(this))
 
-    , m_bookmarkWidget(new QListWidget())
-    , m_canvasWidget(new QListWidget())
+    , m_bookmarkWidget(new BookmarkWidget())
+    , m_canvasWidget(new CanvasWidget())
 
     , m_undoStack(new QUndoStack(this))
     , m_undoView(new QUndoView(m_undoStack))
@@ -53,33 +53,20 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
         this->close();
     }
     QObject::connect(scene, SIGNAL(sendRequestUpdate()), this, SLOT(recievedRequestUpdate()));
+    QObject::connect(scene, SIGNAL(sendAddBookmark(std::string)), this, SLOT(recieveAddBookmark(std::string)));
 
     /* tab widget with bookmarks, canvases, photos, strokes, annotations */
-    QDockWidget* dockwid = new QDockWidget(this);
+    QDockWidget* dockwid = new QDockWidget(QString("Lists of entities"));
     this->addDockWidget(Qt::RightDockWidgetArea, dockwid, Qt::Vertical);
     dockwid->setFeatures(QDockWidget::DockWidgetClosable);
-    dockwid->setWindowTitle(QString("Lists of entities"));
-    dockwid->hide();
+    //dockwid->setWindowTitle(QString("Lists of entities"));
+    //dockwid->hide();
 
     QTabWidget* tabwid = new QTabWidget();
-    tabwid->show();
-    tabwid->setAttribute(Qt::WA_QuitOnClose, false);
+    dockwid->setWidget(tabwid);
     tabwid->setTabPosition(QTabWidget::West);
     tabwid->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
-
-    m_bookmarkWidget->setViewMode(QListWidget::IconMode);
-    m_bookmarkWidget->setMovement(QListView::Free);
-    m_bookmarkWidget->setIconSize(QSize(200, 200));
-    m_bookmarkWidget->setResizeMode(QListWidget::Adjust);
-    m_bookmarkWidget->setSelectionBehavior(QAbstractItemView::SelectItems);
-    m_bookmarkWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-
     tabwid->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
-    m_canvasWidget->setViewMode(QListWidget::ListMode);
-    m_canvasWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-    m_canvasWidget->setSelectionMode(QAbstractItemView::SingleSelection);
-
-
 
     /* undo/redo widget */
     m_undoView->setWindowTitle(tr("Command List"));
@@ -142,6 +129,12 @@ void MainWindow::getTabletActivity(bool active){
 void MainWindow::recievedRequestUpdate()
 {
     m_glWidget->update();
+}
+
+void MainWindow::recieveAddBookmark(const std::string &name)
+{
+    /*  create new item in bookmark widget */
+    m_bookmarkWidget->addItem(QString(name.c_str()));
 }
 
 /* Create an ordinary single view window on the scene _root
@@ -711,7 +704,6 @@ void MainWindow::initializeToolbars()
 {
     // File
     QToolBar* tbFile = this->addToolBar(tr("File"));
-    tbFile->setIconSize(QSize(60, 60));
     tbFile->addAction(m_actionNewFile);
     tbFile->addAction(m_actionOpenFile);
     tbFile->addAction(m_actionSaveFile);
@@ -730,7 +722,7 @@ void MainWindow::initializeToolbars()
     // Camera navigation
     QToolBar* tbCamera = new QToolBar(tr("Camera"));
     //QToolBar* tbCamera = this->addToolBar(tr("Camera"));
-    this->addToolBar(Qt::BottomToolBarArea, tbCamera);
+    this->addToolBar(Qt::TopToolBarArea, tbCamera);
     tbCamera->addAction(m_actionOrbit);
     tbCamera->addAction(m_actionZoom);
     tbCamera->addAction(m_actionPan);

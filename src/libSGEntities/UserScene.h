@@ -94,6 +94,7 @@ public:
 
 signals:
     void sendRequestUpdate();
+    void sendAddBookmark(const std::string& name);
 
 protected:
     ~UserScene();

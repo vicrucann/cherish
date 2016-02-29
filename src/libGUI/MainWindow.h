@@ -18,6 +18,8 @@
 #include "RootScene.h"
 #include "Settings.h"
 #include "glwidget.h"
+#include "BookmarkWidget.h"
+#include "CanvasWidget.h"
 #include "Data.h"
 
 class MainWindow : public QMainWindow {
@@ -31,6 +33,7 @@ public:
 public slots:
     void getTabletActivity(bool active);
     void recievedRequestUpdate();
+    void recieveAddBookmark(const std::string& name);
 
 signals:
     void sendTabletActivity(bool active);
@@ -91,8 +94,8 @@ private:
     QDesktopWidget* m_desktop;
     QMdiArea*       m_mdiArea;
 
-    QListWidget*    m_bookmarkWidget;
-    QListWidget*    m_canvasWidget;
+    BookmarkWidget*    m_bookmarkWidget;
+    CanvasWidget*    m_canvasWidget;
 
 
     // http://doc.qt.io/qt-5/qtwidgets-tools-undoframework-example.html
