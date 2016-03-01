@@ -34,6 +34,7 @@ public slots:
     void getTabletActivity(bool active);
     void recievedRequestUpdate();
     void recieveAutoSwitchMode(dureu::MOUSE_MODE mode);
+    void recieveBookmark(int row);
 
 signals:
     void sendTabletActivity(bool active);

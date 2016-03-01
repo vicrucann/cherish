@@ -116,7 +116,7 @@ void GLWidget::setCameraView()
 
 void GLWidget::setCameraView(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
-    m_manipulator->setTransformation(m_eye, m_center, m_up);
+    m_manipulator->setTransformation(eye, center, up);
     this->setCameraView();
 }
 

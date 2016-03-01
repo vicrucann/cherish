@@ -1,5 +1,7 @@
 #include "BookmarkWidget.h"
 
+#include "Settings.h"
+
 BookmarkWidget::BookmarkWidget(QWidget *parent)
     : QListView(parent)
 {
@@ -9,4 +11,12 @@ BookmarkWidget::BookmarkWidget(QWidget *parent)
     this->setResizeMode(QListView::Adjust);
     this->setSelectionBehavior(QAbstractItemView::SelectItems);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
+    this->setDragDropMode(QAbstractItemView::InternalMove);
 }
+
+void BookmarkWidget::setModel(entity::Bookmarks *bookmarks)
+{
+    QListView::setModel(bookmarks);
+    outLogMsg("Bookmarks are set as a model for bookmarks widget");
+}
+

@@ -70,6 +70,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     /* bookmark widget data */
     m_bookmarkWidget->setModel(m_rootScene->getBookmarksModel());
+    QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)), m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)));
+    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(sendBookmark(int)),
+                     this, SLOT(recieveBookmark(int)));
 
     /* undo/redo widget */
     m_undoView->setWindowTitle(tr("Command List"));
@@ -150,6 +153,17 @@ void MainWindow::recieveAutoSwitchMode(dureu::MOUSE_MODE mode)
         emit this->onSelect();
         break;
     }
+}
+
+void MainWindow::recieveBookmark(int row)
+{
+    outLogMsg("bookmark recieved at MainWindow");
+    entity::Bookmarks* bms = m_rootScene->getBookmarksModel();
+    osg::Vec3d eye, center, up;
+    eye = bms->getEyes()[row];
+    center = bms->getCenters()[row];
+    up = bms->getUps()[row];
+    m_glWidget->setCameraView(eye, center, up);
 }
 
 /* Create an ordinary single view window on the scene _root

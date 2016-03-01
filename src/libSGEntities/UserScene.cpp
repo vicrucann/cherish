@@ -70,7 +70,7 @@ const entity::Bookmarks *entity::UserScene::getBookmarks() const
 
 entity::Bookmarks *entity::UserScene::getBookmarksModel() const
 {
-    return m_bookmarks;
+    return m_bookmarks.get();
 }
 
 void entity::UserScene::setIdCanvas(unsigned int id)

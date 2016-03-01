@@ -1,4 +1,7 @@
 #include "Bookmarks.h"
+#include <assert.h>
+
+#include "Settings.h"
 
 entity::Bookmarks::Bookmarks()
     : QStandardItemModel()
@@ -62,6 +65,16 @@ void entity::Bookmarks::addBookmark(const osg::Vec3d &eye, const osg::Vec3d &cen
 
     QStandardItem* item = new QStandardItem(QString(name.c_str()));
     this->appendRow(item);
+}
+
+void entity::Bookmarks::onClicked(const QModelIndex &index)
+{
+    int row = index.row(); // (id+1) in std::vector's
+    outLogVal("row is", row);
+    assert(row>=0 && row < m_names.size());
+    outLogVal("Selected bookmark", m_names[row]);
+    emit this->sendBookmark(row);
+    //emit this->sendBookmark(m_eyes[row], m_centers[row], m_ups[row]);
 }
 
 REGISTER_OBJECT_WRAPPER(Bookmarks_Wrapper
