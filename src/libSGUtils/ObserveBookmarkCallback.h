@@ -12,11 +12,11 @@
 class ObserveBookmarkCallback : public  osg::NodeCallback
 {
 public:
-    ObserveBookmarkCallback(entitylist::Bookmarks* bookmarks);
+    ObserveBookmarkCallback(entity::Bookmarks* bookmarks);
     virtual void operator()(osg::Node* node, osg::NodeVisitor* nv);
 
 private:
-    osg::observer_ptr<entitylist::Bookmarks> m_bookmarks;
+    osg::observer_ptr<entity::Bookmarks> m_bookmarks;
 };
 
 #endif // OBSERVEBOOKMARKCALLBACK_H

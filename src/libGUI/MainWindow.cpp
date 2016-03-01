@@ -47,20 +47,19 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     m_glWidget->showMaximized();
     subwin->show();
 
-    /* connect MainWindow with UserScene*/
+    /* connect MainWindow with UserScene */
     entity::UserScene* scene = m_rootScene->getUserScene();
     if (!scene){
         outErrMsg("MainWindow ctor: UserScene is NULL");
         this->close();
     }
     QObject::connect(scene, SIGNAL(sendRequestUpdate()), this, SLOT(recievedRequestUpdate()));
-    QObject::connect(scene, SIGNAL(sendAddBookmark(std::string)), this, SLOT(recieveAddBookmark(std::string)));
 
     /* tab widget with bookmarks, canvases, photos, strokes, annotations */
     QDockWidget* dockwid = new QDockWidget(QString("Lists of entities"));
     this->addDockWidget(Qt::RightDockWidgetArea, dockwid, Qt::Vertical);
     dockwid->setFeatures(QDockWidget::DockWidgetClosable);
-    //dockwid->setWindowTitle(QString("Lists of entities"));
+    dockwid->setWindowTitle(QString("Lists of entities"));
     //dockwid->hide();
 
     QTabWidget* tabwid = new QTabWidget();
@@ -68,6 +67,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     tabwid->setTabPosition(QTabWidget::West);
     tabwid->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
     tabwid->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
+
+    /* bookmark widget data */
+    m_bookmarkWidget->setModel(m_rootScene->getBookmarksModel());
 
     /* undo/redo widget */
     m_undoView->setWindowTitle(tr("Command List"));
@@ -130,12 +132,6 @@ void MainWindow::getTabletActivity(bool active){
 void MainWindow::recievedRequestUpdate()
 {
     m_glWidget->update();
-}
-
-void MainWindow::recieveAddBookmark(const std::string &name)
-{
-    /*  create new item in bookmark widget */
-    m_bookmarkWidget->addItem(QString(name.c_str()));
 }
 
 void MainWindow::recieveAutoSwitchMode(dureu::MOUSE_MODE mode)

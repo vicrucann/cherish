@@ -33,7 +33,6 @@ public:
 public slots:
     void getTabletActivity(bool active);
     void recievedRequestUpdate();
-    void recieveAddBookmark(const std::string& name);
     void recieveAutoSwitchMode(dureu::MOUSE_MODE mode);
 
 signals:

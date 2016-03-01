@@ -2,8 +2,10 @@
 #define BOOKMARKWIDGET_H
 
 #include <QListWidget>
+#include <QListView>
+#include "Bookmarks.h"
 
-class BookmarkWidget : public QListWidget
+class BookmarkWidget : public QListView
 {
 public:
     BookmarkWidget(QWidget* parent = 0);

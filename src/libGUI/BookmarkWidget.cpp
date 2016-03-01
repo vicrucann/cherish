@@ -1,12 +1,12 @@
 #include "BookmarkWidget.h"
 
 BookmarkWidget::BookmarkWidget(QWidget *parent)
-    : QListWidget(parent)
+    : QListView(parent)
 {
-    this->setViewMode(QListWidget::IconMode);
-    this->setMovement(QListView::Free);
+    this->setViewMode(QListView::IconMode);
+    this->setMovement(QListView::Snap);
     this->setIconSize(QSize(100,100));
-    this->setResizeMode(QListWidget::Adjust);
+    this->setResizeMode(QListView::Adjust);
     this->setSelectionBehavior(QAbstractItemView::SelectItems);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
 }

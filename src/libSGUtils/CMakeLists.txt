@@ -15,8 +15,8 @@ set (libSGUtils_SRCS
     FindNodeVisitor.cpp
     CameraChangeCallback.h
     CameraChangeCallback.cpp
-    ObserveBookmarkCallback.h
-    ObserveBookmarkCallback.cpp
+    #ObserveBookmarkCallback.h
+    #ObserveBookmarkCallback.cpp
 )
 
 add_library(libSGUtils

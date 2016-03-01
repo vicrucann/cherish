@@ -32,8 +32,9 @@ public:
     META_Node(entity, UserScene)
 
     /* setters/getters for serialization */
-    void setBookmarks(entitylist::Bookmarks* group);
-    const entitylist::Bookmarks* getBookmarks() const;
+    void setBookmarks(entity::Bookmarks* group);
+    const entity::Bookmarks* getBookmarks() const;
+    entity::Bookmarks* getBookmarksModel() const;
 
     void setIdCanvas(unsigned int id);
     unsigned int getIdCanvas() const;
@@ -95,7 +96,6 @@ public:
 
 signals:
     void sendRequestUpdate();
-    void sendAddBookmark(const std::string& name);
 
 protected:
     ~UserScene();
@@ -156,7 +156,7 @@ protected:
     void photoRotateFinish(QUndoStack* stack, double u, double v);
 
 private:
-    osg::ref_ptr<entitylist::Bookmarks> m_bookmarks;
+    osg::ref_ptr<entity::Bookmarks> m_bookmarks;
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
     osg::observer_ptr<entity::Canvas> m_canvasPrevious;
     osg::observer_ptr<entity::Canvas> m_canvasSelected;

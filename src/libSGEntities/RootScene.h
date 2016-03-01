@@ -36,6 +36,7 @@
 #include "../libGUI/hudcamera.h"
 #include "UserScene.h"
 #include "Photo.h"
+#include "Bookmarks.h"
 
 #include <QUndoStack>
 
@@ -83,6 +84,7 @@ public:
     entity::Canvas* getCanvasSelected() const;
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
+    entity::Bookmarks* getBookmarksModel() const;
 
     void editCanvasOffset(const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasRotate(const osg::Quat& rotation, dureu::EVENT event);

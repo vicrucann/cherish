@@ -26,8 +26,8 @@ set (libSGEntities_SRCS
     Entity2D.cpp
     ConstructionTool.h
     ConstructionTool.cpp
-    ViewBookmark.h
-    ViewBookmark.cpp
+    #ViewBookmark.h
+    #ViewBookmark.cpp
     Bookmarks.h
     Bookmarks.cpp
 )

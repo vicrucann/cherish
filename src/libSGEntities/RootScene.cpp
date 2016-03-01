@@ -270,6 +270,11 @@ entity::Canvas* RootScene::getCanvasPrevious() const
     return m_userScene->getCanvasPrevious();
 }
 
+entity::Bookmarks *RootScene::getBookmarksModel() const
+{
+    return m_userScene->getBookmarksModel();
+}
+
 void RootScene::editCanvasOffset(const osg::Vec3f& translate, dureu::EVENT event)
 {
     m_userScene->editCanvasOffset(m_undoStack, translate, event);

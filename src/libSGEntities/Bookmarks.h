@@ -9,24 +9,45 @@
  * QListModel is used for display at the corresponding BookmarkWidget
 */
 
+#include <vector>
+#include <string>
+
 #include <QStandardItemModel>
+#include <QStandardItem>
 #include "ViewBookmark.h"
 
-namespace entitylist {
-class Bookmarks : public osg::Group
+namespace entity {
+class Bookmarks : public QStandardItemModel, public osg::Group
 {
 public:
     Bookmarks();
     Bookmarks(const Bookmarks& parent, osg::CopyOp copyop = osg::CopyOp::SHALLOW_COPY);
-    META_Node(entitylist, Bookmarks)
+    META_Node(entity, Bookmarks)
 
-    bool addBookmark(entity::ViewBookmark* vb);
+    /* osg serialization setters and getters */
+    void setEyes(const std::vector<osg::Vec3d>& eyes);
+    const std::vector<osg::Vec3d>& getEyes() const;
+
+    void setCenters(const std::vector<osg::Vec3d>& centers);
+    const std::vector<osg::Vec3d>& getCenters() const;
+
+    void setUps(const std::vector<osg::Vec3d>& ups);
+    const std::vector<osg::Vec3d>& getUps() const;
+
+    void setNames(const std::vector<std::string>& names);
+    const std::vector<std::string>& getNames() const;
+
+    /* other methods */
+    void addBookmark(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name);
 
 protected:
     ~Bookmarks() {}
 
 private:
-    QStandardItemModel* m_model;
+    std::vector<osg::Vec3d> m_eyes;
+    std::vector<osg::Vec3d> m_centers;
+    std::vector<osg::Vec3d> m_ups;
+    std::vector<std::string> m_names;
 };
 }
 
