@@ -202,7 +202,7 @@ void entity::UserScene::addBookmark(const osg::Vec3d &eye, const osg::Vec3d &cen
         outErrMsg("addBookmark: could not add to root");
         return;
     }
-    this->sendAddBookmark(vbm->getName());
+    emit this->sendAddBookmark(vbm->getName());
 }
 
 void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, int first, int last, dureu::EVENT event)

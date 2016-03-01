@@ -23,10 +23,9 @@ EventHandler::EventHandler(RootScene* scene, dureu::MOUSE_MODE mode)
 // OpenSceneGraph 3.0 Cookbook
 // and search for custom event handler examples
 bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
-{    
+{
     /* if it's mouse navigation mode, don't process event
      * it will be processed by Manipulator */
-
     if (m_mode == dureu::MOUSE_ORBIT || m_mode == dureu::MOUSE_PAN ||
             m_mode == dureu::MOUSE_ZOOM || m_mode == dureu::MOUSE_FIXEDVIEW)
         return false;

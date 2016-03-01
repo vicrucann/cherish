@@ -41,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     //this->onCreateViewer();
     QObject::connect(this, SIGNAL(sendTabletActivity(bool)), m_glWidget, SLOT(getTabletActivity(bool)));
     QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)), m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
+    QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(dureu::MOUSE_MODE)), this, SLOT(recieveAutoSwitchMode(dureu::MOUSE_MODE)));
     QMdiSubWindow* subwin = m_mdiArea->addSubWindow(m_glWidget);
     subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     m_glWidget->showMaximized();
@@ -135,6 +136,24 @@ void MainWindow::recieveAddBookmark(const std::string &name)
 {
     /*  create new item in bookmark widget */
     m_bookmarkWidget->addItem(QString(name.c_str()));
+}
+
+void MainWindow::recieveAutoSwitchMode(dureu::MOUSE_MODE mode)
+{
+    switch (mode){
+    case dureu::MOUSE_SELECT:
+        emit this->onSketch();
+        break;
+    case dureu::MOUSE_SKETCH:
+        emit this->onCameraOrbit();
+        break;
+    case dureu::MOUSE_ORBIT:
+        emit this->onSelect();
+        break;
+    default:
+        emit this->onSelect();
+        break;
+    }
 }
 
 /* Create an ordinary single view window on the scene _root

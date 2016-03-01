@@ -29,6 +29,9 @@ public:
     void setCameraView(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void getCameraView(osg::Vec3d& eye, osg::Vec3d& center, osg::Vec3d& up) const;
 
+signals:
+    void sendAutoSwitchMode(dureu::MOUSE_MODE mode);
+
 public slots:
     void getTabletActivity(bool active);
     void recieveMouseMode(dureu::MOUSE_MODE mode);
@@ -44,6 +47,7 @@ protected:
 
     virtual void mouseMoveEvent(QMouseEvent* event);
     virtual void mousePressEvent(QMouseEvent* event);
+    virtual void mouseDoubleClickEvent(QMouseEvent* event);
     virtual void mouseReleaseEvent(QMouseEvent* event);
     virtual void wheelEvent(QWheelEvent* event);
     virtual void tabletEvent(QTabletEvent* event);

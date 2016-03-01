@@ -101,13 +101,6 @@ void GLWidget::setCameraView()
     m_manipulator->getTransformation(eye, center, up);
     if (eye == m_eye && center == m_center && up == m_up) return;
     outLogMsg("change view detected");
-    outLogVec("old eye", m_eye.x(), m_eye.y(), m_eye.z());
-    outLogVec("new eye", eye.x(), eye.y(), eye.z());
-    outLogVec("old center", m_center.x(), m_center.y(), m_center.z());
-    outLogVec("new center", center.x(), center.y(), center.z());
-    outLogVec("old up", m_up.x(), m_up.y(), m_up.z());
-    outLogVec("new up", up.x(), up.y(), up.z());
-
 
     osg::Vec3d de = eye - m_eye;
     osg::Vec3d dc = center - m_center;
@@ -236,6 +229,12 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
         }
         this->getEventQueue()->mouseButtonPress(static_cast<float>(event->x()), static_cast<float>(event->y()), button);
     }
+}
+
+void GLWidget::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    outLogMsg("double click detected");
+    emit this->sendAutoSwitchMode(m_ModeMouse);
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
