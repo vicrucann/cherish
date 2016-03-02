@@ -4,13 +4,14 @@
 #include "Settings.h"
 
 entity::Bookmarks::Bookmarks()
-    : QStandardItemModel()
+    : QObject()
     , osg::Group()
 {
+    this->setName("Bookmarks");
 }
 
 entity::Bookmarks::Bookmarks(const Bookmarks &parent, osg::CopyOp copyop)
-    : QStandardItemModel()
+    : QObject()
     , osg::Group(parent, copyop)
     , m_eyes(parent.m_eyes)
 {
@@ -56,25 +57,22 @@ const std::vector<std::string> &entity::Bookmarks::getNames() const
     return m_names;
 }
 
-void entity::Bookmarks::addBookmark(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const std::string &name)
+void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const std::string &name)
 {
     m_eyes.push_back(eye);
     m_centers.push_back(center);
     m_ups.push_back(up);
     m_names.push_back(name);
-
-    QStandardItem* item = new QStandardItem(QString(name.c_str()));
-    this->appendRow(item);
+    widget->addItem(QString(name.c_str()));
+    //QStandardItem* item = new QStandardItem(QString(name.c_str()));
+    //this->appendRow(item);
 }
 
-void entity::Bookmarks::onClicked(const QModelIndex &index)
+void entity::Bookmarks::onActivated(const QModelIndex &index)
 {
-    int row = index.row(); // (id+1) in std::vector's
-    outLogVal("row is", row);
-    assert(row>=0 && row < m_names.size());
+    int row = index.row();
     outLogVal("Selected bookmark", m_names[row]);
     emit this->sendBookmark(row);
-    //emit this->sendBookmark(m_eyes[row], m_centers[row], m_ups[row]);
 }
 
 REGISTER_OBJECT_WRAPPER(Bookmarks_Wrapper

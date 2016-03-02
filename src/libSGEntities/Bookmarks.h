@@ -12,12 +12,14 @@
 #include <vector>
 #include <string>
 
-#include <QStandardItemModel>
-#include <QStandardItem>
-#include "ViewBookmark.h"
+#include <QObject>
+#include <QModelIndex>
+#include "../libGUI/BookmarkWidget.h"
+
+class BookmarkWidget;
 
 namespace entity {
-class Bookmarks : public QStandardItemModel, public osg::Group
+class Bookmarks : public QObject, public osg::Group
 {
     Q_OBJECT
 
@@ -40,14 +42,14 @@ public:
     const std::vector<std::string>& getNames() const;
 
     /* other methods */
-    void addBookmark(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name);
-
-public slots:
-    void onClicked(const QModelIndex& index);
+    void addBookmark(BookmarkWidget* widget,
+                     const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name);
 
 signals:
-    void sendBookmark(const osg::Vec3d& eye, const osg::Vec3d& center, osg::Vec3d& up);
     void sendBookmark(int row);
+
+public slots:
+    void onActivated(const QModelIndex& index);
 
 protected:
     ~Bookmarks() {}

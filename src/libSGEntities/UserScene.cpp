@@ -185,7 +185,7 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
     stack->push(cmd);
 }
 
-void entity::UserScene::addBookmark(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+void entity::UserScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     if (!m_bookmarks.get()){
         outErrMsg("addBookmark: bookmarks pointer is NULL");
@@ -197,7 +197,7 @@ void entity::UserScene::addBookmark(const osg::Vec3d &eye, const osg::Vec3d &cen
             return;
         }
     }
-    m_bookmarks->addBookmark(eye, center, up, this->getBookmarkName());
+    m_bookmarks->addBookmark(widget, eye, center, up, this->getBookmarkName());
 }
 
 void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, int first, int last, dureu::EVENT event)

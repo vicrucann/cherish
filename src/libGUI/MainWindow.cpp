@@ -69,8 +69,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     tabwid->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
 
     /* bookmark widget data */
-    m_bookmarkWidget->setModel(m_rootScene->getBookmarksModel());
-    QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)), m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)));
+    QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)),
+                     m_rootScene->getBookmarksModel(), SLOT(onActivated(QModelIndex)));
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(sendBookmark(int)),
                      this, SLOT(recieveBookmark(int)));
 
@@ -207,7 +207,7 @@ void MainWindow::onFileOpen()
         return;
     }
     m_rootScene->setFilePath(fname.toStdString());
-    if (!m_rootScene->loadSceneFromFile()){
+    if (!m_rootScene->loadSceneFromFile(this)){
         QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
         m_rootScene->setFilePath("");
     }
@@ -516,7 +516,7 @@ void MainWindow::onBookmark()
 {
     osg::Vec3d eye,center,up;
     m_glWidget->getCameraView(eye, center, up);
-    m_rootScene->addBookmark(eye, center, up);
+    m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up);
     this->statusBar()->showMessage(tr("Current camera view is saved as a bookmark"));
 }
 

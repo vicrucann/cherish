@@ -6,12 +6,10 @@
 #include <QEvent>
 #include "Bookmarks.h"
 
-class BookmarkWidget : public QListView
+class BookmarkWidget : public QListWidget
 {
 public:
     BookmarkWidget(QWidget* parent = 0);
-
-    void setModel(entity::Bookmarks* bookmarks);
 };
 
 #endif // BOOKMARKWIDGET_H

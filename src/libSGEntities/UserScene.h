@@ -14,8 +14,8 @@
 #include "Canvas.h"
 #include "Stroke.h"
 #include "Photo.h"
-#include "ViewBookmark.h"
 #include "Bookmarks.h"
+#include "../libGUI/BookmarkWidget.h"
 
 // multiple inheritance requires QObject to be first,
 // for more, see:
@@ -54,7 +54,7 @@ public:
     void addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
     void addStroke(QUndoStack* stack, float u, float v, dureu::EVENT event);
     void addPhoto(QUndoStack* stack, const std::string& fname);
-    void addBookmark(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+    void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void eraseStroke(QUndoStack* stack, entity::Stroke* stroke, int first, int last, dureu::EVENT event);
 
     entity::Canvas* getCanvas(unsigned int id);
