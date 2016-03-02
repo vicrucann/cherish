@@ -207,7 +207,7 @@ void MainWindow::onFileOpen()
         return;
     }
     m_rootScene->setFilePath(fname.toStdString());
-    if (!m_rootScene->loadSceneFromFile(this)){
+    if (!m_rootScene->loadSceneFromFile()){
         QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
         m_rootScene->setFilePath("");
     }

@@ -224,9 +224,9 @@ void RootScene::addPhoto(const std::string& fname)
     m_saved = false;
 }
 
-void RootScene::addBookmark(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+void RootScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
-    m_userScene->addBookmark(eye, center, up);
+    m_userScene->addBookmark(widget, eye, center, up);
 }
 
 void RootScene::eraseStroke(entity::Stroke *stroke, int first, int last, dureu::EVENT event)
