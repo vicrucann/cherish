@@ -54,6 +54,7 @@ private slots:
     void onCut();
     void onCopy();
     void onPaste();
+    void onTools();
 
     void onCameraOrbit();
     void onCameraZoom();
@@ -115,7 +116,8 @@ private:
 
     // EDIT actions
     QAction * m_actionUndo, * m_actionRedo, * m_actionCut, * m_actionCopy,
-            * m_actionPaste, * m_actionDelete;
+            * m_actionPaste, * m_actionDelete,
+            * m_actionTools;
 
     // SCENE actions
     QAction * m_actionSketch, * m_actionEraser, * m_actionSelect

@@ -80,6 +80,18 @@ void RootScene::clearUserData()
     m_userScene->clearUserData();
 }
 
+void RootScene::setToolsVisibility(bool vis)
+{
+    this->setAxesVisibility(vis);
+    for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){
+        entity::Canvas* cnv = m_userScene->getCanvas(i);
+        if (!cnv)
+            continue;
+        cnv->setVisibility(vis);
+        cnv->setVisibilityLocalAxis(vis);
+    }
+}
+
 void RootScene::setAxesVisibility(bool vis) {
     m_axisGlo->setVisibility(vis);
 }

@@ -54,6 +54,7 @@ public:
     bool isEmptyScene() const;
     void clearUserData();
 
+    void setToolsVisibility(bool vis);
     void setAxesVisibility(bool vis);
     bool getAxesVisibility() const;
     const Axes* getAxes() const;

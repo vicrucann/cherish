@@ -298,6 +298,17 @@ void MainWindow::onPaste()
     this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
+void MainWindow::onTools()
+{
+    if (m_actionTools->isChecked()){
+        m_rootScene->setToolsVisibility(true);
+    }
+    else{
+        m_rootScene->setToolsVisibility(false);
+    }
+    this->recievedRequestUpdate();
+}
+
 void MainWindow::onCameraOrbit(){
     QCursor* cur = new QCursor(Data::sceneOrbitPixmap(), 0, 0);
     m_mdiArea->setCursor(*cur);
@@ -569,6 +580,11 @@ void MainWindow::initializeActions()
     this->connect(m_actionDelete, SIGNAL(triggered(bool)), this, SLOT(onDelete()));
     m_actionDelete->setShortcut(Qt::Key_Delete);
 
+    m_actionTools = new QAction(Data::editSettingsIcon(), tr("&Tools"), this);
+    m_actionTools->setCheckable(true);
+    m_actionTools->setChecked(true);
+    this->connect(m_actionTools, SIGNAL(toggled(bool)), this, SLOT(onTools()));
+
     // SCENE
 
     m_actionSketch = new QAction(Data::sceneSketchIcon(), tr("&Sketch"), this);
@@ -733,6 +749,7 @@ void MainWindow::initializeToolbars()
     tbEdit->addAction(m_actionCopy);
     tbEdit->addAction(m_actionPaste);
     tbEdit->addAction(m_actionDelete);
+    tbEdit->addAction(m_actionTools);
 
     // Camera navigation
     QToolBar* tbCamera = new QToolBar(tr("Camera"));

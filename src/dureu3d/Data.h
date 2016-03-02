@@ -24,6 +24,7 @@ public:
     static const QIcon& editCopyIcon();
     static const QIcon& editPasteIcon();
     static const QIcon& editDeleteIcon();
+    static const QIcon& editSettingsIcon();
 
 
     static const QIcon& sceneSelectIcon();
