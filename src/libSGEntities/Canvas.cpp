@@ -234,8 +234,10 @@ const osg::Vec3f& entity::Canvas::getNormal() const
 
 void entity::Canvas::setColor(const osg::Vec4f &color)
 {
-    if (color == dureu::CANVAS_CLR_CURRENT) // hide the axis for "rest" canvases
-        this->setVisibilityLocalAxis(true);
+    if (color == dureu::CANVAS_CLR_CURRENT){
+        if (this->getVisibility())
+            this->setVisibilityLocalAxis(true);
+    }
     else
         this->setVisibilityLocalAxis(false);
 
@@ -616,7 +618,9 @@ void entity::Canvas::setModeEdit(bool on)
     else{
         std::cout << "setModeEdit(): OFF - " << on << std::endl;
         this->setColor(dureu::CANVAS_CLR_CURRENT);
-        this->setVisibilityLocalAxis(true); // could be bug here, when originally local axis is off by user
+        if (this->getVisibility()){
+            this->setVisibilityLocalAxis(true); // could be bug here, when originally local axis is off by user
+        }
     }
     m_switch->setChildValue(m_toolNormal, on);
     m_edit = on;

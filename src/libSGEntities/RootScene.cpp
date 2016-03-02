@@ -88,7 +88,8 @@ void RootScene::setToolsVisibility(bool vis)
         if (!cnv)
             continue;
         cnv->setVisibility(vis);
-        cnv->setVisibilityLocalAxis(vis);
+        if (cnv == this->getCanvasCurrent())
+            cnv->setVisibilityLocalAxis(vis);
     }
 }
 
