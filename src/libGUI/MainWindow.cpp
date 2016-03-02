@@ -199,7 +199,8 @@ void MainWindow::onFileOpen()
         this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
     m_glWidget->update();
     this->initializeCallbacks();
-    this->statusBar()->showMessage(tr("Opened file."));
+    m_rootScene->getBookmarksModel()->resetModel(m_bookmarkWidget);
+    this->statusBar()->showMessage(tr("Scene loaded."));
 }
 
 /* Take content of scene graph

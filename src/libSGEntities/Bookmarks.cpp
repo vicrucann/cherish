@@ -68,6 +68,15 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     //this->appendRow(item);
 }
 
+/* resetModel is needed to be called only on loading scene from file */
+void entity::Bookmarks::resetModel(BookmarkWidget *widget)
+{
+    widget->clear();
+    for (unsigned int i=0; i<m_names.size(); ++i){
+        widget->addItem(QString((m_names[i]).c_str()));
+    }
+}
+
 void entity::Bookmarks::onClicked(const QModelIndex &index)
 {
     int row = index.row();
