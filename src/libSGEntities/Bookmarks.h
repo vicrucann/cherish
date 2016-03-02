@@ -49,7 +49,7 @@ signals:
     void sendBookmark(int row);
 
 public slots:
-    void onActivated(const QModelIndex& index);
+    void onClicked(const QModelIndex& index);
 
 protected:
     ~Bookmarks() {}

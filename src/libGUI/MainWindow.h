@@ -91,6 +91,7 @@ private:
     void        initializeActions();
     void        initializeMenus();
     void        initializeToolbars();
+    void        initializeCallbacks();
 
     QDesktopWidget* m_desktop;
     QMdiArea*       m_mdiArea;

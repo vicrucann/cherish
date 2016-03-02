@@ -39,21 +39,10 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     /* Create GLWidgets */
     //this->onCreateViewer();
-    QObject::connect(this, SIGNAL(sendTabletActivity(bool)), m_glWidget, SLOT(getTabletActivity(bool)));
-    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)), m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
-    QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(dureu::MOUSE_MODE)), this, SLOT(recieveAutoSwitchMode(dureu::MOUSE_MODE)));
     QMdiSubWindow* subwin = m_mdiArea->addSubWindow(m_glWidget);
     subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
     m_glWidget->showMaximized();
     subwin->show();
-
-    /* connect MainWindow with UserScene */
-    entity::UserScene* scene = m_rootScene->getUserScene();
-    if (!scene){
-        outErrMsg("MainWindow ctor: UserScene is NULL");
-        this->close();
-    }
-    QObject::connect(scene, SIGNAL(sendRequestUpdate()), this, SLOT(recievedRequestUpdate()));
 
     /* tab widget with bookmarks, canvases, photos, strokes, annotations */
     QDockWidget* dockwid = new QDockWidget(QString("Lists of entities"));
@@ -68,12 +57,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     tabwid->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
     tabwid->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
 
-    /* bookmark widget data */
-    QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)),
-                     m_rootScene->getBookmarksModel(), SLOT(onActivated(QModelIndex)));
-    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(sendBookmark(int)),
-                     this, SLOT(recieveBookmark(int)));
-
     /* undo/redo widget */
     m_undoView->setWindowTitle(tr("Command List"));
     m_undoView->show();
@@ -87,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     this->initializeActions();
     this->initializeMenus();
     this->initializeToolbars();
+    this->initializeCallbacks();
 
     this->onSketch();
 }
@@ -214,6 +198,7 @@ void MainWindow::onFileOpen()
     else
         this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
     m_glWidget->update();
+    this->initializeCallbacks();
     this->statusBar()->showMessage(tr("Opened file."));
 }
 
@@ -813,4 +798,23 @@ void MainWindow::initializeToolbars()
     tbViewer->addAction(m_actionPrevView);
     tbViewer->addAction(m_actionNextView);
     tbViewer->addAction(m_actionBookmark);
+}
+
+/* signal slot connections must be established in two cases:
+ * in MainWindow ctor;
+ * on when scene is loaded from file
+ */
+void MainWindow::initializeCallbacks()
+{
+    /* connect MainWindow with GLWidget */
+    QObject::connect(this, SIGNAL(sendTabletActivity(bool)), m_glWidget, SLOT(getTabletActivity(bool)));
+    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)), m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
+    QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(dureu::MOUSE_MODE)), this, SLOT(recieveAutoSwitchMode(dureu::MOUSE_MODE)));
+
+    /* connect MainWindow with UserScene */
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(sendRequestUpdate()), this, SLOT(recievedRequestUpdate()));
+
+    /* bookmark widget data */
+    QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)), m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)));
+    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(sendBookmark(int)), this, SLOT(recieveBookmark(int)));
 }

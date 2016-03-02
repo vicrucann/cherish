@@ -157,8 +157,7 @@ bool RootScene::loadSceneFromFile()
     for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv){
-            outErrMsg("loadSceneFromFile: could not extract a canvas from loaded scene");
-            return false;
+            continue;
         }
         cnv->initializeTools();
     }
@@ -167,8 +166,7 @@ bool RootScene::loadSceneFromFile()
     for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv){
-            outErrMsg("loadSceneFromFile: could not extract a canvas from loaded scene");
-            return false;
+            continue;
         }
         cnv->setColor(dureu::CANVAS_CLR_REST);
         m_userScene->setCanvasCurrent(cnv);

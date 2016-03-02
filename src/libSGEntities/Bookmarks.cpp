@@ -68,7 +68,7 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     //this->appendRow(item);
 }
 
-void entity::Bookmarks::onActivated(const QModelIndex &index)
+void entity::Bookmarks::onClicked(const QModelIndex &index)
 {
     int row = index.row();
     outLogVal("Selected bookmark", m_names[row]);
