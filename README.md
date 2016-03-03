@@ -48,19 +48,16 @@ Implementation steps:
 * (done) Save and load of a scene graph to disk (**Dec 2015**)
 * Viewer entities (**Dec 2015**)
     * (done) Model views: built-in, second screen, detached menu, viewer splitters, viewer views setup (front, top, iso)
-    * Bookmarks
+    * (done) Bookmarks
 * (done) GUI integration (**Jan 2016**)
 * (in process) First user tests and feedback (**Jan 2016**)
 * Unit tests (**Jan 2016**)
 * Memory leaks detection, performance measurements, optimization (threading), other improvements (**Feb 2016**)
 * (in process) Bug fixing, user feedback, tuning, refactoring (**March 2016**)
 * (in process) Prepare first official `beta` release (**March 2016**)
-* Develop virtual touring methods (**March 2016**)
+* (in process) Develop virtual touring methods (**March 2016**)
 * (in process) Installers and tarballs (**April 2016**)
 * (in process) User documentation (**Jan-April 2016**)
-* Advanced features (**April 2016**)
-    * Path animation
-    * Geographic coordinate system matching
 
 ![Alt text](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/gui-orig.png "Prototype GUI screenshot")  
 The initial prototype screen shot.
@@ -130,11 +127,11 @@ The software is being developed at [Yale Graphics Lab](http://graphics.cs.yale.e
 
 For any questions and requests, feel free to contact Victoria Rudakova - victoria.rudakova(at)yale.edu. Or use [Issues](https://github.com/vicrucann/dura-europos-insitu/issues) for feature requests and bug submission.
 
-Other contributors (in no particular order):
+Other contributors:
 
-* Yumo Rong: user interface functionality
+* Wendy Chen: user testing and feedback 
 * Natallia Trayan: icons designer
-* Wendy Chan: user testing and feedback, GUI design 
+* Yumo Rong: user interface functionality
 
 ## References
 
