@@ -6,6 +6,7 @@
 entity::Bookmarks::Bookmarks()
     : QObject()
     , osg::Group()
+    , m_row(0)
 {
     this->setName("Bookmarks");
 }
@@ -14,6 +15,7 @@ entity::Bookmarks::Bookmarks(const Bookmarks &parent, osg::CopyOp copyop)
     : QObject()
     , osg::Group(parent, copyop)
     , m_eyes(parent.m_eyes)
+    , m_row(0)
 {
 }
 
@@ -64,6 +66,8 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     m_ups.push_back(up);
     m_names.push_back(name);
     widget->addItem(QString(name.c_str()));
+    QListWidgetItem* item = widget->item(m_names.size()-1);
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
     //QStandardItem* item = new QStandardItem(QString(name.c_str()));
     //this->appendRow(item);
 }
@@ -74,14 +78,32 @@ void entity::Bookmarks::resetModel(BookmarkWidget *widget)
     widget->clear();
     for (unsigned int i=0; i<m_names.size(); ++i){
         widget->addItem(QString((m_names[i]).c_str()));
+        QListWidgetItem* item = widget->item(i);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
     }
 }
 
 void entity::Bookmarks::onClicked(const QModelIndex &index)
 {
-    int row = index.row();
-    outLogVal("Selected bookmark", m_names[row]);
-    emit this->sendBookmark(row);
+    m_row = index.row();
+    if (m_row >=0 ){
+        outLogVal("Selected bookmark", m_names[m_row]);
+        emit this->sendBookmark(m_row);
+    }
+    else
+        outErrMsg("onClicked: m_row is out of range");
+}
+
+void entity::Bookmarks::onItemChanged(QListWidgetItem *item)
+{
+    outLogVal("onItemChanged: bookmark name edited to", item->text().toStdString());
+    outLogVal("onItemChanged: row is", m_row);
+    if (m_row >= 0 && m_row < (int)m_names.size()){
+        m_names[m_row] = (item->text()).toStdString();
+        outLogVal("names[row]", m_names[m_row]);
+    }
+    else
+        outErrMsg("onItemChaged: could not update internal data, m_row is out of range");
 }
 
 REGISTER_OBJECT_WRAPPER(Bookmarks_Wrapper

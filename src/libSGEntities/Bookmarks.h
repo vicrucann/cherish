@@ -14,6 +14,7 @@
 
 #include <QObject>
 #include <QModelIndex>
+#include <QListWidgetItem>
 #include "../libGUI/BookmarkWidget.h"
 
 class BookmarkWidget;
@@ -51,6 +52,7 @@ signals:
 
 public slots:
     void onClicked(const QModelIndex& index);
+    void onItemChanged(QListWidgetItem* item);
 
 protected:
     ~Bookmarks() {}
@@ -60,6 +62,8 @@ private:
     std::vector<osg::Vec3d> m_centers;
     std::vector<osg::Vec3d> m_ups;
     std::vector<std::string> m_names;
+
+    int m_row;
 };
 }
 
