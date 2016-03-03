@@ -1,0 +1,33 @@
+#Ascii Scene 
+#Version 130 
+#Generator OpenSceneGraph 3.4.0 
+
+entity::UserScene {
+  UniqueID 1 
+  Name "UserScene" 
+Children 1 {
+entity::Bookmarks {
+      UniqueID 2 
+      Name "Bookmarks" 
+Eyes 3 {
+0.15 -0.85382 0.15 0.702643 -0.687538 0.177754 1.04658 0.136115 0.601231 
+}
+Centers 3 {
+0.15 0.15 0.15 0.15 0.15 0.15 0.15 0.15 0.15 
+}
+Ups 3 {
+0 2.22045e-016 1 -0.0841193 -0.0224935 0.996202 -0.43459 0.230597 0.870607 
+}
+Names 3 {
+one two three 
+}
+}
+  }
+Bookmarks TRUE {
+entity::Bookmarks {
+      UniqueID 2 
+    }
+  }
+IdBookmark 3 
+FilePath "C:/cygwin64/home/vr267/github/dura-europos-insitu/samples/test-bookmarks.osgt" 
+}
