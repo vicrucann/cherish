@@ -172,6 +172,7 @@ void MainWindow::onFileNew()
     this->onFileClose();
     m_undoStack->clear();
     m_viewStack->clear();
+    m_bookmarkWidget->clear();
     this->recievedRequestUpdate();
     this->statusBar()->showMessage(tr("Scene is cleared."));
 }
@@ -836,4 +837,8 @@ void MainWindow::initializeCallbacks()
     QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)), m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)));
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(sendBookmark(int)), this, SLOT(recieveBookmark(int)));
     QObject::connect(m_bookmarkWidget, SIGNAL(itemChanged(QListWidgetItem*)), m_rootScene->getBookmarksModel(), SLOT(onItemChanged(QListWidgetItem*)) );
+    QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)),
+                     m_rootScene->getBookmarksModel(), SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)));
+    QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsRemoved(QModelIndex,int,int)),
+                     m_rootScene->getBookmarksModel(), SLOT(onRowsRemoved(QModelIndex,int,int)));
 }

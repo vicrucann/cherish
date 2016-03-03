@@ -9,17 +9,17 @@ Children 1 {
 entity::Bookmarks {
       UniqueID 2 
       Name "Bookmarks" 
-Eyes 3 {
-0.15 -0.85382 0.15 0.702643 -0.687538 0.177754 1.04658 0.136115 0.601231 
+Eyes 4 {
+0.205379 -0.0989999 2.50317 -1.26705 1.2592 1.68757 2.07165 -0.969096 0.96078 0.15 -2.21695 0.15 
 }
-Centers 3 {
-0.15 0.15 0.15 0.15 0.15 0.15 0.15 0.15 0.15 
+Centers 4 {
+0.15 0.15 0.15 0.15 0.15 0.15 0.15 0.15 0.15 0.15 0.15 0.15 
 }
-Ups 3 {
-0 2.22045e-016 1 -0.0841193 -0.0224935 0.996202 -0.43459 0.230597 0.870607 
+Ups 4 {
+0.808868 -0.582431 -0.0806654 0.225271 -0.679756 0.697986 -0.169589 0.370433 0.913246 0 2.22045e-016 1 
 }
-Names 3 {
-one two three 
+Names 4 {
+four three two one 
 }
 }
   }
@@ -28,6 +28,6 @@ entity::Bookmarks {
       UniqueID 2 
     }
   }
-IdBookmark 3 
+IdBookmark 4 
 FilePath "C:/cygwin64/home/vr267/github/dura-europos-insitu/samples/test-bookmarks.osgt" 
 }

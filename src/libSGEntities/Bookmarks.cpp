@@ -72,6 +72,18 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     //this->appendRow(item);
 }
 
+void entity::Bookmarks::deleteBookmark(size_t row)
+{
+    if (row >= m_names.size()){
+        outErrMsg("deleteBookmark: row is out of range");
+        return;
+    }
+    m_eyes.erase(m_eyes.begin()+row);
+    m_centers.erase(m_centers.begin()+row);
+    m_ups.erase(m_ups.begin()+row);
+    m_names.erase(m_names.begin()+row);
+}
+
 /* resetModel is needed to be called only on loading scene from file */
 void entity::Bookmarks::resetModel(BookmarkWidget *widget)
 {
@@ -97,13 +109,39 @@ void entity::Bookmarks::onClicked(const QModelIndex &index)
 void entity::Bookmarks::onItemChanged(QListWidgetItem *item)
 {
     outLogVal("onItemChanged: bookmark name edited to", item->text().toStdString());
-    outLogVal("onItemChanged: row is", m_row);
     if (m_row >= 0 && m_row < (int)m_names.size()){
         m_names[m_row] = (item->text()).toStdString();
-        outLogVal("names[row]", m_names[m_row]);
     }
     else
         outErrMsg("onItemChaged: could not update internal data, m_row is out of range");
+}
+
+void entity::Bookmarks::onRowsMoved(const QModelIndex &, int start, int end, const QModelIndex &, int row)
+{
+    outLogMsg("Rows moved");
+    outLogVal("start", start);
+    outLogVal("row", row);
+    this->moveItem<osg::Vec3d>(start, row, m_eyes);
+    this->moveItem<osg::Vec3d>(start, row, m_centers);
+    this->moveItem<osg::Vec3d>(start, row, m_ups);
+    this->moveItem<std::string>(start, row, m_names);
+}
+
+void entity::Bookmarks::onRowsRemoved(const QModelIndex &, int first, int)
+{
+    this->deleteBookmark(first);
+}
+
+template <typename T>
+bool entity::Bookmarks::moveItem(size_t from, size_t to, std::vector<T> &list)
+{
+    if (from >= list.size() || to > list.size()) return false;
+    if (from == to) return true;
+    const size_t final = to > from ? to-1 : to;
+    T tmp = list[from];
+    list.erase(list.begin()+from, list.begin()+from+1);
+    list.insert(list.begin()+final, tmp);
+    return true;
 }
 
 REGISTER_OBJECT_WRAPPER(Bookmarks_Wrapper

@@ -10,6 +10,7 @@
 */
 
 #include <vector>
+#include <list>
 #include <string>
 
 #include <QObject>
@@ -45,6 +46,7 @@ public:
     /* other methods */
     void addBookmark(BookmarkWidget* widget,
                      const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name);
+    void deleteBookmark(size_t row);
     void resetModel(BookmarkWidget* widget);
 
 signals:
@@ -53,11 +55,16 @@ signals:
 public slots:
     void onClicked(const QModelIndex& index);
     void onItemChanged(QListWidgetItem* item);
+    void onRowsMoved(const QModelIndex&, int start, int end, const QModelIndex&, int row);
+    void onRowsRemoved(const QModelIndex&, int first, int);
 
 protected:
     ~Bookmarks() {}
 
 private:
+    template <typename T>
+    bool moveItem(size_t from, size_t to, std::vector<T>& list);
+
     std::vector<osg::Vec3d> m_eyes;
     std::vector<osg::Vec3d> m_centers;
     std::vector<osg::Vec3d> m_ups;
