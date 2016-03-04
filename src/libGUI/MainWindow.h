@@ -17,7 +17,7 @@
 
 #include "RootScene.h"
 #include "Settings.h"
-#include "glwidget.h"
+#include "GLWidget.h"
 #include "BookmarkWidget.h"
 #include "CanvasWidget.h"
 #include "Data.h"

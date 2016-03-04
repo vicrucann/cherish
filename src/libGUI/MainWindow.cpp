@@ -14,7 +14,7 @@
 #include <osg/MatrixTransform>
 
 #include "MainWindow.h"
-#include "glwidget.h"
+#include "GLWidget.h"
 #include "Settings.h"
 #include "Data.h"
 

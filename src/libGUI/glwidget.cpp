@@ -1,4 +1,4 @@
-#include "glwidget.h"
+#include "GLWidget.h"
 
 #include <iostream>
 #include <stdexcept>

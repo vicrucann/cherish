@@ -6,7 +6,7 @@
 #include <osg/observer_ptr>
 
 #include "Manipulator.h"
-#include "../libGUI/glwidget.h"
+#include "../libGUI/GLWidget.h"
 
 class GLWidget;
 

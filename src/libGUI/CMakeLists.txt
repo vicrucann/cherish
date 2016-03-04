@@ -15,8 +15,8 @@ set(libGUI_SRCS
     MainWindow.cpp
     MainWindow.h
     hudcamera.h
-    glwidget.h
-    glwidget.cpp
+    GLWidget.h
+    GLWidget.cpp
     BookmarkWidget.h
     BookmarkWidget.cpp
     CanvasWidget.h
