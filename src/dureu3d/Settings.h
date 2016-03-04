@@ -163,6 +163,9 @@ const float HUD_TEXT_POSX = HUD_LEFT + 2.f;
 const float HUD_TEXT_POSY = HUD_BOTTOM + 15.f;
 const float HUD_TEXT_POSZ = 0.f;
 
+const size_t APP_SCREENSHOT_HEIGHT = 200;
+const size_t APP_WIDGET_BUTTON = 32;
+
 } // namespace dura
 
 #endif // SETTINGS

@@ -15,6 +15,7 @@
 
 #include "MainWindow.h"
 #include "GLWidget.h"
+#include "BookmarkDelegate.h"
 #include "Settings.h"
 #include "Data.h"
 
@@ -55,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     dockwid->setWidget(tabwid);
     tabwid->setTabPosition(QTabWidget::West);
     tabwid->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
+    m_bookmarkWidget->setItemDelegate(new BookmarkDelegate);
     tabwid->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
 
     /* undo/redo widget */
@@ -843,5 +845,7 @@ void MainWindow::initializeCallbacks()
                      m_rootScene->getBookmarksModel(), SLOT(onRowsRemoved(QModelIndex,int,int)));
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
                      m_glWidget, SLOT(onRequestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)));
+    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QAbstractItemModel*,QModelIndex)),
+                     m_rootScene->getBookmarksModel(), SLOT(onClickedDelete(QAbstractItemModel*, QModelIndex)));
 
 }

@@ -82,7 +82,8 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
 
 void entity::Bookmarks::deleteBookmark(size_t row)
 {
-    if (row >= m_names.size()){
+    outLogVal("deleting a bookmark at idx", row);
+    if (row >= m_names.size() || row < 0){
         outErrMsg("deleteBookmark: row is out of range");
         return;
     }
@@ -115,6 +116,12 @@ void entity::Bookmarks::onClicked(const QModelIndex &index)
     }
     else
         outErrMsg("onClicked: m_row is out of range");
+}
+
+void entity::Bookmarks::onClickedDelete(QAbstractItemModel *model, const QModelIndex &index)
+{
+
+    this->deleteBookmark(index.row());
 }
 
 void entity::Bookmarks::onItemChanged(QListWidgetItem *item)

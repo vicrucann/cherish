@@ -58,6 +58,7 @@ signals:
 
 public slots:
     void onClicked(const QModelIndex& index);
+    void onClickedDelete(QAbstractItemModel* model, const QModelIndex& index);
     void onItemChanged(QListWidgetItem* item);
     void onRowsMoved(const QModelIndex&, int start, int end, const QModelIndex&, int row);
     void onRowsRemoved(const QModelIndex&, int first, int);
