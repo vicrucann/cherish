@@ -4,6 +4,12 @@
 #include <QPixmap>
 #include <QString>
 
+const QIcon &Data::appIcon()
+{
+    static QIcon icon(":/logo.png");
+    return icon;
+}
+
 const QIcon &Data::fileNewSceneIcon()
 {
     Q_ASSERT_X(!QPixmap(":/file-newscene-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");

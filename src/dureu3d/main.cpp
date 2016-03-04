@@ -2,6 +2,7 @@
 #include "DureuApplication.h"
 #include "MainWindow.h"
 #include "Settings.h"
+#include "Data.h"
 #include <QObject>
 #include <QDesktopWidget>
 
@@ -12,6 +13,7 @@ int main(int argc, char** argv)
     noticeMsg("Starting application...");
 
     DureuApplication dura_app(argc, argv);
+    dura_app.setWindowIcon(Data::appIcon());
     QDesktopWidget* desktop = dura_app.desktop();
     MainWindow mwin;
     mwin.SetDesktopWidget(desktop, dureu::SCREEN_MIN); // pass the desktop geometry and configuration

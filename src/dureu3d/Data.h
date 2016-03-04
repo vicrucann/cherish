@@ -10,6 +10,8 @@ class QPixmap;
 class Data
 {
 public:
+    static const QIcon& appIcon();
+
     static const QIcon& fileNewSceneIcon();
     static const QIcon& fileCloseIcon();
     static const QIcon& fileExitIcon();
