@@ -7,7 +7,7 @@ BookmarkWidget::BookmarkWidget(QWidget *parent)
 {
     //this->setViewMode(QListWidget::IconMode);
     //this->setMovement(QListWidget::Snap);
-    this->setIconSize(QSize(100,100));
+    this->setIconSize(QSize(200,200));
     //this->setResizeMode(QListWidget::Adjust);
     this->setSelectionBehavior(QAbstractItemView::SelectItems);
     this->setSelectionMode(QAbstractItemView::SingleSelection);

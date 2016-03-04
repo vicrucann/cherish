@@ -16,6 +16,9 @@
 #include <QObject>
 #include <QModelIndex>
 #include <QListWidgetItem>
+#include <QPixmap>
+#include <QVector>
+
 #include "../libGUI/BookmarkWidget.h"
 
 class BookmarkWidget;
@@ -51,12 +54,15 @@ public:
 
 signals:
     void sendBookmark(int row);
+    void requestScreenshot(QPixmap& pixmap, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
 
 public slots:
     void onClicked(const QModelIndex& index);
     void onItemChanged(QListWidgetItem* item);
     void onRowsMoved(const QModelIndex&, int start, int end, const QModelIndex&, int row);
     void onRowsRemoved(const QModelIndex&, int first, int);
+
+private slots:
 
 protected:
     ~Bookmarks() {}

@@ -93,6 +93,11 @@ void RootScene::setToolsVisibility(bool vis)
     }
 }
 
+bool RootScene::getToolsVisibility() const
+{
+    return this->getAxesVisibility();
+}
+
 void RootScene::setAxesVisibility(bool vis) {
     m_axisGlo->setVisibility(vis);
 }

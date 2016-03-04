@@ -1,6 +1,8 @@
 #include "Bookmarks.h"
 #include <assert.h>
 
+#include <QDir>
+
 #include "Settings.h"
 
 entity::Bookmarks::Bookmarks()
@@ -68,6 +70,12 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     widget->addItem(QString(name.c_str()));
     QListWidgetItem* item = widget->item(m_names.size()-1);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
+
+    QPixmap pmap;
+    int idx = m_eyes.size()-1;
+    emit this->requestScreenshot(pmap, m_eyes[idx], m_centers[idx], m_ups[idx]);
+    item->setIcon(QIcon(pmap));
+
     //QStandardItem* item = new QStandardItem(QString(name.c_str()));
     //this->appendRow(item);
 }
@@ -92,6 +100,9 @@ void entity::Bookmarks::resetModel(BookmarkWidget *widget)
         widget->addItem(QString((m_names[i]).c_str()));
         QListWidgetItem* item = widget->item(i);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
+        QPixmap pmap;
+        emit this->requestScreenshot(pmap, m_eyes[i], m_centers[i], m_ups[i]);
+        item->setIcon(QIcon(pmap));
     }
 }
 

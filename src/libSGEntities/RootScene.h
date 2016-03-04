@@ -55,6 +55,7 @@ public:
     void clearUserData();
 
     void setToolsVisibility(bool vis);
+    bool getToolsVisibility() const;
     void setAxesVisibility(bool vis);
     bool getAxesVisibility() const;
     const Axes* getAxes() const;

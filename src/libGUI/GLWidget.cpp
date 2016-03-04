@@ -138,6 +138,31 @@ void GLWidget::recieveMouseMode(dureu::MOUSE_MODE mode)
     m_EH->setMode(m_ModeMouse);
 }
 
+void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+{
+    /* save the current camera view */
+    osg::Vec3d eye_, center_, up_;
+    this->getCameraView(eye_, center_, up_);
+
+    /* move the camera to bookmark view */
+    m_manipulator->setTransformation(eye, center, up);
+
+    /* make sure tools are not on */
+    bool toolsOn = m_RootScene->getAxesVisibility();
+    if (toolsOn) m_RootScene->setToolsVisibility(false);
+    this->update();
+
+    /* grab the screenshot */
+    pmap = this->grab();
+
+    /* turn tools back if they were on */
+    if (toolsOn) m_RootScene->setToolsVisibility(true);
+
+    /* return to the current camera view */
+    m_manipulator->setTransformation(eye_, center_, up_);
+    this->update();
+}
+
 void GLWidget::initializeGL()
 {
     osg::StateSet* stateSet = m_RootScene->getOrCreateStateSet();
