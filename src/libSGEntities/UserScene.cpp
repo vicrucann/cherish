@@ -200,6 +200,15 @@ void entity::UserScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     m_bookmarks->addBookmark(widget, eye, center, up, this->getBookmarkName());
 }
 
+void entity::UserScene::deleteBookmark(BookmarkWidget *widget, const QModelIndex &index)
+{
+    if (!m_bookmarks.get()){
+        outErrMsg("addBookmark: bookmarks pointer is NULL");
+        return;
+    }
+    m_bookmarks->deleteBookmark(widget, index);
+}
+
 void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, int first, int last, dureu::EVENT event)
 {
     if (!stack){

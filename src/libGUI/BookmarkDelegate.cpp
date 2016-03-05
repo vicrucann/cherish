@@ -34,7 +34,8 @@ void BookmarkDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
 
 bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
-    if (event->type() == QEvent::MouseButtonPress) {
+    if (event->type() == QEvent::MouseButtonPress ||
+            event->type() == QEvent::MouseButtonRelease) {
         QMouseEvent * e = (QMouseEvent *)event;
         int clickX = e->x();
         int clickY = e->y();
@@ -45,10 +46,12 @@ bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, con
         if( clickX > br.x() && clickX < br.x() + br.width() )
             if( clickY > br.y() && clickY < br.y() + br.height() )
             {
-                if (event->type() == QEvent::MouseButtonRelease)
+                if (event->type() == QEvent::MouseButtonPress)
                     return true;
-                else
-                    emit this->clickedDelete(model, index);
+                else{
+                    outLogMsg("delegate: clicked delete");
+                    emit this->clickedDelete(index);
+                }
             }
         return true;
     }

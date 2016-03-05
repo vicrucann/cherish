@@ -152,6 +152,11 @@ void MainWindow::recieveBookmark(int row)
     m_glWidget->setCameraView(eye, center, up);
 }
 
+void MainWindow::onDeleteBookmark(const QModelIndex &index)
+{
+    m_rootScene->deleteBookmark(m_bookmarkWidget, index);
+}
+
 /* Create an ordinary single view window on the scene _root
  * To create outside viewer, use:
  * GLWidget* vwid = createViewer(Qt::Window);
@@ -845,7 +850,9 @@ void MainWindow::initializeCallbacks()
                      m_rootScene->getBookmarksModel(), SLOT(onRowsRemoved(QModelIndex,int,int)));
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
                      m_glWidget, SLOT(onRequestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)));
-    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QAbstractItemModel*,QModelIndex)),
-                     m_rootScene->getBookmarksModel(), SLOT(onClickedDelete(QAbstractItemModel*, QModelIndex)));
+    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QModelIndex)),
+                     this, SLOT(onDeleteBookmark(QModelIndex)));
+    //QObject::connect(m_bookmarkWidget, SIGNAL(clickedDelete(BookmarkWidget*,QModelIndex)),
+     //                m_rootScene->getBookmarksModel(), SLOT(onClickedDelete(BookmarkWidget*,QModelIndex)));
 
 }

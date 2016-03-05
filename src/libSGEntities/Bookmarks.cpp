@@ -80,17 +80,16 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     //this->appendRow(item);
 }
 
-void entity::Bookmarks::deleteBookmark(size_t row)
+void entity::Bookmarks::deleteBookmark(BookmarkWidget *widget, const QModelIndex &index)
 {
-    outLogVal("deleting a bookmark at idx", row);
-    if (row >= m_names.size() || row < 0){
-        outErrMsg("deleteBookmark: row is out of range");
-        return;
+    /* this will cause onRemoveRow signal, so we do not have to remove
+     * bookmark data from here explicetely */
+    outLogMsg("deleteBookmark: remove item widget");
+    QListWidgetItem* item = widget->takeItem(index.row());
+    if (item){
+        delete item;
+        this->deleteBookmarkData(index.row());
     }
-    m_eyes.erase(m_eyes.begin()+row);
-    m_centers.erase(m_centers.begin()+row);
-    m_ups.erase(m_ups.begin()+row);
-    m_names.erase(m_names.begin()+row);
 }
 
 /* resetModel is needed to be called only on loading scene from file */
@@ -109,19 +108,14 @@ void entity::Bookmarks::resetModel(BookmarkWidget *widget)
 
 void entity::Bookmarks::onClicked(const QModelIndex &index)
 {
-    m_row = index.row();
-    if (m_row >=0 ){
+    outLogVal("Bookmarks: on clicked", index.row());
+    if (index.row() >=0 && index.row() < (int) m_names.size() ){
+        m_row = index.row();
         outLogVal("Selected bookmark", m_names[m_row]);
         emit this->sendBookmark(m_row);
     }
     else
         outErrMsg("onClicked: m_row is out of range");
-}
-
-void entity::Bookmarks::onClickedDelete(QAbstractItemModel *model, const QModelIndex &index)
-{
-
-    this->deleteBookmark(index.row());
 }
 
 void entity::Bookmarks::onItemChanged(QListWidgetItem *item)
@@ -147,7 +141,21 @@ void entity::Bookmarks::onRowsMoved(const QModelIndex &, int start, int end, con
 
 void entity::Bookmarks::onRowsRemoved(const QModelIndex &, int first, int)
 {
-    this->deleteBookmark(first);
+    outLogMsg("onRowsRemoved");
+    this->deleteBookmarkData(first);
+}
+
+void entity::Bookmarks::deleteBookmarkData(int row)
+{
+    outLogVal("deleting a bookmark at idx", row);
+    if (row >= (int)m_names.size() || row < 0){
+        outErrMsg("deleteBookmark: row is out of range");
+        return;
+    }
+    m_eyes.erase(m_eyes.begin()+row);
+    m_centers.erase(m_centers.begin()+row);
+    m_ups.erase(m_ups.begin()+row);
+    m_names.erase(m_names.begin()+row);
 }
 
 template <typename T>

@@ -27,7 +27,7 @@ public:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 signals:
-    void clickedDelete(QAbstractItemModel* model, const QModelIndex& index);
+    void clickedDelete(const QModelIndex& index);
 
 private:
     QRect getButtonRect(const QRect& rect) const;

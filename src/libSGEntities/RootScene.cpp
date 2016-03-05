@@ -245,6 +245,11 @@ void RootScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const
     m_userScene->addBookmark(widget, eye, center, up);
 }
 
+void RootScene::deleteBookmark(BookmarkWidget *widget, const QModelIndex &index)
+{
+    m_userScene->deleteBookmark(widget, index);
+}
+
 void RootScene::eraseStroke(entity::Stroke *stroke, int first, int last, dureu::EVENT event)
 {
     m_userScene->eraseStroke(m_undoStack, stroke, first, last, event);

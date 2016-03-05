@@ -21,4 +21,3 @@ BookmarkDelegate *BookmarkWidget::getBookmarkDelegate() const
 {
     return dynamic_cast<BookmarkDelegate*>(this->itemDelegate());
 }
-
