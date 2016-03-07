@@ -163,6 +163,12 @@ void MainWindow::onDeleteBookmark(const QModelIndex &index)
         m_rootScene->deleteBookmark(m_bookmarkWidget, index);
 }
 
+void MainWindow::onMoveBookmark(const QModelIndex &index)
+{
+    outLogMsg("onMoveBookmark: resetting current index");
+    m_bookmarkWidget->setCurrentIndex(index);
+}
+
 /* Create an ordinary single view window on the scene _root
  * To create outside viewer, use:
  * GLWidget* vwid = createViewer(Qt::Window);
@@ -858,7 +864,10 @@ void MainWindow::initializeCallbacks()
                      m_glWidget, SLOT(onRequestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)));
     QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QModelIndex)),
                      this, SLOT(onDeleteBookmark(QModelIndex)));
-    //QObject::connect(m_bookmarkWidget, SIGNAL(clickedDelete(BookmarkWidget*,QModelIndex)),
-     //                m_rootScene->getBookmarksModel(), SLOT(onClickedDelete(BookmarkWidget*,QModelIndex)));
+    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedMove(QModelIndex)),
+                     this, SLOT(onMoveBookmark(QModelIndex)));
+
+//    QObject::connect(m_bookmarkWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
+//                     m_rootScene->getBookmarksModel(), SLOT(onCurrentItemChanged(QListWidgetItem*,QListWidgetItem*)));
 
 }

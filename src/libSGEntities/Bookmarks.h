@@ -51,7 +51,7 @@ public:
                      const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
     void resetModel(BookmarkWidget* widget);
-    const std::string& getBookmarkName(int row) const;
+    std::string getBookmarkName(int row) const;
 
 signals:
     void sendBookmark(int row);
@@ -62,6 +62,7 @@ public slots:
     void onItemChanged(QListWidgetItem* item);
     void onRowsMoved(const QModelIndex&, int start, int end, const QModelIndex&, int row);
     void onRowsRemoved(const QModelIndex&, int first, int);
+    void onCurrentItemChanged(QListWidgetItem * current, QListWidgetItem * previous);
 
 private slots:
 
@@ -73,7 +74,6 @@ private:
     bool moveItem(size_t from, size_t to, std::vector<T>& list);
 
     void deleteBookmarkData(int row);
-    void addBookmarkData();
 
     std::vector<osg::Vec3d> m_eyes;
     std::vector<osg::Vec3d> m_centers;

@@ -86,7 +86,7 @@ void entity::Bookmarks::deleteBookmark(BookmarkWidget *widget, const QModelIndex
     QListWidgetItem* item = widget->takeItem(index.row());
     if (item){
         delete item;
-        this->deleteBookmarkData(index.row());
+        //this->deleteBookmarkData(index.row());
     }
 }
 
@@ -104,7 +104,7 @@ void entity::Bookmarks::resetModel(BookmarkWidget *widget)
     }
 }
 
-const std::string &entity::Bookmarks::getBookmarkName(int row) const
+std::string entity::Bookmarks::getBookmarkName(int row) const
 {
     if (row>=0 && row < (int)m_names.size())
         return m_names[row];
@@ -121,7 +121,7 @@ void entity::Bookmarks::onClicked(const QModelIndex &index)
         emit this->sendBookmark(m_row);
     }
     else
-        outErrMsg("onClicked: m_row is out of range");
+        outLogMsg("onClicked: m_row is out of range");
 }
 
 void entity::Bookmarks::onItemChanged(QListWidgetItem *item)
@@ -149,6 +149,11 @@ void entity::Bookmarks::onRowsRemoved(const QModelIndex &, int first, int)
 {
     outLogMsg("onRowsRemoved");
     this->deleteBookmarkData(first);
+}
+
+void entity::Bookmarks::onCurrentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
+{
+    outLogMsg("currentItemChanged");
 }
 
 void entity::Bookmarks::deleteBookmarkData(int row)

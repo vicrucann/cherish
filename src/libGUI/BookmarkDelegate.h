@@ -28,9 +28,11 @@ public:
 
 signals:
     void clickedDelete(const QModelIndex& index);
+    void clickedMove(const QModelIndex& index);
 
 private:
-    QRect getButtonRect(const QRect& rect) const;
+    QRect getButtonDeleteRect(const QRect& rect) const;
+    QRect getButtonMoveRect(const QRect& rect) const;
 };
 
 #endif // BOOKMARKDELEGATE_H

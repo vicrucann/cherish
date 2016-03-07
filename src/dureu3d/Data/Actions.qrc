@@ -63,5 +63,6 @@
         <file>control-bookmarks-24px.svg</file>
         <file>control-canvases-24px.svg</file>
         <file>edit-settings-24px.svg</file>
+        <file>control-move-24px.svg</file>
     </qresource>
 </RCC>

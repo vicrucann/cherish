@@ -416,6 +416,13 @@ const QIcon &Data::controlCanvasesIcon()
     return icon;
 }
 
+const QIcon &Data::controlMoveIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/control-move-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/control-move-24px.svg");
+    return icon;
+}
+
 const QPixmap &Data::editDeleteCursor()
 {
     static QPixmap pmap(":/edit-delete-cursor-24px.svg");

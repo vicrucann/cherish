@@ -82,6 +82,7 @@ public:
 
     static const QIcon& controlBookmarksIcon();
     static const QIcon& controlCanvasesIcon();
+    static const QIcon& controlMoveIcon();
 
     /* Cursors */
 

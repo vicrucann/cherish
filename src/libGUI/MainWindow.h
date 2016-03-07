@@ -36,6 +36,7 @@ public slots:
     void recieveAutoSwitchMode(dureu::MOUSE_MODE mode);
     void recieveBookmark(int row);
     void onDeleteBookmark(const QModelIndex &index);
+    void onMoveBookmark(const QModelIndex &index);
 
 signals:
     void sendTabletActivity(bool active);
