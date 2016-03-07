@@ -82,8 +82,6 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
 
 void entity::Bookmarks::deleteBookmark(BookmarkWidget *widget, const QModelIndex &index)
 {
-    /* this will cause onRemoveRow signal, so we do not have to remove
-     * bookmark data from here explicetely */
     outLogMsg("deleteBookmark: remove item widget");
     QListWidgetItem* item = widget->takeItem(index.row());
     if (item){
@@ -104,6 +102,14 @@ void entity::Bookmarks::resetModel(BookmarkWidget *widget)
         emit this->requestScreenshot(pmap, m_eyes[i], m_centers[i], m_ups[i]);
         item->setIcon(QIcon(pmap));
     }
+}
+
+const std::string &entity::Bookmarks::getBookmarkName(int row) const
+{
+    if (row>=0 && row < (int)m_names.size())
+        return m_names[row];
+    else
+        return "";
 }
 
 void entity::Bookmarks::onClicked(const QModelIndex &index)

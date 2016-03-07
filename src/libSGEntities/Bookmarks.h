@@ -51,6 +51,7 @@ public:
                      const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
     void resetModel(BookmarkWidget* widget);
+    const std::string& getBookmarkName(int row) const;
 
 signals:
     void sendBookmark(int row);

@@ -15,6 +15,7 @@ BookmarkWidget::BookmarkWidget(QWidget *parent)
     this->setSpacing(2);
     this->setEditTriggers(QListWidget::DoubleClicked);
     this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
+    this->setTabKeyNavigation(false);
 }
 
 BookmarkDelegate *BookmarkWidget::getBookmarkDelegate() const

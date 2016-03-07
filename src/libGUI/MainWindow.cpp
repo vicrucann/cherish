@@ -154,7 +154,13 @@ void MainWindow::recieveBookmark(int row)
 
 void MainWindow::onDeleteBookmark(const QModelIndex &index)
 {
-    m_rootScene->deleteBookmark(m_bookmarkWidget, index);
+    const std::string& name = m_rootScene->getBookmarksModel()->getBookmarkName(index.row());
+    QMessageBox::StandardButton reply = QMessageBox::question(this,
+                                                              tr("Bookmark deletion"),
+                                                              QString("Are you sure you want to delete bookmark ") + QString(name.c_str()) + QString("?"),
+                                                              QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes)
+        m_rootScene->deleteBookmark(m_bookmarkWidget, index);
 }
 
 /* Create an ordinary single view window on the scene _root

@@ -47,7 +47,7 @@ bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, con
             if( clickY > br.y() && clickY < br.y() + br.height() )
             {
                 if (event->type() == QEvent::MouseButtonPress)
-                    return true;
+                    return false;
                 else{
                     outLogMsg("delegate: clicked delete");
                     emit this->clickedDelete(index);
