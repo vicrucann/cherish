@@ -49,6 +49,7 @@ public:
     /* other methods */
     void addBookmark(BookmarkWidget* widget,
                      const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name);
+    void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
     void resetModel(BookmarkWidget* widget);
     std::string getBookmarkName(int row) const;

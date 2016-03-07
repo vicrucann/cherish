@@ -150,6 +150,8 @@ void MainWindow::recieveBookmark(int row)
     center = bms->getCenters()[row];
     up = bms->getUps()[row];
     m_glWidget->setCameraView(eye, center, up);
+
+    m_rootScene->updateBookmark(m_bookmarkWidget, row);
 }
 
 void MainWindow::onDeleteBookmark(const QModelIndex &index)

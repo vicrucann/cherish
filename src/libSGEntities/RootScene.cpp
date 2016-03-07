@@ -245,6 +245,11 @@ void RootScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const
     m_userScene->addBookmark(widget, eye, center, up);
 }
 
+void RootScene::updateBookmark(BookmarkWidget *widget, int row)
+{
+    m_userScene->updateBookmark(widget, row);
+}
+
 void RootScene::deleteBookmark(BookmarkWidget *widget, const QModelIndex &index)
 {
     m_userScene->deleteBookmark(widget, index);

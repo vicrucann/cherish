@@ -80,6 +80,17 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     //this->appendRow(item);
 }
 
+/* update the look of the bookmakr's screenshot - is performed on every click */
+void entity::Bookmarks::updateBookmark(BookmarkWidget *widget, int row)
+{
+    if (row >=0 && row < (int)m_eyes.size()){
+        QListWidgetItem* item = widget->item(row);
+        QPixmap pmap;
+        emit this->requestScreenshot(pmap, m_eyes[row], m_centers[row], m_ups[row]);
+        item->setIcon(QIcon(pmap));
+    }
+}
+
 void entity::Bookmarks::deleteBookmark(BookmarkWidget *widget, const QModelIndex &index)
 {
     outLogMsg("deleteBookmark: remove item widget");
