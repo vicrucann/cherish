@@ -593,8 +593,8 @@ void entity::Canvas::updateFrame()
         }
 
         /* adjust the size of the canvas drawables in old location */
-        float dx = 0.5*(bb.xMax()-bb.xMin());
-        float dy = 0.5*(bb.yMax()-bb.yMin());
+        float dx = 0.5*(bb.xMax()-bb.xMin())+dureu::CANVAS_CORNER;
+        float dy = 0.5*(bb.yMax()-bb.yMin())+dureu::CANVAS_CORNER;
         float szX = std::max(dx, dureu::CANVAS_MINW);
         float szY = std::max(dy, dureu::CANVAS_MINW);
         this->setVertices(c2d_old, szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
