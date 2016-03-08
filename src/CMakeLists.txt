@@ -27,6 +27,7 @@ set(CMAKE_AUTOMOC ON)
 if( CMAKE_BUILD_TYPE MATCHES "^[Rr]elease$" )
     add_definitions( -DQT_NO_DEBUG_OUTPUT )
 endif()
+add_definitions( -DQT_COMPILING_QSTRING_COMPAT_CPP)
 
 ## Required Qt packages
 find_package(Qt5Core REQUIRED)
