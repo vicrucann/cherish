@@ -247,6 +247,71 @@ public:
 
     }
 
+
+    /* for more detailes, see
+     * http://geomalgorithms.com/a05-_intersect-1.html */
+    static int getPlanesIntersection(entity::Canvas* canvas1, entity::Canvas* canvas2, osg::Vec3f& iP, osg::Vec3f& u)
+    {
+        /* cross produc of normals */
+        osg::Vec3f n1 = canvas1->getNormal();
+        osg::Vec3f n2 = canvas2->getNormal();
+        u = n1^n2;
+
+        float ax = (u.x() >= 0 ? u.x() : -u.x());
+        float ay = (u.y() >= 0 ? u.y() : -u.y());
+        float az = (u.z() >= 0 ? u.z() : -u.z());
+
+        osg::Vec3f C1 = canvas1->getCenter();
+        osg::Vec3f C2 = canvas2->getCenter();
+
+        /* are two planes parallel? */
+        if (std::fabs(ax+ay+az) < dureu::EPSILON) {
+            /* normals are near parallel */
+            /* are they disjoint or coincide? */
+            osg::Vec3f v = C2- C1;
+            v.normalize();
+            /* coincide */
+            if (n1*v == 0) return 1;
+            /* disjoint */
+            else return 0;
+        }
+
+        /* canvases intersect in a line */
+        int maxc;
+        if (ax > ay) {
+            if (ax > az) maxc =  1;
+            else maxc = 3;
+        }
+        else {
+            if (ay > az) maxc =  2;
+            else maxc = 3;
+        }
+
+        /* obtain a point on the intersect line:
+         * zero the max coord, and solve for the other two */
+        float d1 = -n1*C1; // note: could be pre-stored  with plane
+        float d2 = -n2*C2; // the constants in the 2 plane equations
+
+        float xi, yi, zi;
+        switch (maxc) {
+        case 1:
+            xi = 0;
+            yi = (d2*n1.z() - d1*n2.z()) /  u.x();
+            zi = (d1*n2.y() - d2*n1.y()) /  u.x();
+            break;
+        case 2:                     // intersect with y=0
+            xi = (d1*n2.z() - d2*n1.z()) /  u.y();
+            yi = 0;
+            zi = (d2*n1.x() - d1*n2.x()) /  u.y();
+            break;
+        case 3:                     // intersect with z=0
+            xi = (d2*n1.y() - d1*n2.y()) /  u.z();
+            yi = (d1*n2.x() - d2*n1.x()) /  u.z();
+            zi = 0;
+        }
+        iP = osg::Vec3f(xi, yi, zi);
+        return 2;
+    }
 };
 
 #endif // UTILITIES_H
