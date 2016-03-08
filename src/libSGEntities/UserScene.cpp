@@ -254,7 +254,6 @@ entity::Canvas* entity::UserScene::getCanvas(unsigned int id)
 
 entity::Canvas* entity::UserScene::getCanvas(const std::string& name)
 {
-    std::cout << "getCanvas(): (string&)" << std::endl;
     FindNodeVisitor fnv(name);
     this->accept(fnv);
     if (fnv.getNode() == NULL){
@@ -858,22 +857,21 @@ bool entity::UserScene::printScene()
     for (unsigned int i = 0; i < this->getNumChildren(); ++i){
         Canvas* cnv = this->getCanvas(i);
         if (!cnv){
-            outErrMsg("printScene: could not retrive canvas");
-            return false;
+            entity::Bookmarks* bms = dynamic_cast<entity::Bookmarks*>(this->getChild(i));
+            assert(bms == m_bookmarks);
+            if (bms) outLogMsg("Bookmarks data read");
+            continue;
         }
         outLogVal("Canvas name", cnv->getName());
 
         osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(cnv->getChild(0));
         assert(t == cnv->getTransform());
-        outLogVal("Transform name", t->getName());
 
         osg::Switch* sw = dynamic_cast<osg::Switch*>(t->getChild(0));
         assert(sw == cnv->getSwitch());
-        outLogVal("Switch name", sw->getName());
 
         osg::Geode* data = dynamic_cast<osg::Geode*>(sw->getChild(3));
         assert(data == cnv->getGeodeData());
-        outLogVal("Geode data name", data->getName());
     }
     return true;
 }

@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_desktop(0)
     , m_mdiArea(new QMdiArea(this))
 
+    , m_tabWidget(new QTabWidget())
     , m_bookmarkWidget(new BookmarkWidget())
     , m_canvasWidget(new CanvasWidget())
 
@@ -52,12 +53,11 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     dockwid->setWindowTitle(QString("Lists of entities"));
     //dockwid->hide();
 
-    QTabWidget* tabwid = new QTabWidget();
-    dockwid->setWidget(tabwid);
-    tabwid->setTabPosition(QTabWidget::West);
-    tabwid->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
+    dockwid->setWidget(m_tabWidget);
+    m_tabWidget->setTabPosition(QTabWidget::West);
+    m_tabWidget->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
     m_bookmarkWidget->setItemDelegate(new BookmarkDelegate);
-    tabwid->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
+    m_tabWidget->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
 
     /* undo/redo widget */
     m_undoView->setWindowTitle(tr("Command List"));
@@ -220,8 +220,10 @@ void MainWindow::onFileOpen()
     else
         this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
     m_glWidget->update();
-    this->initializeCallbacks();
+   // m_bookmarkWidget->setItemDelegate(new BookmarkDelegate);
+    this->reinitializeCallbacks();
     m_rootScene->getBookmarksModel()->resetModel(m_bookmarkWidget);
+
     this->statusBar()->showMessage(tr("Scene loaded."));
 }
 
@@ -851,12 +853,24 @@ void MainWindow::initializeCallbacks()
     QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)), m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
     QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(dureu::MOUSE_MODE)), this, SLOT(recieveAutoSwitchMode(dureu::MOUSE_MODE)));
 
+    /* bookmark widget data */
+    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QModelIndex)),
+                     this, SLOT(onDeleteBookmark(QModelIndex)));
+    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedMove(QModelIndex)),
+                     this, SLOT(onMoveBookmark(QModelIndex)));
+
+    this->reinitializeCallbacks();
+}
+
+void MainWindow::reinitializeCallbacks()
+{
     /* connect MainWindow with UserScene */
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(sendRequestUpdate()), this, SLOT(recievedRequestUpdate()));
 
     /* bookmark widget data */
     QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)), m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)));
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(sendBookmark(int)), this, SLOT(recieveBookmark(int)));
+
     QObject::connect(m_bookmarkWidget, SIGNAL(itemChanged(QListWidgetItem*)), m_rootScene->getBookmarksModel(), SLOT(onItemChanged(QListWidgetItem*)) );
     QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)),
                      m_rootScene->getBookmarksModel(), SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)));
@@ -864,12 +878,4 @@ void MainWindow::initializeCallbacks()
                      m_rootScene->getBookmarksModel(), SLOT(onRowsRemoved(QModelIndex,int,int)));
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
                      m_glWidget, SLOT(onRequestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)));
-    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QModelIndex)),
-                     this, SLOT(onDeleteBookmark(QModelIndex)));
-    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedMove(QModelIndex)),
-                     this, SLOT(onMoveBookmark(QModelIndex)));
-
-//    QObject::connect(m_bookmarkWidget, SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),
-//                     m_rootScene->getBookmarksModel(), SLOT(onCurrentItemChanged(QListWidgetItem*,QListWidgetItem*)));
-
 }

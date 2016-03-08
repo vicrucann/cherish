@@ -94,11 +94,13 @@ private:
     void        initializeActions();
     void        initializeMenus();
     void        initializeToolbars();
-    void        initializeCallbacks();
+    void        initializeCallbacks(); // for ctor
+    void        reinitializeCallbacks(); // for open file
 
     QDesktopWidget* m_desktop;
     QMdiArea*       m_mdiArea;
 
+    QTabWidget*     m_tabWidget;
     BookmarkWidget*    m_bookmarkWidget;
     CanvasWidget*    m_canvasWidget;
 

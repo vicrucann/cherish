@@ -17,7 +17,7 @@ entity::Bookmarks::Bookmarks(const Bookmarks &parent, osg::CopyOp copyop)
     : QObject()
     , osg::Group(parent, copyop)
     , m_eyes(parent.m_eyes)
-    , m_row(0)
+    , m_row(parent.m_row)
 {
 }
 
@@ -75,9 +75,6 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     int idx = m_eyes.size()-1;
     emit this->requestScreenshot(pmap, m_eyes[idx], m_centers[idx], m_ups[idx]);
     item->setIcon(QIcon(pmap));
-
-    //QStandardItem* item = new QStandardItem(QString(name.c_str()));
-    //this->appendRow(item);
 }
 
 /* update the look of the bookmakr's screenshot - is performed on every click */
@@ -94,6 +91,7 @@ void entity::Bookmarks::updateBookmark(BookmarkWidget *widget, int row)
 void entity::Bookmarks::deleteBookmark(BookmarkWidget *widget, const QModelIndex &index)
 {
     outLogMsg("deleteBookmark: remove item widget");
+    outLogVal("deleteBookmars: total count of items", widget->count());
     QListWidgetItem* item = widget->takeItem(index.row());
     if (item){
         delete item;
