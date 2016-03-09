@@ -19,7 +19,6 @@
 #include "Settings.h"
 #include "GLWidget.h"
 #include "ListWidget.h"
-#include "CanvasWidget.h"
 #include "Data.h"
 
 class MainWindow : public QMainWindow {

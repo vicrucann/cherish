@@ -1,5 +1,5 @@
-#ifndef BOOKMARKWIDGET_H
-#define BOOKMARKWIDGET_H
+#ifndef LISTWIDGET_H
+#define LISTWIDGET_H
 
 #include <QListWidget>
 #include <QListView>
@@ -17,4 +17,10 @@ public:
     BookmarkDelegate* getBookmarkDelegate() const;
 };
 
-#endif // BOOKMARKWIDGET_H
+class CanvasWidget : public QListWidget
+{
+public:
+    CanvasWidget(QWidget* parent = 0){}
+};
+
+#endif // LISTWIDGET_H

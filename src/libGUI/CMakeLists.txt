@@ -21,8 +21,6 @@ set(libGUI_SRCS
     ListWidget.cpp
     ListDelegate.h
     ListDelegate.cpp
-    CanvasWidget.h
-    CanvasWidget.cpp
 )
 
 qt5_wrap_ui(UI_GENERATED_SRCS

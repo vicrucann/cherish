@@ -1,5 +1,5 @@
-#ifndef BOOKMARKDELEGATE_H
-#define BOOKMARKDELEGATE_H
+#ifndef LISTDELEGATE_H
+#define LISTDELEGATE_H
 
 #include <QStyledItemDelegate>
 #include <QPainter>
