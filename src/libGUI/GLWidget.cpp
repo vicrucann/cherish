@@ -100,7 +100,6 @@ void GLWidget::setCameraView()
     osg::Vec3d eye, center, up;
     m_manipulator->getTransformation(eye, center, up);
     if (eye == m_eye && center == m_center && up == m_up) return;
-    outLogMsg("change view detected");
 
     osg::Vec3d de = eye - m_eye;
     osg::Vec3d dc = center - m_center;

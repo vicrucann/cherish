@@ -131,7 +131,12 @@ void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const
         return;
     }
     AddCanvasCommand* cmd = new AddCanvasCommand(this, R, T, name);
+    if (!cmd){
+        outErrMsg("addCanvas: cmd is NULL");
+        return;
+    }
     stack->push(cmd);
+
 }
 
 void entity::UserScene::addStroke(QUndoStack* stack, float u, float v, dureu::EVENT event)
@@ -288,9 +293,11 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
     if (m_canvasCurrent.valid()){
         if (m_canvasPrevious.valid()){
             m_canvasPrevious->setColor(dureu::CANVAS_CLR_REST);
+            emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasPrevious.get()), 0);
             m_canvasPrevious = NULL;
         }
         m_canvasCurrent->setColor(dureu::CANVAS_CLR_PREVIOUS);
+        emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasCurrent.get()), 2);
         m_canvasCurrent->unselectAll();
 
         m_canvasPrevious = m_canvasCurrent;
@@ -302,6 +309,7 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
     }
     m_canvasCurrent = cnv;
     m_canvasCurrent->setColor(dureu::CANVAS_CLR_CURRENT);
+    emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasCurrent.get()), 1);
     return true;
 }
 
@@ -311,6 +319,7 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
         return true;
     if (m_canvasPrevious.valid()){
         m_canvasPrevious->setColor(dureu::CANVAS_CLR_REST);
+        emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasPrevious.get()), 0);
         m_canvasPrevious = NULL;
     }
     if (!cnv){
@@ -319,6 +328,7 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
     }
     m_canvasPrevious = cnv;
     m_canvasPrevious->setColor(dureu::CANVAS_CLR_PREVIOUS);
+    emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasPrevious.get()), 2);
     return true;
 }
 
@@ -394,6 +404,13 @@ entity::Canvas*entity::UserScene::getCanvasPrevious() const
 entity::Canvas *entity::UserScene::getCanvasSelected() const
 {
     return m_canvasSelected.get();
+}
+
+int entity::UserScene::getCanvasIndex(entity::Canvas *canvas) const
+{
+    int bms = this->getChildIndex(m_bookmarks);
+    int cnv = this->getChildIndex(canvas);
+    return (cnv<bms? cnv : cnv+1);
 }
 
 void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event)
@@ -879,6 +896,13 @@ bool entity::UserScene::printScene()
 void entity::UserScene::updateWidgets()
 {
     emit sendRequestUpdate();
+}
+
+void entity::UserScene::onCanvasEdited(QListWidgetItem *item)
+{
+    // assumed it is a current canvas
+    outLogMsg("onCanvasEdited: renaming current canvas");
+    this->getCanvasCurrent()->setName(item->text().toStdString());
 }
 
 std::string entity::UserScene::getCanvasName()

@@ -1,6 +1,8 @@
 #ifndef LISTWIDGET_H
 #define LISTWIDGET_H
 
+#include <string>
+
 #include <QListWidget>
 #include <QListView>
 #include <QEvent>
@@ -19,8 +21,14 @@ public:
 
 class CanvasWidget : public QListWidget
 {
+    Q_OBJECT
 public:
-    CanvasWidget(QWidget* parent = 0){}
+    CanvasWidget(QWidget* parent = 0);
+
+public slots:
+    void onCanvasAdded(const std::string& name);
+    void onCanvasRemoved(int row);
+    void onCanvasSelectedColor(int row, int color);
 };
 
 #endif // LISTWIDGET_H

@@ -55,9 +55,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     dockwid->setWidget(m_tabWidget);
     m_tabWidget->setTabPosition(QTabWidget::West);
+    m_tabWidget->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
     m_tabWidget->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
     m_bookmarkWidget->setItemDelegate(new BookmarkDelegate);
-    m_tabWidget->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
 
     /* undo/redo widget */
     m_undoView->setWindowTitle(tr("Command List"));
@@ -889,5 +889,17 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
                      m_glWidget, SLOT(onRequestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
+                     Qt::UniqueConnection);
+
+    /* canvas widget area */
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasAdded(std::string)),
+                     m_canvasWidget, SLOT(onCanvasAdded(std::string)), Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasSelectedColor(int,int)),
+                     m_canvasWidget, SLOT(onCanvasSelectedColor(int,int)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasRemoved(int)),
+                     m_canvasWidget, SLOT(onCanvasRemoved(int)),
                      Qt::UniqueConnection);
 }
