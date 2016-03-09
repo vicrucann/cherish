@@ -1,17 +1,20 @@
-#ifndef LISTWIDGET_H
-#define LISTWIDGET_H
+#ifndef BOOKMARKWIDGET_H
+#define BOOKMARKWIDGET_H
 
-#include <QtGui>
 #include <QListWidget>
-#include <QLabel>
-class ListWidget : public QWidget
+#include <QListView>
+#include <QEvent>
+#include <QModelIndex>
+#include "Bookmarks.h"
+#include "BookmarkDelegate.h"
+
+class BookmarkWidget : public QListWidget
 {
+ //   Q_OBJECT
 public:
-        ListWidget(QWidget * parent = 0);
-        ~ListWidget();
-private:
-        QLabel *label;
-        QListWidget *list;
+    BookmarkWidget(QWidget* parent = 0);
+
+    BookmarkDelegate* getBookmarkDelegate() const;
 };
 
-#endif // LISTWIDGET_H
+#endif // BOOKMARKWIDGET_H
