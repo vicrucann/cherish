@@ -248,6 +248,7 @@ this->setText(QObject::tr("Delete %1")
 
 void EditCanvasDeleteCommand::undo()
 {
+    emit m_scene->canvasAdded(m_canvas->getName());
     m_scene->addChild(m_canvas);
     m_scene->setCanvasCurrent(m_canvas);
     m_scene->updateWidgets();
@@ -268,6 +269,7 @@ void EditCanvasDeleteCommand::redo()
         }
     }
     // now delete the canvas
+    emit m_scene->canvasRemoved(m_scene->getCanvasIndex(m_canvas.get()));
     m_scene->removeChild(m_canvas);
     m_scene->updateWidgets();
 }
