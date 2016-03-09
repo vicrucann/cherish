@@ -16,7 +16,7 @@
 #include "Stroke.h"
 #include "Photo.h"
 #include "Bookmarks.h"
-#include "../libGUI/BookmarkWidget.h"
+#include "../libGUI/ListWidget.h"
 
 // multiple inheritance requires QObject to be first,
 // for more, see:

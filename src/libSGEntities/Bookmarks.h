@@ -19,7 +19,7 @@
 #include <QPixmap>
 #include <QVector>
 
-#include "../libGUI/BookmarkWidget.h"
+#include "../libGUI/ListWidget.h"
 
 class BookmarkWidget;
 

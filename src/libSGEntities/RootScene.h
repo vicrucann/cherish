@@ -37,7 +37,7 @@
 #include "UserScene.h"
 #include "Photo.h"
 #include "Bookmarks.h"
-#include "../libGUI/BookmarkWidget.h"
+#include "../libGUI/ListWidget.h"
 
 #include <QUndoStack>
 #include <QModelIndex>

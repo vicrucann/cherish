@@ -220,7 +220,6 @@ void MainWindow::onFileOpen()
     else
         this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
     m_glWidget->update();
-   // m_bookmarkWidget->setItemDelegate(new BookmarkDelegate);
     this->initializeCallbacks();
     m_rootScene->getBookmarksModel()->resetModel(m_bookmarkWidget);
 
