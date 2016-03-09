@@ -1,4 +1,4 @@
-#include "BookmarkDelegate.h"
+#include "ListDelegate.h"
 
 #include <QStyleOptionButton>
 #include <QApplication>

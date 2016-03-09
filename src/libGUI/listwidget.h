@@ -6,7 +6,7 @@
 #include <QEvent>
 #include <QModelIndex>
 #include "Bookmarks.h"
-#include "BookmarkDelegate.h"
+#include "ListDelegate.h"
 
 class BookmarkWidget : public QListWidget
 {

@@ -15,7 +15,7 @@
 
 #include "MainWindow.h"
 #include "GLWidget.h"
-#include "BookmarkDelegate.h"
+#include "ListDelegate.h"
 #include "Settings.h"
 #include "Data.h"
 

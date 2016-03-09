@@ -19,8 +19,8 @@ set(libGUI_SRCS
     GLWidget.cpp
     ListWidget.h
     ListWidget.cpp
-    BookmarkDelegate.h
-    BookmarkDelegate.cpp
+    ListDelegate.h
+    ListDelegate.cpp
     CanvasWidget.h
     CanvasWidget.cpp
 )
