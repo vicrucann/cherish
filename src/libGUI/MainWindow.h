@@ -95,7 +95,6 @@ private:
     void        initializeMenus();
     void        initializeToolbars();
     void        initializeCallbacks(); // for ctor
-    void        reinitializeCallbacks(); // for open file
 
     QDesktopWidget* m_desktop;
     QMdiArea*       m_mdiArea;

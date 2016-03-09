@@ -221,7 +221,7 @@ void MainWindow::onFileOpen()
         this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
     m_glWidget->update();
    // m_bookmarkWidget->setItemDelegate(new BookmarkDelegate);
-    this->reinitializeCallbacks();
+    this->initializeCallbacks();
     m_rootScene->getBookmarksModel()->resetModel(m_bookmarkWidget);
 
     this->statusBar()->showMessage(tr("Scene loaded."));
@@ -849,33 +849,46 @@ void MainWindow::initializeToolbars()
 void MainWindow::initializeCallbacks()
 {
     /* connect MainWindow with GLWidget */
-    QObject::connect(this, SIGNAL(sendTabletActivity(bool)), m_glWidget, SLOT(getTabletActivity(bool)));
-    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)), m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
-    QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(dureu::MOUSE_MODE)), this, SLOT(recieveAutoSwitchMode(dureu::MOUSE_MODE)));
+    QObject::connect(this, SIGNAL(sendTabletActivity(bool)), m_glWidget, SLOT(getTabletActivity(bool)),
+                     Qt::UniqueConnection);
 
-    /* bookmark widget data */
-    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QModelIndex)),
-                     this, SLOT(onDeleteBookmark(QModelIndex)));
-    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedMove(QModelIndex)),
-                     this, SLOT(onMoveBookmark(QModelIndex)));
+    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)), m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)),
+                     Qt::UniqueConnection);
 
-    this->reinitializeCallbacks();
-}
+    QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(dureu::MOUSE_MODE)), this, SLOT(recieveAutoSwitchMode(dureu::MOUSE_MODE)),
+                     Qt::UniqueConnection);
 
-void MainWindow::reinitializeCallbacks()
-{
     /* connect MainWindow with UserScene */
-    QObject::connect(m_rootScene->getUserScene(), SIGNAL(sendRequestUpdate()), this, SLOT(recievedRequestUpdate()));
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(sendRequestUpdate()), this, SLOT(recievedRequestUpdate()),
+                     Qt::UniqueConnection);
 
     /* bookmark widget data */
-    QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)), m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)));
-    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(sendBookmark(int)), this, SLOT(recieveBookmark(int)));
+    QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)), m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)),
+                     Qt::UniqueConnection);
 
-    QObject::connect(m_bookmarkWidget, SIGNAL(itemChanged(QListWidgetItem*)), m_rootScene->getBookmarksModel(), SLOT(onItemChanged(QListWidgetItem*)) );
+    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(sendBookmark(int)), this, SLOT(recieveBookmark(int)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QModelIndex)),
+                     this, SLOT(onDeleteBookmark(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedMove(QModelIndex)),
+                     this, SLOT(onMoveBookmark(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_bookmarkWidget, SIGNAL(itemChanged(QListWidgetItem*)), m_rootScene->getBookmarksModel(), SLOT(onItemChanged(QListWidgetItem*)) ,
+                     Qt::UniqueConnection);
+
     QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)),
-                     m_rootScene->getBookmarksModel(), SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)));
+                     m_rootScene->getBookmarksModel(), SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)),
+                     Qt::UniqueConnection);
+
     QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsRemoved(QModelIndex,int,int)),
-                     m_rootScene->getBookmarksModel(), SLOT(onRowsRemoved(QModelIndex,int,int)));
+                     m_rootScene->getBookmarksModel(), SLOT(onRowsRemoved(QModelIndex,int,int)),
+                     Qt::UniqueConnection);
+
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
-                     m_glWidget, SLOT(onRequestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)));
+                     m_glWidget, SLOT(onRequestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
+                     Qt::UniqueConnection);
 }
