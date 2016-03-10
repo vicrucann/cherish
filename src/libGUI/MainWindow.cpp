@@ -848,24 +848,30 @@ void MainWindow::initializeToolbars()
 void MainWindow::initializeCallbacks()
 {
     /* connect MainWindow with GLWidget */
-    QObject::connect(this, SIGNAL(sendTabletActivity(bool)), m_glWidget, SLOT(getTabletActivity(bool)),
+    QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
+                     m_glWidget, SLOT(getTabletActivity(bool)),
                      Qt::UniqueConnection);
 
-    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)), m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)),
+    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)),
+                     m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(dureu::MOUSE_MODE)), this, SLOT(recieveAutoSwitchMode(dureu::MOUSE_MODE)),
+    QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(dureu::MOUSE_MODE)),
+                     this, SLOT(recieveAutoSwitchMode(dureu::MOUSE_MODE)),
                      Qt::UniqueConnection);
 
     /* connect MainWindow with UserScene */
-    QObject::connect(m_rootScene->getUserScene(), SIGNAL(sendRequestUpdate()), this, SLOT(recievedRequestUpdate()),
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(sendRequestUpdate()),
+                     this, SLOT(recievedRequestUpdate()),
                      Qt::UniqueConnection);
 
     /* bookmark widget data */
-    QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)), m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)),
+    QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)),
+                     m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(sendBookmark(int)), this, SLOT(recieveBookmark(int)),
+    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(sendBookmark(int)),
+                     this, SLOT(recieveBookmark(int)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QModelIndex)),
@@ -901,5 +907,13 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasRemoved(int)),
                      m_canvasWidget, SLOT(onCanvasRemoved(int)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_canvasWidget, SIGNAL(clicked(QModelIndex)),
+                     m_rootScene->getUserScene(), SLOT(onClicked(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_canvasWidget, SIGNAL(rightClicked(QModelIndex)),
+                     m_rootScene->getUserScene(), SLOT(onRightClicked(QModelIndex)),
                      Qt::UniqueConnection);
 }

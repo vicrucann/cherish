@@ -75,6 +75,7 @@ public:
     entity::Canvas* getCanvasPrevious() const;
     entity::Canvas* getCanvasSelected() const;
     int getCanvasIndex(entity::Canvas* canvas) const;
+    entity::Canvas* getCanvasFromIndex(int row);
 
     void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event);
@@ -106,6 +107,8 @@ signals:
 
 public slots:
     void onCanvasEdited(QListWidgetItem* item);
+    void onClicked(const QModelIndex& index);
+    void onRightClicked(const QModelIndex& index);
 
 protected:
     ~UserScene();

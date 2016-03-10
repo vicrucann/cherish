@@ -93,3 +93,17 @@ void CanvasWidget::onCanvasSelectedColor(int row, int color)
     }
     item->setBackgroundColor(qcolor);
 }
+
+void CanvasWidget::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::RightButton){
+
+        QPoint p = event->pos();
+        const QModelIndex& index = this->indexAt(p);
+        if (index.isValid())
+            emit this->rightClicked(index);
+        else
+            outErrMsg("mouse right: no item was chosen for selection");
+    }
+    QListWidget::mousePressEvent(event);
+}

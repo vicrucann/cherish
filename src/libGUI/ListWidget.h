@@ -7,6 +7,8 @@
 #include <QListView>
 #include <QEvent>
 #include <QModelIndex>
+#include <QMouseEvent>
+
 #include "Bookmarks.h"
 #include "ListDelegate.h"
 
@@ -25,10 +27,16 @@ class CanvasWidget : public QListWidget
 public:
     CanvasWidget(QWidget* parent = 0);
 
+signals:
+    void rightClicked(const QModelIndex& index);
+
 public slots:
     void onCanvasAdded(const std::string& name);
     void onCanvasRemoved(int row);
     void onCanvasSelectedColor(int row, int color);
+
+protected:
+    virtual void mousePressEvent(QMouseEvent* event);
 };
 
 #endif // LISTWIDGET_H

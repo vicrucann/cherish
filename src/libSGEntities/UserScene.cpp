@@ -253,8 +253,8 @@ void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, i
 
 entity::Canvas* entity::UserScene::getCanvas(unsigned int id)
 {
-    //return dynamic_cast<entity::Canvas*>(this->getChild(id));
-    return getCanvas(this->getChild(id)->getName());
+    return dynamic_cast<entity::Canvas*>(this->getChild(id));
+    //return getCanvas(this->getChild(id)->getName());
 }
 
 entity::Canvas* entity::UserScene::getCanvas(const std::string& name)
@@ -410,7 +410,14 @@ int entity::UserScene::getCanvasIndex(entity::Canvas *canvas) const
 {
     int bms = this->getChildIndex(m_bookmarks);
     int cnv = this->getChildIndex(canvas);
-    return (cnv<bms? cnv : cnv+1);
+    return (cnv<bms? cnv : cnv-1);
+}
+
+entity::Canvas *entity::UserScene::getCanvasFromIndex(int row)
+{
+    int bms = this->getChildIndex(m_bookmarks.get());
+    return row>=bms? dynamic_cast<entity::Canvas*>(this->getChild(row+1)) :
+                     dynamic_cast<entity::Canvas*>(this->getChild(row));
 }
 
 void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event)
@@ -903,6 +910,35 @@ void entity::UserScene::onCanvasEdited(QListWidgetItem *item)
     // assumed it is a current canvas
     outLogMsg("onCanvasEdited: renaming current canvas");
     this->getCanvasCurrent()->setName(item->text().toStdString());
+}
+
+void entity::UserScene::onClicked(const QModelIndex &index)
+{
+    /* get corresponding canvas ptr
+     * make sure you consider bookmark ptr index
+     * set that canvas as current */
+    entity::Canvas* cnv = this->getCanvasFromIndex(index.row());
+    if (!cnv){
+        outErrMsg("UserScene onClicked: canvas ptr is NULL");
+        return;
+    }
+    outLogMsg("Changing current canvas from canvas widget");
+    this->setCanvasCurrent(cnv);
+    this->updateWidgets();
+}
+
+void entity::UserScene::onRightClicked(const QModelIndex &index)
+{
+    entity::Canvas* cnv = this->getCanvasFromIndex(index.row());
+    if (!cnv){
+        outErrMsg("UserScene onRightClicked: canvas ptr is NULL");
+        return;
+    }
+    outLogMsg("Changing previous/target canvas from canvas widget");
+    if (cnv == m_canvasCurrent.get() || cnv == m_canvasPrevious.get())
+        return;
+    this->setCanvasPrevious(cnv);
+    this->updateWidgets();
 }
 
 std::string entity::UserScene::getCanvasName()
