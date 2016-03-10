@@ -27,6 +27,8 @@ class CanvasWidget : public QListWidget
 public:
     CanvasWidget(QWidget* parent = 0);
 
+    CanvasDelegate* getCanvasDelegate() const;
+
 signals:
     void rightClicked(const QModelIndex& index);
 

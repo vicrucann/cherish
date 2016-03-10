@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     m_tabWidget->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
     m_tabWidget->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
     m_bookmarkWidget->setItemDelegate(new BookmarkDelegate);
+    m_canvasWidget->setItemDelegate(new CanvasDelegate);
 
     /* undo/redo widget */
     m_undoView->setWindowTitle(tr("Command List"));
@@ -163,6 +164,23 @@ void MainWindow::onDeleteBookmark(const QModelIndex &index)
                                                               QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::Yes)
         m_rootScene->deleteBookmark(m_bookmarkWidget, index);
+}
+
+void MainWindow::onDeleteCanvas(const QModelIndex &index)
+{
+    entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(index.row());
+    if (!cnv){
+        QMessageBox::critical(this, tr("Error"), tr("Could not obtain a canvas pointer"));
+        return;
+    }
+    const std::string& name = cnv->getName();
+    QMessageBox::StandardButton reply = QMessageBox::question(this,
+                                                              tr("Canvas deletion"),
+                                                              QString("Are you sure you want to delete canvas " + QString(name.c_str()) +
+                                                              " and all it contains?"),
+                                                              QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::Yes)
+        m_rootScene->editCanvasDelete(cnv);
 }
 
 void MainWindow::onMoveBookmark(const QModelIndex &index)
@@ -915,5 +933,9 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_canvasWidget, SIGNAL(rightClicked(QModelIndex)),
                      m_rootScene->getUserScene(), SLOT(onRightClicked(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedDelete(QModelIndex)),
+                     this, SLOT(onDeleteCanvas(QModelIndex)),
                      Qt::UniqueConnection);
 }

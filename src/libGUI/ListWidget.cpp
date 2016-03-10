@@ -35,6 +35,11 @@ CanvasWidget::CanvasWidget(QWidget *parent)
     this->setEditTriggers(QListWidget::DoubleClicked);
 }
 
+CanvasDelegate *CanvasWidget::getCanvasDelegate() const
+{
+    return dynamic_cast<CanvasDelegate*>(this->itemDelegate());
+}
+
 void CanvasWidget::onCanvasAdded(const std::string &name)
 {
     this->addItem(QString(name.c_str()));
@@ -59,6 +64,7 @@ void CanvasWidget::onCanvasRemoved(int row)
     QListWidgetItem* item = this->takeItem(row);
     if (item)
         delete item;
+    outLogMsg("canvasWidget: onCanvasRemoved performed");
 }
 
 void CanvasWidget::onCanvasSelectedColor(int row, int color)

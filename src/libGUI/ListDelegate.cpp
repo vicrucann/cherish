@@ -93,3 +93,88 @@ QRect BookmarkDelegate::getButtonMoveRect(const QRect &rect) const
     w = h = sz;
     return QRect(x,y,w,h);
 }
+
+CanvasDelegate::CanvasDelegate(QObject *parent)
+    : QStyledItemDelegate(parent)
+{
+}
+
+void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QStyledItemDelegate::paint(painter, option, index);
+
+    QRect r = option.rect;
+    QStyleOptionButton buttonDelete, buttonVis;
+
+    buttonDelete.rect = getButtonDeleteRect(r);
+    buttonDelete.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+    buttonDelete.icon = Data::editDeleteIcon();
+    buttonDelete.state = QStyle::State_Enabled;
+    buttonDelete.features = QStyleOptionButton::None;
+
+    buttonVis.rect = getButtonVisibilityRect(r);
+    buttonVis.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+    buttonVis.icon = Data::controlCanvasVisibilityIcon();
+    buttonVis.state = QStyle::State_Enabled;
+    buttonVis.features = QStyleOptionButton::None;
+
+    QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonDelete, painter);
+    QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonVis, painter);
+}
+
+bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    if (event->type() == QEvent::MouseButtonPress ||
+            event->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent * e = (QMouseEvent *)event;
+        int clickX = e->x();
+        int clickY = e->y();
+
+        QRect r = option.rect;
+        QRect br = this->getButtonDeleteRect(r);
+        QRect bv = this->getButtonVisibilityRect(r);
+
+        if( clickX > br.x() && clickX < br.x() + br.width() )
+            if( clickY > br.y() && clickY < br.y() + br.height() )
+            {
+                if (event->type() == QEvent::MouseButtonPress)
+                    return true;
+                else{
+                    outLogMsg("canvas delegate: clicked delete");
+                    emit this->clickedDelete(index);
+                }
+                return true;
+            }
+
+        if( clickX > bv.x() && clickX < bv.x() + bv.width() )
+            if( clickY > bv.y() && clickY < bv.y() + bv.height() )
+            {
+                if (event->type() == QEvent::MouseButtonPress){
+                    outLogMsg("canvas delegate: clicked visibility");
+                    emit this->clickedVisibility(index, true);
+                }
+                return true;
+            }
+    }
+    return QStyledItemDelegate::editorEvent(event, model, option, index);
+}
+
+QRect CanvasDelegate::getButtonDeleteRect(const QRect &rect) const
+{
+    int sz = dureu::APP_WIDGET_BUTTON;
+    int x,y,w,h;
+    x = rect.left() + rect.width() - sz;
+    y = rect.top() + (rect.height() - sz)/2;
+    w = h = sz;
+    return QRect(x,y,w,h);
+}
+
+QRect CanvasDelegate::getButtonVisibilityRect(const QRect &rect) const
+{
+    int sz = dureu::APP_WIDGET_BUTTON;
+    int x,y,w,h;
+    x = rect.left() + rect.width() - 2.5*sz;
+    y = rect.top() + (rect.height() - sz)/2;
+    w = h = sz;
+    return QRect(x,y,w,h);
+}

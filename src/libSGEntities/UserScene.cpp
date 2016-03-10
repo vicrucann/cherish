@@ -542,6 +542,7 @@ void entity::UserScene::editCanvasDelete(QUndoStack *stack, entity::Canvas *canv
         return;
     }
     stack->push(cmd);
+    outLogMsg("UserScene: deleteCanvas command pushed to stack");
 }
 
 void entity::UserScene::editPhotoMove(QUndoStack* stack, Photo *photo, const double u, const double v, dureu::EVENT event)
@@ -905,6 +906,7 @@ void entity::UserScene::updateWidgets()
     emit sendRequestUpdate();
 }
 
+/* to change name from canvas delegate */
 void entity::UserScene::onCanvasEdited(QListWidgetItem *item)
 {
     // assumed it is a current canvas
@@ -912,6 +914,7 @@ void entity::UserScene::onCanvasEdited(QListWidgetItem *item)
     this->getCanvasCurrent()->setName(item->text().toStdString());
 }
 
+/* to selec as current from canvas delegate */
 void entity::UserScene::onClicked(const QModelIndex &index)
 {
     /* get corresponding canvas ptr
@@ -927,6 +930,7 @@ void entity::UserScene::onClicked(const QModelIndex &index)
     this->updateWidgets();
 }
 
+/* to select as previous from canvas delegate */
 void entity::UserScene::onRightClicked(const QModelIndex &index)
 {
     entity::Canvas* cnv = this->getCanvasFromIndex(index.row());

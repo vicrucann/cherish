@@ -22,8 +22,8 @@ class BookmarkDelegate : public QStyledItemDelegate
 
 public:
     BookmarkDelegate(QObject* parent=0);
-    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
+    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 signals:
@@ -35,4 +35,22 @@ private:
     QRect getButtonMoveRect(const QRect& rect) const;
 };
 
-#endif // BOOKMARKDELEGATE_H
+class CanvasDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
+public:
+    CanvasDelegate(QObject* parent=0);
+
+    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
+
+signals:
+    void clickedDelete(const QModelIndex& index);
+    void clickedVisibility(const QModelIndex& index, bool vis);
+
+private:
+    QRect getButtonDeleteRect(const QRect& rect) const;
+    QRect getButtonVisibilityRect(const QRect& rect) const;
+};
+
+#endif // LISTDELEGATE_H
