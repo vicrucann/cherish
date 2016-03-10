@@ -542,7 +542,6 @@ void entity::UserScene::editCanvasDelete(QUndoStack *stack, entity::Canvas *canv
         return;
     }
     stack->push(cmd);
-    outLogMsg("UserScene: deleteCanvas command pushed to stack");
 }
 
 void entity::UserScene::editPhotoMove(QUndoStack* stack, Photo *photo, const double u, const double v, dureu::EVENT event)
@@ -920,6 +919,8 @@ void entity::UserScene::onClicked(const QModelIndex &index)
     /* get corresponding canvas ptr
      * make sure you consider bookmark ptr index
      * set that canvas as current */
+    if (index.row()<0)
+        return;
     entity::Canvas* cnv = this->getCanvasFromIndex(index.row());
     if (!cnv){
         outErrMsg("UserScene onClicked: canvas ptr is NULL");

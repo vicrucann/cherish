@@ -33,6 +33,8 @@ CanvasWidget::CanvasWidget(QWidget *parent)
     this->setDragDropMode(QAbstractItemView::NoDragDrop);
     this->setSpacing(2);
     this->setEditTriggers(QListWidget::DoubleClicked);
+    this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
+    this->setTabKeyNavigation(false);
 }
 
 CanvasDelegate *CanvasWidget::getCanvasDelegate() const
@@ -64,7 +66,6 @@ void CanvasWidget::onCanvasRemoved(int row)
     QListWidgetItem* item = this->takeItem(row);
     if (item)
         delete item;
-    outLogMsg("canvasWidget: onCanvasRemoved performed");
 }
 
 void CanvasWidget::onCanvasSelectedColor(int row, int color)
