@@ -391,6 +391,11 @@ void entity::UserScene::setCanvasesButCurrent(bool enabled)
     }
 }
 
+void entity::UserScene::setCanvasVisibility(bool vis)
+{
+
+}
+
 entity::Canvas*entity::UserScene::getCanvasCurrent() const
 {
     return m_canvasCurrent.get();
@@ -973,6 +978,9 @@ std::string entity::UserScene::getEntityName(const std::string &name, unsigned i
 void entity::UserScene::strokeStart()
 {
     m_canvasCurrent->unselectStrokes();
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
     outLogMsg("strokeStart()");
     if (this->strokeValid()){
         outErrMsg("strokeStart(): Cannot start new stroke since the pointer is not NULL");
@@ -1024,6 +1032,9 @@ bool entity::UserScene::strokeValid() const
 
 void entity::UserScene::strokesMoveStart(double u, double v)
 {
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
     m_u = u;
     m_v = v;
     m_du = m_dv = 0;
@@ -1073,6 +1084,10 @@ bool entity::UserScene::strokesSelectedValid() const
 
 void entity::UserScene::strokesScaleStart(double u, double v)
 {
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
+
     osg::Vec3f center = m_canvasCurrent->getGeodeData()->getBoundingBox().center(); //m_canvasCurrent->getCenter();
     m_du = center.x();
     m_dv = center.y();
@@ -1122,6 +1137,10 @@ void entity::UserScene::strokesScaleFinish(QUndoStack *stack)
 
 void entity::UserScene::strokesRotateStart(double u, double v)
 {
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
+
     osg::Vec3f center = m_canvasCurrent->getGeodeData()->getBoundingBox().center();
     if (center.z() > dureu::EPSILON){
         outLogVec("center", center.x(), center.y(), center.z());
@@ -1206,7 +1225,9 @@ void entity::UserScene::strokesRotateFinish(QUndoStack *stack)
 
 void entity::UserScene::eraseStart(entity::Stroke *stroke, osg::Vec3d &hit)
 {
-
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
 }
 
 void entity::UserScene::eraseAppend(entity::Stroke *stroke, osg::Vec3d &hit)
@@ -1230,6 +1251,10 @@ bool entity::UserScene::eraseValid(Stroke *stroke) const
 
 void entity::UserScene::canvasOffsetStart()
 {
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
+
     if (this->canvasEditValid()){
         outErrMsg("CanvasOffsetStart: cannot start editing since the canvas is already in edit mode");
         return;
@@ -1269,6 +1294,10 @@ bool entity::UserScene::canvasEditValid() const
 
 void entity::UserScene::canvasCloneStart()
 {
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
+
     entity::Canvas* cnv = m_canvasCurrent->clone();
     cnv->setName(this->getCanvasName());
     if (!cnv){
@@ -1329,6 +1358,10 @@ bool entity::UserScene::canvasCloneValid() const
 
 void entity::UserScene::canvasRotateStart()
 {
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
+
     if (this->canvasEditValid()){
         outErrMsg("CanvasRotateStart: cannot start editing since the canvas is already in edit mode");
         return;
@@ -1372,6 +1405,10 @@ void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
 
 void entity::UserScene::photoMoveStart(Photo *photo)
 {
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
+
     if (this->canvasEditValid()){
         outErrMsg("photoMoveStart: cannot start editing since the photo is already in edit mode");
         return;
@@ -1426,6 +1463,10 @@ bool entity::UserScene::photoEditValid() const
 
 void entity::UserScene::photoScaleStart(entity::Photo *photo)
 {
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
+
     if (this->canvasEditValid()){
         outErrMsg("photoScaleStart: cannot start editing since the photo is already in edit mode");
         return;
@@ -1482,6 +1523,10 @@ void entity::UserScene::photoScaleFinish(QUndoStack *stack, double u, double v)
 
 void entity::UserScene::photoRotateStart(entity::Photo *photo, double u, double v)
 {
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
+
     if (this->canvasEditValid()){
         outErrMsg("photoScaleStart: cannot start editing since the photo is already in edit mode");
         return;

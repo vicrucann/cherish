@@ -46,11 +46,12 @@ public:
 
 signals:
     void clickedDelete(const QModelIndex& index);
-    void clickedVisibility(const QModelIndex& index, bool vis);
+    void clickedVisibility(const QModelIndex& index);
 
 private:
     QRect getButtonDeleteRect(const QRect& rect) const;
     QRect getButtonVisibilityRect(const QRect& rect) const;
+
 };
 
 #endif // LISTDELEGATE_H

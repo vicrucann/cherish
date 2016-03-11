@@ -419,14 +419,17 @@ const QIcon &Data::controlCanvasesIcon()
 const QIcon &Data::controlMoveIcon()
 {
     Q_ASSERT_X(!QPixmap(":/control-move-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(":/control-move-24px.svg");
+    static QIcon icon(QPixmap(":/control-move-24px.svg"));
     return icon;
 }
 
 const QIcon &Data::controlCanvasVisibilityIcon()
 {
     Q_ASSERT_X(!QPixmap(":/control-canvas-visibility-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(":/control-canvas-visibility-24px.svg");
+    Q_ASSERT_X(!QPixmap(":/control-canvas-visibilityno-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon;
+    icon.addPixmap(QPixmap(":/control-canvas-visibility-24px.svg"), QIcon::Normal, QIcon::On);
+    icon.addPixmap(QPixmap(":/control-canvas-visibilityno-24px.svg"), QIcon::Normal, QIcon::Off);
     return icon;
 }
 

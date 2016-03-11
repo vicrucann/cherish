@@ -87,7 +87,7 @@ void RootScene::setToolsVisibility(bool vis)
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv)
             continue;
-        cnv->setVisibility(vis);
+        cnv->setVisibilityFrame(vis);
         if (cnv == this->getCanvasCurrent())
             cnv->setVisibilityLocalAxis(vis);
     }

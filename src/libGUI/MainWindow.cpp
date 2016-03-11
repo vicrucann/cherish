@@ -183,6 +183,17 @@ void MainWindow::onDeleteCanvas(const QModelIndex &index)
         m_rootScene->editCanvasDelete(cnv);
 }
 
+void MainWindow::onVisibilityCanvas(const QModelIndex &index)
+{
+    entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(index.row());
+    if (!cnv){
+        QMessageBox::critical(this, tr("Error"), tr("Could not obtain a canvas pointer"));
+        return;
+    }
+    cnv->setVisibilityAll(!cnv->getVisibilityData());
+    this->recievedRequestUpdate();
+}
+
 void MainWindow::onMoveBookmark(const QModelIndex &index)
 {
     outLogMsg("onMoveBookmark: resetting current index");
@@ -937,5 +948,9 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedDelete(QModelIndex)),
                      this, SLOT(onDeleteCanvas(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedVisibility(QModelIndex)),
+                     this, SLOT(onVisibilityCanvas(QModelIndex)),
                      Qt::UniqueConnection);
 }

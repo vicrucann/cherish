@@ -36,6 +36,7 @@ public slots:
     void recieveBookmark(int row);
     void onDeleteBookmark(const QModelIndex &index);
     void onDeleteCanvas(const QModelIndex& index);
+    void onVisibilityCanvas(const QModelIndex& index);
     void onMoveBookmark(const QModelIndex &index);
 
 signals:

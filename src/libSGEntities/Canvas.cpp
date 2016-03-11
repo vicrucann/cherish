@@ -255,7 +255,7 @@ const osg::Vec3f &entity::Canvas::getRotationAxis() const
     return m_rotaxis;
 }
 
-void entity::Canvas::setVisibility(bool vis)
+void entity::Canvas::setVisibilityFrame(bool vis)
 {
     m_switch->setChildValue(m_toolFrame, vis);
 }
@@ -272,6 +272,18 @@ void entity::Canvas::setVisibilityLocalAxis(bool vis)
 bool entity::Canvas::getVisibilityLocalAxis() const
 {
     return m_switch->getChildValue(m_toolAxis);
+}
+
+void entity::Canvas::setVisibilityAll(bool vis)
+{
+    m_switch->setChildValue(m_geodeData, vis);
+    this->setVisibilityFrame(vis);
+    this->setVisibilityLocalAxis(vis);
+}
+
+bool entity::Canvas::getVisibilityData() const
+{
+    return m_switch->getChildValue(m_geodeData);
 }
 
 // translates the current params on mt matrix
@@ -613,6 +625,7 @@ void entity::Canvas::setModeEdit(bool on)
     if (on){
         std::cout << "setModeEdit(): ON - " << on << std::endl;
         this->setColor(dureu::CANVAS_CLR_EDIT);
+        this->setVisibilityAll(true);
         this->setVisibilityLocalAxis(false);
     }
     else{

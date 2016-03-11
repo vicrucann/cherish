@@ -6,6 +6,7 @@
 #include <QDialog>
 #include <QStandardItemModel>
 #include <QListWidget>
+#include <QPushButton>
 
 #include "Data.h"
 #include "Settings.h"
@@ -115,8 +116,13 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     buttonVis.rect = getButtonVisibilityRect(r);
     buttonVis.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
     buttonVis.icon = Data::controlCanvasVisibilityIcon();
-    buttonVis.state = QStyle::State_Enabled;
+
+    if (option.checkState == Qt::Checked)
+        buttonVis.state = QStyle::State_Enabled | QStyle::State_On;
+    else QStyle::State_Enabled | QStyle::State_Off;
+
     buttonVis.features = QStyleOptionButton::None;
+    buttonVis.icon.On;
 
     QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonDelete, painter);
     QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonVis, painter);
@@ -151,7 +157,11 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
             {
                 if (event->type() == QEvent::MouseButtonPress){
                     outLogMsg("canvas delegate: clicked visibility");
-                    emit this->clickedVisibility(index, true);
+                    emit this->clickedVisibility(index);
+//                    if (option.checkState == Qt::Checked)
+//                        option.checkState = QStyle::State_Enabled | QStyle::State_Off;
+//                    else option.checkState = QStyle::State_Enabled | QStyle::State_On;
+
                 }
                 return true;
             }

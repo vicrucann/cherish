@@ -73,10 +73,14 @@ public:
     void setRotationAxis(const osg::Vec3f& axis);
     const osg::Vec3f& getRotationAxis() const;
 
-    void setVisibility(bool vis);
+    void setVisibilityFrame(bool vis);
     bool getVisibility() const;
+
     void setVisibilityLocalAxis(bool vis);
     bool getVisibilityLocalAxis() const;
+
+    void setVisibilityAll(bool vis);
+    bool getVisibilityData() const;
 
     void translate(const osg::Matrix& mt);
     void rotate(const osg::Matrix& mr);
