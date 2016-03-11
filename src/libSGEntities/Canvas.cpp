@@ -244,6 +244,11 @@ void entity::Canvas::setColor(const osg::Vec4f &color)
     m_toolFrame->setColor(color);
 }
 
+const osg::Vec4f &entity::Canvas::getColor() const
+{
+    return m_toolFrame->getColor();
+}
+
 void entity::Canvas::setRotationAxis(const osg::Vec3f &axis)
 {
     outLogVec("canvas setting rotation axis to", axis.x(), axis.y(), axis.z());

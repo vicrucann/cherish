@@ -251,6 +251,7 @@ void MainWindow::onFileOpen()
     m_glWidget->update();
     this->initializeCallbacks();
     m_rootScene->getBookmarksModel()->resetModel(m_bookmarkWidget);
+    m_rootScene->getUserScene()->resetModel(m_canvasWidget);
 
     this->statusBar()->showMessage(tr("Scene loaded."));
 }

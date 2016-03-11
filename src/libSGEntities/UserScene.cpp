@@ -910,6 +910,23 @@ void entity::UserScene::updateWidgets()
     emit sendRequestUpdate();
 }
 
+void entity::UserScene::resetModel(CanvasWidget *widget)
+{
+    widget->clear();
+    for (size_t i=0; i<this->getNumChildren(); ++i){
+        entity::Canvas* cnv = this->getCanvas(i);
+        if (!cnv) continue;
+        emit this->canvasAdded(cnv->getName().c_str());
+
+        if (cnv == m_canvasCurrent.get())
+            emit this->canvasSelectedColor(i,1);
+        else if (cnv == m_canvasPrevious.get())
+            emit this->canvasSelectedColor(i,2);
+        else
+            emit this->canvasSelectedColor(i,0);
+    }
+}
+
 /* to change name from canvas delegate */
 void entity::UserScene::onCanvasEdited(QListWidgetItem *item)
 {

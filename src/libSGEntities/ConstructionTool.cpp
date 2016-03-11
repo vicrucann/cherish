@@ -30,6 +30,13 @@ void entity::ConstructionTool::setColor(const osg::Vec4f &color)
     m_geomTool->dirtyBound();
 }
 
+const osg::Vec4f &entity::ConstructionTool::getColor() const
+{
+    osg::Vec4Array* colorTool = static_cast<osg::Vec4Array*>(m_geomTool->getColorArray());
+    assert(colorTool->size()>0);
+    return (*colorTool)[0];
+}
+
 entity::ToolNormal::ToolNormal()
     : ConstructionTool(2, osg::Array::BIND_OVERALL,
                        new osg::DrawArrays(osg::PrimitiveSet::LINES,0,2))

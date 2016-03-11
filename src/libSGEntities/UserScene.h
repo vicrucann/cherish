@@ -99,6 +99,7 @@ public:
     bool clearUserData();
     bool printScene();
     void updateWidgets();
+    void resetModel(CanvasWidget* widget);
 
 signals:
     void sendRequestUpdate();

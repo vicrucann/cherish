@@ -17,6 +17,7 @@ public:
                              float szCr, float szAx) = 0;
 
     virtual void setColor(const osg::Vec4f& color);
+    virtual const osg::Vec4f& getColor() const;
 
 protected:
     osg::Geode* m_geodeTool;

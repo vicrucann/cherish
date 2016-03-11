@@ -69,6 +69,7 @@ public:
     const osg::Vec3f& getNormal() const;
 
     void setColor(const osg::Vec4f& color);
+    const osg::Vec4f& getColor() const;
 
     void setRotationAxis(const osg::Vec3f& axis);
     const osg::Vec3f& getRotationAxis() const;
