@@ -15,8 +15,6 @@ RootScene::RootScene(QUndoStack *undoStack)
     : osg::Group()
     , m_userScene(new entity::UserScene)
     , m_axisGlo(new Axes)
-    , m_observer(new ObserveSceneCallback)
-    , m_hud(new HUDCamera(dureu::HUD_LEFT, dureu::HUD_RIGHT, dureu::HUD_BOTTOM, dureu::HUD_TOP))
     , m_undoStack(undoStack)
     , m_saved(false)
 {
@@ -30,20 +28,6 @@ RootScene::RootScene(QUndoStack *undoStack)
     if (!this->addChild(m_axisGlo.get())){
         outErrMsg("RootScene(): could not add axes as a child");
         fatalMsg("RootScene(): could not add axes as a child");
-    }
-
-    m_observer->setScenePointer(m_userScene.get());
-    m_userScene->addUpdateCallback(m_observer.get());
-
-    // child #2
-    if (!this->addChild(m_hud.get())){
-        outErrMsg("RootScene(): could not add hud as a child");
-        fatalMsg("RootScene(): could not add hud as a child");
-    }
-
-    if (!m_hud->setText(m_observer->getTextGeode())){
-        outErrMsg("RootScene(): could not set text to hud camera");
-        fatalMsg("RootScene(): could not set text to hud camera");
     }
 
     this->setName("RootScene");
@@ -110,22 +94,6 @@ const Axes* RootScene::getAxes() const{
     return m_axisGlo.get();
 }
 
-const ObserveSceneCallback *RootScene::getSceneObserver() const{
-    return m_observer.get();
-}
-
-const HUDCamera *RootScene::getHudCamera() const{
-    return m_hud.get();
-}
-
-void RootScene::setHudCameraVisibility(bool vis){
-    m_hud->setVisibility(vis);
-}
-
-bool RootScene::getHudCameraVisibility() const{
-    return m_hud->getVisibility();
-}
-
 bool RootScene::writeScenetoFile()
 {
     if (m_userScene->getFilePath() == "")
@@ -166,10 +134,6 @@ bool RootScene::loadSceneFromFile()
 
     /* update pointer */
     m_userScene = newscene.get();
-
-    /* reset observer */
-    m_observer->setScenePointer(m_userScene.get());
-    m_userScene->addUpdateCallback(m_observer.get());
 
     /* load the construction tools */
     for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){

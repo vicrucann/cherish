@@ -14,7 +14,6 @@ set(libGUI_SRCS
     DureuApplication.h
     MainWindow.cpp
     MainWindow.h
-    hudcamera.h
     GLWidget.h
     GLWidget.cpp
     ListWidget.h

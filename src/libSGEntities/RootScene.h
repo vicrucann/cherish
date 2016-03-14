@@ -61,11 +61,6 @@ public:
     bool getAxesVisibility() const;
     const Axes* getAxes() const;
 
-    const ObserveSceneCallback* getSceneObserver() const;
-    const HUDCamera* getHudCamera() const;
-    void setHudCameraVisibility(bool vis);
-    bool getHudCameraVisibility() const;
-
     bool writeScenetoFile();
     bool loadSceneFromFile();
 
@@ -116,8 +111,6 @@ protected:
 private:
     osg::ref_ptr<entity::UserScene> m_userScene;
     osg::ref_ptr<Axes> m_axisGlo;
-    osg::ref_ptr<ObserveSceneCallback> m_observer;
-    osg::ref_ptr<HUDCamera> m_hud;
     QUndoStack* m_undoStack;
     bool m_saved;
 };
