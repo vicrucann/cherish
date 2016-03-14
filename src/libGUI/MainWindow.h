@@ -18,6 +18,7 @@
 #include "RootScene.h"
 #include "Settings.h"
 #include "GLWidget.h"
+#include "CameraProperties.h"
 #include "ListWidget.h"
 #include "Data.h"
 
@@ -144,6 +145,7 @@ private:
             , * m_actionStrokesPush
     ;
 
+    CameraProperties* m_cameraProperties;
 };
 
 #endif // MAINWINDOW

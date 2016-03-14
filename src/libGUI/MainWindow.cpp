@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_rootScene(new RootScene(m_undoStack))
     , m_viewStack(new QUndoStack(this))
     , m_glWidget(new GLWidget(m_rootScene.get(), m_viewStack, this))
+    , m_cameraProperties( new CameraProperties(60.f, this) )
 {
     this->setMenuBar(m_menuBar);
 
@@ -383,8 +384,9 @@ void MainWindow::onCameraPan(){
 
 void MainWindow::onCameraAperture()
 {
-    CameraProperties properties(this);
-    properties.exec();
+    m_cameraProperties->show();
+//    CameraProperties properties(this);
+//    properties.exec();
 }
 
 void MainWindow::onSelect(){
@@ -971,4 +973,10 @@ void MainWindow::initializeCallbacks()
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedVisibility(QModelIndex)),
                      this, SLOT(onVisibilityCanvas(QModelIndex)),
                      Qt::UniqueConnection);
+
+    /* UI forms */
+    QObject::connect(m_cameraProperties, SIGNAL(fovChanged(double)),
+                     m_glWidget, SLOT(onFOVChanged(double)),
+                     Qt::UniqueConnection);
+
 }

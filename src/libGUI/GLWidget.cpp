@@ -162,6 +162,20 @@ void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const o
     this->update();
 }
 
+/* FOV is a whole angle, not half angle */
+void GLWidget::onFOVChanged(double fov)
+{
+    osg::Camera* camera = this->getCamera();
+    if (!camera){
+        outErrMsg("onFOVChanged: could not obtain camera ptr");
+        return;
+    }
+    float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());
+    camera->setProjectionMatrixAsPerspective(fov*0.5, ratio, 1.f, 1000.f);
+    camera->dirtyBound();
+    this->update();
+}
+
 void GLWidget::initializeGL()
 {
     osg::StateSet* stateSet = m_RootScene->getOrCreateStateSet();
