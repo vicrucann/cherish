@@ -117,9 +117,10 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     buttonVis.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
     buttonVis.icon = Data::controlCanvasVisibilityIcon();
 
-    if (option.checkState == Qt::Checked)
-        buttonVis.state = QStyle::State_Enabled | QStyle::State_On;
-    else QStyle::State_Enabled | QStyle::State_Off;
+//    if (option.checkState == Qt::Checked)
+//        buttonVis.state = QStyle::State_Enabled | QStyle::State_On;
+//    else QStyle::State_Enabled | QStyle::State_Off;
+    buttonVis.state = QStyle::State_Enabled | QStyle::State_On;
 
     buttonVis.features = QStyleOptionButton::None;
     buttonVis.icon.On;
