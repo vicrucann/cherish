@@ -20,11 +20,14 @@ set(libGUI_SRCS
     ListWidget.cpp
     ListDelegate.h
     ListDelegate.cpp
+    CameraProperties.h
+    CameraProperties.cpp
 )
 
 qt5_wrap_ui(UI_GENERATED_SRCS
     Widgets/MainWindow.ui
     Widgets/QtOSGWindow.ui
+    Widgets/CameraProperties.ui
 )
 
 add_library(libGUI STATIC

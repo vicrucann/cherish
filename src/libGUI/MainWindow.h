@@ -144,9 +144,6 @@ private:
             , * m_actionStrokesPush
     ;
 
-
-    // QToolButton *select;
-    // QWidgetAction* selectAction;
 };
 
 #endif // MAINWINDOW

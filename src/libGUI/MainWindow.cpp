@@ -16,6 +16,7 @@
 #include "MainWindow.h"
 #include "GLWidget.h"
 #include "ListDelegate.h"
+#include "CameraProperties.h"
 #include "Settings.h"
 #include "Data.h"
 
@@ -69,6 +70,9 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     this->initializeToolbars();
     this->initializeCallbacks();
 
+    /* load UI forms */
+
+    /* setup initial mode */
     this->onSketch();
 }
 
@@ -379,7 +383,8 @@ void MainWindow::onCameraPan(){
 
 void MainWindow::onCameraAperture()
 {
-
+    CameraProperties properties(this);
+    properties.exec();
 }
 
 void MainWindow::onSelect(){
