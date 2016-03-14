@@ -85,6 +85,9 @@ public:
     static const QIcon& controlMoveIcon();
     static const QIcon& controlCanvasVisibilityIcon();
 
+
+    static const QIcon& cameraApertureIcon();
+
     /* Cursors */
 
     static const QPixmap&  editDeleteCursor();

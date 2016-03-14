@@ -62,6 +62,8 @@ private slots:
     void onCameraOrbit();
     void onCameraZoom();
     void onCameraPan();
+    void onCameraAperture();
+
     void onSelect();
     void onErase();
     void onDelete();
@@ -107,7 +109,6 @@ private:
 
     // http://doc.qt.io/qt-5/qtwidgets-tools-undoframework-example.html
     QUndoStack*     m_undoStack;
-    QUndoView*      m_undoView;
 
     QMenuBar*       m_menuBar;
     osg::ref_ptr<RootScene> m_rootScene; // main scene graph
@@ -123,10 +124,13 @@ private:
             * m_actionPaste, * m_actionDelete,
             * m_actionTools;
 
+    /* CAMERA actions */
+    QAction * m_actionOrbit, * m_actionPan, * m_actionZoom
+            , * m_actionPrevView, * m_actionNextView, * m_actionBookmark
+            , * m_actionCameraSettings;
+
     // SCENE actions
-    QAction * m_actionSketch, * m_actionEraser, * m_actionSelect
-            // Camera navigation
-            , * m_actionOrbit, * m_actionPan, * m_actionZoom
+    QAction * m_actionSketch, * m_actionEraser, * m_actionSelect            
             // New Canvas sub-menu
             , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasXZ
             // New Canvas Set sub-menu
@@ -140,8 +144,6 @@ private:
             , * m_actionStrokesPush
     ;
 
-    /* VIEWER actions */
-    QAction * m_actionPrevView, * m_actionNextView, * m_actionBookmark;
 
     // QToolButton *select;
     // QWidgetAction* selectAction;

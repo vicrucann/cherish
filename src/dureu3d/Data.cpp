@@ -433,6 +433,13 @@ const QIcon &Data::controlCanvasVisibilityIcon()
     return icon;
 }
 
+const QIcon &Data::cameraApertureIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/camera-aperture-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/camera-aperture-24px.svg");
+    return icon;
+}
+
 const QPixmap &Data::editDeleteCursor()
 {
     static QPixmap pmap(":/edit-delete-cursor-24px.svg");

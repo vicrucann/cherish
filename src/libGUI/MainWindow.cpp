@@ -29,7 +29,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_canvasWidget(new CanvasWidget())
 
     , m_undoStack(new QUndoStack(this))
-    , m_undoView(new QUndoView(m_undoStack))
 
     , m_menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
 
@@ -59,11 +58,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     m_tabWidget->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
     m_bookmarkWidget->setItemDelegate(new BookmarkDelegate);
     m_canvasWidget->setItemDelegate(new CanvasDelegate);
-
-    /* undo/redo widget */
-    m_undoView->setWindowTitle(tr("Command List"));
-    m_undoView->show();
-    m_undoView->setAttribute(Qt::WA_QuitOnClose, false);
 
     /* viewer stack */
     m_viewStack->setUndoLimit(50);
@@ -383,6 +377,11 @@ void MainWindow::onCameraPan(){
     this->statusBar()->showMessage(tr("Camera pan mode."));
 }
 
+void MainWindow::onCameraAperture()
+{
+
+}
+
 void MainWindow::onSelect(){
 
     QCursor* cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
@@ -638,6 +637,29 @@ void MainWindow::initializeActions()
     m_actionTools->setChecked(true);
     this->connect(m_actionTools, SIGNAL(toggled(bool)), this, SLOT(onTools()));
 
+    /* CAMERA */
+
+    m_actionOrbit = new QAction(Data::sceneOrbitIcon(), tr("&Orbit"), this);
+    this->connect(m_actionOrbit, SIGNAL(triggered(bool)), this, SLOT(onCameraOrbit()));
+
+    m_actionPan = new QAction(Data::scenePanIcon(), tr("&Pan"), this);
+    this->connect(m_actionPan, SIGNAL(triggered(bool)), this, SLOT(onCameraPan()));
+
+    m_actionZoom = new QAction(Data::sceneZoomIcon(), tr("&Zoom"), this);
+    this->connect(m_actionZoom, SIGNAL(triggered(bool)), this, SLOT(onCameraZoom()));
+
+    m_actionPrevView = m_viewStack->createUndoAction(this, tr("Previous view"));
+    m_actionPrevView->setIcon(Data::viewerPreviousIcon());
+
+    m_actionNextView = m_viewStack->createRedoAction(this, tr("Next view"));
+    m_actionNextView->setIcon(Data::viewerNextIcon());
+
+    m_actionBookmark = new QAction(Data::viewerBookmarkIcon(), tr("Bookmark view"), this);
+    this->connect(m_actionBookmark, SIGNAL(triggered(bool)), this, SLOT(onBookmark()));
+
+    m_actionCameraSettings = new QAction(Data::cameraApertureIcon(), tr("Camera settings"), this);
+    this->connect(m_actionCameraSettings, SIGNAL(triggered(bool)), this, SLOT(onCameraAperture()));
+
     // SCENE
 
     m_actionSketch = new QAction(Data::sceneSketchIcon(), tr("&Sketch"), this);
@@ -648,15 +670,6 @@ void MainWindow::initializeActions()
 
     m_actionSelect = new QAction(Data::sceneSelectIcon(), tr("S&elect"), this);
     this->connect(m_actionSelect, SIGNAL(triggered(bool)), this, SLOT(onSelect()));
-
-    m_actionOrbit = new QAction(Data::sceneOrbitIcon(), tr("&Orbit"), this);
-    this->connect(m_actionOrbit, SIGNAL(triggered(bool)), this, SLOT(onCameraOrbit()));
-
-    m_actionPan = new QAction(Data::scenePanIcon(), tr("&Pan"), this);
-    this->connect(m_actionPan, SIGNAL(triggered(bool)), this, SLOT(onCameraPan()));
-
-    m_actionZoom = new QAction(Data::sceneZoomIcon(), tr("&Zoom"), this);
-    this->connect(m_actionZoom, SIGNAL(triggered(bool)), this, SLOT(onCameraZoom()));
 
     m_actionCanvasClone = new QAction(Data::sceneNewCanvasCloneIcon(), tr("Clone Current"), this);
     this->connect(m_actionCanvasClone, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasClone()));
@@ -709,16 +722,6 @@ void MainWindow::initializeActions()
     m_actionStrokesPush = new QAction(Data::scenePushStrokesIcon(), tr("Push Strokes"), this);
     this->connect(m_actionStrokesPush, SIGNAL(triggered(bool)), this, SLOT(onStrokesPush()));
 
-    /* VIEWER actions */
-    m_actionPrevView = m_viewStack->createUndoAction(this, tr("Previous view"));
-    m_actionPrevView->setIcon(Data::viewerPreviousIcon());
-
-    m_actionNextView = m_viewStack->createRedoAction(this, tr("Next view"));
-    m_actionNextView->setIcon(Data::viewerNextIcon());
-
-    m_actionBookmark = new QAction(Data::viewerBookmarkIcon(), tr("Bookmark view"), this);
-    this->connect(m_actionBookmark, SIGNAL(triggered(bool)), this, SLOT(onBookmark()));
-
 }
 
 void MainWindow::initializeMenus()
@@ -746,16 +749,24 @@ void MainWindow::initializeMenus()
     menuEdit->addAction(m_actionPaste);
     menuEdit->addAction(m_actionDelete);
 
-    // SCENE
+    /* CAMERA */
+    QMenu* menuCamera = m_menuBar->addMenu(tr("Camera"));
+    menuCamera->addAction(m_actionOrbit);
+    menuCamera->addAction(m_actionPan);
+    menuCamera->addAction(m_actionZoom);
+    menuCamera->addSeparator();
+    menuCamera->addAction(m_actionPrevView);
+    menuCamera->addAction(m_actionNextView);
+    menuCamera->addSeparator();
+    menuCamera->addAction(m_actionBookmark);
+    menuCamera->addSeparator();
+    menuCamera->addAction(m_actionCameraSettings);
+
+    /* SCENE */
     QMenu* menuScene = m_menuBar->addMenu(tr("&Scene"));
     menuScene->addAction(m_actionSelect);
     menuScene->addAction(m_actionSketch);
     menuScene->addAction(m_actionEraser);
-    menuScene->addSeparator();
-    QMenu* submenuCamera = menuScene->addMenu("Camera Navigation");
-    submenuCamera->addAction(m_actionOrbit);
-    submenuCamera->addAction(m_actionPan);
-    submenuCamera->addAction(m_actionZoom);
     menuScene->addSeparator();
     QMenu* submenuCanvas = menuScene->addMenu("New Canvas");
     submenuCanvas->setIcon(Data::sceneNewCanvasIcon());
@@ -869,6 +880,7 @@ void MainWindow::initializeToolbars()
     tbViewer->addAction(m_actionPrevView);
     tbViewer->addAction(m_actionNextView);
     tbViewer->addAction(m_actionBookmark);
+    tbViewer->addAction(m_actionCameraSettings);
 }
 
 /* signal slot connections must be established in two cases:
