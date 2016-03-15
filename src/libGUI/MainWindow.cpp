@@ -566,6 +566,7 @@ void MainWindow::onStrokesPush()
     }
     m_rootScene->editStrokesPush(camera);
     this->statusBar()->showMessage(tr("Push is performed on selected strokes from current canvas (pink) to previous canvas (violet)."));
+    this->onSelect();
 }
 
 void MainWindow::onBookmark()
