@@ -39,10 +39,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 
     switch (m_mode){
     case dureu::MOUSE_SELECT:
-        if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL)
-            this->doSelectStroke<StrokeIntersector::Intersection, StrokeIntersector>(ea, aa);
-        else
-            this->doSelectEntity<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
+        this->doSelectStroke<StrokeIntersector::Intersection, StrokeIntersector>(ea, aa);
         break;
     case dureu::MOUSE_SKETCH:
         this->doSketch(ea, aa);
@@ -802,14 +799,14 @@ void EventHandler::doEditPhotoRotate(const osgGA::GUIEventAdapter &ea, osgGA::GU
 template <typename T1, typename T2>
 void EventHandler::doSelectStroke(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
-    if (ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN)
-        m_scene->getCanvasCurrent()->resetStrokesSelected();
-
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            ))
         return;
+
+    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && !(ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL))
+        m_scene->getCanvasCurrent()->resetStrokesSelected();
 
     T1* result = new T1;
     if (!this->getLineIntersection<T1, T2>(ea,aa, *result)) return;
@@ -820,24 +817,4 @@ void EventHandler::doSelectStroke(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         return;
     }
     m_scene->getCanvasCurrent()->addStrokesSelected(stroke);
-}
-
-template <typename T1, typename T2>
-void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
-{
-    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-        return;
-
-    T1* result = new T1;
-    bool intersected = this->getLineIntersection<T1, T2>(ea,aa, *result);
-    if (!intersected)
-        return;
-
-    entity::Canvas* cnv = this->getCanvas(*result);
-    if (!cnv){
-        std::cerr << "doPickCanvas(): could not dynamic_cast<Canvas*>" << std::endl;
-        return;
-    }
-    std::cout << "doPickCanvas(): assumed canvas with name: " << cnv->getName() << std::endl;
-    m_scene->setCanvasCurrent(cnv);
 }

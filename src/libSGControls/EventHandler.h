@@ -34,9 +34,6 @@ public:
     void doEraseStroke(entity::Stroke *stroke, int first, int last, dureu::EVENT event = dureu::EVENT_DRAGGED);
 
     template <typename T1, typename T2>
-    void doSelectEntity(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-
-    template <typename T1, typename T2>
     void doSelectStroke(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     void doSketch(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
