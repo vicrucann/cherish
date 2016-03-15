@@ -12,6 +12,7 @@ public:
     StrokeIntersector();
     StrokeIntersector(const osg::Vec3& start, const osg::Vec3& end);
     StrokeIntersector(CoordinateFrame cf, double x, double y);
+    StrokeIntersector(CoordinateFrame cf, const osg::Vec3d& start, const osg::Vec3d& end);
 
     void setOffset(float offset);
     float getOffset() const;

@@ -6,6 +6,7 @@
 #include <osg/BoundingBox>
 
 #include "Stroke.h"
+#include "Utilities.h"
 
 StrokeIntersector::StrokeIntersector()
     : osgUtil::LineSegmentIntersector(MODEL, 0.f, 0.f)
@@ -23,6 +24,13 @@ StrokeIntersector::StrokeIntersector(const osg::Vec3 &start, const osg::Vec3 &en
 
 StrokeIntersector::StrokeIntersector(osgUtil::Intersector::CoordinateFrame cf, double x, double y)
     : osgUtil::LineSegmentIntersector(cf, x, y)
+    , m_offset(0.05f)
+{
+    m_hitIndices.clear();
+}
+
+StrokeIntersector::StrokeIntersector(osgUtil::Intersector::CoordinateFrame cf, const osg::Vec3d &start, const osg::Vec3d &end)
+    : osgUtil::LineSegmentIntersector(cf, start, end)
     , m_offset(0.05f)
 {
     m_hitIndices.clear();
@@ -107,12 +115,11 @@ void StrokeIntersector::intersect(osgUtil::IntersectionVisitor &iv, osg::Drawabl
         osg::Vec3Array* vertices = dynamic_cast<osg::Vec3Array*>(geometry->getVertexArray());
         if (!vertices) return;
 
-        osg::Vec3d dir = e - s;
-        double invLength = 1.0 / dir.length();
-        for (unsigned int i=0; i<vertices->size(); ++i)
+        for (unsigned int i=1; i<vertices->size(); ++i)
         {
-            double distance =  fabs((((*vertices)[i] - s)^dir).length());
-            distance *= invLength;
+
+            double distance = Utilities::getSkewLinesDistance(s,e,(*vertices)[i], (*vertices)[i-1]);
+
             if (m_offset<distance) continue;
 
             Intersection hit;

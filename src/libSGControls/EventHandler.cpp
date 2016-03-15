@@ -571,7 +571,6 @@ bool EventHandler::getLineIntersection(const osgGA::GUIEventAdapter &ea,
     }
     cam->accept(iv);
     if (!intersector->containsIntersections()){
-        outLogMsg("getLineIntersection(): no intersections found");
         return false;
     }
     result = *(intersector->getIntersections().begin());
@@ -806,16 +805,14 @@ void EventHandler::doSelectStroke(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
     if (ea.getEventType() == osgGA::GUIEventAdapter::KEYDOWN)
         m_scene->getCanvasCurrent()->resetStrokesSelected();
 
-    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           ))
         return;
 
-    outLogMsg("Attempting to select a stroke");
     T1* result = new T1;
-    bool intersected = this->getLineIntersection<T1, T2>(ea,aa, *result);
-    if (!intersected){
-        outLogMsg("No strokes intersection found");
-        return;
-    }
+    if (!this->getLineIntersection<T1, T2>(ea,aa, *result)) return;
 
     entity::Stroke* stroke = this->getStroke(*result);
     if (!stroke){

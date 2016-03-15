@@ -387,14 +387,13 @@ void entity::Canvas::addStrokesSelected(entity::Stroke* stroke)
         return;
     }
     if (!this->isStrokeSelected(stroke)){
-        outLogMsg("stroke is unselected, do select");
         this->setStrokeSelected(stroke);
         m_strokesSelected.push_back(stroke);
     }
-    else{
-        outLogMsg("stroke is already selected, do unselect");
-        this->resetStrokeSelected(stroke);
-    }
+//    else{
+//        outLogMsg("stroke is already selected, do unselect");
+//        this->resetStrokeSelected(stroke);
+//    }
 }
 
 void entity::Canvas::resetStrokesSelected()
@@ -521,11 +520,9 @@ void entity::Canvas::setStrokeSelected(bool selected)
     if (!selected){
         m_strokeSelected->setColor(dureu::STROKE_CLR_NORMAL);
         m_strokeSelected = 0;
-        outLogMsg("normal color is set");
     }
     else{
         m_strokeSelected->setColor(dureu::STROKE_CLR_SELECTED);
-        outLogMsg("selected color is set");
     }
 }
 

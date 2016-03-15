@@ -44,6 +44,10 @@ public:
                                        const osg::Vec3f& normal, osg::Vec3f& X1);
 
 
+    static double getSkewLinesDistance(const osg::Vec3d &r1, const osg::Vec3d &r2,
+                                       const osg::Vec3d &v1, const osg::Vec3d &v2);
+
+
     /* for more detailes, see
      * http://geomalgorithms.com/a05-_intersect-1.html */
     static int getPlanesIntersection(entity::Canvas* canvas1, entity::Canvas* canvas2, osg::Vec3f& iP, osg::Vec3f& u);

@@ -216,6 +216,17 @@ bool Utilities::getSkewLinesProjection(const osg::Vec3f &center, const osg::Vec3
     return true;
 }
 
+double Utilities::getSkewLinesDistance(const osg::Vec3d &r1, const osg::Vec3d &r2, const osg::Vec3d &v1, const osg::Vec3d &v2)
+{
+    osg::Vec3d u1 = r2-r1;
+    osg::Vec3d u2 = v2-v1;
+    osg::Vec3d u3 = u1^u2;
+    osg::Vec3d dir = r1 - v2;
+    if (u3.length() == 0)
+        return 1;
+    return std::fabs((dir*u3)/u3.length());
+}
+
 int Utilities::getPlanesIntersection(entity::Canvas *canvas1, entity::Canvas *canvas2, osg::Vec3f &iP, osg::Vec3f &u)
 {
     /* cross produc of normals */
