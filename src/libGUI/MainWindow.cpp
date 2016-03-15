@@ -979,4 +979,8 @@ void MainWindow::initializeCallbacks()
                      m_glWidget, SLOT(onFOVChanged(double)),
                      Qt::UniqueConnection);
 
+    QObject::connect(m_cameraProperties, SIGNAL(focalChanged(double)),
+                     m_glWidget, SLOT(onFocalChanged(double)),
+                     Qt::UniqueConnection);
+
 }

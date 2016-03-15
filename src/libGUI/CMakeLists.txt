@@ -22,6 +22,8 @@ set(libGUI_SRCS
     ListDelegate.cpp
     CameraProperties.h
     CameraProperties.cpp
+    FixedSpinBox.h
+    FixedSpinBox.cpp
 )
 
 qt5_wrap_ui(UI_GENERATED_SRCS

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Camera properties</string>
   </property>
   <widget class="QWidget" name="formLayoutWidget">
    <property name="geometry">
@@ -19,7 +19,7 @@
      <x>30</x>
      <y>30</y>
      <width>441</width>
-     <height>121</height>
+     <height>122</height>
     </rect>
    </property>
    <layout class="QFormLayout" name="m_layout">
@@ -74,9 +74,62 @@
       </property>
      </widget>
     </item>
+    <item row="2" column="1">
+     <widget class="QLabel" name="m_labelDegrees">
+      <property name="text">
+       <string>degrees</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="Line" name="m_line">
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <property name="lineWidth">
+       <number>2</number>
+      </property>
+      <property name="midLineWidth">
+       <number>2</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="m_labelFocal">
+      <property name="text">
+       <string>Focal length</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="FixedSpinBox" name="m_spinBox">
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+      <property name="readOnly">
+       <bool>false</bool>
+      </property>
+      <property name="maximum">
+       <number>120</number>
+      </property>
+      <property name="singleStep">
+       <number>10</number>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FixedSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>FixedSpinBox.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

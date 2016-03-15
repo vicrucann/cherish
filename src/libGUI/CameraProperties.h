@@ -19,8 +19,10 @@ public:
 
 signals:
     void fovChanged(double);
+    void focalChanged(double);
 
 public slots:
+    void onFocalChanged(int value);
 
 private slots:
     void onSliderMoved(int position);

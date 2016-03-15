@@ -176,6 +176,14 @@ void GLWidget::onFOVChanged(double fov)
     this->update();
 }
 
+void GLWidget::onFocalChanged(double focal)
+{
+    double fov = 0;
+    if (focal>0) fov = std::atan(static_cast<float>( this->height())/(2*focal));
+    else fov = 60.f;
+    this->onFOVChanged(fov);
+}
+
 void GLWidget::initializeGL()
 {
     osg::StateSet* stateSet = m_RootScene->getOrCreateStateSet();
