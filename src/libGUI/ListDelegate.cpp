@@ -7,6 +7,7 @@
 #include <QStandardItemModel>
 #include <QListWidget>
 #include <QPushButton>
+#include <QStylePainter>
 
 #include "Data.h"
 #include "Settings.h"
@@ -117,10 +118,14 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     buttonVis.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
     buttonVis.icon = Data::controlCanvasVisibilityIcon();
 
-//    if (option.checkState == Qt::Checked)
-//        buttonVis.state = QStyle::State_Enabled | QStyle::State_On;
-//    else QStyle::State_Enabled | QStyle::State_Off;
-    buttonVis.state = QStyle::State_Enabled | QStyle::State_On;
+    if (option.state.testFlag(QStyle::State_Sunken)){
+        outLogMsg("option is sunken");
+        buttonVis.state = QStyle::State_Enabled | QStyle::State_Off;
+    }
+    else
+        buttonVis.state = QStyle::State_Enabled | QStyle::State_On;
+
+    //buttonVis.state = QStyle::State_Enabled | QStyle::State_On;
 
     buttonVis.features = QStyleOptionButton::None;
     buttonVis.icon.On;
