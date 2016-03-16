@@ -636,9 +636,9 @@ void MainWindow::initializeActions()
     this->connect(m_actionPaste, SIGNAL(triggered(bool)), this, SLOT(onPaste()));
     m_actionPaste->setShortcut(tr("Ctrl+V"));
 
-    m_actionDelete = new QAction(Data::editDeleteIcon(), tr("&Delete"), this);
-    this->connect(m_actionDelete, SIGNAL(triggered(bool)), this, SLOT(onDelete()));
-    m_actionDelete->setShortcut(Qt::Key_Delete);
+//    m_actionDelete = new QAction(Data::editDeleteIcon(), tr("&Delete"), this);
+//    this->connect(m_actionDelete, SIGNAL(triggered(bool)), this, SLOT(onDelete()));
+//    m_actionDelete->setShortcut(Qt::Key_Delete);
 
     m_actionTools = new QAction(Data::editSettingsIcon(), tr("&Tools"), this);
     m_actionTools->setCheckable(true);
@@ -673,8 +673,9 @@ void MainWindow::initializeActions()
     m_actionSketch = new QAction(Data::sceneSketchIcon(), tr("&Sketch"), this);
     this->connect(m_actionSketch, SIGNAL(triggered(bool)), this, SLOT(onSketch()));
 
-    m_actionEraser = new QAction(Data::sceneEraserIcon(), tr("&Eraser"), this);
-    this->connect(m_actionEraser, SIGNAL(triggered(bool)), this, SLOT(onErase()));
+    m_actionEraser = new QAction(Data::sceneEraserIcon(), tr("&Deleter"), this);
+    this->connect(m_actionEraser, SIGNAL(triggered(bool)), this, SLOT(onDelete()));
+    m_actionEraser->setShortcut(Qt::Key_Delete);
 
     m_actionSelect = new QAction(Data::sceneSelectIcon(), tr("S&elect"), this);
     this->connect(m_actionSelect, SIGNAL(triggered(bool)), this, SLOT(onSelect()));
@@ -755,7 +756,7 @@ void MainWindow::initializeMenus()
     menuEdit->addAction(m_actionCut);
     menuEdit->addAction(m_actionCopy);
     menuEdit->addAction(m_actionPaste);
-    menuEdit->addAction(m_actionDelete);
+//    menuEdit->addAction(m_actionDelete);
 
     /* CAMERA */
     QMenu* menuCamera = m_menuBar->addMenu(tr("Camera"));
@@ -820,7 +821,7 @@ void MainWindow::initializeToolbars()
     tbEdit->addAction(m_actionCut);
     tbEdit->addAction(m_actionCopy);
     tbEdit->addAction(m_actionPaste);
-    tbEdit->addAction(m_actionDelete);
+//    tbEdit->addAction(m_actionDelete);
     tbEdit->addAction(m_actionTools);
 
     // Camera navigation
