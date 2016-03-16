@@ -45,10 +45,8 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         this->doSketch(ea, aa);
         break;
     case dureu::MOUSE_DELETE:
-        if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL)
-            this->doDeleteEntity(ea, aa);
-        else
-            this->doDeleteCanvas<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
+        //if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL)
+        this->doDeleteStroke(ea, aa);
         break;
     case dureu::MOUSE_CANVAS_OFFSET:
         this->doEditCanvasOffset(ea, aa);
@@ -160,57 +158,25 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
     }
 }
 
-void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+void EventHandler::doDeleteStroke(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
-    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+//    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+//        return;
+
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           ))
         return;
 
-    /* see if there is a stroke or photo selected */
-    osgUtil::LineSegmentIntersector::Intersection* result_photo = new osgUtil::LineSegmentIntersector::Intersection;
+    /* see if there is a stroke */
     StrokeIntersector::Intersection* result_stroke = new StrokeIntersector::Intersection;
-    bool inter_photo = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
-            (ea,aa, *result_photo);
     bool inter_stroke = this->getLineIntersection<StrokeIntersector::Intersection, StrokeIntersector>
             (ea,aa, *result_stroke);
-    if (!inter_photo && !inter_stroke) {return;}
-    if (inter_photo){
-        outLogMsg("About to delete photo");
-        entity::Photo* photo = this->getPhoto(*result_photo);
-        if (!photo){
-            outErrMsg("doDeleteEntity: could not obtain photo");
-            return;
-        }
-        m_scene->editPhotoDelete(photo);
-    }
-    else{
-        outLogMsg("About to delete stroke");
-        entity::Stroke* stroke = this->getStroke(*result_stroke);
-        if (!stroke){
-            std::cerr << "doDeleteEntity(): could not dynamic_cast<Stroke*>" << std::endl;
-            return;
-        }
-        m_scene->editStrokeDelete(stroke);
-    }
-}
-
-template <typename T1, typename T2>
-void EventHandler::doDeleteCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
-{
-    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-        return;
-    outLogMsg("doDeleteCanvas called");
-
-    T1* result = new T1;
-    bool intersected = this->getLineIntersection<T1, T2>(ea,aa, *result);
-    if (!intersected)
-        return;
-
-    entity::Canvas* cnv = this->getCanvas(*result);
-    if (!cnv){
-        std::cerr << "doDeleteCanvas(): could not dynamic_cast<Canvas*>" << std::endl;
-        return;
-    }
-    m_scene->editCanvasDelete(cnv);
+    if (!inter_stroke) return;
+    entity::Stroke* stroke = this->getStroke(*result_stroke);
+    if (!stroke) return;
+    m_scene->editStrokeDelete(stroke);
 }
 
 void EventHandler::doEditCanvasOffset(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
