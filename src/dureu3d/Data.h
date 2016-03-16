@@ -84,6 +84,7 @@ public:
     static const QIcon& controlCanvasesIcon();
     static const QIcon& controlMoveIcon();
     static const QIcon& controlCanvasVisibilityIcon();
+    static const QIcon& controlImagesIcon();
 
 
     static const QIcon& cameraApertureIcon();

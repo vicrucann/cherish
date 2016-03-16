@@ -433,6 +433,13 @@ const QIcon &Data::controlCanvasVisibilityIcon()
     return icon;
 }
 
+const QIcon &Data::controlImagesIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/control-images-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/control-images-24px.svg");
+    return icon;
+}
+
 const QIcon &Data::cameraApertureIcon()
 {
     Q_ASSERT_X(!QPixmap(":/camera-aperture-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
