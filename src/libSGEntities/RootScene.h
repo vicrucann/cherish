@@ -36,6 +36,8 @@
 #include "../libSGUtils/ObserveSceneCallback.h"
 #include "../libGUI/hudcamera.h"
 #include "UserScene.h"
+#include "Entity2D.h"
+#include "Stroke.h"
 #include "Photo.h"
 #include "Bookmarks.h"
 #include "../libGUI/ListWidget.h"
@@ -107,6 +109,10 @@ public:
     void editStrokesRotate(double u, double v, dureu::EVENT event);
     void editStrokeDelete(entity::Stroke* stroke);
 
+    void copyToBuffer();
+    void cutToBuffer();
+    void pasteFromBuffer();
+
 protected:
     ~RootScene();
     void printScene();
@@ -116,6 +122,7 @@ private:
     osg::ref_ptr<Axes> m_axisGlo;
     osg::ref_ptr<osg::Switch> m_bookmarkToolSwitch;
     osg::ref_ptr<osg::AutoTransform> m_bookmarkAT;
+    std::vector< osg::ref_ptr<entity::Stroke> > m_buffer; /* copy-paste buffer */
     QUndoStack* m_undoStack;
     bool m_saved;
 };

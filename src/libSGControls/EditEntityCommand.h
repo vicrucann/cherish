@@ -224,4 +224,38 @@ protected:
     osg::ref_ptr<entity::Stroke> m_stroke;
 };
 
+class EditPasteCommand : public QUndoCommand
+{
+public:
+    EditPasteCommand(entity::UserScene* scene, entity::Canvas* target,
+                     const std::vector< osg::ref_ptr<entity::Stroke> >& buffer, QUndoCommand* parent=0);
+    ~EditPasteCommand() {}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    std::vector<entity::Stroke*> m_strokes;
+};
+
+class EditCutCommand : public QUndoCommand
+{
+public:
+    EditCutCommand(entity::UserScene* scene, entity::Canvas*  canvas,
+                   const std::vector<entity::Stroke*>& selected,
+                   std::vector< osg::ref_ptr<entity::Stroke> >& buffer, QUndoCommand* parent=0);
+    ~EditCutCommand() {}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    std::vector< osg::ref_ptr<entity::Stroke> >& m_buffer;
+    const std::vector<entity::Stroke*>& m_selected;
+};
+
 #endif // EDITENTITYCOMMAND_H

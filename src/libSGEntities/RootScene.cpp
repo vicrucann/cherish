@@ -11,6 +11,7 @@
 #include "axes.h"
 #include "Settings.h"
 #include "ConstructionTool.h"
+#include "EditEntityCommand.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
     : osg::Group()
@@ -383,6 +384,48 @@ void RootScene::editStrokesRotate(double u, double v, dureu::EVENT event)
 void RootScene::editStrokeDelete(entity::Stroke *stroke)
 {
     m_userScene->editStrokeDelete(m_undoStack, stroke);
+    m_saved = false;
+}
+
+/* copies the selected strokes into buffer, makes a deep copy */
+void RootScene::copyToBuffer()
+{
+    m_buffer.clear();
+    if (!m_userScene->getCanvasCurrent()) return;
+
+    const std::vector<entity::Stroke*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
+    if (selected.size()==0) return;
+
+    for (size_t i=0; i<selected.size(); ++i){
+        const entity::Stroke& copy = *selected.at(i);
+        entity::Stroke* stroke = new entity::Stroke(copy, osg::CopyOp::DEEP_COPY_ALL);
+        if (!stroke) continue;
+        m_buffer.push_back(stroke);
+    }
+}
+
+/* also removes the selected strokes from current canvas */
+void RootScene::cutToBuffer()
+{
+    m_buffer.clear();
+    if (!m_userScene->getCanvasCurrent()) return;
+    const std::vector<entity::Stroke*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
+    if (selected.size()==0) return;
+
+    EditCutCommand* cmd = new EditCutCommand(m_userScene.get(), this->getCanvasCurrent(),
+                                             this->getCanvasCurrent()->getStrokesSelected(),
+                                             m_buffer);
+    if (!cmd) return;
+    m_undoStack->push(cmd);
+}
+
+void RootScene::pasteFromBuffer()
+{
+    if (m_buffer.size()==0) return;
+
+    EditPasteCommand* cmd = new EditPasteCommand(m_userScene.get(), this->getCanvasCurrent(), m_buffer);
+    if (!cmd) return;
+    m_undoStack->push(cmd);
     m_saved = false;
 }
 

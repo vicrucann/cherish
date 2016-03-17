@@ -337,17 +337,20 @@ void MainWindow::onFileExit()
 
 void MainWindow::onCut()
 {
-    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
+    m_rootScene->cutToBuffer();
+    this->statusBar()->showMessage(tr("Cutted selected strokes to buffer."));
 }
 
 void MainWindow::onCopy()
 {
-    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
+    m_rootScene->copyToBuffer();
+    this->statusBar()->showMessage(tr("Copied selected strokes to the buffer."));
 }
 
 void MainWindow::onPaste()
 {
-    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
+    m_rootScene->pasteFromBuffer();
+    this->statusBar()->showMessage(tr("Pasted buffer content into current canvas."));
 }
 
 void MainWindow::onTools()

@@ -395,3 +395,84 @@ void EditStrokesRotateCommand::redo()
     m_canvas->updateFrame();
     m_scene->updateWidgets();
 }
+
+EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas *target, const std::vector<osg::ref_ptr<entity::Stroke> > &buffer, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_canvas(target)
+{
+    for (size_t i=0; i<buffer.size(); ++i){
+        const entity::Stroke& copy = *buffer.at(i);
+        entity::Stroke* stroke = new entity::Stroke(copy, osg::CopyOp::DEEP_COPY_ALL);
+        if (!stroke) continue;
+        m_strokes.push_back(stroke);
+    }
+
+    this->setText(QObject::tr("Paste strokes to canvas %1")
+                  .arg(QString(m_canvas->getName().c_str())));
+}
+
+void EditPasteCommand::undo()
+{
+    m_canvas->unselectStrokes();
+    for (size_t i=0; i<m_strokes.size();++i){
+        m_canvas->getGeodeData()->removeDrawable(m_strokes.at(i));
+    }
+    m_canvas->updateFrame();
+    m_scene->updateWidgets();
+}
+
+void EditPasteCommand::redo()
+{
+    m_canvas->unselectStrokes();
+    for (size_t i=0; i<m_strokes.size(); ++i){
+        entity::Stroke* stroke = m_strokes.at(i);
+        if (!stroke) continue;
+        stroke->moveDelta(0.2, 0.2);
+        m_canvas->getGeodeData()->addDrawable(stroke);
+        m_canvas->addStrokesSelected(stroke);
+    }
+    m_canvas->updateFrame();
+    m_scene->updateWidgets();
+}
+
+EditCutCommand::EditCutCommand(entity::UserScene* scene, entity::Canvas*  canvas,
+                               const std::vector<entity::Stroke*>& selected,
+                               std::vector< osg::ref_ptr<entity::Stroke> >& buffer, QUndoCommand* parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_canvas(canvas)
+    , m_buffer(buffer)
+    , m_selected(selected)
+{
+    this->setText(QObject::tr("Cutted strokes to buffer from canvas %1")
+                  .arg(QString(m_canvas->getName().c_str())));
+}
+
+void EditCutCommand::undo()
+{
+    m_scene->setCanvasCurrent(m_canvas.get());
+    for (size_t i=0; i<m_buffer.size(); ++i){
+        entity::Stroke* stroke = m_buffer.at(i);
+        if (!stroke) continue;
+        m_canvas->getGeodeData()->addDrawable(stroke);
+        m_canvas->addStrokesSelected(stroke);
+    }
+    m_canvas->updateFrame();
+    m_scene->updateWidgets();
+}
+
+void EditCutCommand::redo()
+{
+    for (size_t i=0; i<m_selected.size(); ++i){
+        entity::Stroke* stroke = m_selected.at(i);
+        if (!stroke) continue;
+        m_buffer.push_back(stroke);
+    }
+    m_scene->setCanvasCurrent(m_canvas.get());
+    for (size_t i=0; i<m_buffer.size(); ++i){
+        m_canvas->getGeodeData()->removeDrawable(m_buffer.at(i));
+    }
+    m_canvas->updateFrame();
+    m_scene->updateWidgets();
+}
