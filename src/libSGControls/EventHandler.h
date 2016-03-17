@@ -38,7 +38,7 @@ public:
 
     void doSketch(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
-    void doDeleteStroke(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doDeleteEntity(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     void doEditCanvasOffset(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void doEditCanvasRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
