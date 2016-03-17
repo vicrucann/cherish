@@ -394,10 +394,10 @@ void MainWindow::onSelect(){
     QCursor* cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
     m_mdiArea->setCursor(*cur);
     emit sendMouseMode(dureu::MOUSE_SELECT);
-    this->statusBar()->showMessage(tr("To select canvas, click on its pickable; "
+    this->statusBar()->showMessage(tr("Select mode is on: helps to select entities within current canvas; "
                                       "To select strokes within CURRENT canvas, "
-                                      "hold <CTRL> and click on stroke to add to selection. "
-                                      "Press <CTRL> to deselect all strokes."));
+                                      "use left mouse click and drag. "
+                                      "Click again to deselect all the strokes. Press <Ctrl> and hold to add more strokes to already selected strokes."));
 }
 
 void MainWindow::onErase()
@@ -412,9 +412,9 @@ void MainWindow::onDelete()
 {
     QCursor* cur = new QCursor(Data::editDeleteCursor(), 0, 0);
     m_mdiArea->setCursor(*cur);
-    this->statusBar()->showMessage(tr("To delete canvas, click by mouse on pickable; "
-                                      "to delete stroke or photo within CURRENT canvas, "
-                                      "hold <CTRL> and click on desired entity"));
+    this->statusBar()->showMessage(tr("Delete mode is on: helps to delete entities within current canvas; "
+                                      "to delete stroke, left mouse click and drag; "
+                                      "to delete photo, use right mouse click. "));
     emit sendMouseMode(dureu::MOUSE_DELETE);
 }
 
