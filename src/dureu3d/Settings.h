@@ -119,6 +119,11 @@ const osg::Vec4 CANVAS_CLR_SELECTED = solarized::red;
 const osg::Vec4 CANVAS_CLR_EDIT = solarized::cyan;
 const osg::Vec4 CANVAS_CLR_ROTAXIS = solarized::orange;
 
+const osg::Vec4 BOOKMARK_CLR = solarized::green;
+const float BOOKMARK_X = 0.2f;
+const float BOOKMARK_Y = 0.2f;
+const float BOOKMARK_Z = 0.3f;
+
 const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
 const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
 const float STROKE_MINL = 0.05f;

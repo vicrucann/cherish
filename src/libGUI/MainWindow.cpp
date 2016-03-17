@@ -249,7 +249,7 @@ void MainWindow::onFileOpen()
         this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
     m_glWidget->update();
     this->initializeCallbacks();
-    m_rootScene->getBookmarksModel()->resetModel(m_bookmarkWidget);
+    m_rootScene->resetBookmarks(m_bookmarkWidget);
     m_rootScene->getUserScene()->resetModel(m_canvasWidget);
 
     this->statusBar()->showMessage(tr("Scene loaded."));

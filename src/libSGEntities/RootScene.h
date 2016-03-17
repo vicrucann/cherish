@@ -29,6 +29,7 @@
 #include <string>
 
 #include <osg/ref_ptr>
+#include <osg/AutoTransform>
 
 #include "axes.h"
 #include "Settings.h"
@@ -76,6 +77,8 @@ public:
     void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
+    void resetBookmarks(BookmarkWidget* widget);
+    void setBookmarkToolVisibility(bool vis);
     void eraseStroke(entity::Stroke* stroke, int first, int last, dureu::EVENT event);
 
     void setCanvasSelected(entity::Canvas* cnv);
@@ -111,6 +114,8 @@ protected:
 private:
     osg::ref_ptr<entity::UserScene> m_userScene;
     osg::ref_ptr<Axes> m_axisGlo;
+    osg::ref_ptr<osg::Switch> m_bookmarkToolSwitch;
+    osg::ref_ptr<osg::AutoTransform> m_bookmarkAT;
     QUndoStack* m_undoStack;
     bool m_saved;
 };
