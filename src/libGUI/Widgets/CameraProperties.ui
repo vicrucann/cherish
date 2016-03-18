@@ -82,54 +82,15 @@
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="Line" name="m_line">
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <property name="lineWidth">
-       <number>2</number>
-      </property>
-      <property name="midLineWidth">
-       <number>2</number>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="m_labelFocal">
+     <widget class="QCheckBox" name="m_checkOrtho">
       <property name="text">
-       <string>Focal length</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="FixedSpinBox" name="m_spinBox">
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-      <property name="readOnly">
-       <bool>false</bool>
-      </property>
-      <property name="maximum">
-       <number>120</number>
-      </property>
-      <property name="singleStep">
-       <number>10</number>
+       <string>Orthographic</string>
       </property>
      </widget>
     </item>
    </layout>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>FixedSpinBox</class>
-   <extends>QSpinBox</extends>
-   <header>FixedSpinBox.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

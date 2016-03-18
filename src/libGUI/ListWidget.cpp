@@ -47,11 +47,12 @@ void CanvasWidget::onCanvasAdded(const std::string &name)
     this->addItem(QString(name.c_str()));
     QListWidgetItem* item = this->item(this->count()-1);
     if (!item){
-        outErrMsg("onCanvasAdded: could not extract just added item, "
+        outLogMsg("onCanvasAdded: could not extract just added item, "
                   "properties are not set correctly");
         return;
     }
     item->setFlags(item->flags() | Qt::ItemIsEditable);
+    outLogVal("Canvas added to widget", name);
 }
 
 void CanvasWidget::onCanvasRemoved(int row)
@@ -71,7 +72,7 @@ void CanvasWidget::onCanvasRemoved(int row)
 void CanvasWidget::onCanvasSelectedColor(int row, int color)
 {
     if (row >= this->count()){
-        outErrMsg("onCanvasSelectedColor: canvas index is out of range, "
+        outLogMsg("onCanvasSelectedColor: canvas index is out of range, "
                   "selection on widget will not be performed");
         outLogVal("row", row);
         outLogVal("count", this->count());
@@ -79,7 +80,7 @@ void CanvasWidget::onCanvasSelectedColor(int row, int color)
     }
     QListWidgetItem* item = this->item(row);
     if (!item){
-        outErrMsg("onCanvasSelectedColor: could not extract item, "
+        outLogMsg("onCanvasSelectedColor: could not extract item, "
                   "properties are not set");
         return;
     }

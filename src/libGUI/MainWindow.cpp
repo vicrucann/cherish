@@ -937,7 +937,8 @@ void MainWindow::initializeCallbacks()
                      this, SLOT(onMoveBookmark(QModelIndex)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_bookmarkWidget, SIGNAL(itemChanged(QListWidgetItem*)), m_rootScene->getBookmarksModel(), SLOT(onItemChanged(QListWidgetItem*)) ,
+    QObject::connect(m_bookmarkWidget, SIGNAL(itemChanged(QListWidgetItem*)),
+                     m_rootScene->getBookmarksModel(), SLOT(onItemChanged(QListWidgetItem*)) ,
                      Qt::UniqueConnection);
 
     QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)),
@@ -972,6 +973,10 @@ void MainWindow::initializeCallbacks()
                      m_rootScene->getUserScene(), SLOT(onRightClicked(QModelIndex)),
                      Qt::UniqueConnection);
 
+    QObject::connect(m_canvasWidget, SIGNAL(itemChanged(QListWidgetItem*)),
+                     m_rootScene->getUserScene(), SLOT(onCanvasEdited(QListWidgetItem*)),
+                     Qt::UniqueConnection);
+
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedDelete(QModelIndex)),
                      this, SLOT(onDeleteCanvas(QModelIndex)),
                      Qt::UniqueConnection);
@@ -987,6 +992,10 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_cameraProperties, SIGNAL(focalChanged(double)),
                      m_glWidget, SLOT(onFocalChanged(double)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_cameraProperties, SIGNAL(orthoChecked(bool)),
+                     m_glWidget, SLOT(onOrthoSet(bool)),
                      Qt::UniqueConnection);
 
 }

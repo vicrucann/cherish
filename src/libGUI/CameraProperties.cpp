@@ -19,9 +19,13 @@ CameraProperties::CameraProperties(double fov, QWidget *parent)
                      this, SLOT(onSliderMoved(int)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_ui->m_spinBox, SIGNAL(valueChanged(int)),
-                     this, SLOT(onFocalChanged(int)),
+    QObject::connect(m_ui->m_checkOrtho, SIGNAL(clicked(bool)),
+                     this, SLOT(onOrthoChecked(bool)),
                      Qt::UniqueConnection);
+
+//    QObject::connect(m_ui->m_spinBox, SIGNAL(valueChanged(int)),
+//                     this, SLOT(onFocalChanged(int)),
+//                     Qt::UniqueConnection);
 
     m_ui->m_labelValue->setText(QString::number(fov));
 }
@@ -33,6 +37,12 @@ CameraProperties::~CameraProperties()
 void CameraProperties::onFocalChanged(int value)
 {
     emit this->focalChanged(double(value));
+}
+
+void CameraProperties::onOrthoChecked(bool val)
+{
+    outLogMsg("CameraProperties: onOrthoChecked");
+    emit this->orthoChecked(val);
 }
 
 void CameraProperties::onSliderMoved(int position)

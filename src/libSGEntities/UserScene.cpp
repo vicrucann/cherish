@@ -387,10 +387,7 @@ void entity::UserScene::setCanvasesButCurrent(bool enabled)
 
     for (unsigned int i=0; i<this->getNumChildren(); ++i){
         entity::Canvas* cnv = this->getCanvas(i);
-        if (!cnv){
-            outErrMsg("setCanvasesButCurrent(): Could not obtain one of the canvases");
-            return;
-        }
+        if (!cnv) return;
         if (cnv != m_canvasCurrent.get()){
             if (enabled)
                 cnv->setNodeMask(~0x0);
@@ -957,11 +954,11 @@ void entity::UserScene::resetModel(CanvasWidget *widget)
         emit this->canvasAdded(cnv->getName().c_str());
 
         if (cnv == m_canvasCurrent.get())
-            emit this->canvasSelectedColor(i,1);
+            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),1);
         else if (cnv == m_canvasPrevious.get())
-            emit this->canvasSelectedColor(i,2);
+            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),2);
         else
-            emit this->canvasSelectedColor(i,0);
+            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),0);
     }
 }
 

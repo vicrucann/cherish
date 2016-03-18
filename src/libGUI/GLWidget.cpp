@@ -184,6 +184,24 @@ void GLWidget::onFocalChanged(double focal)
     this->onFOVChanged(fov);
 }
 
+void GLWidget::onOrthoSet(bool ortho)
+{
+    osg::Camera* camera = this->getCamera();
+    if (!camera){
+        outErrMsg("onFOVChanged: could not obtain camera ptr");
+        return;
+    }
+    float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());
+    if (!ortho)
+        camera->setProjectionMatrixAsPerspective(60, ratio, 1.f, 1000.f);
+    else{
+        outLogMsg("setting camera to ortho");
+        camera->setProjectionMatrixAsOrtho(-1,1,-1,1,-1,1);
+    }
+    camera->dirtyBound();
+    this->update();
+}
+
 void GLWidget::initializeGL()
 {
     osg::StateSet* stateSet = m_RootScene->getOrCreateStateSet();

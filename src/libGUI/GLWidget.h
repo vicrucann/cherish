@@ -39,6 +39,7 @@ public slots:
     void onRequestScreenshot(QPixmap& pmap, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void onFOVChanged(double fov);
     void onFocalChanged(double focal);
+    void onOrthoSet(bool ortho);
 
 protected:
     // Widget's events that need to be over-ridden
