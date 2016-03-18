@@ -71,6 +71,7 @@ public:
     void setCanvasSelected(entity::Canvas* cnv);
     void setCanvasSelected(bool selected);
     void setCanvasesButCurrent(bool enabled);
+    bool getCanvasesButCurrent() const;
     void setCanvasVisibility(bool vis);
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
@@ -88,6 +89,7 @@ public:
     void editPhotoRotate(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
     void editPhotoFlip(QUndoStack* stack, entity::Photo* photo, bool horizontal);
     void editPhotoDelete(QUndoStack* stack, entity::Photo* photo);
+    void editPhotoPush(QUndoStack* stack, entity::Photo* photo);
 
     void editStrokesPush(QUndoStack* stack, osg::Camera* camera);
     void editStrokesMove(QUndoStack* stack, double u, double v, dureu::EVENT event);

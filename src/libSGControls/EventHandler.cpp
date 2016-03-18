@@ -63,6 +63,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     case dureu::MOUSE_PHOTO_FLIPV:
         this->doEditPhotoFlip<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa, false);
         break;
+    case dureu::MOUSE_PHOTO_PUSH:
+        this->doEditPhotoPush<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
+        break;
     case dureu::MOUSE_ENTITY_MOVE:
         if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() > 0)
             this->doEditStrokesMove(ea, aa);
@@ -95,7 +98,11 @@ void EventHandler::setMode(dureu::MOUSE_MODE mode)
     case dureu::MOUSE_ENTITY_SCALE:
     case dureu::MOUSE_PHOTO_FLIPH:
     case dureu::MOUSE_PHOTO_FLIPV:
+    case dureu::MOUSE_PHOTO_PUSH:
     case dureu::MOUSE_ENTITY_MOVE:
+    case dureu::MOUSE_ERASE:
+    case dureu::MOUSE_DELETE:
+    case dureu::MOUSE_SELECT:
         m_scene->setCanvasesButCurrent(false);
         break;
     default:
@@ -797,4 +804,18 @@ void EventHandler::doSelectStroke(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         return;
     }
     m_scene->getCanvasCurrent()->addStrokesSelected(stroke);
+}
+
+template <typename T1, typename T2>
+void EventHandler::doEditPhotoPush(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (!( ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ))
+        return;
+
+    T1* result = new T1;
+    bool intersects = this->getLineIntersection<T1, T2>(ea,aa, *result);
+    if (!intersects) return;
+    entity::Photo* photo = this->getPhoto(*result);
+    if (!photo) return;
+    m_scene->editPhotoPush(photo);
 }

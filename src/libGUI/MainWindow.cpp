@@ -554,8 +554,9 @@ void MainWindow::onImageFlipV()
 
 void MainWindow::onImagePush()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
-    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
+    m_mdiArea->setCursor(Qt::CrossCursor);
+    emit sendMouseMode(dureu::MOUSE_PHOTO_PUSH);
+    this->statusBar()->showMessage(tr("Click on image, and it will be moved from current to previous canvas."));
 }
 
 void MainWindow::onStrokesPush()
@@ -728,7 +729,7 @@ void MainWindow::initializeActions()
     m_actionImageFlipH = new QAction(Data::sceneImageFlipHIcon(), tr("Flip Image"), this);
     this->connect(m_actionImageFlipH, SIGNAL(triggered(bool)), this, SLOT(onImageFlipH()));
 
-    m_actionImagePush = new QAction(Data::sceneImagePushIcon(), tr("Push Image"), this);
+    m_actionImagePush = new QAction(Data::sceneImagePushIcon(), tr("Move image from current to previous canvas"), this);
     this->connect(m_actionImagePush, SIGNAL(triggered(bool)), this, SLOT(onImagePush()));
 
     m_actionStrokesPush = new QAction(Data::scenePushStrokesIcon(), tr("Push Strokes"), this);

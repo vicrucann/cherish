@@ -357,6 +357,12 @@ void RootScene::editPhotoDelete(entity::Photo *photo)
     m_saved = false;
 }
 
+void RootScene::editPhotoPush(entity::Photo *photo)
+{
+    m_userScene->editPhotoPush(m_undoStack, photo);
+    m_saved = false;
+}
+
 void RootScene::editStrokesPush(osg::Camera* camera)
 {
     m_userScene->editStrokesPush(m_undoStack, camera);

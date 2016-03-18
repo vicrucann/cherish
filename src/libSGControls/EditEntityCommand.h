@@ -258,4 +258,21 @@ protected:
     const std::vector<entity::Stroke*>& m_selected;
 };
 
+class EditPhotoPushCommand : public QUndoCommand
+{
+public:
+    EditPhotoPushCommand(entity::UserScene* scene, entity::Canvas* current, entity::Canvas* previous,
+                         entity::Photo* photo, QUndoCommand* parent=0);
+    ~EditPhotoPushCommand() {}
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_current;
+    osg::observer_ptr<entity::Canvas> m_previous;
+    osg::observer_ptr<entity::Photo> m_photo;
+};
+
 #endif // EDITENTITYCOMMAND_H

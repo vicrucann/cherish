@@ -310,6 +310,15 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
     m_canvasCurrent = cnv;
     m_canvasCurrent->setColor(dureu::CANVAS_CLR_CURRENT);
     emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasCurrent.get()), 1);
+
+    /* make sure node masks are holding as before for the current canvas */
+    if (m_canvasPrevious.get()){
+        if (!this->getCanvasesButCurrent()){
+            m_canvasCurrent->setNodeMask(~0x0);
+            m_canvasPrevious->setNodeMask(0x1);
+        }
+    }
+
     return true;
 }
 
@@ -389,6 +398,11 @@ void entity::UserScene::setCanvasesButCurrent(bool enabled)
                 cnv->setNodeMask(0x1); // see EventHandler when we set iv.setTraversalMask(~0x1);
         }
     }
+}
+
+bool entity::UserScene::getCanvasesButCurrent() const
+{
+    return m_canvasCurrent->getNodeMask() == m_canvasPrevious->getNodeMask();
 }
 
 void entity::UserScene::setCanvasVisibility(bool vis)
@@ -705,6 +719,30 @@ void entity::UserScene::editPhotoDelete(QUndoStack *stack, entity::Photo *photo)
         outErrMsg("editPhotoDelete: undo/redo command is NULL");
         return;
     }
+    stack->push(cmd);
+}
+
+void entity::UserScene::editPhotoPush(QUndoStack *stack, entity::Photo *photo)
+{
+    if (!stack){
+        outErrMsg("editPhotoDelete(): undo stack is NULL.");
+        return;
+    }
+    if (!photo)
+        return;
+    if (!this->getCanvasCurrent()->getGeodeData()->containsDrawable(photo)){
+        outErrMsg("editPhotoDelete: current canvas does not contain that photo."
+                  "Deletion is not possible.");
+        return;
+    }
+    if (!this->getCanvasPrevious()){
+        outErrMsg("editPhotoPush: previous canvas is null");
+        return;
+    }
+
+    EditPhotoPushCommand* cmd = new EditPhotoPushCommand(this, m_canvasCurrent.get(),
+                                                         m_canvasPrevious.get(), photo);
+    if (!cmd) return;
     stack->push(cmd);
 }
 

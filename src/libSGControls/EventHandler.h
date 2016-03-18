@@ -47,6 +47,9 @@ public:
     template <typename T1, typename T2>
     void doEditPhotoMove(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
+    template <typename T1, typename T2>
+    void doEditPhotoPush(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
     void doEditStrokesMove(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void doEditStrokesScale(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void doEditStrokesRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
