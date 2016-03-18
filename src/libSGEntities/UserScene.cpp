@@ -966,8 +966,12 @@ void entity::UserScene::resetModel(CanvasWidget *widget)
 void entity::UserScene::onCanvasEdited(QListWidgetItem *item)
 {
     // assumed it is a current canvas
-    outLogMsg("onCanvasEdited: renaming current canvas");
-    this->getCanvasCurrent()->setName(item->text().toStdString());
+    if (!this->getCanvasCurrent()) return;
+    QListWidget* widget = item->listWidget();
+    int row = widget->row(item);
+    entity::Canvas* cnv = this->getCanvasFromIndex(row);
+    if (!cnv) return;
+    cnv->setName(item->text().toStdString());
 }
 
 /* to selec as current from canvas delegate */
