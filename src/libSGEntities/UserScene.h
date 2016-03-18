@@ -78,6 +78,7 @@ public:
     entity::Canvas* getCanvasSelected() const;
     int getCanvasIndex(entity::Canvas* canvas) const;
     entity::Canvas* getCanvasFromIndex(int row);
+    int getNumCanvases() const;
 
     void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event);

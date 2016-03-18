@@ -436,6 +436,13 @@ entity::Canvas *entity::UserScene::getCanvasFromIndex(int row)
                      dynamic_cast<entity::Canvas*>(this->getChild(row));
 }
 
+int entity::UserScene::getNumCanvases() const
+{
+    int bms = this->getChildIndex(m_bookmarks.get());
+    int numChild = this->getNumChildren();
+    return bms == numChild? numChild : numChild-1;
+}
+
 void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event)
 {
     if (!stack){
@@ -966,9 +973,10 @@ void entity::UserScene::resetModel(CanvasWidget *widget)
 void entity::UserScene::onCanvasEdited(QListWidgetItem *item)
 {
     // assumed it is a current canvas
-    if (!this->getCanvasCurrent()) return;
+    //if (!this->getCanvasCurrent()) return;
     QListWidget* widget = item->listWidget();
     int row = widget->row(item);
+    if (row == this->getNumCanvases()) return;
     entity::Canvas* cnv = this->getCanvasFromIndex(row);
     if (!cnv) return;
     cnv->setName(item->text().toStdString());
