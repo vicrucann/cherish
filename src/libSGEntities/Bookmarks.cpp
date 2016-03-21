@@ -138,11 +138,14 @@ void entity::Bookmarks::onClicked(const QModelIndex &index)
 void entity::Bookmarks::onItemChanged(QListWidgetItem *item)
 {
     outLogVal("onItemChanged: bookmark name edited to", item->text().toStdString());
+    m_row = item->listWidget()->row(item);
     if (m_row >= 0 && m_row < (int)m_names.size()){
         m_names[m_row] = (item->text()).toStdString();
     }
-    else
+    else{
         outErrMsg("onItemChaged: could not update internal data, m_row is out of range");
+        m_row=0;
+    }
 }
 
 void entity::Bookmarks::onRowsMoved(const QModelIndex &, int start, int end, const QModelIndex &, int row)
