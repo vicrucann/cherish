@@ -41,6 +41,7 @@
 #include "Photo.h"
 #include "Bookmarks.h"
 #include "../libGUI/ListWidget.h"
+#include "Tool.h"
 
 #include <QUndoStack>
 #include <QModelIndex>
@@ -77,8 +78,10 @@ public:
     void selectAllStrokes();
     void addPhoto(const std::string& fname);
     void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+    void addBookmarkTool(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
+    void deleteBookmarkTool(int first, int last);
     void resetBookmarks(BookmarkWidget* widget);
     void setBookmarkToolVisibility(bool vis);
     void eraseStroke(entity::Stroke* stroke, int first, int last, dureu::EVENT event);
@@ -121,8 +124,7 @@ protected:
 private:
     osg::ref_ptr<entity::UserScene> m_userScene;
     osg::ref_ptr<Axes> m_axisGlo;
-    osg::ref_ptr<osg::Switch> m_bookmarkToolSwitch;
-    osg::ref_ptr<osg::AutoTransform> m_bookmarkAT;
+    osg::Group* m_bookmarkGroup;
     std::vector< osg::ref_ptr<entity::Stroke> > m_buffer; /* copy-paste buffer */
     QUndoStack* m_undoStack;
     bool m_saved;

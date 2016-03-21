@@ -622,6 +622,11 @@ void entity::Canvas::updateFrame()
     }
 }
 
+const osg::Vec3Array *entity::Canvas::getFrame() const
+{
+    return m_toolFrame->getVertices();
+}
+
 void entity::Canvas::setModeEdit(bool on)
 {
     if (on){

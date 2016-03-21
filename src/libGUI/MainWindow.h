@@ -39,6 +39,8 @@ public slots:
     void onDeleteCanvas(const QModelIndex& index);
     void onVisibilityCanvas(const QModelIndex& index);
     void onMoveBookmark(const QModelIndex &index);
+    void onBookmarkAddedToWidget(const QModelIndex &, int first, int last);
+    void onBookmarkRemovedFromWidget(const QModelIndex &, int first, int last);
 
 signals:
     void sendTabletActivity(bool active);

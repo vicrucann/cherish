@@ -180,6 +180,9 @@ private:
     osg::observer_ptr<entity::Canvas> m_canvasSelected;
     osg::observer_ptr<entity::Canvas> m_canvasTarget; /* for push operations */
     osg::observer_ptr<entity::Canvas> m_canvasClone; /* for clone current canvas */
+
+    osg::ref_ptr<entity::ToolIntersectionLine> m_intersection; /* debug version */
+
     osg::Vec3f m_deltaT; /* for edit operations: translate */
     osg::Quat m_deltaR; /* for edit operation: rotate */
     double m_u, m_v; /* move photo */

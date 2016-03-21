@@ -199,6 +199,28 @@ void MainWindow::onMoveBookmark(const QModelIndex &index)
     m_bookmarkWidget->setCurrentIndex(index);
 }
 
+void MainWindow::onBookmarkAddedToWidget(const QModelIndex &, int first, int last)
+{
+    outLogMsg("onBookmarkAddedToWidget");
+    const std::vector<osg::Vec3d>& centers =
+            m_rootScene->getUserScene()->getBookmarks()->getCenters();
+    const std::vector<osg::Vec3d>& eyes =
+            m_rootScene->getUserScene()->getBookmarks()->getEyes();
+    const std::vector<osg::Vec3d>& ups =
+            m_rootScene->getUserScene()->getBookmarks()->getUps();
+    if (first<0 || first>=int(centers.size())) return;
+    if (last<0 || last>=int(centers.size())) return;
+    for (int i=first; i<=last; ++i){
+        m_glWidget->setCameraView(eyes[i],centers[i],ups[i]);
+        m_rootScene->addBookmarkTool(eyes[i],centers[i],ups[i]);
+    }
+}
+
+void MainWindow::onBookmarkRemovedFromWidget(const QModelIndex &, int first, int last)
+{
+    m_rootScene->deleteBookmarkTool(first, last);
+}
+
 /* Create an ordinary single view window on the scene _root
  * To create outside viewer, use:
  * GLWidget* vwid = createViewer(Qt::Window);
@@ -218,10 +240,15 @@ void MainWindow::onMoveBookmark(const QModelIndex &index)
 */
 void MainWindow::onFileNew()
 {
+    outLogMsg("onFileNew called");
     this->onFileClose();
     m_undoStack->clear();
     m_viewStack->clear();
-    m_bookmarkWidget->clear();
+    outLogVal("bookmark items to remove", m_bookmarkWidget->count());
+    m_bookmarkWidget->model()->removeRows(0,m_bookmarkWidget->count());
+//    m_bookmarkWidget->clear();
+//    m_canvasWidget->clear();
+    m_canvasWidget->model()->removeRows(0, m_canvasWidget->count());
     this->recievedRequestUpdate();
     this->statusBar()->showMessage(tr("Scene is cleared."));
 }
@@ -929,6 +956,20 @@ void MainWindow::initializeCallbacks()
                      this, SLOT(recieveBookmark(int)),
                      Qt::UniqueConnection);
 
+    QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsInserted(QModelIndex,int,int)),
+                     this, SLOT(onBookmarkAddedToWidget(QModelIndex,int,int)),
+                     Qt::UniqueConnection);
+
+    /* for bookmark scene graph representation */
+    QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsRemoved(QModelIndex,int,int)),
+                     this, SLOT(onBookmarkRemovedFromWidget(QModelIndex,int,int)),
+                     Qt::UniqueConnection);
+
+    /* for bookmark data of std::vectors */
+    QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsRemoved(QModelIndex,int,int)),
+                     m_rootScene->getBookmarksModel(), SLOT(onRowsRemoved(QModelIndex,int,int)),
+                     Qt::UniqueConnection);
+
     QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QModelIndex)),
                      this, SLOT(onDeleteBookmark(QModelIndex)),
                      Qt::UniqueConnection);
@@ -945,9 +986,6 @@ void MainWindow::initializeCallbacks()
                      m_rootScene->getBookmarksModel(), SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsRemoved(QModelIndex,int,int)),
-                     m_rootScene->getBookmarksModel(), SLOT(onRowsRemoved(QModelIndex,int,int)),
-                     Qt::UniqueConnection);
 
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
                      m_glWidget, SLOT(onRequestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),

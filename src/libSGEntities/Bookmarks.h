@@ -62,7 +62,7 @@ public slots:
     void onClicked(const QModelIndex& index);
     void onItemChanged(QListWidgetItem* item);
     void onRowsMoved(const QModelIndex&, int start, int end, const QModelIndex&, int row);
-    void onRowsRemoved(const QModelIndex&, int first, int);
+    void onRowsRemoved(const QModelIndex&, int first, int last);
     void onCurrentItemChanged(QListWidgetItem * current, QListWidgetItem * previous);
 
 private slots:
@@ -74,7 +74,7 @@ private:
     template <typename T>
     bool moveItem(size_t from, size_t to, std::vector<T>& list);
 
-    void deleteBookmarkData(int row);
+    void deleteBookmarkData(int first, int last);
 
     std::vector<osg::Vec3d> m_eyes;
     std::vector<osg::Vec3d> m_centers;

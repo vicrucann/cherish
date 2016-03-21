@@ -115,6 +115,7 @@ public:
     /* re-calculate frame's geometry and plane center transform
      * based on canvas content location */
     void updateFrame();
+    const osg::Vec3Array* getFrame() const;
 
     void setModeEdit(bool on); // changes certain colors, shows or hides normal
     bool getModeEdit() const;

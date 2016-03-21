@@ -920,6 +920,9 @@ entity::UserScene::~UserScene()
 bool entity::UserScene::clearUserData()
 {
     /* clear SG content */
+    m_idCanvas=0;
+    m_idPhoto=0;
+    m_idBookmark=0;
     return this->removeChildren(0, this->getNumChildren());
 }
 

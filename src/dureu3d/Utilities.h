@@ -48,9 +48,15 @@ public:
                                        const osg::Vec3d &v1, const osg::Vec3d &v2);
 
 
+    /* intersection between two canvases that is projected onto frame on canvas2 */
+    static int getCanvasesIntersection(entity::Canvas* current, entity::Canvas* previous,
+                                       osg::Vec3f& P1, osg::Vec3f& P2, osg::Vec3f& P3, osg::Vec3f& P4);
+
     /* for more detailes, see
      * http://geomalgorithms.com/a05-_intersect-1.html */
     static int getPlanesIntersection(entity::Canvas* canvas1, entity::Canvas* canvas2, osg::Vec3f& iP, osg::Vec3f& u);
+
+    static osg::Vec3f projectPointOnLine(const osg::Vec3f& A, const osg::Vec3f& v, const osg::Vec3f& P);
 };
 
 #endif // UTILITIES_H

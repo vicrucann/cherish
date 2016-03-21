@@ -17,8 +17,7 @@ RootScene::RootScene(QUndoStack *undoStack)
     : osg::Group()
     , m_userScene(new entity::UserScene)
     , m_axisGlo(new Axes)
-    , m_bookmarkToolSwitch(new osg::Switch)
-    , m_bookmarkAT(new osg::AutoTransform)
+    , m_bookmarkGroup(new osg::Group)
     , m_undoStack(undoStack)
     , m_saved(false)
 {
@@ -35,11 +34,7 @@ RootScene::RootScene(QUndoStack *undoStack)
     }
 
     /* child #2 */
-    this->addChild(m_bookmarkToolSwitch.get());
-    m_bookmarkToolSwitch->addChild(m_bookmarkAT.get(), true);
-//    m_bookmarkAT->setAutoScaleToScreen(true);
-//    m_bookmarkAT->setMinimumScale(0.f);
-//    m_bookmarkAT->setMaximumScale(2.f);
+    this->addChild(m_bookmarkGroup);
 
     this->setName("RootScene");
 }
@@ -73,6 +68,7 @@ bool RootScene::isEmptyScene() const
 void RootScene::clearUserData()
 {
     m_userScene->clearUserData();
+    m_buffer.clear();
 }
 
 void RootScene::setToolsVisibility(bool vis)
@@ -115,7 +111,6 @@ bool RootScene::writeScenetoFile()
         return true;
     }
     return false;
-
 }
 
 bool RootScene::loadSceneFromFile()
@@ -219,8 +214,16 @@ void RootScene::addPhoto(const std::string& fname)
 void RootScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     m_userScene->addBookmark(widget, eye, center, up);
-//    m_bookmarkToolSwitch->addChild(new entity::ToolBookmark(eye, center, up), true);
-    m_bookmarkAT->addChild(new entity::ToolBookmark(eye, center, up));
+}
+
+void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+{
+    if (!m_bookmarkGroup) {
+        outLogMsg("addBookmarkTool: none will be added, ptr is null");
+        return;
+    }
+    if (!m_bookmarkGroup->addChild(new entity::BookmarkTool(eye, center, up)))
+        outLogMsg("addBookmarkTool: could not add as child");
 }
 
 void RootScene::updateBookmark(BookmarkWidget *widget, int row)
@@ -231,8 +234,13 @@ void RootScene::updateBookmark(BookmarkWidget *widget, int row)
 void RootScene::deleteBookmark(BookmarkWidget *widget, const QModelIndex &index)
 {
     m_userScene->deleteBookmark(widget, index);
-    if (!m_bookmarkAT->removeChild(index.row()))
-        outErrMsg("deleteBookmark: could not delete bookmark tool from scene");
+}
+
+void RootScene::deleteBookmarkTool(int first, int last)
+{
+    if (first>=int(m_bookmarkGroup->getNumChildren()) || last>=int(m_bookmarkGroup->getNumChildren())) return;
+    m_bookmarkGroup->removeChild(first, std::abs(last-first+1));
+    outLogMsg("bookmarkTool deleted");
 }
 
 void RootScene::resetBookmarks(BookmarkWidget *widget)
@@ -243,19 +251,23 @@ void RootScene::resetBookmarks(BookmarkWidget *widget)
         return;
     }
     bms->resetModel(widget);
-    m_bookmarkAT->removeChildren(0, m_bookmarkAT->getNumChildren());
 
-    const std::vector<osg::Vec3d>& eyes = bms->getEyes();
-    const std::vector<osg::Vec3d>& centers = bms->getCenters();
-    const std::vector<osg::Vec3d>& ups = bms->getUps();
-    for (size_t i=0; i < bms->getNames().size(); ++i){
-        m_bookmarkAT->addChild(new entity::ToolBookmark(eyes[i], centers[i], ups[i]));
-    }
+//    const std::vector<osg::Vec3d>& eyes = bms->getEyes();
+//    const std::vector<osg::Vec3d>& centers = bms->getCenters();
+//    const std::vector<osg::Vec3d>& ups = bms->getUps();
+//    for (size_t i=0; i < bms->getNames().size(); ++i){
+//        m_bookmarkGroup->addChild(new entity::BookmarkTool(eyes[i], centers[i], ups[i]));
+//    }
 }
 
 void RootScene::setBookmarkToolVisibility(bool vis)
 {
-    m_bookmarkToolSwitch->setChildValue(m_bookmarkAT.get(), vis);
+    // TODO
+    for (size_t i=0; i<m_bookmarkGroup->getNumChildren(); i++){
+        entity::BookmarkTool* bt = dynamic_cast<entity::BookmarkTool*>(m_bookmarkGroup->getChild(i));
+        if (bt)
+            bt->setVisibility(vis);
+    }
 }
 
 void RootScene::eraseStroke(entity::Stroke *stroke, int first, int last, dureu::EVENT event)

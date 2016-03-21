@@ -68,7 +68,9 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     m_ups.push_back(up);
     m_names.push_back(name);
     widget->addItem(QString(name.c_str()));
-    QListWidgetItem* item = widget->item(m_names.size()-1);
+    outLogVal("number of items", widget->count());
+    QListWidgetItem* item = widget->item(widget->count()-1);
+    if (!item) return;
     item->setFlags(item->flags() | Qt::ItemIsEditable);
 
     QPixmap pmap;
@@ -102,7 +104,7 @@ void entity::Bookmarks::deleteBookmark(BookmarkWidget *widget, const QModelIndex
 /* resetModel is needed to be called only on loading scene from file */
 void entity::Bookmarks::resetModel(BookmarkWidget *widget)
 {
-    widget->clear();
+//    widget->clear();
     for (unsigned int i=0; i<m_names.size(); ++i){
         widget->addItem(QString((m_names[i]).c_str()));
         QListWidgetItem* item = widget->item(i);
@@ -154,10 +156,10 @@ void entity::Bookmarks::onRowsMoved(const QModelIndex &, int start, int end, con
     this->moveItem<std::string>(start, row, m_names);
 }
 
-void entity::Bookmarks::onRowsRemoved(const QModelIndex &, int first, int)
+void entity::Bookmarks::onRowsRemoved(const QModelIndex &, int first, int last)
 {
-    outLogMsg("onRowsRemoved");
-    this->deleteBookmarkData(first);
+    outLogVal("onRowsRemoved atBookmarks", first);
+    this->deleteBookmarkData(first, last);
 }
 
 void entity::Bookmarks::onCurrentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
@@ -165,17 +167,21 @@ void entity::Bookmarks::onCurrentItemChanged(QListWidgetItem *current, QListWidg
     outLogMsg("currentItemChanged");
 }
 
-void entity::Bookmarks::deleteBookmarkData(int row)
+void entity::Bookmarks::deleteBookmarkData(int first, int last)
 {
-    outLogVal("deleting a bookmark at idx", row);
-    if (row >= (int)m_names.size() || row < 0){
-        outErrMsg("deleteBookmark: row is out of range");
+    outLogVal("deleting bookmark data at idx", first);
+    if (first >= (int)m_names.size() || first < 0){
+        outErrMsg("deleteBookmark: first is out of range");
         return;
     }
-    m_eyes.erase(m_eyes.begin()+row);
-    m_centers.erase(m_centers.begin()+row);
-    m_ups.erase(m_ups.begin()+row);
-    m_names.erase(m_names.begin()+row);
+    if (last >= (int)m_names.size() || last < 0){
+        outErrMsg("deleteBookmark: last is out of range");
+        return;
+    }
+    m_eyes.erase(m_eyes.begin()+first, m_eyes.begin()+last);
+    m_centers.erase(m_centers.begin()+first, m_centers.begin()+last);
+    m_ups.erase(m_ups.begin()+first, m_ups.begin()+last);
+    m_names.erase(m_names.begin()+first, m_names.begin()+last);
 }
 
 template <typename T>

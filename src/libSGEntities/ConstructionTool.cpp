@@ -143,6 +143,11 @@ void entity::ToolFrame::setVertices(const osg::Vec3f &center, float szX, float s
     m_geomPick->dirtyBound();
 }
 
+const osg::Vec3Array *entity::ToolFrame::getVertices() const
+{
+    return static_cast<osg::Vec3Array*>(m_geomTool->getVertexArray());
+}
+
 void entity::ToolFrame::setColor(const osg::Vec4f &color)
 {
     ConstructionTool::setColor(color);
@@ -207,4 +212,36 @@ void entity::ToolBookmark::setVertices(const osg::Vec3d &eye, const osg::Vec3d &
 
 void entity::ToolBookmark::setVertices(const osg::Vec3f &, float, float, float, float)
 {
+}
+
+entity::ToolIntersectionLine::ToolIntersectionLine(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)
+    : ConstructionTool(4, osg::Array::BIND_OVERALL,
+                       new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,0,4))
+{
+    this->setName("groupIntersectionLine");
+    m_geodeTool->setName("geodeIntersectionLine");
+    m_geomTool->setName("geomIntersectionLine");
+    this->setColor(dureu::CANVAS_CLR_INTERSECTION);
+    this->setVertices(P1,P2,P3,P4);
+
+    osg::StateSet* ss = new osg::StateSet;
+    osg::LineWidth* lw = new osg::LineWidth;
+    lw->setWidth(dureu::CANVAS_LINE_WIDTH);
+    ss->setAttributeAndModes(lw,osg::StateAttribute::ON);
+    ss->setAttributeAndModes(new osg::BlendFunc, osg::StateAttribute::ON);
+    ss->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
+    ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+    m_geomTool->setStateSet(ss);
+}
+
+void entity::ToolIntersectionLine::setVertices(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)
+{
+    osg::Vec3Array* vertices = static_cast<osg::Vec3Array*>(m_geomTool->getVertexArray());
+    assert(vertices->size() == 4);
+    (*vertices)[0] = P1;
+    (*vertices)[1] = P2;
+    (*vertices)[2] = P3;
+    (*vertices)[3] = P4;
+    m_geomTool->dirtyDisplayList();
+    m_geomTool->dirtyBound();
 }

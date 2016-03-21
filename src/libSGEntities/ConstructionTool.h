@@ -62,9 +62,20 @@ public:
     ToolFrame();
     void setVertices(const osg::Vec3f &center, float szX, float szY,
                      float szCr, float);
+    const osg::Vec3Array* getVertices() const;
     void setColor(const osg::Vec4f &color);
 protected:
     osg::Geometry* m_geomPick;
+};
+
+class ToolIntersectionLine : public ConstructionTool
+{
+public:
+    ToolIntersectionLine(const osg::Vec3f& P1, const osg::Vec3f& P2,
+                         const osg::Vec3f& P3, const osg::Vec3f& P4);
+    void setVertices(const osg::Vec3f &, float, float, float, float){}
+    void setVertices(const osg::Vec3f& P1, const osg::Vec3f& P2,
+                     const osg::Vec3f& P3, const osg::Vec3f& P4);
 };
 
 }

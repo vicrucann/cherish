@@ -227,6 +227,30 @@ double Utilities::getSkewLinesDistance(const osg::Vec3d &r1, const osg::Vec3d &r
     return std::fabs((dir*u3)/u3.length());
 }
 
+int Utilities::getCanvasesIntersection(entity::Canvas *current, entity::Canvas *previous, osg::Vec3f &P1, osg::Vec3f &P2, osg::Vec3f &P3, osg::Vec3f &P4)
+{
+    /* find intersection line between current and previous */
+    osg::Vec3f iP, u;
+    int is = getPlanesIntersection(current, previous, iP, u);
+
+    /* if intersection found */
+    if (is == 2){
+        /* get four vertices of current canvas */
+        const osg::Vec3Array* vertices = current->getFrame();
+        osg::Vec3f v1 = (*vertices)[0];
+        osg::Vec3f v2 = (*vertices)[1];
+        osg::Vec3f v3 = (*vertices)[2];
+        osg::Vec3f v4 = (*vertices)[3];
+
+        /* project each vertex onto intersection line*/
+        P1 = projectPointOnLine(iP, u, v1);
+        P2 = projectPointOnLine(iP, u, v2);
+        P3 = projectPointOnLine(iP, u, v3);
+        P4 = projectPointOnLine(iP, u, v4);
+    }
+    return is;
+}
+
 int Utilities::getPlanesIntersection(entity::Canvas *canvas1, entity::Canvas *canvas2, osg::Vec3f &iP, osg::Vec3f &u)
 {
     /* cross produc of normals */
@@ -288,4 +312,10 @@ int Utilities::getPlanesIntersection(entity::Canvas *canvas1, entity::Canvas *ca
     }
     iP = osg::Vec3f(xi, yi, zi);
     return 2;
+}
+
+/* prpject AP onto v and add resulting vector to A */
+osg::Vec3f Utilities::projectPointOnLine(const osg::Vec3f &A, const osg::Vec3f &v, const osg::Vec3f &P)
+{
+    return A + v * ((A-P)*v)/(v*v);
 }

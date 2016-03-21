@@ -114,6 +114,7 @@ const osg::Vec4 BACKGROUND_CLR = solarized::base3;
 const osg::Vec3f NORMAL = osg::Vec3f(0.f,0.f,1.f);
 
 const osg::Vec4 CANVAS_CLR_CURRENT = solarized::magenta;
+const osg::Vec4 CANVAS_CLR_INTERSECTION = osg::Vec4(solarized::magenta.x(), solarized::magenta.y(), solarized::magenta.z(), 0.5);
 const osg::Vec4 CANVAS_CLR_PREVIOUS = solarized::violet;
 const osg::Vec4 CANVAS_CLR_REST = solarized::base1;
 const osg::Vec4 CANVAS_CLR_SELECTED = solarized::red;
@@ -121,9 +122,9 @@ const osg::Vec4 CANVAS_CLR_EDIT = solarized::cyan;
 const osg::Vec4 CANVAS_CLR_ROTAXIS = solarized::orange;
 
 const osg::Vec4 BOOKMARK_CLR = solarized::green;
-const float BOOKMARK_X = 0.2f;
-const float BOOKMARK_Y = 0.2f;
-const float BOOKMARK_Z = 0.3f;
+const float BOOKMARK_X = 10;
+const float BOOKMARK_Y = BOOKMARK_X;
+const float BOOKMARK_Z = BOOKMARK_X;
 
 const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
 const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
@@ -143,7 +144,7 @@ const float CANVAS_LINE_WIDTH = 1.5f;
 const float PHOTO_MINW = 1; // half width
 const float PHOTO_MINH = 1; // half height
 
-const float AXES_SIZE = 0.3f;
+const float AXES_SIZE = 1.f;
 const osg::Vec4 AXES_CLR_X = solarized::blue;
 const osg::Vec4 AXES_CLR_Y = solarized::cyan;
 const osg::Vec4 AXES_CLR_Z = solarized::red;
