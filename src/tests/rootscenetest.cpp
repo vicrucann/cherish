@@ -70,10 +70,10 @@ void RootSceneTest::assertConstants(){
    // QVERIFY(_RS->getCanvasCurrent()->getColor() == dureu::CANVAS_CLR_CURRENT);
     //QVERIFY(_RS->getCanvasPrevious()->getColor() == dureu::CANVAS_CLR_PREVIOUS);
 
-    QVERIFY(_RS->getName() == "RootScene");
-    QVERIFY(_RS->getNumChildren() == 3);
-    QVERIFY(_RS->getAxesVisibility());
-    QVERIFY(_RS->getAxes() == _RS->getChild(1));
+//    QVERIFY(_RS->getName() == "RootScene");
+//    QVERIFY(_RS->getNumChildren() == 3);
+//    QVERIFY(_RS->getAxesVisibility());
+//    QVERIFY(_RS->getAxes() == _RS->getChild(1));
 //    QVERIFY(_RS->getHudCamera()->getName() == "HUDCamera");
 //    QVERIFY(_RS->getHudCameraVisibility());
 }

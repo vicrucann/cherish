@@ -12,8 +12,6 @@ include_directories(
 set (libSGEntities_SRCS
     Canvas.h
     Canvas.cpp
-    axes.h
-    axes.cpp
     RootScene.h
     RootScene.cpp
     Stroke.h

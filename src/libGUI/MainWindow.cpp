@@ -74,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     /* load UI forms */
 
     /* setup initial mode */
+    this->onNewCanvasXZ();
     this->onSketch();
 }
 
@@ -484,7 +485,7 @@ void MainWindow::onNewCanvasYZ()
 void MainWindow::onNewCanvasXZ()
 {
     m_mdiArea->setCursor(Qt::ArrowCursor);
-    m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, -1, 0, 0), osg::Matrix::translate(0,0,0));
+    m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
 }

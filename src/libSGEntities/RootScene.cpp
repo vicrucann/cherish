@@ -8,7 +8,6 @@
 #include <osgDB/Registry>
 
 #include "RootScene.h"
-#include "axes.h"
 #include "Settings.h"
 #include "ConstructionTool.h"
 #include "EditEntityCommand.h"
@@ -16,7 +15,7 @@
 RootScene::RootScene(QUndoStack *undoStack)
     : osg::Group()
     , m_userScene(new entity::UserScene)
-    , m_axisGlo(new Axes)
+    , m_axisTool(new entity::AxisGlobalTool)
     , m_bookmarkGroup(new osg::Group)
     , m_undoStack(undoStack)
     , m_saved(false)
@@ -28,7 +27,7 @@ RootScene::RootScene(QUndoStack *undoStack)
     }
 
     // child #1
-    if (!this->addChild(m_axisGlo.get())){
+    if (!this->addChild(m_axisTool)){
         outErrMsg("RootScene(): could not add axes as a child");
         fatalMsg("RootScene(): could not add axes as a child");
     }
@@ -91,15 +90,11 @@ bool RootScene::getToolsVisibility() const
 }
 
 void RootScene::setAxesVisibility(bool vis) {
-    m_axisGlo->setVisibility(vis);
+    m_axisTool->setVisibility(vis);
 }
 
 bool RootScene::getAxesVisibility() const{
-    return m_axisGlo->getVisibility();
-}
-
-const Axes* RootScene::getAxes() const{
-    return m_axisGlo.get();
+    return m_axisTool->getVisibility();
 }
 
 bool RootScene::writeScenetoFile()

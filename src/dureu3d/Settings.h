@@ -144,7 +144,7 @@ const float CANVAS_LINE_WIDTH = 1.5f;
 const float PHOTO_MINW = 1; // half width
 const float PHOTO_MINH = 1; // half height
 
-const float AXES_SIZE = 1.f;
+const float AXES_SIZE = 100.f;
 const osg::Vec4 AXES_CLR_X = solarized::blue;
 const osg::Vec4 AXES_CLR_Y = solarized::cyan;
 const osg::Vec4 AXES_CLR_Z = solarized::red;

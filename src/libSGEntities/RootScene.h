@@ -31,7 +31,6 @@
 #include <osg/ref_ptr>
 #include <osg/AutoTransform>
 
-#include "axes.h"
 #include "Settings.h"
 #include "../libSGUtils/ObserveSceneCallback.h"
 #include "../libGUI/hudcamera.h"
@@ -63,7 +62,6 @@ public:
     bool getToolsVisibility() const;
     void setAxesVisibility(bool vis);
     bool getAxesVisibility() const;
-    const Axes* getAxes() const;
 
     bool writeScenetoFile();
     bool loadSceneFromFile();
@@ -123,7 +121,7 @@ protected:
 
 private:
     osg::ref_ptr<entity::UserScene> m_userScene;
-    osg::ref_ptr<Axes> m_axisGlo;
+    entity::AxisGlobalTool* m_axisTool;
     osg::Group* m_bookmarkGroup;
     std::vector< osg::ref_ptr<entity::Stroke> > m_buffer; /* copy-paste buffer */
     QUndoStack* m_undoStack;
