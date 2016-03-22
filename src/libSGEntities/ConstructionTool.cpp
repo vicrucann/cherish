@@ -159,61 +159,6 @@ void entity::ToolFrame::setColor(const osg::Vec4f &color)
     m_geomPick->dirtyBound();
 }
 
-entity::ToolBookmark::ToolBookmark(const osg::Vec3d &eye, const osg::Vec3d& center, const osg::Vec3d& up)
-    : ConstructionTool(12, osg::Array::BIND_OVERALL,
-                       new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,0,12))
-{
-    this->setName("groupBookmark");
-    m_geodeTool->setName("geodeBookmark");
-    m_geomTool->setName("geomBookmark");
-    this->setColor(dureu::BOOKMARK_CLR);
-    this->setVertices(eye, center, up);
-
-    osg::StateSet* ss = new osg::StateSet;
-    osg::LineWidth* lw = new osg::LineWidth;
-    lw->setWidth(3.f);
-    ss->setAttributeAndModes(lw,osg::StateAttribute::ON);
-    ss->setAttributeAndModes(new osg::BlendFunc, osg::StateAttribute::ON);
-    ss->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
-    ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    m_geomTool->setStateSet(ss);
-}
-
-void entity::ToolBookmark::setVertices(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
-{
-    osg::Vec3d dir = center-eye;
-    dir.normalize();
-    osg::Vec3d side = dir^up;
-    side.normalize();
-
-    osg::Vec3d C = eye + dir * dureu::BOOKMARK_Z;
-    osg::Vec3d v1 = C + side * dureu::BOOKMARK_X + up * dureu::BOOKMARK_Y;
-    osg::Vec3d v2 = C - side * dureu::BOOKMARK_X + up * dureu::BOOKMARK_Y;
-    osg::Vec3d v3 = C - side * dureu::BOOKMARK_X - up * dureu::BOOKMARK_Y;
-    osg::Vec3d v4 = C + side * dureu::BOOKMARK_X - up * dureu::BOOKMARK_Y;
-
-    osg::Vec3Array* vFrame = static_cast<osg::Vec3Array*>(m_geomTool->getVertexArray());
-    assert(vFrame->size() == 12);
-    (*vFrame)[0] = eye;
-    (*vFrame)[1] = v1;
-    (*vFrame)[2] = v2;
-    (*vFrame)[3] = v3;
-    (*vFrame)[4] = v4;
-    (*vFrame)[5] = v1;
-    (*vFrame)[6] = eye;
-    (*vFrame)[7] = v2;
-    (*vFrame)[8] = eye;
-    (*vFrame)[9] = v3;
-    (*vFrame)[10] = eye;
-    (*vFrame)[11] = v4;
-    m_geomTool->dirtyDisplayList();
-    m_geomTool->dirtyBound();
-}
-
-void entity::ToolBookmark::setVertices(const osg::Vec3f &, float, float, float, float)
-{
-}
-
 entity::ToolIntersectionLine::ToolIntersectionLine(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)
     : ConstructionTool(4, osg::Array::BIND_OVERALL,
                        new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,0,4))

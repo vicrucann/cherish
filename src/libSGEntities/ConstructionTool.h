@@ -31,15 +31,6 @@ protected:
     osg::Geometry* m_geomTool;
 };
 
-class ToolBookmark : public ConstructionTool
-{
-public:
-    ToolBookmark(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up);
-
-    void setVertices(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up);
-    void setVertices(const osg::Vec3f&, float, float, float, float );
-};
-
 class ToolNormal : public ConstructionTool
 {
 public:
