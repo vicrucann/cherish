@@ -66,6 +66,7 @@ namespace dureu{
 
 const double PI = 3.14159265359;
 const double EPSILON = 0.00001;
+const osg::Vec3f CENTER = osg::Vec3f(0.f,0.f,0.f);
 
 enum ENTITY_TYPE
 {

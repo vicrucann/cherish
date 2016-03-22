@@ -64,6 +64,29 @@ private:
     osg::Camera* m_camera;
 };
 
+class IntersectionTool : public Tool
+{
+public:
+    IntersectionTool(const osg::Vec3f& P1, const osg::Vec3f& P2,
+                     const osg::Vec3f& P3, const osg::Vec3f& P4);
+    void initializeSG();
+    void setVisibility(bool on);
+    bool getVisibility() const;
+    void setPoints(const osg::Vec3f& P1, const osg::Vec3f& P2,
+                   const osg::Vec3f& P3, const osg::Vec3f& P4);
+};
+
+class AxisLocalTool : public Tool
+{
+public:
+    AxisLocalTool();
+    void initializeSG();
+    void setVisibility(bool on);
+    bool getVisibility() const;
+
+    virtual void setColor(const osg::Vec4f c1, const osg::Vec4f c2);
+};
+
 }
 
 

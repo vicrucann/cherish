@@ -26,8 +26,8 @@ target_link_libraries(${FOO_NAME} ${TEST_LIBRARIES})
 add_test(${FOO_NAME} ${FOO_SRC})
 
 # Root Scene tests
-set(ROOT_SRC rootscenetest.cpp)
-set(ROOT_NAME rootscenetest)
-add_executable(${ROOT_NAME} ${ROOT_SRC})
-target_link_libraries(${ROOT_NAME} ${TEST_LIBRARIES})
-add_test(${ROOT_NAME} ${ROOT_SRC})
+# set(ROOT_SRC rootscenetest.cpp)
+# set(ROOT_NAME rootscenetest)
+# add_executable(${ROOT_NAME} ${ROOT_SRC})
+# target_link_libraries(${ROOT_NAME} ${TEST_LIBRARIES})
+# add_test(${ROOT_NAME} ${ROOT_SRC})

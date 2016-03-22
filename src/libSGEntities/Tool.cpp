@@ -183,3 +183,91 @@ void entity::AxisGlobalTool::setColor(const osg::Vec4f c1, const osg::Vec4f c2, 
     (*colors)[5] = c3;
     this->updateGeometry();
 }
+
+entity::IntersectionTool::IntersectionTool(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)
+    : Tool(4, osg::Array::BIND_OVERALL,
+           new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0,4))
+{
+    this->setColor(dureu::CANVAS_CLR_CURRENT);
+
+    std::vector<osg::Vec3f> verts;
+    verts.push_back(P1);
+    verts.push_back(P2);
+    verts.push_back(P3);
+    verts.push_back(P4);
+    this->setVertices(verts);
+
+    this->initializeSG();
+    this->setVisibility(false);
+}
+
+void entity::IntersectionTool::initializeSG()
+{
+    m_switch->addChild(m_geode);
+}
+
+void entity::IntersectionTool::setVisibility(bool on)
+{
+    m_switch->setChildValue(m_geode, on);
+}
+
+bool entity::IntersectionTool::getVisibility() const
+{
+    return m_switch->getChildValue(m_geode);
+}
+
+void entity::IntersectionTool::setPoints(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)
+{
+    if (P1.isNaN() || P2.isNaN() || P3.isNaN() || P4.isNaN()) return;
+    std::vector<osg::Vec3f> verts;
+    verts.push_back(P1);
+    verts.push_back(P2);
+    verts.push_back(P3);
+    verts.push_back(P4);
+    this->setVertices(verts);
+}
+
+entity::AxisLocalTool::AxisLocalTool()
+    : Tool(4, osg::Array::BIND_PER_VERTEX,
+           new osg::DrawArrays(osg::PrimitiveSet::LINES,0,4), 1)
+{
+    this->setColor(solarized::orange, solarized::yellow);
+
+    std::vector<osg::Vec3f> verts;
+    osg::Vec3f center = osg::Vec3f(0,0,0);
+    osg::Vec3f x = osg::Vec3f(dureu::CANVAS_AXIS,0,0);
+    osg::Vec3f y = osg::Vec3f(0,dureu::CANVAS_AXIS,0);
+    verts.push_back(center);
+    verts.push_back(center+x);
+    verts.push_back(center);
+    verts.push_back(center+y);
+    this->setVertices(verts);
+
+    this->initializeSG();
+    this->setVisibility(true);
+}
+
+void entity::AxisLocalTool::initializeSG()
+{
+    m_switch->addChild(m_geode);
+}
+
+void entity::AxisLocalTool::setVisibility(bool on)
+{
+    m_switch->setChildValue(m_geode, on);
+}
+
+bool entity::AxisLocalTool::getVisibility() const
+{
+    return m_switch->getChildValue(m_geode);
+}
+
+void entity::AxisLocalTool::setColor(const osg::Vec4f c1, const osg::Vec4f c2)
+{
+    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(m_geometry->getColorArray());
+    (*colors)[0] = c1;
+    (*colors)[1] = c1;
+    (*colors)[2] = c2;
+    (*colors)[3] = c2;
+    this->updateGeometry();
+}
