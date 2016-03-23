@@ -9,7 +9,6 @@
 
 #include "RootScene.h"
 #include "Settings.h"
-#include "ConstructionTool.h"
 #include "EditEntityCommand.h"
 
 RootScene::RootScene(QUndoStack *undoStack)

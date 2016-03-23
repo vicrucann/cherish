@@ -1,4 +1,4 @@
-#include "Tool.h"
+#include "ToolGlobal.h"
 #include <osg/LineWidth>
 #include <osg/BlendFunc>
 
@@ -7,7 +7,7 @@
 #include "Settings.h"
 
 
-entity::Tool::Tool(int nVerts, osg::Array::Binding colorBind, osg::PrimitiveSet *primitiveSet, float linewidth)
+entity::ToolGlobal::ToolGlobal(int nVerts, osg::Array::Binding colorBind, osg::PrimitiveSet *primitiveSet, float linewidth)
     : osg::Group()
     , m_switch(new osg::Switch)
     , m_geode(new osg::Geode)
@@ -34,7 +34,7 @@ entity::Tool::Tool(int nVerts, osg::Array::Binding colorBind, osg::PrimitiveSet 
     this->addChild(m_switch);
 }
 
-void entity::Tool::setVertices(const std::vector<osg::Vec3f> &source)
+void entity::ToolGlobal::setVertices(const std::vector<osg::Vec3f> &source)
 {
     osg::Vec3Array* vertices = static_cast<osg::Vec3Array*>(m_geometry->getVertexArray());
     assert(vertices->size() == source.size());
@@ -43,7 +43,7 @@ void entity::Tool::setVertices(const std::vector<osg::Vec3f> &source)
     this->updateGeometry();
 }
 
-void entity::Tool::setColor(const osg::Vec4f &color)
+void entity::ToolGlobal::setColor(const osg::Vec4f &color)
 {
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(m_geometry->getColorArray());
     assert(colors->size()>0);
@@ -51,21 +51,21 @@ void entity::Tool::setColor(const osg::Vec4f &color)
     this->updateGeometry();
 }
 
-const osg::Vec4f &entity::Tool::getColor() const
+const osg::Vec4f &entity::ToolGlobal::getColor() const
 {
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(m_geometry->getColorArray());
     assert(colors->size()>0);
     return (*colors)[0];
 }
 
-void entity::Tool::updateGeometry()
+void entity::ToolGlobal::updateGeometry()
 {
     m_geometry->dirtyDisplayList();
     m_geometry->dirtyBound();
 }
 
 entity::BookmarkTool::BookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
-    : Tool(12, osg::Array::BIND_OVERALL,
+    : ToolGlobal(12, osg::Array::BIND_OVERALL,
            new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,0,12))
     , m_AT(new osg::AutoTransform)
 {
@@ -125,7 +125,7 @@ bool entity::BookmarkTool::getVisibility() const
 }
 
 entity::AxisGlobalTool::AxisGlobalTool()
-    : Tool(6, osg::Array::BIND_PER_VERTEX,
+    : ToolGlobal(6, osg::Array::BIND_PER_VERTEX,
            new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,0,6))
     , m_AT(new osg::AutoTransform)
     , m_camera(new osg::Camera)
@@ -181,93 +181,5 @@ void entity::AxisGlobalTool::setColor(const osg::Vec4f c1, const osg::Vec4f c2, 
     (*colors)[3] = c2;
     (*colors)[4] = c3;
     (*colors)[5] = c3;
-    this->updateGeometry();
-}
-
-entity::IntersectionTool::IntersectionTool(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)
-    : Tool(4, osg::Array::BIND_OVERALL,
-           new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0,4))
-{
-    this->setColor(dureu::CANVAS_CLR_CURRENT);
-
-    std::vector<osg::Vec3f> verts;
-    verts.push_back(P1);
-    verts.push_back(P2);
-    verts.push_back(P3);
-    verts.push_back(P4);
-    this->setVertices(verts);
-
-    this->initializeSG();
-    this->setVisibility(false);
-}
-
-void entity::IntersectionTool::initializeSG()
-{
-    m_switch->addChild(m_geode);
-}
-
-void entity::IntersectionTool::setVisibility(bool on)
-{
-    m_switch->setChildValue(m_geode, on);
-}
-
-bool entity::IntersectionTool::getVisibility() const
-{
-    return m_switch->getChildValue(m_geode);
-}
-
-void entity::IntersectionTool::setPoints(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)
-{
-    if (P1.isNaN() || P2.isNaN() || P3.isNaN() || P4.isNaN()) return;
-    std::vector<osg::Vec3f> verts;
-    verts.push_back(P1);
-    verts.push_back(P2);
-    verts.push_back(P3);
-    verts.push_back(P4);
-    this->setVertices(verts);
-}
-
-entity::AxisLocalTool::AxisLocalTool()
-    : Tool(4, osg::Array::BIND_PER_VERTEX,
-           new osg::DrawArrays(osg::PrimitiveSet::LINES,0,4), 1)
-{
-    this->setColor(solarized::orange, solarized::yellow);
-
-    std::vector<osg::Vec3f> verts;
-    osg::Vec3f center = osg::Vec3f(0,0,0);
-    osg::Vec3f x = osg::Vec3f(dureu::CANVAS_AXIS,0,0);
-    osg::Vec3f y = osg::Vec3f(0,dureu::CANVAS_AXIS,0);
-    verts.push_back(center);
-    verts.push_back(center+x);
-    verts.push_back(center);
-    verts.push_back(center+y);
-    this->setVertices(verts);
-
-    this->initializeSG();
-    this->setVisibility(true);
-}
-
-void entity::AxisLocalTool::initializeSG()
-{
-    m_switch->addChild(m_geode);
-}
-
-void entity::AxisLocalTool::setVisibility(bool on)
-{
-    m_switch->setChildValue(m_geode, on);
-}
-
-bool entity::AxisLocalTool::getVisibility() const
-{
-    return m_switch->getChildValue(m_geode);
-}
-
-void entity::AxisLocalTool::setColor(const osg::Vec4f c1, const osg::Vec4f c2)
-{
-    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(m_geometry->getColorArray());
-    (*colors)[0] = c1;
-    (*colors)[1] = c1;
-    (*colors)[2] = c2;
-    (*colors)[3] = c2;
     this->updateGeometry();
 }

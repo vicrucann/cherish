@@ -20,7 +20,7 @@
 #include "Settings.h"
 #include "Stroke.h"
 #include "Photo.h"
-#include "ConstructionTool.h"
+#include "ToolLocal.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>

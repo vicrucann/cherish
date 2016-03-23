@@ -40,7 +40,7 @@
 #include "Photo.h"
 #include "Bookmarks.h"
 #include "../libGUI/ListWidget.h"
-#include "Tool.h"
+#include "ToolGlobal.h"
 
 #include <QUndoStack>
 #include <QModelIndex>

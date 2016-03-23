@@ -1,4 +1,4 @@
-#include "ConstructionTool.h"
+#include "ToolLocal.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,7 +11,7 @@
 
 #include "Settings.h"
 
-entity::ConstructionTool::ConstructionTool(unsigned int nVerts, osg::Array::Binding colorBind, osg::PrimitiveSet *primitiveSet)
+entity::ToolLocal::ToolLocal(unsigned int nVerts, osg::Array::Binding colorBind, osg::PrimitiveSet *primitiveSet)
     : osg::Group()
     , m_geodeTool(new osg::Geode)
     , m_geomTool(new osg::Geometry)
@@ -25,7 +25,7 @@ entity::ConstructionTool::ConstructionTool(unsigned int nVerts, osg::Array::Bind
     this->addChild(m_geodeTool);
 }
 
-void entity::ConstructionTool::setColor(const osg::Vec4f &color)
+void entity::ToolLocal::setColor(const osg::Vec4f &color)
 {
     osg::Vec4Array* colorTool = static_cast<osg::Vec4Array*>(m_geomTool->getColorArray());
     assert(colorTool->size()>0);
@@ -34,7 +34,7 @@ void entity::ConstructionTool::setColor(const osg::Vec4f &color)
     m_geomTool->dirtyBound();
 }
 
-const osg::Vec4f &entity::ConstructionTool::getColor() const
+const osg::Vec4f &entity::ToolLocal::getColor() const
 {
     osg::Vec4Array* colorTool = static_cast<osg::Vec4Array*>(m_geomTool->getColorArray());
     assert(colorTool->size()>0);
@@ -42,7 +42,7 @@ const osg::Vec4f &entity::ConstructionTool::getColor() const
 }
 
 entity::ToolNormal::ToolNormal()
-    : ConstructionTool(2, osg::Array::BIND_OVERALL,
+    : ToolLocal(2, osg::Array::BIND_OVERALL,
                        new osg::DrawArrays(osg::PrimitiveSet::LINES,0,2))
 {
     this->setName("groupNormal");
@@ -64,7 +64,7 @@ void entity::ToolNormal::setVertices(const osg::Vec3f &center, float szX, float 
 }
 
 entity::ToolAxisLocal::ToolAxisLocal()
-    : ConstructionTool(4, osg::Array::BIND_PER_VERTEX,
+    : ToolLocal(4, osg::Array::BIND_PER_VERTEX,
                        new osg::DrawArrays(osg::PrimitiveSet::LINES,0,4))
 {
     this->setName("groupAxisLocal");
@@ -101,7 +101,7 @@ void entity::ToolAxisLocal::setVertices(const osg::Vec3f &center, float , float 
 }
 
 entity::ToolFrame::ToolFrame()
-    : ConstructionTool(4, osg::Array::BIND_OVERALL,
+    : ToolLocal(4, osg::Array::BIND_OVERALL,
                        new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4))
     , m_geomPick(new osg::Geometry)
     , m_geomIntersect(new osg::Geometry)
@@ -171,7 +171,7 @@ const osg::Vec3Array *entity::ToolFrame::getVertices() const
 
 void entity::ToolFrame::setColor(const osg::Vec4f &color)
 {
-    ConstructionTool::setColor(color);
+    ToolLocal::setColor(color);
 
     osg::Vec4Array* colorPick = static_cast<osg::Vec4Array*>(m_geomPick->getColorArray());
     assert(colorPick->size() > 0);
@@ -187,7 +187,7 @@ void entity::ToolFrame::setColor(const osg::Vec4f &color)
 }
 
 entity::ToolIntersectionLine::ToolIntersectionLine(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)
-    : ConstructionTool(4, osg::Array::BIND_OVERALL,
+    : ToolLocal(4, osg::Array::BIND_OVERALL,
                        new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,0,4))
 {
     this->setName("groupIntersectionLine");

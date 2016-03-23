@@ -1,11 +1,11 @@
-#ifndef CONSTRUCTIONTOOL_H
-#define CONSTRUCTIONTOOL_H
+#ifndef TOOLLOCAL_H
+#define TOOLLOCAL_H
 
 #include "osg/Group"
 #include "osg/Geode"
 #include "osg/Geometry"
 
-/* ConstructionTool is a base class for any construction tools on scene.
+/* ToolLocal is a base class for any construction tools on scene.
  * Have to re-define setVertices()
  * TODO: put visibility, state set params into base class so that the structure is
  * [osg::Group] -> [osg::Switch] -> (osg::Geode)
@@ -13,10 +13,10 @@
  */
 
 namespace entity {
-class ConstructionTool : public osg::Group
+class ToolLocal : public osg::Group
 {
 public:
-    ConstructionTool(unsigned int nVerts,
+    ToolLocal(unsigned int nVerts,
                      osg::Array::Binding colorBind,
                      osg::PrimitiveSet* primitiveSet);
 
@@ -31,7 +31,7 @@ protected:
     osg::Geometry* m_geomTool;
 };
 
-class ToolNormal : public ConstructionTool
+class ToolNormal : public ToolLocal
 {
 public:
     ToolNormal();
@@ -39,7 +39,7 @@ public:
     void setVertices(const osg::Vec3f &center, float szX, float szY, float, float);
 };
 
-class ToolAxisLocal : public ConstructionTool
+class ToolAxisLocal : public ToolLocal
 {
 public:
     ToolAxisLocal();
@@ -47,7 +47,7 @@ public:
     void setVertices(const osg::Vec3f &center, float, float, float, float szAx);
 };
 
-class ToolFrame : public ConstructionTool
+class ToolFrame : public ToolLocal
 {
 public:
     ToolFrame();
@@ -61,7 +61,7 @@ protected:
     osg::Geometry* m_geomIntersect;
 };
 
-class ToolIntersectionLine : public ConstructionTool
+class ToolIntersectionLine : public ToolLocal
 {
 public:
     ToolIntersectionLine(const osg::Vec3f& P1, const osg::Vec3f& P2,
@@ -74,4 +74,4 @@ public:
 }
 
 
-#endif // CONSTRUCTIONTOOL_H
+#endif // ToolLocal_H

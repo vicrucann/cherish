@@ -1,5 +1,5 @@
-#ifndef TOOL_H
-#define TOOL_H
+#ifndef TOOLGLOBAL_H
+#define TOOLGLOBAL_H
 
 #include <vector>
 #include <iostream>
@@ -13,10 +13,10 @@
 #include <osg/Camera>
 
 namespace entity {
-class Tool : public osg::Group
+class ToolGlobal : public osg::Group
 {
 public:
-    Tool(int nVerts, osg::Array::Binding colorBind,
+    ToolGlobal(int nVerts, osg::Array::Binding colorBind,
          osg::PrimitiveSet* primitiveSet, float linewidth=3.f);
 
     /* connect switch to geode: either directly or use other nodes in between */
@@ -37,7 +37,7 @@ protected:
     osg::Geometry* m_geometry;
 };
 
-class BookmarkTool : public Tool
+class BookmarkTool : public ToolGlobal
 {
 public:
     BookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up);
@@ -49,7 +49,7 @@ private:
     osg::AutoTransform* m_AT;
 };
 
-class AxisGlobalTool : public Tool
+class AxisGlobalTool : public ToolGlobal
 {
 public:
     AxisGlobalTool();
@@ -64,30 +64,7 @@ private:
     osg::Camera* m_camera;
 };
 
-class IntersectionTool : public Tool
-{
-public:
-    IntersectionTool(const osg::Vec3f& P1, const osg::Vec3f& P2,
-                     const osg::Vec3f& P3, const osg::Vec3f& P4);
-    void initializeSG();
-    void setVisibility(bool on);
-    bool getVisibility() const;
-    void setPoints(const osg::Vec3f& P1, const osg::Vec3f& P2,
-                   const osg::Vec3f& P3, const osg::Vec3f& P4);
-};
-
-class AxisLocalTool : public Tool
-{
-public:
-    AxisLocalTool();
-    void initializeSG();
-    void setVisibility(bool on);
-    bool getVisibility() const;
-
-    virtual void setColor(const osg::Vec4f c1, const osg::Vec4f c2);
-};
-
 }
 
 
-#endif // TOOL_H
+#endif // TOOLGlobal_H
