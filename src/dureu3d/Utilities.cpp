@@ -178,6 +178,16 @@ bool Utilities::getLocalFromGlobal(const osg::Vec3f &P, const osg::Matrix &invM,
     return true;
 }
 
+bool Utilities::getGlobalFromLocal(const osg::Vec3f &p, const osg::Matrix &M, osg::Vec3f &P)
+{
+    if (std::fabs(p.z())>dureu::EPSILON){
+        outErrMsg("getGlobalFromLocal: local point's z-coord is not close to zero");
+        return false;
+    }
+    P = p * M;
+    return true;
+}
+
 bool Utilities::getSkewLinesProjection(const osg::Vec3f &center, const osg::Vec3f &farPoint, const osg::Vec3f &nearPoint, const osg::Vec3f &normal, osg::Vec3f &X1)
 {
     osg::Vec3f P1 = center;
@@ -227,7 +237,7 @@ double Utilities::getSkewLinesDistance(const osg::Vec3d &r1, const osg::Vec3d &r
     return std::fabs((dir*u3)/u3.length());
 }
 
-int Utilities::getCanvasesIntersection(entity::Canvas *current, entity::Canvas *previous, osg::Vec3f &P1, osg::Vec3f &P2, osg::Vec3f &P3, osg::Vec3f &P4)
+int Utilities::getCanvasesIntersection(entity::Canvas *current, entity::Canvas *previous, osg::Vec3f &p1, osg::Vec3f &p2, osg::Vec3f &p3, osg::Vec3f &p4)
 {
     /* find intersection line between current and previous */
     osg::Vec3f iP, u;
@@ -235,18 +245,34 @@ int Utilities::getCanvasesIntersection(entity::Canvas *current, entity::Canvas *
 
     /* if intersection found */
     if (is == 2){
-        /* get four vertices of current canvas */
+        /* get four local vertices of current canvas */
         const osg::Vec3Array* vertices = current->getFrame();
         osg::Vec3f v1 = (*vertices)[0];
         osg::Vec3f v2 = (*vertices)[1];
         osg::Vec3f v3 = (*vertices)[2];
         osg::Vec3f v4 = (*vertices)[3];
 
-        /* project each vertex onto intersection line*/
-        P1 = projectPointOnLine(iP, u, v1);
-        P2 = projectPointOnLine(iP, u, v2);
-        P3 = projectPointOnLine(iP, u, v3);
-        P4 = projectPointOnLine(iP, u, v4);
+        /* translate local to global coordiantes */
+        osg::Matrix M, invM;
+        getModel(current, M, invM);
+        osg::Vec3f V1=dureu::CENTER, V2=dureu::CENTER, V3=dureu::CENTER, V4=dureu::CENTER;
+        getGlobalFromLocal(v1, M, V1);
+        getGlobalFromLocal(v2, M, V2);
+        getGlobalFromLocal(v3, M, V3);
+        getGlobalFromLocal(v4, M, V4);
+
+        /* project each global vertex onto global intersection line*/
+        osg::Vec3f P1=dureu::CENTER, P2=dureu::CENTER, P3=dureu::CENTER, P4=dureu::CENTER;
+        P1 = projectPointOnLine(iP, u, V1);
+        P2 = projectPointOnLine(iP, u, V2);
+        P3 = projectPointOnLine(iP, u, V3);
+        P4 = projectPointOnLine(iP, u, V4);
+
+        /* project global back to local since we need to feed local coords to canvas drawables */
+        getLocalFromGlobal(P1, invM, p1);
+        getLocalFromGlobal(P2, invM, p2);
+        getLocalFromGlobal(P3, invM, p3);
+        getLocalFromGlobal(P4, invM, p4);
     }
     return is;
 }
@@ -315,7 +341,7 @@ int Utilities::getPlanesIntersection(entity::Canvas *canvas1, entity::Canvas *ca
 }
 
 /* prpject AP onto v and add resulting vector to A */
-osg::Vec3f Utilities::projectPointOnLine(const osg::Vec3f &A, const osg::Vec3f &v, const osg::Vec3f &P)
+osg::Vec3f Utilities::projectPointOnLine(const osg::Vec3f &iP, const osg::Vec3f &u, const osg::Vec3f &P)
 {
-    return A + v * ((A-P)*v)/(v*v);
+    return iP + u * ((P-iP)*u)/(u*u);
 }

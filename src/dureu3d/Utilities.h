@@ -33,6 +33,8 @@ public:
 
     static bool getLocalFromGlobal(const osg::Vec3f& P,const osg::Matrix& invM, osg::Vec3f& p);
 
+    static bool getGlobalFromLocal(const osg::Vec3f& p, const osg::Matrix& M, osg::Vec3f& P);
+
     /* algorithm for distance between skew lines:
      * http://www2.washjeff.edu/users/mwoltermann/Dorrie/69.pdf
      * For two points P1 and P2 on skew lines;
@@ -50,13 +52,13 @@ public:
 
     /* intersection between two canvases that is projected onto frame on canvas2 */
     static int getCanvasesIntersection(entity::Canvas* current, entity::Canvas* previous,
-                                       osg::Vec3f& P1, osg::Vec3f& P2, osg::Vec3f& P3, osg::Vec3f& P4);
+                                       osg::Vec3f& p1, osg::Vec3f& p2, osg::Vec3f& p3, osg::Vec3f& p4);
 
     /* for more detailes, see
      * http://geomalgorithms.com/a05-_intersect-1.html */
     static int getPlanesIntersection(entity::Canvas* canvas1, entity::Canvas* canvas2, osg::Vec3f& iP, osg::Vec3f& u);
 
-    static osg::Vec3f projectPointOnLine(const osg::Vec3f& A, const osg::Vec3f& v, const osg::Vec3f& P);
+    static osg::Vec3f projectPointOnLine(const osg::Vec3f& iP, const osg::Vec3f& u, const osg::Vec3f& P);
 };
 
 #endif // UTILITIES_H

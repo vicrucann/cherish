@@ -114,7 +114,7 @@ public:
 
     /* re-calculate frame's geometry and plane center transform
      * based on canvas content location */
-    void updateFrame();
+    void updateFrame(entity::Canvas *against = 0);
     const osg::Vec3Array* getFrame() const;
 
     void setModeEdit(bool on); // changes certain colors, shows or hides normal
@@ -137,6 +137,7 @@ protected:
     void updateTransforms();
     void resetTransforms();
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
+    void setIntersection(entity::Canvas* against = 0);
 
 private:
     osg::Matrix m_mR; /* part of m_transform */

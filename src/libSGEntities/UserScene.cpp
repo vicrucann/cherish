@@ -319,6 +319,10 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
         }
     }
 
+    /* update frames of current and previous so that intersection drawable is updated */
+    if (m_canvasPrevious.get()) m_canvasPrevious->updateFrame();
+    m_canvasCurrent->updateFrame(m_canvasPrevious.get());
+
     return true;
 }
 
@@ -338,6 +342,7 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
     m_canvasPrevious = cnv;
     m_canvasPrevious->setColor(dureu::CANVAS_CLR_PREVIOUS);
     emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasPrevious.get()), 2);
+    m_canvasPrevious->updateFrame();
     return true;
 }
 
@@ -1453,6 +1458,7 @@ void entity::UserScene::canvasRotateAppend(const osg::Quat &r)
     }
 
     m_canvasCurrent->rotate(osg::Matrix::rotate(r));
+    m_canvasCurrent->updateFrame(m_canvasPrevious.get());
     m_deltaR = r * m_deltaR;
     this->updateWidgets();
 }

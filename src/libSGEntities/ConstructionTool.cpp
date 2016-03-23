@@ -104,6 +104,7 @@ entity::ToolFrame::ToolFrame()
     : ConstructionTool(4, osg::Array::BIND_OVERALL,
                        new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4))
     , m_geomPick(new osg::Geometry)
+    , m_geomIntersect(new osg::Geometry)
 {
     this->setName("groupFrame");
     m_geodeTool->setName("geodeFrame");
@@ -115,8 +116,15 @@ entity::ToolFrame::ToolFrame()
     m_geomPick->setColorArray(new osg::Vec4Array(4), osg::Array::BIND_OVERALL);
     m_geomPick->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
 
+    m_geodeTool->addDrawable(m_geomIntersect);
+    m_geomIntersect->setName("Intersection");
+    m_geomIntersect->setVertexArray(new osg::Vec3Array(4));
+    m_geomIntersect->setColorArray(new osg::Vec4Array(4), osg::Array::BIND_OVERALL);
+    m_geomIntersect->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0,4));
+
     this->setColor(dureu::CANVAS_CLR_REST);
     this->setVertices(osg::Vec3f(0,0,0), dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, 0);
+    this->setIntersection(dureu::CENTER, dureu::CENTER,dureu::CENTER,dureu::CENTER);
 }
 
 void entity::ToolFrame::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float)
@@ -143,6 +151,19 @@ void entity::ToolFrame::setVertices(const osg::Vec3f &center, float szX, float s
     m_geomPick->dirtyBound();
 }
 
+void entity::ToolFrame::setIntersection(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)
+{
+    if (P1.isNaN() || P2.isNaN() || P3.isNaN() || P4.isNaN()) return;
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_geomIntersect->getVertexArray());
+    assert(verts->size() == 4);
+    (*verts)[0] = P1;
+    (*verts)[1] = P2;
+    (*verts)[2] = P3;
+    (*verts)[3] = P4;
+    m_geomIntersect->dirtyDisplayList();
+    m_geomIntersect->dirtyBound();
+}
+
 const osg::Vec3Array *entity::ToolFrame::getVertices() const
 {
     return static_cast<osg::Vec3Array*>(m_geomTool->getVertexArray());
@@ -157,6 +178,12 @@ void entity::ToolFrame::setColor(const osg::Vec4f &color)
     (*colorPick)[0] = color;
     m_geomPick->dirtyDisplayList();
     m_geomPick->dirtyBound();
+
+    osg::Vec4Array* colorInter = static_cast<osg::Vec4Array*>(m_geomIntersect->getColorArray());
+    assert(colorPick->size() > 0);
+    (*colorInter)[0] = color;
+    m_geomIntersect->dirtyDisplayList();
+    m_geomIntersect->dirtyBound();
 }
 
 entity::ToolIntersectionLine::ToolIntersectionLine(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)

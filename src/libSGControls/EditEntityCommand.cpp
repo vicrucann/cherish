@@ -51,12 +51,14 @@ void EditCanvasRotateCommand::undo()
     osg::Vec3d axis;
     m_rotate.getRotate(angle, axis);
     m_canvas->rotate(osg::Matrix::rotate(-angle, axis));
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditCanvasRotateCommand::redo()
 {
     m_canvas->rotate(osg::Matrix::rotate(m_rotate));
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -84,14 +86,14 @@ EditPhotoMoveCommand::~EditPhotoMoveCommand()
 void EditPhotoMoveCommand::undo()
 {
     m_photo->move(m_u0, m_v0);
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditPhotoMoveCommand::redo()
 {
     m_photo->move(m_u1, m_v1);
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -200,14 +202,14 @@ EditPhotoScaleCommand::EditPhotoScaleCommand(entity::UserScene *scene, const dou
 void EditPhotoScaleCommand::undo()
 {
     m_photo->scale(1.f/m_scale, 1.f/m_scale, m_photo->getCenter());
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditPhotoScaleCommand::redo()
 {
     m_photo->scale(m_scale, m_scale, m_photo->getCenter());
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -226,14 +228,14 @@ EditPhotoRotateCommand::EditPhotoRotateCommand(entity::UserScene *scene, const d
 void EditPhotoRotateCommand::undo()
 {
     m_photo->rotate(-m_angle);
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditPhotoRotateCommand::redo()
 {
     m_photo->rotate(m_angle);
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -333,14 +335,14 @@ EditStrokesMoveCommand::EditStrokesMoveCommand(entity::UserScene *scene, const s
 void EditStrokesMoveCommand::undo()
 {
     m_canvas->moveStrokes(m_strokes, -m_du, -m_dv);
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditStrokesMoveCommand::redo()
 {
     m_canvas->moveStrokes(m_strokes, m_du, m_dv);
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -359,14 +361,14 @@ EditStrokesScaleCommand::EditStrokesScaleCommand(entity::UserScene *scene, const
 void EditStrokesScaleCommand::undo()
 {
     m_canvas->scaleStrokes(m_strokes, 1/m_scale, m_center);
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditStrokesScaleCommand::redo()
 {
     m_canvas->scaleStrokes(m_strokes, m_scale, m_center);
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -385,14 +387,14 @@ EditStrokesRotateCommand::EditStrokesRotateCommand(entity::UserScene *scene, con
 void EditStrokesRotateCommand::undo()
 {
     m_canvas->rotateStrokes(m_strokes, -m_theta, m_center);
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditStrokesRotateCommand::redo()
 {
     m_canvas->rotateStrokes(m_strokes, m_theta, m_center);
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -418,7 +420,7 @@ void EditPasteCommand::undo()
     for (size_t i=0; i<m_strokes.size();++i){
         m_canvas->getGeodeData()->removeDrawable(m_strokes.at(i));
     }
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -432,7 +434,7 @@ void EditPasteCommand::redo()
         m_canvas->getGeodeData()->addDrawable(stroke);
         m_canvas->addStrokesSelected(stroke);
     }
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -458,7 +460,7 @@ void EditCutCommand::undo()
         m_canvas->getGeodeData()->addDrawable(stroke);
         m_canvas->addStrokesSelected(stroke);
     }
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -473,7 +475,7 @@ void EditCutCommand::redo()
     for (size_t i=0; i<m_buffer.size(); ++i){
         m_canvas->getGeodeData()->removeDrawable(m_buffer.at(i));
     }
-    m_canvas->updateFrame();
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -495,7 +497,7 @@ void EditPhotoPushCommand::undo()
     m_current->getGeodeData()->addDrawable(m_photo.get());
     //m_current->getGeodeData()->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
     m_previous->getGeodeData()->removeChild(m_photo.get());
-    m_current->updateFrame();
+    m_current->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -504,6 +506,6 @@ void EditPhotoPushCommand::redo()
     m_previous->getGeodeData()->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
     m_previous->getGeodeData()->addDrawable(m_photo.get());
     m_current->getGeodeData()->removeDrawable(m_photo.get());
-    m_previous->updateFrame();
+    m_previous->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
