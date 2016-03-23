@@ -5,6 +5,8 @@
 #include "osg/Geode"
 #include "osg/Geometry"
 
+#include "Settings.h"
+
 /* ToolLocal is a base class for any construction tools on scene.
  * Have to re-define setVertices()
  * TODO: put visibility, state set params into base class so that the structure is
@@ -55,7 +57,7 @@ public:
                      float szCr, float);
     void setIntersection(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4);
     const osg::Vec3Array* getVertices() const;
-    void setColor(const osg::Vec4f &color);
+    void setColor(const osg::Vec4f &colorMain, const osg::Vec4f& colorIntersect = dureu::CANVAS_CLR_PREVIOUS);
 protected:
     osg::Geometry* m_geomPick;
     osg::Geometry* m_geomIntersect;

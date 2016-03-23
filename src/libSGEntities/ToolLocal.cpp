@@ -7,6 +7,7 @@
 
 #include <osg/StateSet>
 #include <osg/LineWidth>
+#include <osg/LineStipple>
 #include <osg/BlendFunc>
 
 #include "Settings.h"
@@ -125,6 +126,12 @@ entity::ToolFrame::ToolFrame()
     this->setColor(dureu::CANVAS_CLR_REST);
     this->setVertices(osg::Vec3f(0,0,0), dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, 0);
     this->setIntersection(dureu::CENTER, dureu::CENTER,dureu::CENTER,dureu::CENTER);
+
+    osg::LineStipple* ls = new osg::LineStipple;
+    ls->setFactor(1);
+    ls->setPattern(0xf00f);
+    osg::StateSet* ss = m_geomIntersect->getOrCreateStateSet();
+    ss->setAttributeAndModes(ls, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
 }
 
 void entity::ToolFrame::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float)
@@ -169,19 +176,19 @@ const osg::Vec3Array *entity::ToolFrame::getVertices() const
     return static_cast<osg::Vec3Array*>(m_geomTool->getVertexArray());
 }
 
-void entity::ToolFrame::setColor(const osg::Vec4f &color)
+void entity::ToolFrame::setColor(const osg::Vec4f &colorMain, const osg::Vec4f &colorIntersect)
 {
-    ToolLocal::setColor(color);
+    ToolLocal::setColor(colorMain);
 
     osg::Vec4Array* colorPick = static_cast<osg::Vec4Array*>(m_geomPick->getColorArray());
     assert(colorPick->size() > 0);
-    (*colorPick)[0] = color;
+    (*colorPick)[0] = colorMain;
     m_geomPick->dirtyDisplayList();
     m_geomPick->dirtyBound();
 
     osg::Vec4Array* colorInter = static_cast<osg::Vec4Array*>(m_geomIntersect->getColorArray());
     assert(colorPick->size() > 0);
-    (*colorInter)[0] = color;
+    (*colorInter)[0] = colorIntersect;
     m_geomIntersect->dirtyDisplayList();
     m_geomIntersect->dirtyBound();
 }
@@ -196,10 +203,17 @@ entity::ToolIntersectionLine::ToolIntersectionLine(const osg::Vec3f &P1, const o
     this->setColor(dureu::CANVAS_CLR_INTERSECTION);
     this->setVertices(P1,P2,P3,P4);
 
-    osg::StateSet* ss = new osg::StateSet;
+
     osg::LineWidth* lw = new osg::LineWidth;
     lw->setWidth(dureu::CANVAS_LINE_WIDTH);
+
+    osg::LineStipple* ls = new osg::LineStipple;
+    ls->setFactor(1);
+    ls->setPattern(0xAAAA);
+
+    osg::StateSet* ss = new osg::StateSet;
     ss->setAttributeAndModes(lw,osg::StateAttribute::ON);
+    ss->setAttributeAndModes(ls, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
     ss->setAttributeAndModes(new osg::BlendFunc, osg::StateAttribute::ON);
     ss->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
     ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);

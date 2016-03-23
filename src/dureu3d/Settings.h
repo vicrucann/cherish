@@ -115,7 +115,7 @@ const osg::Vec4 BACKGROUND_CLR = solarized::base3;
 const osg::Vec3f NORMAL = osg::Vec3f(0.f,0.f,1.f);
 
 const osg::Vec4 CANVAS_CLR_CURRENT = solarized::magenta;
-const osg::Vec4 CANVAS_CLR_INTERSECTION = osg::Vec4(solarized::magenta.x(), solarized::magenta.y(), solarized::magenta.z(), 0.5);
+const osg::Vec4 CANVAS_CLR_INTERSECTION = osg::Vec4(solarized::violet.x(), solarized::violet.y(), solarized::violet.z(), 0.5);
 const osg::Vec4 CANVAS_CLR_PREVIOUS = solarized::violet;
 const osg::Vec4 CANVAS_CLR_REST = solarized::base1;
 const osg::Vec4 CANVAS_CLR_SELECTED = solarized::red;
