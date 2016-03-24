@@ -343,6 +343,7 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
     m_canvasPrevious->setColor(dureu::CANVAS_CLR_PREVIOUS);
     emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasPrevious.get()), 2);
     m_canvasPrevious->updateFrame();
+    m_canvasCurrent->updateFrame(m_canvasPrevious.get());
     return true;
 }
 
