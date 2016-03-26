@@ -47,6 +47,7 @@ public:
 
 private:
     osg::ref_ptr<osg::DrawArrays> m_lines;
+    osg::ref_ptr<osg::Program> m_program;
     osg::Vec4f m_color;
 };
 }

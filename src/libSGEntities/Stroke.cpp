@@ -2,6 +2,7 @@
 
 #include <assert.h>
 
+#include <osg/Program>
 #include <osg/LineWidth>
 #include <osg/StateSet>
 #include <osg/BlendFunc>
@@ -10,7 +11,10 @@
 
 entity::Stroke::Stroke()
     : entity::Entity2D()
-    , m_lines(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP))
+//    , m_lines(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP))
+    , m_lines(new osg::DrawArrays(GL_LINE_STRIP_ADJACENCY))
+//    , m_lines(new osg::DrawArrays(GL_LINE_STRIP_ADJACENCY_ARB))
+    , m_program(new osg::Program)
     , m_color(osg::Vec4f(0.f, 0.f, 0.f, 1.f))
 {
     osg::Vec4Array* colors = new osg::Vec4Array;
@@ -21,6 +25,17 @@ entity::Stroke::Stroke()
     this->setVertexArray(verts);
     this->setColorArray(colors);
     this->setColorBinding(osg::Geometry::BIND_OVERALL);
+
+//    osg::Shader* sh_geom = new osg::Shader(osg::Shader::GEOMETRY, "Stroke.glsl");
+//    osg::Shader* sh_vert = new osg::Shader(osg::Shader::VERTEX, "Stroke.vert");
+//    osg::Shader* sh_frag = new osg::Shader(osg::Shader::FRAGMENT, "Stroke.frag");
+//    m_program->addShader(sh_vert);
+//    m_program->addShader(sh_geom);
+//    m_program->addShader(sh_frag);
+
+//    m_program->setParameter(GL_GEOMETRY_VERTICES_OUT_EXT, 0);
+//    m_program->setParameter(GL_GEOMETRY_INPUT_TYPE_EXT, GL_LINES);
+//    m_program->setParameter(GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_LINE_STRIP);
 
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
@@ -35,6 +50,11 @@ entity::Stroke::Stroke()
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     this->setStateSet(stateset);
 
+//    osg::Matrix m = osg::Matrix::identity();
+//    stateset->addUniform(new osg::Uniform("MVPW", m));
+//    stateset->addUniform(new osg::Uniform("BaseWidth", 50*0.002f));
+//    stateset->addUniform(new osg::Uniform("WidthAmplitude", 0.005f));
+
     this->setDataVariance(osg::Object::DYNAMIC);
     this->setUseDisplayList(false);
     this->setUseVertexBufferObjects(true);
@@ -46,8 +66,10 @@ entity::Stroke::Stroke()
 entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
     : entity::Entity2D(copy, copyop)
     , m_lines(copy.m_lines)
+    , m_program(copy.m_program)
     , m_color(copy.m_color)
 {
+    outLogMsg("stroke copy ctor done");
 }
 
 void entity::Stroke::setLines(osg::DrawArrays* lines)

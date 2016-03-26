@@ -21,9 +21,16 @@ qt5_add_resources(IMG_RSC_ADDED
     Data/Logo.qrc
 )
 
+file(GLOB_RECURSE SHADER_RSC_ADDED
+    Shaders/*.frag
+    Shaders/*.vert
+    Shaders/*.glsl
+)
+
 add_executable(${PROJECT_NAME}
     ${DureuApplication_SRCS}
     ${IMG_RSC_ADDED}
+    ${SHADER_RSC_ADDED}
 )
 
 target_link_libraries( ${PROJECT_NAME}
