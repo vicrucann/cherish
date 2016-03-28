@@ -646,6 +646,9 @@ void MainWindow::initializeActions()
     this->connect(m_actionSaveFile, SIGNAL(triggered(bool)), this, SLOT(onFileSave()));
     m_actionSaveFile->setShortcut(tr("Ctrl+S"));
 
+    m_actionSaveAsFile = new QAction(tr("Save as..."), this);
+    this->connect(m_actionSaveAsFile, SIGNAL(triggered(bool)), this, SLOT(onFileSaveAs()));
+
     // EDIT
 
     m_actionUndo = m_undoStack->createUndoAction(this, tr("&Undo"));
@@ -773,6 +776,7 @@ void MainWindow::initializeMenus()
     menuFile->addAction(m_actionOpenFile);
     menuFile->addSeparator();
     menuFile->addAction(m_actionSaveFile);
+    menuFile->addAction(m_actionSaveAsFile);
     // "Save As" here
     menuFile->addSeparator();
     menuFile->addAction(m_actionImportImage);
