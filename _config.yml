@@ -15,9 +15,9 @@ highlighter: pygments
 
 
 ### content configuration ###
-title:       "Sample project page for SEEDSPIRE"
-keywords:    "sample, jekyll"
-description: "To test SinglePaged theme"
+title:       "SEEDSPIRE: making sense of data by sketching and image manipulation for 3D representation of historical sites"
+keywords:    "archaeology, cultural heritage, 3D reconstruction, virtual tour"
+description: "Software package for cultural heritage sparse data gather-together and building a 3D representation of the historical site"
 source_link: "https://github.com/t413/SinglePaged"
 favicon:     "img/favicon.ico"
 touch_icon:  "img/apple-touch-icon.png"

@@ -1,8 +1,8 @@
 ---
-title: "Release"
+title: "Installation"
 bg: green  #defined in _config.yml, can use html color like '#0fbfcf'
 color: white   #text color
-fa-icon: archive
+fa-icon: download
 ---
 
 > Where to download from?
