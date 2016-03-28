@@ -490,6 +490,19 @@ void MainWindow::onNewCanvasXZ()
     this->statusBar()->showMessage(tr("New canvas was created."));
 }
 
+void MainWindow::onNewCanvasOrtho()
+{
+    entity::Canvas* canvas = m_rootScene->getCanvasCurrent();
+    if (!canvas) return;
+    osg::Vec3f center_glo = canvas->getStrokesSelectedCenter();
+    osg::Vec3f normal = canvas->getGlobalAxisV();
+    m_rootScene->addCanvas(normal, center_glo);
+
+    this->onSketch();
+    this->statusBar()->showMessage(tr("New canvas perpendicular to previous was created"));
+
+}
+
 void MainWindow::onNewCanvasStandard()
 {
     m_rootScene->addCanvas(osg::Matrix::identity(),
@@ -718,6 +731,9 @@ void MainWindow::initializeActions()
     m_actionCanvasClone = new QAction(Data::sceneNewCanvasCloneIcon(), tr("Clone Current"), this);
     this->connect(m_actionCanvasClone, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasClone()));
 
+    m_actionCanvasOrtho = new QAction(Data::sceneNewCanvasOrthoIcon(), tr("Perpendicular to current"), this);
+    this->connect(m_actionCanvasOrtho, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasOrtho()));
+
     m_actionCanvasXY = new QAction(Data::sceneNewCanvasXYIcon(), tr("Plane XY"), this);
     this->connect(m_actionCanvasXY, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasXY()));
 
@@ -730,14 +746,14 @@ void MainWindow::initializeActions()
     m_actionSetStandard = new QAction(Data::sceneNewCanvasSetStandardIcon(), tr("Standard"), this);
     this->connect(m_actionSetStandard, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasStandard()));
 
-    m_actionSetCoaxial = new QAction(Data::sceneNewCanvasSetCoaxialIcon(), tr("Coaxial"), this);
-    this->connect(m_actionSetCoaxial, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasCoaxial()));
+//    m_actionSetCoaxial = new QAction(Data::sceneNewCanvasSetCoaxialIcon(), tr("Coaxial"), this);
+//    this->connect(m_actionSetCoaxial, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasCoaxial()));
 
-    m_actionSetParallel = new QAction(Data::sceneNewCanvasSetParallelIcon(), tr("Parallel"), this);
-    this->connect(m_actionSetParallel, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasParallel()));
+//    m_actionSetParallel = new QAction(Data::sceneNewCanvasSetParallelIcon(), tr("Parallel"), this);
+//    this->connect(m_actionSetParallel, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasParallel()));
 
-    m_actionSetRing = new QAction(Data::sceneNewCanvasSetRingIcon(), tr("Ring"), this);
-    this->connect(m_actionSetRing, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasRing()));
+//    m_actionSetRing = new QAction(Data::sceneNewCanvasSetRingIcon(), tr("Ring"), this);
+//    this->connect(m_actionSetRing, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasRing()));
 
     m_actionCanvasOffset = new QAction(Data::sceneCanvasOffsetIcon(), tr("Offset Canvas"), this);
     this->connect(m_actionCanvasOffset, SIGNAL(triggered(bool)), this, SLOT(onCanvasOffset()));
@@ -819,12 +835,13 @@ void MainWindow::initializeMenus()
     submenuCanvas->addAction(m_actionCanvasXY);
     submenuCanvas->addAction(m_actionCanvasYZ);
     submenuCanvas->addAction(m_actionCanvasXZ);
+    submenuCanvas->addAction(m_actionCanvasOrtho);
     QMenu* submenuSet = menuScene->addMenu("New Canvas Set");
     submenuSet->setIcon(Data::sceneNewCanvasSetIcon());
     submenuSet->addAction(m_actionSetStandard);
-    submenuSet->addAction(m_actionSetCoaxial);
-    submenuSet->addAction(m_actionSetParallel);
-    submenuSet->addAction(m_actionSetRing);
+//    submenuSet->addAction(m_actionSetCoaxial);
+//    submenuSet->addAction(m_actionSetParallel);
+//    submenuSet->addAction(m_actionSetRing);
     menuScene->addSeparator();
     QMenu* submenuEC = menuScene->addMenu("Edit Canvas");
     submenuEC->addAction(m_actionCanvasOffset);
@@ -881,6 +898,7 @@ void MainWindow::initializeToolbars()
     menuNewCanvas->addAction(m_actionCanvasYZ);
     menuNewCanvas->addAction(m_actionCanvasXZ);
     menuNewCanvas->addAction(m_actionCanvasClone);
+    menuNewCanvas->addAction(m_actionCanvasOrtho);
     QToolButton* tbNewCanvas = new QToolButton();
     tbNewCanvas->setIcon(Data::sceneNewCanvasIcon());
     tbNewCanvas->setMenu(menuNewCanvas);
@@ -890,9 +908,9 @@ void MainWindow::initializeToolbars()
 
     QMenu* menuNewCanvasSet = new QMenu();
     menuNewCanvasSet->addAction(m_actionSetStandard);
-    menuNewCanvasSet->addAction(m_actionSetCoaxial);
-    menuNewCanvasSet->addAction(m_actionSetParallel);
-    menuNewCanvasSet->addAction(m_actionSetRing);
+//    menuNewCanvasSet->addAction(m_actionSetCoaxial);
+//    menuNewCanvasSet->addAction(m_actionSetParallel);
+//    menuNewCanvasSet->addAction(m_actionSetRing);
     QToolButton* tbNewCanvasSet = new QToolButton();
     tbNewCanvasSet->setIcon(Data::sceneNewCanvasSetIcon());
     tbNewCanvasSet->setMenu(menuNewCanvasSet);

@@ -123,6 +123,22 @@ void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const
     this->addCanvas(stack, R,T, getEntityName(dureu::NAME_CANVAS, m_idCanvas++));
 }
 
+void entity::UserScene::addCanvas(QUndoStack *stack, const osg::Vec3f &normal, const osg::Vec3f &center)
+{
+    if (!stack){
+        fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
+    }
+    AddCanvasCommand* cmd = new AddCanvasCommand(this, normal, center,
+                                                 getEntityName(dureu::NAME_CANVAS, m_idCanvas++));
+    if (!cmd){
+        outErrMsg("addCanvas: cmd is NULL");
+        return;
+    }
+    stack->push(cmd);
+}
+
 void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T, const std::string& name)
 {
     if (!stack){

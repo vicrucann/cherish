@@ -18,6 +18,8 @@ public:
                      const std::string& name, QUndoCommand* parent = 0);
     AddCanvasCommand(entity::UserScene* scene, const entity::Canvas& copy,
                      QUndoCommand* parent = 0);
+    AddCanvasCommand(entity::UserScene* scene, const osg::Vec3f& normal, const osg::Vec3f& center,
+                     const std::string& name, QUndoCommand* parent = 0);
     ~AddCanvasCommand();
 
     void undo() Q_DECL_OVERRIDE;

@@ -52,6 +52,7 @@ public:
 
     /* other methods */
     void addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T);
+    void addCanvas(QUndoStack* stack, const osg::Vec3f& normal, const osg::Vec3f& center);
     void addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
     void addStroke(QUndoStack* stack, float u, float v, dureu::EVENT event);
     void addPhoto(QUndoStack* stack, const std::string& fname);

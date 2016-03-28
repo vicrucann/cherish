@@ -71,6 +71,7 @@ public:
     int getPhotoLevel() const;
 
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T);
+    void addCanvas(const osg::Vec3f& normal, const osg::Vec3f& center);
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
     void addStroke(float u, float v, dureu::EVENT event);
     void selectAllStrokes();

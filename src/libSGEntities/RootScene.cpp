@@ -181,6 +181,12 @@ void RootScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T)
     m_saved = false;
 }
 
+void RootScene::addCanvas(const osg::Vec3f &normal, const osg::Vec3f &center)
+{
+    m_userScene->addCanvas(m_undoStack, normal, center);
+    m_saved = false;
+}
+
 void RootScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name)
 {
     m_userScene->addCanvas(m_undoStack, R, T, name);

@@ -11,7 +11,7 @@ AddCanvasCommand::AddCanvasCommand(entity::UserScene* scene, const osg::Matrix& 
     m_canvas->setName(name);
     m_canvas->setMatrixRotation(R);
     m_canvas->setMatrixTranslation(T);
-    this->setText(QObject::tr("Add %1")
+    this->setText(QObject::tr("Add canvas %1")
                   .arg(QString(name.c_str())));
 }
 
@@ -20,8 +20,27 @@ AddCanvasCommand::AddCanvasCommand(entity::UserScene* scene, const entity::Canva
     , m_scene(scene)
     , m_canvas(copy.clone())
 {
-    this->setText(QObject::tr("Clone to %1")
+    this->setText(QObject::tr("Clone to canvas %1")
                   .arg(QString(m_canvas->getName().c_str())));
+}
+
+AddCanvasCommand::AddCanvasCommand(entity::UserScene *scene, const osg::Vec3f &normal, const osg::Vec3f &center, const std::string &name, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_canvas(new entity::Canvas())
+{
+    m_canvas->initializeSG();
+    m_canvas->setName(name);
+
+    osg::Matrix mR = osg::Matrix::identity(); //::rotate(dureu::PI*0.5, rotaxis.x(), rotaxis.y(), rotaxis.z());
+    mR.makeRotate(osg::Vec3f(0,0,1), normal); // from default global normal to new normal
+    m_canvas->setMatrixRotation(mR);
+
+    osg::Matrix mT = osg::Matrix::translate(center);
+    m_canvas->setMatrixTranslation(mT);
+
+    this->setText(QObject::tr("Add canvas %1")
+                  .arg(QString(name.c_str())));
 }
 
 AddCanvasCommand::~AddCanvasCommand()
@@ -47,6 +66,7 @@ void AddCanvasCommand::undo()
     // now delete the canvas
     emit m_scene->canvasRemoved(m_scene->getCanvasIndex(m_canvas.get()));
     m_scene->removeChild(m_canvas);
+    m_scene->getCanvasCurrent()->updateFrame(0);
     m_scene->updateWidgets();
 }
 

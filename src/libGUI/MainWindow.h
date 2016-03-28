@@ -76,6 +76,7 @@ private slots:
     void onNewCanvasXY();
     void onNewCanvasYZ();
     void onNewCanvasXZ();
+    void onNewCanvasOrtho();
     void onNewCanvasStandard();
     void onNewCanvasCoaxial();
     void onNewCanvasParallel();
@@ -136,8 +137,10 @@ private:
     QAction * m_actionSketch, * m_actionEraser, * m_actionSelect            
             // New Canvas sub-menu
             , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasXZ
+            , * m_actionCanvasOrtho
             // New Canvas Set sub-menu
-            , * m_actionSetStandard, * m_actionSetParallel, * m_actionSetCoaxial, * m_actionSetRing
+            , * m_actionSetStandard
+//            , * m_actionSetParallel, * m_actionSetCoaxial, * m_actionSetRing
             // Edit Canvas
             , * m_actionCanvasOffset, * m_actionCanvasRotate
             // Edit Image

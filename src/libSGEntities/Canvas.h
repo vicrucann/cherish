@@ -83,6 +83,9 @@ public:
     void setVisibilityAll(bool vis);
     bool getVisibilityData() const;
 
+    osg::Vec3f getGlobalAxisU() const;
+    osg::Vec3f getGlobalAxisV() const;
+
     void translate(const osg::Matrix& mt);
     void rotate(const osg::Matrix& mr);
 

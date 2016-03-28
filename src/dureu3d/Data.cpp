@@ -178,6 +178,13 @@ const QIcon &Data::sceneNewCanvasXZIcon()
     return icon;
 }
 
+const QIcon &Data::sceneNewCanvasOrthoIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-newcanvas-ortho-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/scene-newcanvas-ortho-24px.svg");
+    return icon;
+}
+
 const QIcon &Data::sceneNewCanvasSetIcon()
 {
     Q_ASSERT_X(!QPixmap(":/scene-newcanvas-set-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");

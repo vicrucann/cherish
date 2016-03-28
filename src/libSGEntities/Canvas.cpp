@@ -292,6 +292,32 @@ bool entity::Canvas::getVisibilityData() const
     return m_switch->getChildValue(m_geodeData);
 }
 
+/*  V
+ *  |
+ *  |____ U
+ *  /
+ * normal
+ */
+osg::Vec3f entity::Canvas::getGlobalAxisU() const
+{
+    osg::Vec3f u_loc = osg::Vec3f(1,0,0);
+    osg::Matrix M = m_transform->getMatrix();
+    return M * u_loc;
+}
+
+/*  V
+ *  |
+ *  |____ U
+ *  /
+ * normal
+ */
+osg::Vec3f entity::Canvas::getGlobalAxisV() const
+{
+    osg::Vec3f v_loc = osg::Vec3f(0,1,0);
+    osg::Matrix M = m_transform->getMatrix();
+    return M * v_loc;
+}
+
 // translates the current params on mt matrix
 void entity::Canvas::translate(const osg::Matrix& mt)
 {
@@ -430,6 +456,9 @@ int entity::Canvas::getStrokesSelectedSize() const
     return m_strokesSelected.size();
 }
 
+/* returns global center of selected entities;
+ * if there is no selected entities, returns canvas center
+*/
 osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
 {
     double mu = 0, mv = 0;
@@ -449,7 +478,10 @@ osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
         mu /= m_strokesSelected.size();
         mv /= m_strokesSelected.size();
     }
-    return osg::Vec3f(mu, mv, 0);
+    osg::Matrix M = m_transform->getMatrix();
+    osg::Vec3f center_loc = osg::Vec3f(mu, mv, 0);
+    osg::Vec3f center_glo = center_loc * M;
+    return center_glo;
 }
 
 void entity::Canvas::moveStrokes(std::vector<entity::Stroke *>& strokes, double du, double dv)
