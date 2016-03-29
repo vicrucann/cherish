@@ -127,7 +127,7 @@ void MainWindow::recievedRequestUpdate()
 void MainWindow::recieveAutoSwitchMode(dureu::MOUSE_MODE mode)
 {
     switch (mode){
-    case dureu::MOUSE_SELECT:
+    case dureu::MOUSE_SELECT_2D:
         emit this->onSketch();
         break;
     case dureu::MOUSE_SKETCH:
@@ -440,7 +440,7 @@ void MainWindow::onSelect(){
 
     QCursor* cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
     m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_SELECT);
+    emit sendMouseMode(dureu::MOUSE_SELECT_2D);
     this->statusBar()->showMessage(tr("Select mode is on: helps to select entities within current canvas; "
                                       "To select strokes within CURRENT canvas, "
                                       "use left mouse click and drag. "

@@ -38,8 +38,11 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     //    m_scene->getCanvasCurrent()->addStrokesSelectedAll();
 
     switch (m_mode){
-    case dureu::MOUSE_SELECT:
-        this->doSelectStroke<StrokeIntersector::Intersection, StrokeIntersector>(ea, aa);
+    case dureu::MOUSE_SELECT_2D:
+        if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL)
+            this->doSelectCanvas<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
+        else
+            this->doSelectStroke<StrokeIntersector::Intersection, StrokeIntersector>(ea, aa);
         break;
     case dureu::MOUSE_SKETCH:
         this->doSketch(ea, aa);
@@ -102,7 +105,7 @@ void EventHandler::setMode(dureu::MOUSE_MODE mode)
     case dureu::MOUSE_ENTITY_MOVE:
     case dureu::MOUSE_ERASE:
     case dureu::MOUSE_DELETE:
-    case dureu::MOUSE_SELECT:
+    case dureu::MOUSE_SELECT_2D:
         m_scene->setCanvasesButCurrent(false);
         break;
     default:
@@ -818,4 +821,26 @@ void EventHandler::doEditPhotoPush(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
     entity::Photo* photo = this->getPhoto(*result);
     if (!photo) return;
     m_scene->editPhotoPush(photo);
+}
+
+template <typename T1, typename T2>
+void EventHandler::doSelectCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+        return;
+
+    this->setMode(dureu::MOUSE_SELECT_3D);
+
+    T1* result = new T1;
+    bool intersected = this->getLineIntersection<T1, T2>(ea,aa, *result);
+    if (intersected){
+        entity::Canvas* cnv = this->getCanvas(*result);
+        if (cnv){
+            std::cout << "doPickCanvas(): assumed canvas with name: " << cnv->getName() << std::endl;
+            m_scene->setCanvasCurrent(cnv);
+        }
+        else
+            std::cerr << "doPickCanvas(): could not dynamic_cast<Canvas*>" << std::endl;
+    }
+    this->setMode(dureu::MOUSE_SELECT_2D);
 }

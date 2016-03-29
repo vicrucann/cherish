@@ -83,7 +83,8 @@ enum APPMODE{
 };
 
 enum MOUSE_MODE
-{     MOUSE_SELECT // for selection and delete
+{     MOUSE_SELECT_2D // for selection and delete
+      , MOUSE_SELECT_3D // sub mode when user presses and holds CTRL
       , MOUSE_SKETCH // to draw strokes and 2D geometric shapes
       , MOUSE_CANVAS_OFFSET
       , MOUSE_CANVAS_ROTATE

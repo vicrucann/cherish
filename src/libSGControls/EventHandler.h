@@ -24,7 +24,7 @@
 
 class EventHandler : public osgGA::GUIEventHandler {
 public:
-    EventHandler(RootScene* scene, dureu::MOUSE_MODE mode = dureu::MOUSE_SELECT);
+    EventHandler(RootScene* scene, dureu::MOUSE_MODE mode = dureu::MOUSE_SELECT_2D);
 
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
@@ -35,6 +35,9 @@ public:
 
     template <typename T1, typename T2>
     void doSelectStroke(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
+    template <typename T1, typename T2>
+    void doSelectCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa);
 
     void doSketch(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
