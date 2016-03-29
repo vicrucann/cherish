@@ -18,6 +18,7 @@ public:
     static const QIcon& fileImageIcon();
     static const QIcon& fileOpenIcon();
     static const QIcon& fileSaveIcon();
+    static const QIcon& fileExportIcon();
 
 
     static const QIcon& editUndoIcon();

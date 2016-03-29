@@ -107,6 +107,11 @@ bool RootScene::writeScenetoFile()
     return false;
 }
 
+bool RootScene::exportSceneToFile(const std::string &name)
+{
+    return osgDB::writeNodeFile(*this, name);
+}
+
 bool RootScene::loadSceneFromFile()
 {
     if (!m_undoStack){

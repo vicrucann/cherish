@@ -53,6 +53,7 @@ private slots:
     void onFileOpen();
     void onFileSave();
     void onFileSaveAs();
+    void onFileExport();
     void onFileImage();
     void onFileClose();
     void onFileExit();
@@ -121,7 +122,8 @@ private:
 
     // FILE actions
     QAction * m_actionNewFile, * m_actionClose, * m_actionExit,
-            * m_actionImportImage, * m_actionOpenFile, * m_actionSaveFile, * m_actionSaveAsFile;
+            * m_actionImportImage, * m_actionOpenFile, * m_actionSaveFile,
+            * m_actionSaveAsFile, * m_actionExportAs;
 
     // EDIT actions
     QAction * m_actionUndo, * m_actionRedo, * m_actionCut, * m_actionCopy,

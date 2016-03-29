@@ -321,6 +321,22 @@ void MainWindow::onFileSaveAs()
     this->onFileSave();
 }
 
+void MainWindow::onFileExport()
+{
+    QString fname = QFileDialog::getSaveFileName(this, tr("Exporting file"), QString(), tr("Raw OSGT format (*.osgt)"));
+    if (fname.isEmpty()){
+        QMessageBox::warning(this, tr("Chosing filename"), tr("No file name is chosen. File was not exported."));
+        this->statusBar()->showMessage(tr("Scene was not exported."));
+        return;
+    }
+    if (!m_rootScene->exportSceneToFile(fname.toStdString())){
+        QMessageBox::critical(this, tr("Error"), tr("Could not export scene to file"));
+        this->statusBar()->showMessage(tr("Scene was not exported to file"));
+        return;
+    }
+    this->statusBar()->showMessage(tr("Scene was successfully exported."));
+}
+
 void MainWindow::onFileImage()
 {
     if (m_rootScene->isEmptyScene()){
@@ -662,6 +678,9 @@ void MainWindow::initializeActions()
     m_actionSaveAsFile = new QAction(tr("Save as..."), this);
     this->connect(m_actionSaveAsFile, SIGNAL(triggered(bool)), this, SLOT(onFileSaveAs()));
 
+    m_actionExportAs = new QAction(Data::fileExportIcon(), tr("Export as..."), this);
+    this->connect(m_actionExportAs, SIGNAL(triggered(bool)), this, SLOT(onFileExport()));
+
     // EDIT
 
     m_actionUndo = m_undoStack->createUndoAction(this, tr("&Undo"));
@@ -793,7 +812,7 @@ void MainWindow::initializeMenus()
     menuFile->addSeparator();
     menuFile->addAction(m_actionSaveFile);
     menuFile->addAction(m_actionSaveAsFile);
-    // "Save As" here
+    menuFile->addAction(m_actionExportAs);
     menuFile->addSeparator();
     menuFile->addAction(m_actionImportImage);
     menuFile->addSeparator();

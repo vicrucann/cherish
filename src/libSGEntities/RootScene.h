@@ -64,6 +64,7 @@ public:
     bool getAxesVisibility() const;
 
     bool writeScenetoFile();
+    bool exportSceneToFile(const std::string& name);
     bool loadSceneFromFile();
 
     int getStrokeLevel() const;

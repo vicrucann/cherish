@@ -52,6 +52,13 @@ const QIcon &Data::fileSaveIcon()
     return icon;
 }
 
+const QIcon &Data::fileExportIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/file-export-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/file-export-24px.svg");
+    return icon;
+}
+
 const QIcon &Data::editUndoIcon()
 {
     Q_ASSERT_X(!QPixmap(":/edit-undo-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
