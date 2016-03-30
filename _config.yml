@@ -8,6 +8,7 @@ safe: false
 ### site serving configuration ###
 exclude: [CNAME, README.md, .gitignore, Gemfile]
 permalink: / ## disables post output
+baseurl: /dura-europos-insitu
 timezone: null
 lsi: false
 markdown: kramdown
@@ -18,7 +19,7 @@ highlighter: pygments
 title:       "SEEDSPIRE: making sense of data by sketching and image manipulation for 3D representation of historical sites"
 keywords:    "archaeology, cultural heritage, 3D reconstruction, virtual tour"
 description: "Software package for cultural heritage sparse data gather-together and building a 3D representation of the historical site"
-source_link: "https://github.com/t413/SinglePaged"
+source_link: "https://github.com/vicrucann/dura-europos-insitu"
 favicon:     "img/favicon.ico"
 touch_icon:  "img/apple-touch-icon.png"
 # google_analytics_key: UA-49607422-1 ## put YOUR key here to enable tracking! (blank to disable)
