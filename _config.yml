@@ -8,6 +8,7 @@ safe: false
 ### site serving configuration ###
 exclude: [CNAME, README.md, .gitignore, Gemfile]
 permalink: / ## disables post output
+baseurl: /dura-europos-insitu
 timezone: null
 lsi: false
 markdown: kramdown
