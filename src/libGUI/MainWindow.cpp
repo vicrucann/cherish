@@ -264,17 +264,16 @@ void MainWindow::onFileOpen()
 
     QString fname = QFileDialog::getOpenFileName(this, tr("Open a scene from file"),
                                                  QString(), tr("OSG files (*.osg *.osgt)"));
-    if (fname.isEmpty()){
-        QMessageBox::critical(this, tr("Error"), tr("Could not obtain a file name"));
-        return;
+    if (!fname.isEmpty()){
+        m_rootScene->setFilePath(fname.toStdString());
+        if (!m_rootScene->loadSceneFromFile()){
+            QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
+            m_rootScene->setFilePath("");
+        }
+        else
+            this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
     }
-    m_rootScene->setFilePath(fname.toStdString());
-    if (!m_rootScene->loadSceneFromFile()){
-        QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
-        m_rootScene->setFilePath("");
-    }
-    else
-        this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
+
     m_glWidget->update();
     this->initializeCallbacks();
     m_rootScene->resetBookmarks(m_bookmarkWidget);
