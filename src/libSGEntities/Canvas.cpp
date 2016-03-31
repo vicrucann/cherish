@@ -31,7 +31,7 @@ entity::Canvas::Canvas()
 
     , m_strokeCurrent(0)
     , m_selectedEntity(0)
-    , m_strokeSelected(0)
+    , m_entitySelected(0)
     , m_photoCurrent(0)
 
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
@@ -73,7 +73,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
 
     , m_strokeCurrent(0)
     , m_selectedEntity(0)
-    , m_strokeSelected(0)
+    , m_entitySelected(0)
     , m_photoCurrent(0)
 
     , m_center(cnv.m_center)
@@ -344,22 +344,24 @@ void entity::Canvas::unselectAll()
 {
     this->setPhotoCurrent(false);
     this->setStrokeCurrent(false);
-    this->unselectStrokes();
+    this->unselectEntities();
 }
 
-void entity::Canvas::unselectStrokes()
+void entity::Canvas::unselectEntities()
 {
-    this->resetStrokesSelected();
+    this->resetEntitiesSelected();
 }
 
 void entity::Canvas::selectAllStrokes()
 {
-    this->resetStrokesSelected();
-    for (unsigned int i = 0; i < m_geodeData->getNumChildren(); ++i){
-        entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_geodeData->getChild(i));
-        if (!stroke)
-            continue;
-        this->addStrokesSelected(stroke);
+    this->resetEntitiesSelected();
+    for (unsigned int i = 0; i < m_geodeData->getNumChildren(); i++){
+        entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
+        if (!entity) continue;
+        this->addEntitiesSelected(entity);
+//        entity::Entity2D* entity = dynamic_cast<entity::Entity2D>(m_geodeData->getChild(i));
+//        if (!entity) continue;
+//        this->addEntitiesSelected(entity);
     }
 }
 
@@ -383,69 +385,49 @@ entity::Stroke *entity::Canvas::getStrokeCurrent() const
     return m_strokeCurrent.get();
 }
 
-void entity::Canvas::addStrokesSelectedAll()
+void entity::Canvas::addEntitiesSelected(Entity2D *entity)
 {
-    this->resetStrokesSelected();
-    for (unsigned int i = 0; i < m_geodeData->getNumChildren(); i++){
-        entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
-        if (!entity){
-            outErrMsg("addStrokesSelectedAll: could not dynamic_cast to Entity2D*");
-            continue;
-        }
-        if (entity->getEntityType() == dureu::ENTITY_STROKE){
-            entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(entity);
-            if (!stroke){
-                outErrMsg("addStrokesSelectedAll: could not dynamic_cast to Stroke*");
-                continue;
-            }
-            this->addStrokesSelected(stroke);
-        }
-    }
-}
-
-void entity::Canvas::addStrokesSelected(entity::Stroke* stroke)
-{
-    if (!stroke){
-        outErrMsg("addStrokesSelected: stroke ptr is NULL");
+    if (!entity){
+        outErrMsg("addEntitiesSelected: stroke ptr is NULL");
         return;
     }
-    if (!m_geodeData->containsDrawable(stroke)){
+    if (!m_geodeData->containsDrawable(entity)){
         outErrMsg("The stroke does not belong to Canvas, selection is impossible");
         return;
     }
-    if (!this->isStrokeSelected(stroke)){
-        this->setStrokeSelected(stroke);
-        m_selectedEntity.push_back(stroke);
+    if (!this->isEntitySelected(entity)){
+        this->setEntitySelected(entity);
+        m_selectedEntity.push_back(entity);
     }
 //    else{
 //        outLogMsg("stroke is already selected, do unselect");
-//        this->resetStrokeSelected(stroke);
+//        this->resetEntitySelected(stroke);
 //    }
 }
 
-void entity::Canvas::resetStrokesSelected()
+void entity::Canvas::resetEntitiesSelected()
 {
     for (unsigned int i = 0; i < m_selectedEntity.size(); ++i){
-        entity::Stroke* stroke = dynamic_cast<entity::Stroke*>( m_selectedEntity.at(i));
-        if (!stroke) continue;
-        this->setStrokeSelected(stroke);
-        this->setStrokeSelected(false);
+        entity::Entity2D* entity = m_selectedEntity.at(i);
+        if (!entity) continue;
+        this->setEntitySelected(entity);
+        this->setEntitySelected(false);
     }
     m_selectedEntity.clear();
 }
 
-void entity::Canvas::resetStrokeSelected(entity::Stroke *stroke)
+void entity::Canvas::resetEntitySelected(Entity2D *entity)
 {
     unsigned int i;
     for (i = 0; i < m_selectedEntity.size(); ++i){
-        entity::Stroke* s = dynamic_cast<entity::Stroke*>(m_selectedEntity.at(i));
+        entity::Entity2D* s = m_selectedEntity.at(i);
         if (!s) continue;
-        if (stroke == s)
+        if (entity == s)
             break;
     }
-    if (!stroke) return;
-    this->setStrokeSelected(stroke);
-    this->setStrokeSelected(false);
+    if (!entity) return;
+    this->setEntitySelected(entity);
+    this->setEntitySelected(false);
     m_selectedEntity.erase(m_selectedEntity.begin()+i);
 }
 
@@ -487,93 +469,93 @@ osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
     return center_glo;
 }
 
-void entity::Canvas::moveStrokes(std::vector<entity::Entity2D *>& entities, double du, double dv)
+void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, double du, double dv)
 {
     for (unsigned int i=0; i<entities.size(); ++i){
         entity::Entity2D* entity = entities.at(i);
         if (!entity){
-            outErrMsg("moveStrokes: one of entity ptr is NULL");
+            outErrMsg("moveEntities: one of entity ptr is NULL");
             break;
         }
         entity->moveDelta(du, dv);
     }
 }
 
-void entity::Canvas::moveStrokesSelected(double du, double dv)
+void entity::Canvas::moveEntitiesSelected(double du, double dv)
 {
-    this->moveStrokes(m_selectedEntity, du, dv);
+    this->moveEntities(m_selectedEntity, du, dv);
 }
 
-void entity::Canvas::scaleStrokes(std::vector<Entity2D *> &entities, double s, osg::Vec3f center)
+void entity::Canvas::scaleEntities(std::vector<Entity2D *> &entities, double s, osg::Vec3f center)
 {
     for (unsigned int i=0; i<entities.size(); ++i){
         entity::Entity2D* entity = entities.at(i);
         if (!entity){
-            outErrMsg("moveStrokes: one of strokes ptr is NULL");
+            outErrMsg("scaleEntities: one of strokes ptr is NULL");
             break;
         }
         entity->scale(s, center);
     }
 }
 
-void entity::Canvas::scaleStrokesSelected(double s, osg::Vec3f center)
+void entity::Canvas::scaleEntitiesSelected(double s, osg::Vec3f center)
 {
-    this->scaleStrokes(m_selectedEntity, s, center);
+    this->scaleEntities(m_selectedEntity, s, center);
 }
 
-void entity::Canvas::rotateStrokes(std::vector<Entity2D *> entities, double theta, osg::Vec3f center)
+void entity::Canvas::rotateEntities(std::vector<Entity2D *> entities, double theta, osg::Vec3f center)
 {
     for (unsigned int i=0; i<entities.size(); ++i){
         entity::Entity2D* entity = entities.at(i);
         if (!entity){
-            outErrMsg("moveStrokes: one of entities ptr is NULL");
+            outErrMsg("rotateEntities: one of entities ptr is NULL");
             break;
         }
         entity->rotate(theta, center);
     }
 }
 
-void entity::Canvas::rotateStrokesSelected(double theta, osg::Vec3f center)
+void entity::Canvas::rotateEntitiesSelected(double theta, osg::Vec3f center)
 {
-    this->rotateStrokes(m_selectedEntity, theta, center);
+    this->rotateEntities(m_selectedEntity, theta, center);
 }
 
-void entity::Canvas::setStrokeSelected(entity::Stroke *stroke)
+void entity::Canvas::setEntitySelected(Entity2D *entity)
 {
-    if (m_strokeSelected.get() == stroke){
+    if (m_entitySelected.get() == entity){
         return;
     }
-    //if (m_strokeSelected.get() != 0)
-    //    this->setStrokeSelected(false);
-    m_strokeSelected = stroke;
-    this->setStrokeSelected(true);
+    //if (m_entitySelected.get() != 0)
+    //    this->setEntitySelected(false);
+    m_entitySelected = entity;
+    this->setEntitySelected(true);
 }
 
-void entity::Canvas::setStrokeSelected(bool selected)
+void entity::Canvas::setEntitySelected(bool selected)
 {
-    if (!m_strokeSelected.get())
+    if (!m_entitySelected.get())
         return;
     if (!selected){
-        m_strokeSelected->setColor(dureu::STROKE_CLR_NORMAL);
-        m_strokeSelected = 0;
+        m_entitySelected->setColor(dureu::STROKE_CLR_NORMAL);
+        m_entitySelected = 0;
     }
     else{
-        m_strokeSelected->setColor(dureu::STROKE_CLR_SELECTED);
+        m_entitySelected->setColor(dureu::STROKE_CLR_SELECTED);
     }
 }
 
-bool entity::Canvas::isStrokeSelected(entity::Stroke *stroke) const
+bool entity::Canvas::isEntitySelected(Entity2D *entity) const
 {
     for (unsigned int i = 0; i < m_selectedEntity.size(); ++i){
-        if (stroke == m_selectedEntity.at(i))
+        if (entity == m_selectedEntity.at(i))
             return true;
     }
     return false;
 }
 
-entity::Stroke *entity::Canvas::getStrokeSelected() const
+entity::Entity2D *entity::Canvas::getEntitySelected() const
 {
-    return m_strokeSelected.get();
+    return m_entitySelected.get();
 }
 
 bool entity::Canvas::setPhotoCurrent(entity::Photo *photo)

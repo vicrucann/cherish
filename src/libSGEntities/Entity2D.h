@@ -16,6 +16,7 @@ public:
     virtual void scale(double scaleX, double scaleY, osg::Vec3f center) = 0;
     virtual void scale(double scale, osg::Vec3f center) = 0;
     virtual void rotate(double theta, osg::Vec3f center) = 0;
+    virtual void setColor(const osg::Vec4f& color) = 0;
 
     virtual dureu::ENTITY_TYPE getEntityType() const = 0;
 

@@ -809,25 +809,25 @@ void entity::UserScene::editStrokesMove(QUndoStack *stack, double u, double v, d
     switch (event){
     case dureu::EVENT_OFF:
         outLogMsg("EditStrokesMove: event off called");
-        if (this->strokesSelectedValid())
-            this->strokesMoveFinish(stack);
+        if (this->entitiesSelectedValid())
+            this->entitiesMoveFinish(stack);
         break;
     case dureu::EVENT_PRESSED:
         outLogMsg("EditStrokesMove: event pressed called");
-        this->strokesMoveStart(u,v);
-        this->strokesMoveAppend(u,v);
+        this->entitiesMoveStart(u,v);
+        this->entitiesMoveAppend(u,v);
         break;
     case dureu::EVENT_DRAGGED:
-        if (!this->strokesSelectedValid())
-            this->strokesMoveStart(u,v);
-        this->strokesMoveAppend(u,v);
+        if (!this->entitiesSelectedValid())
+            this->entitiesMoveStart(u,v);
+        this->entitiesMoveAppend(u,v);
         break;
     case dureu::EVENT_RELEASED:
-        if (!this->strokesSelectedValid())
+        if (!this->entitiesSelectedValid())
             break;
         outLogMsg("EditStrokesMove: event release called");
-        this->strokesMoveAppend(u,v);
-        this->strokesMoveFinish(stack);
+        this->entitiesMoveAppend(u,v);
+        this->entitiesMoveFinish(stack);
         break;
     default:
         break;
@@ -843,27 +843,27 @@ void entity::UserScene::editStrokesScale(QUndoStack *stack, double u, double v, 
     switch (event){
     case dureu::EVENT_OFF:
         outLogMsg("EditStrokesScale: event off called");
-        if (this->strokesSelectedValid()){
+        if (this->entitiesSelectedValid()){
             outLogMsg("EditStrokesScale: event off performed");
-            this->strokesScaleFinish(stack);
+            this->entitiesScaleFinish(stack);
         }
         break;
     case dureu::EVENT_PRESSED:
         outLogMsg("EditStrokesScale: event pressed called");
-        this->strokesScaleStart(u,v);
-        this->strokesScaleAppend(u,v);
+        this->entitiesScaleStart(u,v);
+        this->entitiesScaleAppend(u,v);
         break;
     case dureu::EVENT_DRAGGED:
-        if (!this->strokesSelectedValid())
-            this->strokesScaleStart(u,v);
-        this->strokesScaleAppend(u,v);
+        if (!this->entitiesSelectedValid())
+            this->entitiesScaleStart(u,v);
+        this->entitiesScaleAppend(u,v);
         break;
     case dureu::EVENT_RELEASED:
-        if (!this->strokesSelectedValid())
+        if (!this->entitiesSelectedValid())
             break;
         outLogMsg("EditStrokesScale: event release called");
-        this->strokesScaleAppend(u,v);
-        this->strokesScaleFinish(stack);
+        this->entitiesScaleAppend(u,v);
+        this->entitiesScaleFinish(stack);
         break;
     default:
         break;
@@ -879,27 +879,27 @@ void entity::UserScene::editStrokesRotate(QUndoStack *stack, double u, double v,
     switch (event){
     case dureu::EVENT_OFF:
         outLogMsg("EditStrokesScale: event off called");
-        if (this->strokesSelectedValid()){
+        if (this->entitiesSelectedValid()){
             outLogMsg("EditStrokesScale: event off performed");
-            this->strokesRotateFinish(stack);
+            this->entitiesRotateFinish(stack);
         }
         break;
     case dureu::EVENT_PRESSED:
         outLogMsg("EditStrokesScale: event pressed called");
-        this->strokesRotateStart(u,v);
-        this->strokesRotateAppend(u,v);
+        this->entitiesRotateStart(u,v);
+        this->entitiesRotateAppend(u,v);
         break;
     case dureu::EVENT_DRAGGED:
-        if (!this->strokesSelectedValid())
-            this->strokesRotateStart(u,v);
-        this->strokesRotateAppend(u,v);
+        if (!this->entitiesSelectedValid())
+            this->entitiesRotateStart(u,v);
+        this->entitiesRotateAppend(u,v);
         break;
     case dureu::EVENT_RELEASED:
-        if (!this->strokesSelectedValid())
+        if (!this->entitiesSelectedValid())
             break;
         outLogMsg("EditStrokesScale: event release called");
-        this->strokesRotateAppend(u,v);
-        this->strokesRotateFinish(stack);
+        this->entitiesRotateAppend(u,v);
+        this->entitiesRotateFinish(stack);
         break;
     default:
         break;
@@ -1066,7 +1066,7 @@ std::string entity::UserScene::getEntityName(const std::string &name, unsigned i
 
 void entity::UserScene::strokeStart()
 {
-    m_canvasCurrent->unselectStrokes();
+    m_canvasCurrent->unselectEntities();
     /* if the canvas is hidden, show it all so that user could see where they sketch */
     if (!m_canvasCurrent->getVisibilityData())
         m_canvasCurrent->setVisibilityAll(true);
@@ -1119,7 +1119,7 @@ bool entity::UserScene::strokeValid() const
     return m_canvasCurrent->getStrokeCurrent();
 }
 
-void entity::UserScene::strokesMoveStart(double u, double v)
+void entity::UserScene::entitiesMoveStart(double u, double v)
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
     if (!m_canvasCurrent->getVisibilityData())
@@ -1130,13 +1130,13 @@ void entity::UserScene::strokesMoveStart(double u, double v)
     m_inits = true;
 }
 
-void entity::UserScene::strokesMoveAppend(double u, double v)
+void entity::UserScene::entitiesMoveAppend(double u, double v)
 {
     double du = u - m_u;
     double dv = v - m_v;
 
     /* perform delta movement */
-    m_canvasCurrent->moveStrokesSelected(du, dv);
+    m_canvasCurrent->moveEntitiesSelected(du, dv);
 
     this->updateWidgets();
     m_du += du;
@@ -1145,12 +1145,12 @@ void entity::UserScene::strokesMoveAppend(double u, double v)
     m_v = v;
 }
 
-void entity::UserScene::strokesMoveFinish(QUndoStack *stack)
+void entity::UserScene::entitiesMoveFinish(QUndoStack *stack)
 {
     /* move things back so that to perform this operation in undo/redo FW */
-    m_canvasCurrent->moveStrokesSelected(-m_du, -m_dv);
+    m_canvasCurrent->moveEntitiesSelected(-m_du, -m_dv);
 
-    EditStrokesMoveCommand* cmd = new EditStrokesMoveCommand(this,
+    EditEntitiesMoveCommand* cmd = new EditEntitiesMoveCommand(this,
                                                              m_canvasCurrent->getStrokesSelected(),
                                                              m_canvasCurrent.get(),
                                                              m_du, m_dv);
@@ -1166,12 +1166,12 @@ void entity::UserScene::strokesMoveFinish(QUndoStack *stack)
     m_inits = false;
 }
 
-bool entity::UserScene::strokesSelectedValid() const
+bool entity::UserScene::entitiesSelectedValid() const
 {
     return ((m_canvasCurrent->getStrokesSelectedSize() > 0? true : false) && m_inits);
 }
 
-void entity::UserScene::strokesScaleStart(double u, double v)
+void entity::UserScene::entitiesScaleStart(double u, double v)
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
     if (!m_canvasCurrent->getVisibilityData())
@@ -1187,7 +1187,7 @@ void entity::UserScene::strokesScaleStart(double u, double v)
     m_inits = true;
 }
 
-void entity::UserScene::strokesScaleAppend(double u, double v)
+void entity::UserScene::entitiesScaleAppend(double u, double v)
 {
     double s = 1;
     // make sure it's not smaller than allowed
@@ -1197,17 +1197,17 @@ void entity::UserScene::strokesScaleAppend(double u, double v)
     outLogVal("s", s);
 
     m_scale *= s;
-    m_canvasCurrent->scaleStrokesSelected(s, osg::Vec3f(m_du, m_dv, 0));
+    m_canvasCurrent->scaleEntitiesSelected(s, osg::Vec3f(m_du, m_dv, 0));
 
     this->updateWidgets();
     m_u = std::fabs(u-m_v);
 }
 
-void entity::UserScene::strokesScaleFinish(QUndoStack *stack)
+void entity::UserScene::entitiesScaleFinish(QUndoStack *stack)
 {
-    m_canvasCurrent->scaleStrokesSelected(1/m_scale, osg::Vec3f(m_du, m_dv, 0));
+    m_canvasCurrent->scaleEntitiesSelected(1/m_scale, osg::Vec3f(m_du, m_dv, 0));
 
-    EditStrokesScaleCommand* cmd = new EditStrokesScaleCommand(this,
+    EditEntitiesScaleCommand* cmd = new EditEntitiesScaleCommand(this,
                                                                m_canvasCurrent->getStrokesSelected(),
                                                                m_canvasCurrent.get(),
                                                                m_scale, osg::Vec3f(m_du, m_dv, 0));
@@ -1224,7 +1224,7 @@ void entity::UserScene::strokesScaleFinish(QUndoStack *stack)
 
 }
 
-void entity::UserScene::strokesRotateStart(double u, double v)
+void entity::UserScene::entitiesRotateStart(double u, double v)
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
     if (!m_canvasCurrent->getVisibilityData())
@@ -1233,7 +1233,7 @@ void entity::UserScene::strokesRotateStart(double u, double v)
     osg::Vec3f center = m_canvasCurrent->getGeodeData()->getBoundingBox().center();
     if (center.z() > dureu::EPSILON){
         outLogVec("center", center.x(), center.y(), center.z());
-        outErrMsg("strokesRotateStart: z coordiante is not close to zero");
+        outErrMsg("entitiesRotateStart: z coordiante is not close to zero");
     }
 
     m_u = u;
@@ -1244,7 +1244,7 @@ void entity::UserScene::strokesRotateStart(double u, double v)
     m_inits = true;
 }
 
-void entity::UserScene::strokesRotateAppend(double u, double v)
+void entity::UserScene::entitiesRotateAppend(double u, double v)
 {
     double cx = m_du;
     double cy = m_dv;
@@ -1283,7 +1283,7 @@ void entity::UserScene::strokesRotateAppend(double u, double v)
     outLogVal("theta", theta);
 
     /* now rotate stroke on theta around center of coords [m_du m_dv] */
-    m_canvasCurrent->rotateStrokesSelected(theta, osg::Vec3f(m_du, m_dv, 0));
+    m_canvasCurrent->rotateEntitiesSelected(theta, osg::Vec3f(m_du, m_dv, 0));
 
     m_rotate += theta;
     m_u = u;
@@ -1292,11 +1292,11 @@ void entity::UserScene::strokesRotateAppend(double u, double v)
     this->updateWidgets();
 }
 
-void entity::UserScene::strokesRotateFinish(QUndoStack *stack)
+void entity::UserScene::entitiesRotateFinish(QUndoStack *stack)
 {
-    m_canvasCurrent->rotateStrokesSelected(-m_rotate, osg::Vec3f(m_du, m_dv, 0));
+    m_canvasCurrent->rotateEntitiesSelected(-m_rotate, osg::Vec3f(m_du, m_dv, 0));
 
-    EditStrokesRotateCommand* cmd = new EditStrokesRotateCommand(this,
+    EditEntitiesRotateCommand* cmd = new EditEntitiesRotateCommand(this,
                                                                  m_canvasCurrent->getStrokesSelected(),
                                                                  m_canvasCurrent.get(),
                                                                  m_rotate, osg::Vec3f(m_du, m_dv, 0));
@@ -1306,7 +1306,7 @@ void entity::UserScene::strokesRotateFinish(QUndoStack *stack)
     m_inits = false;
 
     if (!cmd){
-        outErrMsg("strokesRotateFinish: Could not allocate command");
+        outErrMsg("entitiesRotateFinish: Could not allocate command");
         return;
     }
     stack->push(cmd);

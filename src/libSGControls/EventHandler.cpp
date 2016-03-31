@@ -42,7 +42,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL)
             this->doSelectCanvas<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
         else
-            this->doSelectStroke<StrokeIntersector::Intersection, StrokeIntersector>(ea, aa);
+            this->doSelectEntity(ea, aa);
         break;
     case dureu::MOUSE_SKETCH:
         this->doSketch(ea, aa);
@@ -786,8 +786,7 @@ void EventHandler::doEditPhotoRotate(const osgGA::GUIEventAdapter &ea, osgGA::GU
 
 }
 
-template <typename T1, typename T2>
-void EventHandler::doSelectStroke(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
@@ -796,17 +795,23 @@ void EventHandler::doSelectStroke(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         return;
 
     if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && !(ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL))
-        m_scene->getCanvasCurrent()->resetStrokesSelected();
+        m_scene->getCanvasCurrent()->resetEntitiesSelected();
 
-    T1* result = new T1;
-    if (!this->getLineIntersection<T1, T2>(ea,aa, *result)) return;
-
-    entity::Stroke* stroke = this->getStroke(*result);
-    if (!stroke){
-        std::cerr << "doSelectStroke(): could not dynamic_cast<Stroke*>" << std::endl;
-        return;
+    osgUtil::LineSegmentIntersector::Intersection* result_photo = new osgUtil::LineSegmentIntersector::Intersection;
+    bool inter_photo = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
+            (ea,aa, *result_photo);
+    if (inter_photo){
+        entity::Photo* photo = this->getPhoto(*result_photo);
+        if (photo) m_scene->getCanvasCurrent()->addEntitiesSelected(photo);
     }
-    m_scene->getCanvasCurrent()->addStrokesSelected(stroke);
+
+    StrokeIntersector::Intersection* result_stroke = new StrokeIntersector::Intersection;
+    bool inter_stroke = this->getLineIntersection<StrokeIntersector::Intersection, StrokeIntersector>
+            (ea,aa, *result_stroke);
+    if (inter_stroke) {
+        entity::Stroke* stroke = this->getStroke(*result_stroke);
+        if (stroke) m_scene->getCanvasCurrent()->addEntitiesSelected(stroke);
+    }
 }
 
 template <typename T1, typename T2>

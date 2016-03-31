@@ -156,12 +156,12 @@ protected:
     osg::Vec3f m_eye;
 };
 
-class EditStrokesMoveCommand : public QUndoCommand
+class EditEntitiesMoveCommand : public QUndoCommand
 {
 public:
-    EditStrokesMoveCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& strokes, entity::Canvas* canvas,
+    EditEntitiesMoveCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& strokes, entity::Canvas* canvas,
                            double du, double dv, QUndoCommand* parent = 0);
-    ~EditStrokesMoveCommand() {}
+    ~EditEntitiesMoveCommand() {}
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
@@ -174,12 +174,12 @@ protected:
     double m_dv;
 };
 
-class EditStrokesScaleCommand : public QUndoCommand
+class EditEntitiesScaleCommand : public QUndoCommand
 {
 public:
-    EditStrokesScaleCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities, entity::Canvas* canvas,
+    EditEntitiesScaleCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities, entity::Canvas* canvas,
                             double scale, osg::Vec3f center, QUndoCommand* parent = 0);
-    ~EditStrokesScaleCommand() {}
+    ~EditEntitiesScaleCommand() {}
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
@@ -192,12 +192,12 @@ protected:
     osg::Vec3f m_center;
 };
 
-class EditStrokesRotateCommand : public QUndoCommand
+class EditEntitiesRotateCommand : public QUndoCommand
 {
 public:
-    EditStrokesRotateCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities, entity::Canvas* canvas,
+    EditEntitiesRotateCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities, entity::Canvas* canvas,
                              double theta, osg::Vec3f center, QUndoCommand* parent = 0);
-    ~EditStrokesRotateCommand() {}
+    ~EditEntitiesRotateCommand() {}
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;

@@ -39,7 +39,7 @@ public:
     void loadImage(const std::string& fname);
     osg::StateAttribute* getTextureAsAttribute() const;
 
-    void setFrameColor(const osg::Vec4 color);
+    void setFrameColor(const osg::Vec4 color); // degenerated, will be removed
     void setModeEdit(bool edit);
     bool getModeEdit() const;
 
@@ -51,6 +51,7 @@ public:
     void flipV();
     void scale(double scale, osg::Vec3f center);
     void scale(double scaleX, double scaleY, osg::Vec3f center);
+    void setColor(const osg::Vec4f& color);
 
     dureu::ENTITY_TYPE getEntityType() const;
 

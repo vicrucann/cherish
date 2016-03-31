@@ -221,6 +221,19 @@ void entity::Photo::scale(double scaleX, double scaleY, osg::Vec3f center)
     this->updateVertices();
 }
 
+void entity::Photo::setColor(const osg::Vec4f &color)
+{
+    outLogMsg("photo color resetting");
+    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+    if (color != dureu::STROKE_CLR_NORMAL)
+        (*colors)[0] = color;
+    else
+        (*colors)[0] = dureu::PHOTO_CLR_REST;
+    colors->dirty();
+    this->dirtyDisplayList();
+    this->dirtyBound();
+}
+
 dureu::ENTITY_TYPE entity::Photo::getEntityType() const
 {
     return dureu::ENTITY_PHOTO;

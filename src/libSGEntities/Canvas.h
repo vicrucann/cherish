@@ -90,26 +90,25 @@ public:
     void rotate(const osg::Matrix& mr);
 
     void unselectAll();
-    void unselectStrokes();
+    void unselectEntities();
     void selectAllStrokes();
 
     void setStrokeCurrent(entity::Stroke* stroke);
     void setStrokeCurrent(bool current);
     entity::Stroke* getStrokeCurrent() const;
 
-    void addStrokesSelectedAll(); // de-generate methods, will be removed
-    void addStrokesSelected(entity::Stroke* stroke);
-    void resetStrokesSelected();
-    void resetStrokeSelected(entity::Stroke* stroke);
+    void addEntitiesSelected(entity::Entity2D* entity);
+    void resetEntitiesSelected();
+    void resetEntitySelected(entity::Entity2D* entity);
     const std::vector<Entity2D *> &getStrokesSelected() const;
     int getStrokesSelectedSize() const;
     osg::Vec3f getStrokesSelectedCenter() const;
-    void moveStrokes(std::vector<Entity2D *> &entities, double du, double dv);
-    void moveStrokesSelected(double du, double dv);
-    void scaleStrokes(std::vector<Entity2D *> &entities, double s, osg::Vec3f center);
-    void scaleStrokesSelected(double s, osg::Vec3f center);
-    void rotateStrokes(std::vector<entity::Entity2D*> entities, double theta, osg::Vec3f center);
-    void rotateStrokesSelected(double theta, osg::Vec3f center);
+    void moveEntities(std::vector<Entity2D *> &entities, double du, double dv);
+    void moveEntitiesSelected(double du, double dv);
+    void scaleEntities(std::vector<Entity2D *> &entities, double s, osg::Vec3f center);
+    void scaleEntitiesSelected(double s, osg::Vec3f center);
+    void rotateEntities(std::vector<entity::Entity2D*> entities, double theta, osg::Vec3f center);
+    void rotateEntitiesSelected(double theta, osg::Vec3f center);
 
     bool setPhotoCurrent(entity::Photo* photo);
     void setPhotoCurrent(bool current);
@@ -132,10 +131,10 @@ public:
 protected:
     ~Canvas();
 
-    void setStrokeSelected(entity::Stroke* stroke);
-    void setStrokeSelected(bool selected);
-    bool isStrokeSelected(entity::Stroke* stroke) const;
-    entity::Stroke* getStrokeSelected() const;
+    void setEntitySelected(entity::Entity2D* entity);
+    void setEntitySelected(bool selected);
+    bool isEntitySelected(entity::Entity2D* entity) const;
+    entity::Entity2D* getEntitySelected() const;
 
     void updateTransforms();
     void resetTransforms();
@@ -156,7 +155,7 @@ private:
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
     std::vector<entity::Entity2D*> m_selectedEntity;
-    osg::observer_ptr<entity::Stroke> m_strokeSelected; /* for stroke editing, e.g., push, delete, copy, cut */
+    osg::observer_ptr<entity::Entity2D> m_entitySelected; /* for stroke editing, e.g., push, delete, copy, cut */
     osg::observer_ptr<entity::Photo> m_photoCurrent; /* for editing photo position and properties*/
 
     osg::Vec3f m_center; /* 3D global - virtual plane parameter */

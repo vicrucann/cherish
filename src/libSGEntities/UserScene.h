@@ -129,18 +129,18 @@ protected:
     void strokeFinish(QUndoStack* stack);
     bool strokeValid() const;
 
-    void strokesMoveStart(double u, double v);
-    void strokesMoveAppend(double u, double v);
-    void strokesMoveFinish(QUndoStack* stack);
-    bool strokesSelectedValid() const;
+    void entitiesMoveStart(double u, double v);
+    void entitiesMoveAppend(double u, double v);
+    void entitiesMoveFinish(QUndoStack* stack);
+    bool entitiesSelectedValid() const;
 
-    void strokesScaleStart(double u, double v);
-    void strokesScaleAppend(double u, double v);
-    void strokesScaleFinish(QUndoStack* stack);
+    void entitiesScaleStart(double u, double v);
+    void entitiesScaleAppend(double u, double v);
+    void entitiesScaleFinish(QUndoStack* stack);
 
-    void strokesRotateStart(double u, double v);
-    void strokesRotateAppend(double u, double v);
-    void strokesRotateFinish(QUndoStack* stack);
+    void entitiesRotateStart(double u, double v);
+    void entitiesRotateAppend(double u, double v);
+    void entitiesRotateFinish(QUndoStack* stack);
 
     void eraseStart(entity::Stroke* stroke, osg::Vec3d& hit);
     void eraseAppend(entity::Stroke* stroke, osg::Vec3d& hit);
