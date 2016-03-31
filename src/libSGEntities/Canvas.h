@@ -101,14 +101,14 @@ public:
     void addStrokesSelected(entity::Stroke* stroke);
     void resetStrokesSelected();
     void resetStrokeSelected(entity::Stroke* stroke);
-    const std::vector< entity::Stroke* >& getStrokesSelected() const;
+    const std::vector<Entity2D *> &getStrokesSelected() const;
     int getStrokesSelectedSize() const;
     osg::Vec3f getStrokesSelectedCenter() const;
-    void moveStrokes(std::vector<Stroke *> &strokes, double du, double dv);
+    void moveStrokes(std::vector<Entity2D *> &entities, double du, double dv);
     void moveStrokesSelected(double du, double dv);
-    void scaleStrokes(std::vector<Stroke *> &strokes, double s, osg::Vec3f center);
+    void scaleStrokes(std::vector<Entity2D *> &entities, double s, osg::Vec3f center);
     void scaleStrokesSelected(double s, osg::Vec3f center);
-    void rotateStrokes(std::vector<entity::Stroke*> strokes, double theta, osg::Vec3f center);
+    void rotateStrokes(std::vector<entity::Entity2D*> entities, double theta, osg::Vec3f center);
     void rotateStrokesSelected(double theta, osg::Vec3f center);
 
     bool setPhotoCurrent(entity::Photo* photo);
@@ -155,7 +155,7 @@ private:
     entity::ToolFrame* m_toolFrame;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
-    std::vector<entity::Stroke*> m_strokesSelected;
+    std::vector<entity::Entity2D*> m_selectedEntity;
     osg::observer_ptr<entity::Stroke> m_strokeSelected; /* for stroke editing, e.g., push, delete, copy, cut */
     osg::observer_ptr<entity::Photo> m_photoCurrent; /* for editing photo position and properties*/
 

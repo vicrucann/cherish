@@ -30,7 +30,7 @@ entity::Canvas::Canvas()
     , m_toolFrame(new entity::ToolFrame)
 
     , m_strokeCurrent(0)
-    , m_strokesSelected(0)
+    , m_selectedEntity(0)
     , m_strokeSelected(0)
     , m_photoCurrent(0)
 
@@ -72,7 +72,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_toolFrame(cnv.m_toolFrame)
 
     , m_strokeCurrent(0)
-    , m_strokesSelected(0)
+    , m_selectedEntity(0)
     , m_strokeSelected(0)
     , m_photoCurrent(0)
 
@@ -415,7 +415,7 @@ void entity::Canvas::addStrokesSelected(entity::Stroke* stroke)
     }
     if (!this->isStrokeSelected(stroke)){
         this->setStrokeSelected(stroke);
-        m_strokesSelected.push_back(stroke);
+        m_selectedEntity.push_back(stroke);
     }
 //    else{
 //        outLogMsg("stroke is already selected, do unselect");
@@ -425,35 +425,38 @@ void entity::Canvas::addStrokesSelected(entity::Stroke* stroke)
 
 void entity::Canvas::resetStrokesSelected()
 {
-    for (unsigned int i = 0; i < m_strokesSelected.size(); ++i){
-        entity::Stroke* stroke = m_strokesSelected.at(i);
+    for (unsigned int i = 0; i < m_selectedEntity.size(); ++i){
+        entity::Stroke* stroke = dynamic_cast<entity::Stroke*>( m_selectedEntity.at(i));
+        if (!stroke) continue;
         this->setStrokeSelected(stroke);
         this->setStrokeSelected(false);
     }
-    m_strokesSelected.clear();
+    m_selectedEntity.clear();
 }
 
 void entity::Canvas::resetStrokeSelected(entity::Stroke *stroke)
 {
     unsigned int i;
-    for (i = 0; i < m_strokesSelected.size(); ++i){
-        entity::Stroke* s = m_strokesSelected.at(i);
+    for (i = 0; i < m_selectedEntity.size(); ++i){
+        entity::Stroke* s = dynamic_cast<entity::Stroke*>(m_selectedEntity.at(i));
+        if (!s) continue;
         if (stroke == s)
             break;
     }
+    if (!stroke) return;
     this->setStrokeSelected(stroke);
     this->setStrokeSelected(false);
-    m_strokesSelected.erase(m_strokesSelected.begin()+i);
+    m_selectedEntity.erase(m_selectedEntity.begin()+i);
 }
 
-const std::vector<entity::Stroke* >& entity::Canvas::getStrokesSelected() const
+const std::vector<entity::Entity2D* >& entity::Canvas::getStrokesSelected() const
 {
-    return m_strokesSelected;
+    return m_selectedEntity;
 }
 
 int entity::Canvas::getStrokesSelectedSize() const
 {
-    return m_strokesSelected.size();
+    return m_selectedEntity.size();
 }
 
 /* returns global center of selected entities;
@@ -462,21 +465,21 @@ int entity::Canvas::getStrokesSelectedSize() const
 osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
 {
     double mu = 0, mv = 0;
-    for (unsigned int i=0; i<m_strokesSelected.size(); ++i)
+    for (unsigned int i=0; i<m_selectedEntity.size(); ++i)
     {
-        entity::Stroke* stroke = m_strokesSelected.at(i);
-        if (!stroke){
-            outErrMsg("getStrokesSelecterCenter: one of strokes ptr is NULL");
+        entity::Entity2D* entity = m_selectedEntity.at(i);
+        if (!entity){
+            outErrMsg("getStrokesSelecterCenter: one of entities ptr is NULL");
             break;
         }
-        osg::BoundingSphere bs = stroke->getBound();
-        osg::BoundingBox bb = stroke->getBoundingBox();
+        osg::BoundingSphere bs = entity->getBound();
+        osg::BoundingBox bb = entity->getBoundingBox();
         mu += bb.center().x();
         mv += bb.center().y();
     }
-    if (m_strokesSelected.size() > 0){
-        mu /= m_strokesSelected.size();
-        mv /= m_strokesSelected.size();
+    if (m_selectedEntity.size() > 0){
+        mu /= m_selectedEntity.size();
+        mv /= m_selectedEntity.size();
     }
     osg::Matrix M = m_transform->getMatrix();
     osg::Vec3f center_loc = osg::Vec3f(mu, mv, 0);
@@ -484,55 +487,55 @@ osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
     return center_glo;
 }
 
-void entity::Canvas::moveStrokes(std::vector<entity::Stroke *>& strokes, double du, double dv)
+void entity::Canvas::moveStrokes(std::vector<entity::Entity2D *>& entities, double du, double dv)
 {
-    for (unsigned int i=0; i<strokes.size(); ++i){
-        entity::Stroke* stroke = strokes.at(i);
-        if (!stroke){
-            outErrMsg("moveStrokes: one of strokes ptr is NULL");
+    for (unsigned int i=0; i<entities.size(); ++i){
+        entity::Entity2D* entity = entities.at(i);
+        if (!entity){
+            outErrMsg("moveStrokes: one of entity ptr is NULL");
             break;
         }
-        stroke->moveDelta(du, dv);
+        entity->moveDelta(du, dv);
     }
 }
 
 void entity::Canvas::moveStrokesSelected(double du, double dv)
 {
-    this->moveStrokes(m_strokesSelected, du, dv);
+    this->moveStrokes(m_selectedEntity, du, dv);
 }
 
-void entity::Canvas::scaleStrokes(std::vector<entity::Stroke *> &strokes, double s, osg::Vec3f center)
+void entity::Canvas::scaleStrokes(std::vector<Entity2D *> &entities, double s, osg::Vec3f center)
 {
-    for (unsigned int i=0; i<strokes.size(); ++i){
-        entity::Stroke* stroke = strokes.at(i);
-        if (!stroke){
+    for (unsigned int i=0; i<entities.size(); ++i){
+        entity::Entity2D* entity = entities.at(i);
+        if (!entity){
             outErrMsg("moveStrokes: one of strokes ptr is NULL");
             break;
         }
-        stroke->scale(s, center);
+        entity->scale(s, center);
     }
 }
 
 void entity::Canvas::scaleStrokesSelected(double s, osg::Vec3f center)
 {
-    this->scaleStrokes(m_strokesSelected, s, center);
+    this->scaleStrokes(m_selectedEntity, s, center);
 }
 
-void entity::Canvas::rotateStrokes(std::vector<entity::Stroke *> strokes, double theta, osg::Vec3f center)
+void entity::Canvas::rotateStrokes(std::vector<Entity2D *> entities, double theta, osg::Vec3f center)
 {
-    for (unsigned int i=0; i<strokes.size(); ++i){
-        entity::Stroke* stroke = strokes.at(i);
-        if (!stroke){
-            outErrMsg("moveStrokes: one of strokes ptr is NULL");
+    for (unsigned int i=0; i<entities.size(); ++i){
+        entity::Entity2D* entity = entities.at(i);
+        if (!entity){
+            outErrMsg("moveStrokes: one of entities ptr is NULL");
             break;
         }
-        stroke->rotate(theta, center);
+        entity->rotate(theta, center);
     }
 }
 
 void entity::Canvas::rotateStrokesSelected(double theta, osg::Vec3f center)
 {
-    this->rotateStrokes(m_strokesSelected, theta, center);
+    this->rotateStrokes(m_selectedEntity, theta, center);
 }
 
 void entity::Canvas::setStrokeSelected(entity::Stroke *stroke)
@@ -561,8 +564,8 @@ void entity::Canvas::setStrokeSelected(bool selected)
 
 bool entity::Canvas::isStrokeSelected(entity::Stroke *stroke) const
 {
-    for (unsigned int i = 0; i < m_strokesSelected.size(); ++i){
-        if (stroke == m_strokesSelected.at(i))
+    for (unsigned int i = 0; i < m_selectedEntity.size(); ++i){
+        if (stroke == m_selectedEntity.at(i))
             return true;
     }
     return false;

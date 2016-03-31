@@ -782,7 +782,7 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
     osg::Vec3f eye, c, u;
     camera->getViewMatrixAsLookAt(eye, c, u);
 
-    const std::vector<entity::Stroke*>& strokes = this->getCanvasCurrent()->getStrokesSelected();
+    const std::vector<entity::Entity2D*>& strokes = this->getCanvasCurrent()->getStrokesSelected();
 
 //    if (!Utilities::areStrokesProjectable(strokes, m_canvasCurrent.get(), m_canvasPrevious.get(), camera)){
 //        outErrMsg("Strokes are not pushable under this point of view. Try to change camera position.");

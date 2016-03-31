@@ -416,11 +416,11 @@ void RootScene::copyToBuffer()
     m_buffer.clear();
     if (!m_userScene->getCanvasCurrent()) return;
 
-    const std::vector<entity::Stroke*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
+    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
     if (selected.size()==0) return;
 
     for (size_t i=0; i<selected.size(); ++i){
-        const entity::Stroke& copy = *selected.at(i);
+        const entity::Stroke& copy = dynamic_cast<const entity::Stroke&>( *selected.at(i));
         entity::Stroke* stroke = new entity::Stroke(copy, osg::CopyOp::DEEP_COPY_ALL);
         if (!stroke) continue;
         m_buffer.push_back(stroke);
@@ -432,7 +432,7 @@ void RootScene::cutToBuffer()
 {
     m_buffer.clear();
     if (!m_userScene->getCanvasCurrent()) return;
-    const std::vector<entity::Stroke*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
+    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
     if (selected.size()==0) return;
 
     EditCutCommand* cmd = new EditCutCommand(m_userScene.get(), this->getCanvasCurrent(),

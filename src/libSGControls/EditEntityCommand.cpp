@@ -97,13 +97,14 @@ void EditPhotoMoveCommand::redo()
     m_scene->updateWidgets();
 }
 
-EditStrokesPushCommand::EditStrokesPushCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes,
+/* only works for strokes, any photos remain unchanged */
+EditStrokesPushCommand::EditStrokesPushCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities,
                                                entity::Canvas *current, entity::Canvas *target,
                                                const osg::Vec3f &eye,
                                                QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
-    , m_strokes(strokes)
+    , m_entities(entities)
     , m_canvasCurrent(current)
     , m_canvasTarget(target)
     , m_eye(eye)
@@ -134,8 +135,9 @@ void EditStrokesPushCommand::doPushStrokes(entity::Canvas& source, entity::Canva
     const osg::Plane plane = target.getPlane();
     const osg::Vec3f center = target.getCenter();
 
-    for (unsigned int i=0; i<m_strokes.size(); ++i){
-        entity::Stroke* s = m_strokes.at(i);
+    for (unsigned int i=0; i<m_entities.size(); ++i){
+        entity::Stroke* s = dynamic_cast<entity::Stroke*> (m_entities.at(i));
+        if (!s) continue;
         osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(s->getVertexArray());
         for (unsigned int j=0; j<verts->size(); ++j){
             osg::Vec3f p = (*verts)[j];
@@ -320,10 +322,10 @@ void EditPhotoDeleteCommand::redo()
     m_scene->updateWidgets();
 }
 
-EditStrokesMoveCommand::EditStrokesMoveCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes, entity::Canvas *canvas, double du, double dv, QUndoCommand *parent)
+EditStrokesMoveCommand::EditStrokesMoveCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double du, double dv, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
-    , m_strokes(strokes)
+    , m_entities(entities)
     , m_canvas(canvas)
     , m_du(du)
     , m_dv(dv)
@@ -334,22 +336,22 @@ EditStrokesMoveCommand::EditStrokesMoveCommand(entity::UserScene *scene, const s
 
 void EditStrokesMoveCommand::undo()
 {
-    m_canvas->moveStrokes(m_strokes, -m_du, -m_dv);
+    m_canvas->moveStrokes(m_entities, -m_du, -m_dv);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditStrokesMoveCommand::redo()
 {
-    m_canvas->moveStrokes(m_strokes, m_du, m_dv);
+    m_canvas->moveStrokes(m_entities, m_du, m_dv);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-EditStrokesScaleCommand::EditStrokesScaleCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes, entity::Canvas *canvas, double scale, osg::Vec3f center, QUndoCommand *parent)
+EditStrokesScaleCommand::EditStrokesScaleCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double scale, osg::Vec3f center, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
-    , m_strokes(strokes)
+    , m_entities(entities)
     , m_canvas(canvas)
     , m_scale(scale)
     , m_center(center)
@@ -360,22 +362,22 @@ EditStrokesScaleCommand::EditStrokesScaleCommand(entity::UserScene *scene, const
 
 void EditStrokesScaleCommand::undo()
 {
-    m_canvas->scaleStrokes(m_strokes, 1/m_scale, m_center);
+    m_canvas->scaleStrokes(m_entities, 1/m_scale, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditStrokesScaleCommand::redo()
 {
-    m_canvas->scaleStrokes(m_strokes, m_scale, m_center);
+    m_canvas->scaleStrokes(m_entities, m_scale, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-EditStrokesRotateCommand::EditStrokesRotateCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes, entity::Canvas *canvas, double theta, osg::Vec3f center, QUndoCommand *parent)
+EditStrokesRotateCommand::EditStrokesRotateCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double theta, osg::Vec3f center, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
-    , m_strokes(strokes)
+    , m_entities(entities)
     , m_canvas(canvas)
     , m_theta(theta)
     , m_center(center)
@@ -386,28 +388,28 @@ EditStrokesRotateCommand::EditStrokesRotateCommand(entity::UserScene *scene, con
 
 void EditStrokesRotateCommand::undo()
 {
-    m_canvas->rotateStrokes(m_strokes, -m_theta, m_center);
+    m_canvas->rotateStrokes(m_entities, -m_theta, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditStrokesRotateCommand::redo()
 {
-    m_canvas->rotateStrokes(m_strokes, m_theta, m_center);
+    m_canvas->rotateStrokes(m_entities, m_theta, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas *target, const std::vector<osg::ref_ptr<entity::Stroke> > &buffer, QUndoCommand *parent)
+EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas *target, const std::vector<osg::ref_ptr<entity::Entity2D> > &buffer, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(target)
 {
     for (size_t i=0; i<buffer.size(); ++i){
-        const entity::Stroke& copy = *buffer.at(i);
+        const entity::Stroke& copy = dynamic_cast<const entity::Stroke&> (*buffer.at(i));
         entity::Stroke* stroke = new entity::Stroke(copy, osg::CopyOp::DEEP_COPY_ALL);
         if (!stroke) continue;
-        m_strokes.push_back(stroke);
+        m_entities.push_back(stroke);
     }
 
     this->setText(QObject::tr("Paste strokes to canvas %1")
@@ -417,8 +419,8 @@ EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas *tar
 void EditPasteCommand::undo()
 {
     m_canvas->unselectStrokes();
-    for (size_t i=0; i<m_strokes.size();++i){
-        m_canvas->getGeodeData()->removeDrawable(m_strokes.at(i));
+    for (size_t i=0; i<m_entities.size();++i){
+        m_canvas->getGeodeData()->removeDrawable(m_entities.at(i));
     }
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
@@ -427,8 +429,8 @@ void EditPasteCommand::undo()
 void EditPasteCommand::redo()
 {
     m_canvas->unselectStrokes();
-    for (size_t i=0; i<m_strokes.size(); ++i){
-        entity::Stroke* stroke = m_strokes.at(i);
+    for (size_t i=0; i<m_entities.size(); ++i){
+        entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_entities.at(i));
         if (!stroke) continue;
         stroke->moveDelta(0.2, 0.2);
         m_canvas->getGeodeData()->addDrawable(stroke);
@@ -439,8 +441,8 @@ void EditPasteCommand::redo()
 }
 
 EditCutCommand::EditCutCommand(entity::UserScene* scene, entity::Canvas*  canvas,
-                               const std::vector<entity::Stroke*>& selected,
-                               std::vector< osg::ref_ptr<entity::Stroke> >& buffer, QUndoCommand* parent)
+                               const std::vector<entity::Entity2D *> &selected,
+                               std::vector<osg::ref_ptr<entity::Entity2D> > &buffer, QUndoCommand* parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(canvas)
@@ -455,7 +457,7 @@ void EditCutCommand::undo()
 {
     m_scene->setCanvasCurrent(m_canvas.get());
     for (size_t i=0; i<m_buffer.size(); ++i){
-        entity::Stroke* stroke = m_buffer.at(i);
+        entity::Stroke* stroke = dynamic_cast<entity::Stroke*> (m_buffer.at(i).get());
         if (!stroke) continue;
         m_canvas->getGeodeData()->addDrawable(stroke);
         m_canvas->addStrokesSelected(stroke);
@@ -467,7 +469,7 @@ void EditCutCommand::undo()
 void EditCutCommand::redo()
 {
     for (size_t i=0; i<m_selected.size(); ++i){
-        entity::Stroke* stroke = m_selected.at(i);
+        entity::Stroke* stroke = dynamic_cast<entity::Stroke*> ( m_selected.at(i));
         if (!stroke) continue;
         m_buffer.push_back(stroke);
     }
