@@ -283,6 +283,11 @@ void entity::FrameTool::setColorIntersection(const osg::Vec4f &colorIntersect)
     m_geomIntersect->dirtyBound();
 }
 
+osg::Geometry *entity::FrameTool::getPickable() const
+{
+    return m_geomPickable;
+}
+
 void entity::FrameTool::setPickable(const osg::Vec3f &p0, float szCr)
 {
     osg::Vec3Array* vPick = static_cast<osg::Vec3Array*>(m_geomPickable->getVertexArray());

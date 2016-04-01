@@ -268,6 +268,11 @@ osg::Vec3f entity::Canvas::getGlobalAxisV() const
     return M * v_loc;
 }
 
+osg::Geometry *entity::Canvas::getGeometryPickable() const
+{
+    return m_toolFrame->getPickable();
+}
+
 // translates the current params on mt matrix
 void entity::Canvas::translate(const osg::Matrix& mt)
 {

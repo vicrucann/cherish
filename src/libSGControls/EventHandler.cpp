@@ -441,10 +441,13 @@ entity::Stroke *EventHandler::getStroke(const StrokeIntersector::Intersection &r
     return dynamic_cast<entity::Stroke*>(result.drawable.get());
 }
 
-entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result){
-    if (result.drawable->getName() != "Pickable")
+entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::Intersection &result)
+{
+
+    entity::Canvas* canvas = dynamic_cast<entity::Canvas*>(result.nodePath.at(m_scene->getCanvasLevel()));
+    if (result.drawable != canvas->getGeometryPickable())
         return NULL;
-    return dynamic_cast<entity::Canvas*>(result.nodePath.at(m_scene->getCanvasLevel()));
+    return canvas;
 }
 
 entity::Photo *EventHandler::getPhoto(const osgUtil::LineSegmentIntersector::Intersection &result)

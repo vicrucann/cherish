@@ -82,6 +82,8 @@ public:
     void setIntersection(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4);
     void setColorIntersection(const osg::Vec4f& colorIntersect);
 
+    osg::Geometry* getPickable() const;
+
 protected:
     void setPickable(const osg::Vec3f& p0, float szCr);
     void setColorPickable(const osg::Vec4f& color);

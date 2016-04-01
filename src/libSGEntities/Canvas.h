@@ -83,6 +83,8 @@ public:
     osg::Vec3f getGlobalAxisU() const;
     osg::Vec3f getGlobalAxisV() const;
 
+    osg::Geometry* getGeometryPickable() const;
+
     void translate(const osg::Matrix& mt);
     void rotate(const osg::Matrix& mr);
 
