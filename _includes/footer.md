@@ -1,8 +1,5 @@
 
 
-Design by Tim O'Brien [t413.com](http://t413.com/)
+Website © 2015 by [HTACG](http://www.htacg.org/)
 &mdash;
-[SinglePaged theme](https://github.com/t413/SinglePaged)
-&mdash;
-this site is [open source]({{ site.source_link }})
-
+The HTACG and HTML Tidy logos incorporate the HTML5 logo by [W3C](http://w3.org)
