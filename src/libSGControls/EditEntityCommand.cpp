@@ -62,41 +62,6 @@ void EditCanvasRotateCommand::redo()
     m_scene->updateWidgets();
 }
 
-
-
-EditPhotoMoveCommand::EditPhotoMoveCommand(entity::UserScene *scene, const double u, const double v, QUndoCommand *parent)
-    : QUndoCommand(parent)
-    , m_scene(scene)
-    , m_canvas(scene->getCanvasCurrent())
-    , m_photo(m_canvas->getPhotoCurrent())
-    , m_u0(m_photo->getCenter().x())
-    , m_v0(m_photo->getCenter().y())
-    , m_u1(u)
-    , m_v1(v)
-{
-    this->setText(QObject::tr("Move %1 within %2")
-                  .arg(QString(m_photo->getName().c_str()),
-                       QString(m_canvas->getName().c_str())));
-}
-
-EditPhotoMoveCommand::~EditPhotoMoveCommand()
-{
-}
-
-void EditPhotoMoveCommand::undo()
-{
-    m_photo->move(m_u0, m_v0);
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
-}
-
-void EditPhotoMoveCommand::redo()
-{
-    m_photo->move(m_u1, m_v1);
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
-}
-
 /* only works for strokes, any photos remain unchanged */
 EditStrokesPushCommand::EditStrokesPushCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities,
                                                entity::Canvas *current, entity::Canvas *target,
@@ -155,90 +120,6 @@ void EditStrokesPushCommand::doPushStrokes(entity::Canvas& source, entity::Canva
         s->dirtyBound();
     }
     target.updateFrame();
-}
-
-EditPhotoFlipCommand::EditPhotoFlipCommand(entity::UserScene *scene, bool horizontal, QUndoCommand *parent)
-    : QUndoCommand(parent)
-    , m_scene(scene)
-    , m_canvas(m_scene->getCanvasCurrent())
-    , m_photo(m_canvas->getPhotoCurrent())
-    , m_horizontal(horizontal)
-{
-    QString str = horizontal? "Horizontal" : "Vertical";
-    this->setText(QObject::tr("%1 Flip photo %2 within %3")
-                  .arg(str,
-                       QString(m_photo->getName().c_str()),
-                       QString(m_canvas->getName().c_str())));
-}
-
-void EditPhotoFlipCommand::undo()
-{
-    if (m_horizontal)
-        m_photo->flipH();
-    else
-        m_photo->flipV();
-    m_scene->updateWidgets();
-}
-
-void EditPhotoFlipCommand::redo()
-{
-    if (m_horizontal)
-        m_photo->flipH();
-    else
-        m_photo->flipV();
-    m_scene->updateWidgets();
-}
-
-EditPhotoScaleCommand::EditPhotoScaleCommand(entity::UserScene *scene, const double scale, QUndoCommand *parent)
-    : QUndoCommand(parent)
-    , m_scene(scene)
-    , m_canvas(scene->getCanvasCurrent())
-    , m_photo(m_canvas->getPhotoCurrent())
-    , m_scale(scale)
-{
-    this->setText(QObject::tr("Scale %1 within %2")
-                  .arg(QString(m_photo->getName().c_str()),
-                       QString(m_canvas->getName().c_str())) );
-}
-
-void EditPhotoScaleCommand::undo()
-{
-    m_photo->scale(1.f/m_scale, 1.f/m_scale, m_photo->getCenter());
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
-}
-
-void EditPhotoScaleCommand::redo()
-{
-    m_photo->scale(m_scale, m_scale, m_photo->getCenter());
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
-}
-
-EditPhotoRotateCommand::EditPhotoRotateCommand(entity::UserScene *scene, const double angle, QUndoCommand *parent)
-    : QUndoCommand(parent)
-    , m_scene(scene)
-    , m_canvas(scene->getCanvasCurrent())
-    , m_photo(m_canvas->getPhotoCurrent())
-    , m_angle(angle)
-{
-    this->setText(QObject::tr("Rotate %1 within %2")
-                  .arg(QString(m_photo->getName().c_str()),
-                       QString(m_canvas->getName().c_str())) );
-}
-
-void EditPhotoRotateCommand::undo()
-{
-    m_photo->rotate(-m_angle);
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
-}
-
-void EditPhotoRotateCommand::redo()
-{
-    m_photo->rotate(m_angle);
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
 }
 
 EditCanvasDeleteCommand::EditCanvasDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, QUndoCommand *parent)
@@ -434,7 +315,7 @@ void EditPasteCommand::redo()
         if (!entity) continue;
         entity->moveDelta(0.2, 0.2);
         m_canvas->getGeodeData()->addDrawable(entity);
-        m_canvas->addEntitiesSelected(entity);
+        m_canvas->addEntitySelected(entity);
     }
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
@@ -460,7 +341,7 @@ void EditCutCommand::undo()
         entity::Entity2D* entity = m_buffer.at(i).get();
         if (!entity) continue;
         m_canvas->getGeodeData()->addDrawable(entity);
-        m_canvas->addEntitiesSelected(entity);
+        m_canvas->addEntitySelected(entity);
     }
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();

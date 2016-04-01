@@ -100,10 +100,6 @@ public:
     void editCanvasClone(const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasDelete(entity::Canvas* canvas);
 
-    void editPhotoMove(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
-    void editPhotoScale(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
-    void editPhotoRotate(entity::Photo* photo, const double u, const double v, dureu::EVENT event);
-    void editPhotoFlip(entity::Photo* photo, bool horizontal);
     void editPhotoDelete(entity::Photo* photo);
     void editPhotoPush(entity::Photo* photo);
 

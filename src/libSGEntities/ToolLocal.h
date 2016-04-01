@@ -73,6 +73,20 @@ public:
                      const osg::Vec3f& P3, const osg::Vec3f& P4);
 };
 
+class ToolFrameSelected : public ToolLocal
+{
+public:
+    ToolFrameSelected(const osg::Vec3f &center, float szX, float szY, float szCr, float);
+    void setVertices(const osg::Vec3f &center, float szX, float szY, float, float);
+
+protected:
+    osg::Geometry* getQuadGeometry(float szCr, float X, float Y) const;
+
+    osg::Geometry* m_geomCenter;
+    osg::Geometry* m_geomCr1, * m_geomCr2, * m_geomCr3, * m_geomCr4;
+    osg::Geometry* m_geomAx1, * m_geomAx2, * m_geomAx3, * m_geomAx4;
+};
+
 }
 
 

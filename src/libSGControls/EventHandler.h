@@ -47,23 +47,11 @@ public:
     void doCanvasClone(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     template <typename T1, typename T2>
-    void doEditPhotoMove(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-
-    template <typename T1, typename T2>
     void doEditPhotoPush(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
-    void doEditStrokesMove(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-    void doEditStrokesScale(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-    void doEditStrokesRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-
-    template <typename T1, typename T2>
-    void doEditPhotoFlip(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, bool horizontal);
-
-    template <typename T1, typename T2>
-    void doEditPhotoScale(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-
-    template <typename T1, typename T2>
-    void doEditPhotoRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doEditEntitiesMove(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doEditEntitiesScale(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doEditEntitiesRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
 protected:
     entity::Stroke* getStroke(const StrokeIntersector::Intersection& result);

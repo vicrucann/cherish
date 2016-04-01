@@ -231,3 +231,55 @@ void entity::ToolIntersectionLine::setVertices(const osg::Vec3f &P1, const osg::
     m_geomTool->dirtyDisplayList();
     m_geomTool->dirtyBound();
 }
+
+
+/*  Cr1----Ax1----Cr2
+ *  |               |
+ *  |               |
+ *  |               |
+ *  Ax4    Cen    Ax2
+ *  |               |
+ *  |               |
+ *  |               |
+ *  Cr4----Ax3----Cr3
+ */
+entity::ToolFrameSelected::ToolFrameSelected(const osg::Vec3f &center, float szX, float szY, float szCr, float)
+    : ToolLocal(4, osg::Array::BIND_OVERALL,
+                new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP,0,4))
+{
+    this->setColor(dureu::CANVAS_CLR_SELECTED);
+    this->setVertices(center, szX, szY, 0, 0);
+}
+
+void entity::ToolFrameSelected::setVertices(const osg::Vec3f &center, float szX, float szY, float, float)
+{
+    osg::Vec3Array* vFrame = static_cast<osg::Vec3Array*>(m_geomTool->getVertexArray());
+    assert(vFrame->size() == 4);
+    (*vFrame)[0] = center + osg::Vec3(szX,szY,0.f);
+    (*vFrame)[1] = center + osg::Vec3(szX,-szY,0.f);
+    (*vFrame)[2] = center + osg::Vec3(-szX,-szY,0.f);
+    (*vFrame)[3] = center + osg::Vec3(-szX,szY,0.f);
+    m_geomTool->dirtyDisplayList();
+    m_geomTool->dirtyBound();
+}
+
+osg::Geometry *entity::ToolFrameSelected::getQuadGeometry(float szCr, float X, float Y) const
+{
+    osg::Geometry* geom = new osg::Geometry;
+    osg::Vec3Array* verts = new osg::Vec3Array;
+    osg::Vec3f C = osg::Vec3f(X,Y,0.f);
+    verts->push_back(C + osg::Vec3f(szCr, szCr, 0.f));
+    verts->push_back(C + osg::Vec3f(-szCr, szCr, 0.f));
+    verts->push_back(C + osg::Vec3f(-szCr, -szCr, 0.f));
+    verts->push_back(C + osg::Vec3f(szCr, -szCr, 0.f));
+    geom->setVertexArray(verts);
+
+    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
+
+    osg::Vec3Array* norms = new osg::Vec3Array;
+    norms->push_back(osg::Vec3(0,0,-1));
+    geom->setNormalArray(norms);
+    geom->setNormalBinding(osg::Geometry::BIND_OVERALL);
+
+    return geom;
+}

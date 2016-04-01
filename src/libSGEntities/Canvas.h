@@ -20,7 +20,7 @@
 #include "Settings.h"
 #include "Stroke.h"
 #include "Photo.h"
-#include "ToolLocal.h"
+#include "ToolGlobal.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
@@ -77,9 +77,6 @@ public:
     void setVisibilityFrame(bool vis);
     bool getVisibility() const;
 
-    void setVisibilityLocalAxis(bool vis);
-    bool getVisibilityLocalAxis() const;
-
     void setVisibilityAll(bool vis);
     bool getVisibilityData() const;
 
@@ -97,9 +94,9 @@ public:
     void setStrokeCurrent(bool current);
     entity::Stroke* getStrokeCurrent() const;
 
-    void addEntitiesSelected(entity::Entity2D* entity);
+    void addEntitySelected(entity::Entity2D* entity);
     void resetEntitiesSelected();
-    void resetEntitySelected(entity::Entity2D* entity);
+    void removeEntitySelected(entity::Entity2D* entity);
     const std::vector<Entity2D *> &getStrokesSelected() const;
     int getStrokesSelectedSize() const;
     osg::Vec3f getStrokesSelectedCenter() const;
@@ -109,10 +106,6 @@ public:
     void scaleEntitiesSelected(double s, osg::Vec3f center);
     void rotateEntities(std::vector<entity::Entity2D*> entities, double theta, osg::Vec3f center);
     void rotateEntitiesSelected(double theta, osg::Vec3f center);
-
-    bool setPhotoCurrent(entity::Photo* photo);
-    void setPhotoCurrent(bool current);
-    entity::Photo* getPhotoCurrent() const;
 
     /* re-calculate frame's geometry and plane center transform
      * based on canvas content location */
@@ -131,10 +124,8 @@ public:
 protected:
     ~Canvas();
 
-    void setEntitySelected(entity::Entity2D* entity);
-    void setEntitySelected(bool selected);
-    bool isEntitySelected(entity::Entity2D* entity) const;
-    entity::Entity2D* getEntitySelected() const;
+    void setEntitySelectedColor(entity::Entity2D* entity, bool selected = true);
+    int isEntitySelected(entity::Entity2D* entity) const;
 
     void updateTransforms();
     void resetTransforms();
@@ -145,18 +136,14 @@ private:
     osg::Matrix m_mR; /* part of m_transform */
     osg::Matrix m_mT; /* part of m_transform */
     osg::ref_ptr<osg::MatrixTransform> m_transform; /* matrix transform in 3D space */
-    osg::ref_ptr<osg::Switch> m_switch; /* inisible or not, the whole canvas */
-    osg::ref_ptr<osg::Geode> m_geodeData; /* keeps user canvas drawables such as strokes and photos */
+    osg::ref_ptr<osg::Switch> m_switch; /* inisible or not, the whole canvas content */
+    osg::ref_ptr<osg::Geode> m_geodeData; /* keeps user canvas 2d entities such as strokes and photos */
 
     /* construction geodes */
-    entity::ToolNormal* m_toolNormal;
-    entity::ToolAxisLocal* m_toolAxis;
-    entity::ToolFrame* m_toolFrame;
+    entity::FrameTool* m_toolFrame;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
-    std::vector<entity::Entity2D*> m_selectedEntity;
-    osg::observer_ptr<entity::Entity2D> m_entitySelected; /* for stroke editing, e.g., push, delete, copy, cut */
-    osg::observer_ptr<entity::Photo> m_photoCurrent; /* for editing photo position and properties*/
+    std::vector<entity::Entity2D*> m_selectedEntities; /* list of selected entities */
 
     osg::Vec3f m_center; /* 3D global - virtual plane parameter */
     osg::Vec3f m_normal; /* 3D global - virtual plane parameter*/

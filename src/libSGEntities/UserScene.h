@@ -86,10 +86,6 @@ public:
     void editCanvasClone(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasDelete(QUndoStack* stack, entity::Canvas* canvas);
 
-    void editPhotoMove(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
-    void editPhotoScale(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
-    void editPhotoRotate(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
-    void editPhotoFlip(QUndoStack* stack, entity::Photo* photo, bool horizontal);
     void editPhotoDelete(QUndoStack* stack, entity::Photo* photo);
     void editPhotoPush(QUndoStack* stack, entity::Photo* photo);
 
@@ -161,19 +157,6 @@ protected:
     void canvasRotateAppend(const osg::Quat& r);
     void canvasRotateFinish(QUndoStack* stack);
 
-    void photoMoveStart(entity::Photo* photo);
-    void photoMoveAppend(const double u, const double v);
-    void photoMoveFinish(QUndoStack* stack, const double u, const double v);
-    bool photoEditValid() const;
-
-    void photoScaleStart(entity::Photo* photo);
-    void photoScaleAppend(double u, double v);
-    void photoScaleFinish(QUndoStack* stack, double u, double v);
-
-    void photoRotateStart(entity::Photo* photo, double u, double v);
-    void photoRotateAppend(double u, double v);
-    void photoRotateFinish(QUndoStack* stack, double u, double v);
-
 private:
     osg::ref_ptr<entity::Bookmarks> m_bookmarks;
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
@@ -181,8 +164,6 @@ private:
     osg::observer_ptr<entity::Canvas> m_canvasSelected;
     osg::observer_ptr<entity::Canvas> m_canvasTarget; /* for push operations */
     osg::observer_ptr<entity::Canvas> m_canvasClone; /* for clone current canvas */
-
-    osg::ref_ptr<entity::ToolIntersectionLine> m_intersection; /* debug version */
 
     osg::Vec3f m_deltaT; /* for edit operations: translate */
     osg::Quat m_deltaR; /* for edit operation: rotate */

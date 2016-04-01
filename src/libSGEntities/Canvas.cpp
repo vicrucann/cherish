@@ -25,14 +25,10 @@ entity::Canvas::Canvas()
     , m_switch(new osg::Switch)
     , m_geodeData(new osg::Geode)
 
-    , m_toolNormal(new entity::ToolNormal)
-    , m_toolAxis(new entity::ToolAxisLocal)
-    , m_toolFrame(new entity::ToolFrame)
+    , m_toolFrame(new entity::FrameTool)
 
     , m_strokeCurrent(0)
-    , m_selectedEntity(0)
-    , m_entitySelected(0)
-    , m_photoCurrent(0)
+    , m_selectedEntities(0)
 
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
     , m_normal(dureu::NORMAL)
@@ -67,14 +63,10 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_switch(cnv.m_switch)
     , m_geodeData(cnv.m_geodeData)
 
-    , m_toolNormal(cnv.m_toolNormal)
-    , m_toolAxis(cnv.m_toolAxis)
     , m_toolFrame(cnv.m_toolFrame)
 
     , m_strokeCurrent(0)
-    , m_selectedEntity(0)
-    , m_entitySelected(0)
-    , m_photoCurrent(0)
+    , m_selectedEntities(0)
 
     , m_center(cnv.m_center)
     , m_normal(cnv.m_normal)
@@ -90,37 +82,13 @@ void entity::Canvas::initializeTools()
     if (m_switch->getNumChildren() == 0){
         outLogMsg("  from scratch");
         m_switch->addChild(m_toolFrame, true);
-        m_switch->addChild(m_toolAxis, true);
-        m_switch->addChild(m_toolNormal, false);
         outLogMsg("canvas tools added");
     }
     /* remove all but geode data */
-    else if (m_switch->getNumChildren() == 4 || m_switch->getNumChildren() == 3 ){
-
-        osg::Node* tnn = this->getTool("groupNormal");
-        if (tnn) m_switch->replaceChild(tnn, m_toolNormal);
-        else {
-            outErrMsg("normal node is null, trying to fix manually...");
-            if (m_switch->getChild(2))
-                m_switch->replaceChild(m_switch->getChild(0), m_toolNormal);
-        }
-
-        osg::Node* tan = this->getTool("groupAxisLocal");
-        if (tan) m_switch->replaceChild(tan, m_toolAxis);
-        else {
-            outErrMsg("axis node is null, trying to fix manually...");
-            if (m_switch->getChild(1))
-                m_switch->replaceChild(m_switch->getChild(1), m_toolAxis);
-        }
-
+    else if (m_switch->getNumChildren() == 2 || m_switch->getNumChildren() == 1 ){
         osg::Node* tfn = this->getTool("groupFrame");
         if (tfn) m_switch->replaceChild(tfn, m_toolFrame);
-        else{
-            outErrMsg("framel node is null, trying to fix manually...");
-            if (m_switch->getChild(0))
-                m_switch->replaceChild(m_switch->getChild(2), m_toolFrame);
-        }
-
+        else outErrMsg("framel node is null, construction tools are not initialized");
         this->updateFrame();
     }
     else
@@ -235,13 +203,6 @@ const osg::Vec3f& entity::Canvas::getNormal() const
 
 void entity::Canvas::setColor(const osg::Vec4f &color)
 {
-    if (color == dureu::CANVAS_CLR_CURRENT){
-        if (this->getVisibility())
-            this->setVisibilityLocalAxis(true);
-    }
-    else
-        this->setVisibilityLocalAxis(false);
-
     m_toolFrame->setColor(color);
 }
 
@@ -263,28 +224,17 @@ const osg::Vec3f &entity::Canvas::getRotationAxis() const
 
 void entity::Canvas::setVisibilityFrame(bool vis)
 {
-    m_switch->setChildValue(m_toolFrame, vis);
+    m_toolFrame->setVisibility(vis);
 }
 
 bool entity::Canvas::getVisibility() const{
-    return m_switch->getChildValue(m_toolFrame);
-}
-
-void entity::Canvas::setVisibilityLocalAxis(bool vis)
-{
-    m_switch->setChildValue(m_toolAxis, vis);
-}
-
-bool entity::Canvas::getVisibilityLocalAxis() const
-{
-    return m_switch->getChildValue(m_toolAxis);
+    return m_toolFrame->getVisibility();
 }
 
 void entity::Canvas::setVisibilityAll(bool vis)
 {
     m_switch->setChildValue(m_geodeData, vis);
     this->setVisibilityFrame(vis);
-    this->setVisibilityLocalAxis(vis);
 }
 
 bool entity::Canvas::getVisibilityData() const
@@ -342,7 +292,6 @@ void entity::Canvas::rotate(const osg::Matrix& mr)
 
 void entity::Canvas::unselectAll()
 {
-    this->setPhotoCurrent(false);
     this->setStrokeCurrent(false);
     this->unselectEntities();
 }
@@ -358,10 +307,10 @@ void entity::Canvas::selectAllStrokes()
     for (unsigned int i = 0; i < m_geodeData->getNumChildren(); i++){
         entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
         if (!entity) continue;
-        this->addEntitiesSelected(entity);
+        this->addEntitySelected(entity);
 //        entity::Entity2D* entity = dynamic_cast<entity::Entity2D>(m_geodeData->getChild(i));
 //        if (!entity) continue;
-//        this->addEntitiesSelected(entity);
+//        this->addEntitySelected(entity);
     }
 }
 
@@ -385,60 +334,62 @@ entity::Stroke *entity::Canvas::getStrokeCurrent() const
     return m_strokeCurrent.get();
 }
 
-void entity::Canvas::addEntitiesSelected(Entity2D *entity)
+/* whenever new entity is added to selection,
+ * update the selection frame;
+ * if the entity is the first, then create the selection frame and
+ * add it to the scene graph
+ */
+void entity::Canvas::addEntitySelected(Entity2D *entity)
 {
     if (!entity){
-        outErrMsg("addEntitiesSelected: stroke ptr is NULL");
+        outErrMsg("addEntitySelected: stroke ptr is NULL");
         return;
     }
     if (!m_geodeData->containsDrawable(entity)){
         outErrMsg("The stroke does not belong to Canvas, selection is impossible");
         return;
     }
-    if (!this->isEntitySelected(entity)){
-        this->setEntitySelected(entity);
-        m_selectedEntity.push_back(entity);
+    if (this->isEntitySelected(entity) == -1){
+        this->setEntitySelectedColor(entity, true);
+        m_selectedEntities.push_back(entity);
     }
-//    else{
-//        outLogMsg("stroke is already selected, do unselect");
-//        this->resetEntitySelected(stroke);
-//    }
 }
 
 void entity::Canvas::resetEntitiesSelected()
 {
-    for (unsigned int i = 0; i < m_selectedEntity.size(); ++i){
-        entity::Entity2D* entity = m_selectedEntity.at(i);
-        if (!entity) continue;
-        this->setEntitySelected(entity);
-        this->setEntitySelected(false);
+    while (m_selectedEntities.size() > 0){
+        entity::Entity2D* entity = m_selectedEntities.at(m_selectedEntities.size()-1);
+        if (!entity) {
+            outErrMsg("resetEntitiesSelected: entity is NULL");
+            return;
+        }
+        this->removeEntitySelected(entity);
     }
-    m_selectedEntity.clear();
 }
 
-void entity::Canvas::resetEntitySelected(Entity2D *entity)
+
+/* whenever an entity is substracted from selection,
+ * update the selection frame;
+ * if no entities left, remove the selection frame from scene graph
+*/
+void entity::Canvas::removeEntitySelected(Entity2D *entity)
 {
-    unsigned int i;
-    for (i = 0; i < m_selectedEntity.size(); ++i){
-        entity::Entity2D* s = m_selectedEntity.at(i);
-        if (!s) continue;
-        if (entity == s)
-            break;
-    }
     if (!entity) return;
-    this->setEntitySelected(entity);
-    this->setEntitySelected(false);
-    m_selectedEntity.erase(m_selectedEntity.begin()+i);
+    int idx = this->isEntitySelected(entity);
+    if (idx >=0 && idx < (int)m_selectedEntities.size()){
+        this->setEntitySelectedColor(entity, false);
+        m_selectedEntities.erase(m_selectedEntities.begin()+idx);
+    }
 }
 
 const std::vector<entity::Entity2D* >& entity::Canvas::getStrokesSelected() const
 {
-    return m_selectedEntity;
+    return m_selectedEntities;
 }
 
 int entity::Canvas::getStrokesSelectedSize() const
 {
-    return m_selectedEntity.size();
+    return m_selectedEntities.size();
 }
 
 /* returns global center of selected entities;
@@ -447,9 +398,9 @@ int entity::Canvas::getStrokesSelectedSize() const
 osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
 {
     double mu = 0, mv = 0;
-    for (unsigned int i=0; i<m_selectedEntity.size(); ++i)
+    for (unsigned int i=0; i<m_selectedEntities.size(); ++i)
     {
-        entity::Entity2D* entity = m_selectedEntity.at(i);
+        entity::Entity2D* entity = m_selectedEntities.at(i);
         if (!entity){
             outErrMsg("getStrokesSelecterCenter: one of entities ptr is NULL");
             break;
@@ -459,9 +410,9 @@ osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
         mu += bb.center().x();
         mv += bb.center().y();
     }
-    if (m_selectedEntity.size() > 0){
-        mu /= m_selectedEntity.size();
-        mv /= m_selectedEntity.size();
+    if (m_selectedEntities.size() > 0){
+        mu /= m_selectedEntities.size();
+        mv /= m_selectedEntities.size();
     }
     osg::Matrix M = m_transform->getMatrix();
     osg::Vec3f center_loc = osg::Vec3f(mu, mv, 0);
@@ -483,7 +434,7 @@ void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, dou
 
 void entity::Canvas::moveEntitiesSelected(double du, double dv)
 {
-    this->moveEntities(m_selectedEntity, du, dv);
+    this->moveEntities(m_selectedEntities, du, dv);
 }
 
 void entity::Canvas::scaleEntities(std::vector<Entity2D *> &entities, double s, osg::Vec3f center)
@@ -500,7 +451,7 @@ void entity::Canvas::scaleEntities(std::vector<Entity2D *> &entities, double s, 
 
 void entity::Canvas::scaleEntitiesSelected(double s, osg::Vec3f center)
 {
-    this->scaleEntities(m_selectedEntity, s, center);
+    this->scaleEntities(m_selectedEntities, s, center);
 }
 
 void entity::Canvas::rotateEntities(std::vector<Entity2D *> entities, double theta, osg::Vec3f center)
@@ -517,71 +468,23 @@ void entity::Canvas::rotateEntities(std::vector<Entity2D *> entities, double the
 
 void entity::Canvas::rotateEntitiesSelected(double theta, osg::Vec3f center)
 {
-    this->rotateEntities(m_selectedEntity, theta, center);
+    this->rotateEntities(m_selectedEntities, theta, center);
 }
 
-void entity::Canvas::setEntitySelected(Entity2D *entity)
+void entity::Canvas::setEntitySelectedColor(Entity2D *entity, bool selected)
 {
-    if (m_entitySelected.get() == entity){
-        return;
+    if (!entity) return;
+    if (selected) entity->setColor(dureu::STROKE_CLR_SELECTED);
+    else entity->setColor(dureu::STROKE_CLR_NORMAL);
+}
+
+int entity::Canvas::isEntitySelected(Entity2D *entity) const
+{
+    for (size_t i = 0; i < m_selectedEntities.size(); ++i){
+        if (entity == m_selectedEntities.at(i))
+            return i;
     }
-    //if (m_entitySelected.get() != 0)
-    //    this->setEntitySelected(false);
-    m_entitySelected = entity;
-    this->setEntitySelected(true);
-}
-
-void entity::Canvas::setEntitySelected(bool selected)
-{
-    if (!m_entitySelected.get())
-        return;
-    if (!selected){
-        m_entitySelected->setColor(dureu::STROKE_CLR_NORMAL);
-        m_entitySelected = 0;
-    }
-    else{
-        m_entitySelected->setColor(dureu::STROKE_CLR_SELECTED);
-    }
-}
-
-bool entity::Canvas::isEntitySelected(Entity2D *entity) const
-{
-    for (unsigned int i = 0; i < m_selectedEntity.size(); ++i){
-        if (entity == m_selectedEntity.at(i))
-            return true;
-    }
-    return false;
-}
-
-entity::Entity2D *entity::Canvas::getEntitySelected() const
-{
-    return m_entitySelected.get();
-}
-
-bool entity::Canvas::setPhotoCurrent(entity::Photo *photo)
-{
-    if (m_photoCurrent.get() == photo)
-        return true;
-    if (!this->getGeodeData()->containsNode(photo))
-        return false;
-    if (m_photoCurrent.get()!=0)
-        this->setPhotoCurrent(false);
-    m_photoCurrent = photo;
-    this->setPhotoCurrent(true);
-    return true;
-}
-
-// changes photo frame color based on bool varialbe
-void entity::Canvas::setPhotoCurrent(bool current)
-{
-    if (!m_photoCurrent)
-        return;
-    if (!current){
-        m_photoCurrent->setFrameColor(dureu::PHOTO_CLR_REST);
-        m_photoCurrent = 0;
-    }
-    else
-        m_photoCurrent->setFrameColor(dureu::PHOTO_CLR_SELECTED);
+    return -1;
 }
 
 void entity::Canvas::updateFrame(entity::Canvas* against)
@@ -649,16 +552,11 @@ void entity::Canvas::setModeEdit(bool on)
         std::cout << "setModeEdit(): ON - " << on << std::endl;
         this->setColor(dureu::CANVAS_CLR_EDIT);
         this->setVisibilityAll(true);
-        this->setVisibilityLocalAxis(false);
     }
     else{
         std::cout << "setModeEdit(): OFF - " << on << std::endl;
         this->setColor(dureu::CANVAS_CLR_CURRENT);
-        if (this->getVisibility()){
-            this->setVisibilityLocalAxis(true); // could be bug here, when originally local axis is off by user
-        }
     }
-    m_switch->setChildValue(m_toolNormal, on);
     m_edit = on;
 }
 
@@ -714,11 +612,6 @@ entity::Canvas *entity::Canvas::clone() const
     return clone.release();
 }
 
-entity::Photo* entity::Canvas::getPhotoCurrent() const
-{
-    return m_photoCurrent.get();
-}
-
 entity::Canvas::~Canvas()
 {
 }
@@ -768,8 +661,6 @@ void entity::Canvas::resetTransforms()
 void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
 {
     m_toolFrame->setVertices(center, szX, szY, szCr, szAx);
-    m_toolAxis->setVertices(center, szX, szY, szCr, szAx);
-    m_toolNormal->setVertices(center, szX, szY, szCr, szAx);
 }
 
 void entity::Canvas::setIntersection(entity::Canvas *against)

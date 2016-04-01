@@ -1,6 +1,7 @@
 #include "ToolGlobal.h"
 #include <osg/LineWidth>
 #include <osg/BlendFunc>
+#include <osg/LineStipple>
 
 #include <assert.h>
 
@@ -41,6 +42,11 @@ void entity::ToolGlobal::setVertices(const std::vector<osg::Vec3f> &source)
     for (size_t i=0; i<vertices->size(); ++i)
         (*vertices)[i] = source[i];
     this->updateGeometry();
+}
+
+const osg::Vec3Array *entity::ToolGlobal::getVertices() const
+{
+    return static_cast<osg::Vec3Array*>(m_geometry->getVertexArray());
 }
 
 void entity::ToolGlobal::setColor(const osg::Vec4f &color)
@@ -182,4 +188,142 @@ void entity::AxisGlobalTool::setColor(const osg::Vec4f c1, const osg::Vec4f c2, 
     (*colors)[4] = c3;
     (*colors)[5] = c3;
     this->updateGeometry();
+}
+
+entity::FrameTool::FrameTool()
+    : ToolGlobal(4, osg::Array::BIND_OVERALL, new osg::DrawArrays(osg::PrimitiveSet::LINE_LOOP, 0,4), 1)
+    , m_geodePickable(new osg::Geode)
+    , m_geodeIntersect(new osg::Geode)
+    , m_geomPickable(new osg::Geometry)
+    , m_geomIntersect(new osg::Geometry)
+{
+    this->initializeSG();
+    this->setColor(dureu::CANVAS_CLR_REST);
+    this->setVisibility(true);
+}
+
+void entity::FrameTool::initializeSG()
+{
+    /* pickable settings */
+    m_geomPickable->setVertexArray(new osg::Vec3Array(4));
+    m_geomPickable->setColorArray(new osg::Vec4Array(4), osg::Array::BIND_OVERALL);
+    m_geomPickable->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
+
+    /* intersection settings */
+    osg::LineStipple* ls = new osg::LineStipple;
+    ls->setFactor(1);
+    ls->setPattern(0xf00f);
+
+    m_geomIntersect->setVertexArray(new osg::Vec3Array(4));
+    m_geomIntersect->setColorArray(new osg::Vec4Array(4), osg::Array::BIND_OVERALL);
+    m_geomIntersect->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP, 0,4));
+    m_geomIntersect->getOrCreateStateSet()->setAttributeAndModes(ls, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+
+    /* scene graph structure */
+    m_geodePickable->addDrawable(m_geomPickable);
+    m_geodeIntersect->addDrawable(m_geomIntersect);
+
+    m_switch->addChild(m_geode);
+    m_switch->addChild(m_geodePickable);
+    m_switch->addChild(m_geodeIntersect);
+}
+
+void entity::FrameTool::setVisibility(bool on)
+{
+    m_switch->setChildValue(m_geode, on);
+    m_switch->setChildValue(m_geodePickable, on);
+    m_switch->setChildValue(m_geodeIntersect, on);
+}
+
+bool entity::FrameTool::getVisibility() const
+{
+    return m_switch->getChildValue(m_geode);
+}
+
+void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
+{
+    std::vector<osg::Vec3f> verts;
+    verts.push_back(center + osg::Vec3(szX,szY,0.f));
+    verts.push_back(center + osg::Vec3(-szX,szY,0.f));
+    verts.push_back(center + osg::Vec3(-szX,-szY,0.f));
+    verts.push_back(center + osg::Vec3(szX,-szY,0.f));
+    ToolGlobal::setVertices(verts);
+
+    osg::Vec3f p0 = verts.at(0);
+    this->setPickable(p0, szCr);
+}
+
+void entity::FrameTool::setColor(const osg::Vec4f &color, const osg::Vec4f &colorIntersect)
+{
+    ToolGlobal::setColor(color);
+    this->setColorPickable(color);
+    this->setColorIntersection(colorIntersect);
+}
+
+void entity::FrameTool::setIntersection(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)
+{
+    if (P1.isNaN() || P2.isNaN() || P3.isNaN() || P4.isNaN()) return;
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_geomIntersect->getVertexArray());
+    assert(verts->size() == 4);
+    (*verts)[0] = P1;
+    (*verts)[1] = P2;
+    (*verts)[2] = P3;
+    (*verts)[3] = P4;
+
+    m_geomIntersect->dirtyDisplayList();
+    m_geomIntersect->dirtyBound();
+}
+
+void entity::FrameTool::setColorIntersection(const osg::Vec4f &colorIntersect)
+{
+    osg::Vec4Array* colorInter = static_cast<osg::Vec4Array*>(m_geomIntersect->getColorArray());
+    assert(colorInter->size() > 0);
+    (*colorInter)[0] = colorIntersect;
+    m_geomIntersect->dirtyDisplayList();
+    m_geomIntersect->dirtyBound();
+}
+
+void entity::FrameTool::setPickable(const osg::Vec3f &p0, float szCr)
+{
+    osg::Vec3Array* vPick = static_cast<osg::Vec3Array*>(m_geomPickable->getVertexArray());
+    assert(vPick->size() == 4);
+    (*vPick)[0] = p0;
+    (*vPick)[1] = p0 + osg::Vec3(-szCr, 0.f, 0.f);
+    (*vPick)[2] = p0 + osg::Vec3(-szCr, -szCr, 0.f);
+    (*vPick)[3] = p0 + osg::Vec3(.0f, -szCr, 0.f);
+    this->updateGeometryPickable();
+}
+
+void entity::FrameTool::setColorPickable(const osg::Vec4f &color)
+{
+    osg::Vec4Array* colorPick = static_cast<osg::Vec4Array*>(m_geomPickable->getColorArray());
+    assert(colorPick->size() > 0);
+    (*colorPick)[0] = color;
+    this->updateGeometryPickable();
+}
+
+void entity::FrameTool::updateGeometryPickable()
+{
+    m_geomPickable->dirtyDisplayList();
+    m_geomPickable->dirtyBound();
+}
+
+void entity::FrameTool::setCenter()
+{
+
+}
+
+void entity::FrameTool::setAxis()
+{
+
+}
+
+void entity::FrameTool::setNormal()
+{
+
+}
+
+void entity::FrameTool::setMovables2D()
+{
+
 }
