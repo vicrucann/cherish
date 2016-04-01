@@ -22,12 +22,8 @@ set (libSGEntities_SRCS
     UserScene.cpp
     Entity2D.h
     Entity2D.cpp
-    ToolLocal.h
-    ToolLocal.cpp
     ToolGlobal.h
     ToolGlobal.cpp
-    #ViewBookmark.h
-    #ViewBookmark.cpp
     Bookmarks.h
     Bookmarks.cpp
 )
