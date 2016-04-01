@@ -6,7 +6,7 @@ safe: true
 
 
 ### site serving configuration ###
-baseurl: http://www.htacg.org
+baseurl: http://vicrucann.github.io/dura-europos-insitu
 exclude: [CNAME, README.md, .gitignore]
 #permalink: / ## disables post output
 timezone: null
