@@ -52,7 +52,4 @@ defaults:
 ### file locations
 source:      .
 destination: ./_site
-#plugins:     ./_plugins
 layouts_dir: ./_layouts
-#data_source: ./_data
-#collections: null
