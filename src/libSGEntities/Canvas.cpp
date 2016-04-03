@@ -28,7 +28,7 @@ entity::Canvas::Canvas()
     , m_toolFrame(new entity::FrameTool)
 
     , m_strokeCurrent(0)
-    , m_selectedEntities(0)
+//    , m_selectedGroup(0)
 
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
     , m_normal(dureu::NORMAL)
@@ -66,7 +66,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_toolFrame(cnv.m_toolFrame)
 
     , m_strokeCurrent(0)
-    , m_selectedEntities(0)
+//    , m_selectedGroup(0)
 
     , m_center(cnv.m_center)
     , m_normal(cnv.m_normal)
@@ -303,12 +303,12 @@ void entity::Canvas::unselectAll()
 
 void entity::Canvas::unselectEntities()
 {
-    this->resetEntitiesSelected();
+    m_selectedGroup.resetAll();
 }
 
 void entity::Canvas::selectAllStrokes()
 {
-    this->resetEntitiesSelected();
+    this->unselectEntities();
     for (unsigned int i = 0; i < m_geodeData->getNumChildren(); i++){
         entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
         if (!entity) continue;
@@ -346,32 +346,8 @@ entity::Stroke *entity::Canvas::getStrokeCurrent() const
  */
 void entity::Canvas::addEntitySelected(Entity2D *entity)
 {
-    if (!entity){
-        outErrMsg("addEntitySelected: stroke ptr is NULL");
-        return;
-    }
-    if (!m_geodeData->containsDrawable(entity)){
-        outErrMsg("The stroke does not belong to Canvas, selection is impossible");
-        return;
-    }
-    if (this->isEntitySelected(entity) == -1){
-        this->setEntitySelectedColor(entity, true);
-        m_selectedEntities.push_back(entity);
-    }
+    m_selectedGroup.addEntity(entity, m_geodeData.get());
 }
-
-void entity::Canvas::resetEntitiesSelected()
-{
-    while (m_selectedEntities.size() > 0){
-        entity::Entity2D* entity = m_selectedEntities.at(m_selectedEntities.size()-1);
-        if (!entity) {
-            outErrMsg("resetEntitiesSelected: entity is NULL");
-            return;
-        }
-        this->removeEntitySelected(entity);
-    }
-}
-
 
 /* whenever an entity is substracted from selection,
  * update the selection frame;
@@ -379,22 +355,17 @@ void entity::Canvas::resetEntitiesSelected()
 */
 void entity::Canvas::removeEntitySelected(Entity2D *entity)
 {
-    if (!entity) return;
-    int idx = this->isEntitySelected(entity);
-    if (idx >=0 && idx < (int)m_selectedEntities.size()){
-        this->setEntitySelectedColor(entity, false);
-        m_selectedEntities.erase(m_selectedEntities.begin()+idx);
-    }
+    m_selectedGroup.removeEntity(entity);
 }
 
 const std::vector<entity::Entity2D* >& entity::Canvas::getStrokesSelected() const
 {
-    return m_selectedEntities;
+    return m_selectedGroup.getEntities();
 }
 
 int entity::Canvas::getStrokesSelectedSize() const
 {
-    return m_selectedEntities.size();
+    return m_selectedGroup.getSize();
 }
 
 /* returns global center of selected entities;
@@ -402,94 +373,37 @@ int entity::Canvas::getStrokesSelectedSize() const
 */
 osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
 {
-    double mu = 0, mv = 0;
-    for (unsigned int i=0; i<m_selectedEntities.size(); ++i)
-    {
-        entity::Entity2D* entity = m_selectedEntities.at(i);
-        if (!entity){
-            outErrMsg("getStrokesSelecterCenter: one of entities ptr is NULL");
-            break;
-        }
-        osg::BoundingSphere bs = entity->getBound();
-        osg::BoundingBox bb = entity->getBoundingBox();
-        mu += bb.center().x();
-        mv += bb.center().y();
-    }
-    if (m_selectedEntities.size() > 0){
-        mu /= m_selectedEntities.size();
-        mv /= m_selectedEntities.size();
-    }
-    osg::Matrix M = m_transform->getMatrix();
-    osg::Vec3f center_loc = osg::Vec3f(mu, mv, 0);
-    osg::Vec3f center_glo = center_loc * M;
-    return center_glo;
+    return m_selectedGroup.getCenter(m_transform->getMatrix());
 }
 
 void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, double du, double dv)
 {
-    for (unsigned int i=0; i<entities.size(); ++i){
-        entity::Entity2D* entity = entities.at(i);
-        if (!entity){
-            outErrMsg("moveEntities: one of entity ptr is NULL");
-            break;
-        }
-        entity->moveDelta(du, dv);
-    }
+    m_selectedGroup.move(entities, du, dv);
 }
 
 void entity::Canvas::moveEntitiesSelected(double du, double dv)
 {
-    this->moveEntities(m_selectedEntities, du, dv);
+    m_selectedGroup.move(du, dv);
 }
 
 void entity::Canvas::scaleEntities(std::vector<Entity2D *> &entities, double s, osg::Vec3f center)
 {
-    for (unsigned int i=0; i<entities.size(); ++i){
-        entity::Entity2D* entity = entities.at(i);
-        if (!entity){
-            outErrMsg("scaleEntities: one of strokes ptr is NULL");
-            break;
-        }
-        entity->scale(s, center);
-    }
+    m_selectedGroup.scale(entities, s,s,center);
 }
 
 void entity::Canvas::scaleEntitiesSelected(double s, osg::Vec3f center)
 {
-    this->scaleEntities(m_selectedEntities, s, center);
+    m_selectedGroup.scale(s,s);
 }
 
 void entity::Canvas::rotateEntities(std::vector<Entity2D *> entities, double theta, osg::Vec3f center)
 {
-    for (unsigned int i=0; i<entities.size(); ++i){
-        entity::Entity2D* entity = entities.at(i);
-        if (!entity){
-            outErrMsg("rotateEntities: one of entities ptr is NULL");
-            break;
-        }
-        entity->rotate(theta, center);
-    }
+    m_selectedGroup.rotate(entities, theta, center);
 }
 
 void entity::Canvas::rotateEntitiesSelected(double theta, osg::Vec3f center)
 {
-    this->rotateEntities(m_selectedEntities, theta, center);
-}
-
-void entity::Canvas::setEntitySelectedColor(Entity2D *entity, bool selected)
-{
-    if (!entity) return;
-    if (selected) entity->setColor(dureu::STROKE_CLR_SELECTED);
-    else entity->setColor(dureu::STROKE_CLR_NORMAL);
-}
-
-int entity::Canvas::isEntitySelected(Entity2D *entity) const
-{
-    for (size_t i = 0; i < m_selectedEntities.size(); ++i){
-        if (entity == m_selectedEntities.at(i))
-            return i;
-    }
-    return -1;
+    m_selectedGroup.rotate(theta);
 }
 
 void entity::Canvas::updateFrame(entity::Canvas* against)

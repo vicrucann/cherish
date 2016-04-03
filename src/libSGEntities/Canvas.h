@@ -21,6 +21,7 @@
 #include "Stroke.h"
 #include "Photo.h"
 #include "ToolGlobal.h"
+#include "SelectedGroup.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
@@ -45,6 +46,7 @@ public:
 
     META_Node(entity, Canvas)
 
+    /* setters and getters for serialization only! */
     void setMatrixRotation(const osg::Matrix& R);
     const osg::Matrix& getMatrixRotation() const;
 
@@ -68,6 +70,8 @@ public:
     void setNormal(const osg::Vec3f& normal);
     const osg::Vec3f& getNormal() const;
 
+    /* other API methods */
+
     void setColor(const osg::Vec4f& color);
     const osg::Vec4f& getColor() const;
 
@@ -88,7 +92,7 @@ public:
     void translate(const osg::Matrix& mt);
     void rotate(const osg::Matrix& mr);
 
-    void unselectAll();
+    void unselectAll(); /* includes current strokes and selection group */
     void unselectEntities();
     void selectAllStrokes();
 
@@ -97,7 +101,6 @@ public:
     entity::Stroke* getStrokeCurrent() const;
 
     void addEntitySelected(entity::Entity2D* entity);
-    void resetEntitiesSelected();
     void removeEntitySelected(entity::Entity2D* entity);
     const std::vector<Entity2D *> &getStrokesSelected() const;
     int getStrokesSelectedSize() const;
@@ -126,9 +129,6 @@ public:
 protected:
     ~Canvas();
 
-    void setEntitySelectedColor(entity::Entity2D* entity, bool selected = true);
-    int isEntitySelected(entity::Entity2D* entity) const;
-
     void updateTransforms();
     void resetTransforms();
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
@@ -145,8 +145,8 @@ private:
     entity::FrameTool* m_toolFrame;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
-    std::vector<entity::Entity2D*> m_selectedEntities; /* list of selected entities */
-
+//    std::vector<entity::Entity2D*> m_selectedEntities; /* list of selected entities */
+    entity::SelectedGroup m_selectedGroup;
     osg::Vec3f m_center; /* 3D global - virtual plane parameter */
     osg::Vec3f m_normal; /* 3D global - virtual plane parameter*/
 

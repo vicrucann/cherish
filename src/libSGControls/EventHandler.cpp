@@ -622,7 +622,7 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         return;
 
     if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && !(ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL))
-        m_scene->getCanvasCurrent()->resetEntitiesSelected();
+        m_scene->getCanvasCurrent()->unselectEntities();
 
     osgUtil::LineSegmentIntersector::Intersection* result_photo = new osgUtil::LineSegmentIntersector::Intersection;
     bool inter_photo = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>

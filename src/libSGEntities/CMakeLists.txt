@@ -26,6 +26,8 @@ set (libSGEntities_SRCS
     ToolGlobal.cpp
     Bookmarks.h
     Bookmarks.cpp
+    SelectedGroup.h
+    SelectedGroup.cpp
 )
 
 add_library(libSGEntities
