@@ -1,5 +1,9 @@
 #include "SelectedGroup.h"
 
+#include <iostream>
+#include <stdio.h>
+#include <algorithm>
+
 #include <osg/BoundingBox>
 #include <osg/BoundingBox>
 #include "Settings.h"
@@ -8,6 +12,7 @@
 entity::SelectedGroup::SelectedGroup(const osg::Vec3f &canvasCenter)
     : m_group(0)
     , m_center(canvasCenter)
+    , m_centerEdited(false)
 {
 }
 
@@ -25,8 +30,8 @@ void entity::SelectedGroup::addEntity(entity::Entity2D *entity, osg::Geode *geod
     if (this->isEntitySelected(entity) == -1){
         this->setEntitySelectedColor(entity, true);
         m_group.push_back(entity);
+        if (!m_centerEdited) m_center = this->getCenter2D();
     }
-
 }
 
 bool entity::SelectedGroup::removeEntity(entity::Entity2D *entity)
@@ -36,6 +41,8 @@ bool entity::SelectedGroup::removeEntity(entity::Entity2D *entity)
     if (idx >=0 && idx < (int)m_group.size()){
         this->setEntitySelectedColor(entity, false);
         m_group.erase(m_group.begin()+idx);
+        if (!m_centerEdited) m_center = this->getCenter2D();
+        if (m_group.size() == 0) m_centerEdited = false;
         return true;
     }
     return false;
@@ -54,11 +61,14 @@ void entity::SelectedGroup::resetAll()
             return;
         }
     }
+    m_centerEdited = false;
 }
 
 void entity::SelectedGroup::selectAll(osg::Geode *geodeData)
 {
+    bool tmp = m_centerEdited;
     this->resetAll();
+    m_centerEdited = tmp;
     for (size_t i = 0; i <geodeData->getNumChildren(); ++i){
         entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(geodeData->getChild(i));
         if (!entity) continue;
@@ -76,7 +86,19 @@ int entity::SelectedGroup::getSize() const
     return m_group.size();
 }
 
-osg::Vec3f entity::SelectedGroup::getCenter(const osg::Matrix &M) const
+bool entity::SelectedGroup::isEmpty() const
+{
+    return (m_group.size() == 0);
+}
+
+osg::Vec3f entity::SelectedGroup::getCenter3D(const osg::Matrix &M) const
+{
+    osg::Vec3f center_loc = this->getCenter2D();
+    osg::Vec3f center_glo = center_loc * M;
+    return center_glo;
+}
+
+osg::Vec3f entity::SelectedGroup::getCenter2D() const
 {
     double mu = 0, mv = 0;
     for (size_t i=0; i<m_group.size(); ++i)
@@ -94,9 +116,53 @@ osg::Vec3f entity::SelectedGroup::getCenter(const osg::Matrix &M) const
         mu /= m_group.size();
         mv /= m_group.size();
     }
-    osg::Vec3f center_loc = osg::Vec3f(mu, mv, 0);
-    osg::Vec3f center_glo = center_loc * M;
-    return center_glo;
+    return osg::Vec3f(mu, mv, 0);
+}
+
+osg::Vec3f entity::SelectedGroup::getCenter3DCustom(const osg::Matrix &M) const
+{
+    return m_center * M;
+}
+
+void entity::SelectedGroup::setCenter3DCustom(const osg::Vec3f &center, const osg::Matrix &M)
+{
+    m_centerEdited = true;
+    osg::Matrix invM;
+    if (!invM.invert(M)) return;
+    m_center = center * invM;
+}
+
+osg::Vec3f entity::SelectedGroup::getCenter2DCustom() const
+{
+    return m_center;
+}
+
+void entity::SelectedGroup::setCenter2DCustom(const osg::Vec3f &center)
+{
+    m_centerEdited = true;
+    m_center = center;
+}
+
+osg::BoundingBox entity::SelectedGroup::getBoundingBox() const
+{
+    osg::BoundingBox bb;
+    double xmin = FLT_MAX, ymin = FLT_MAX, xmax = -FLT_MAX, ymax = -FLT_MAX;
+    for (size_t i=0; i<m_group.size(); ++i){
+        entity::Entity2D* entity = m_group.at(i);
+        if (!entity){
+            outErrMsg("getStrokesSelecterCenter: one of entities ptr is NULL");
+            break;
+        }
+        osg::BoundingBox bbi = entity->getBoundingBox();
+        if (!bbi.valid()) continue;
+        xmin = std::min(xmin, double(bbi.xMin()));
+        ymin = std::min(ymin, double(bbi.yMin()));
+        xmax = std::max(xmax, double(bbi.xMax()));
+        ymax = std::max(ymax, double(bbi.yMax()));
+
+    }
+    bb.set(xmin, ymin, 0, xmax, ymax, 0);
+    return bb;
 }
 
 void entity::SelectedGroup::move(double du, double dv)

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <osg/Geode>
+#include <osg/BoundingBox>
 #include "Entity2D.h"
 
 namespace entity {
@@ -17,7 +18,14 @@ public:
     void selectAll(osg::Geode* geodeData);
     const std::vector<Entity2D *> &getEntities() const;
     int getSize() const;
-    osg::Vec3f getCenter(const osg::Matrix& M) const;
+    bool isEmpty() const;
+    osg::Vec3f getCenter3D(const osg::Matrix& M) const;
+    osg::Vec3f getCenter2D() const;
+    osg::Vec3f getCenter3DCustom(const osg::Matrix& M) const;
+    void setCenter3DCustom(const osg::Vec3f& center, const osg::Matrix& M);
+    osg::Vec3f getCenter2DCustom() const;
+    void setCenter2DCustom(const osg::Vec3f& center);
+    osg::BoundingBox getBoundingBox() const;
 
     void move(double du, double dv);
     void move(std::vector<Entity2D *> &entities, double du, double dv);
@@ -33,6 +41,7 @@ protected:
     std::vector<entity::Entity2D*> m_group;
 
     osg::Vec3f m_center; /* local center for rotation and scaling */
+    bool m_centerEdited; /* whether center was edited by user or not */
 
 }; // class SelectedGroup
 

@@ -639,6 +639,11 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         entity::Stroke* stroke = this->getStroke(*result_stroke);
         if (stroke) m_scene->getCanvasCurrent()->addEntitySelected(stroke);
     }
+
+    /* if some entities were selected, go into edit-frame mode for canvas frame */
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE){
+        m_scene->getCanvasCurrent()->updateFrame(m_scene->getCanvasPrevious());
+    }
 }
 
 template <typename T1, typename T2>
