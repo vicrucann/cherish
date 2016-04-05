@@ -41,10 +41,11 @@ public slots:
     void onMoveBookmark(const QModelIndex &index);
     void onBookmarkAddedToWidget(const QModelIndex &, int first, int last);
     void onBookmarkRemovedFromWidget(const QModelIndex &, int first, int last);
+    void slotMouseModeSet(dureu::MOUSE_MODE mode);
 
 signals:
-    void sendTabletActivity(bool active);
-    void sendMouseMode(dureu::MOUSE_MODE mode);
+    void signalTabletActivity(bool active);
+    void signalMouseMode(dureu::MOUSE_MODE mode);
 
 private slots:
     //void onCreateViewer();

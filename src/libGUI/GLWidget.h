@@ -30,12 +30,14 @@ public:
     void setCameraView(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void getCameraView(osg::Vec3d& eye, osg::Vec3d& center, osg::Vec3d& up) const;
 
+    void setMouseMode(const dureu::MOUSE_MODE& mode);
+
 signals:
     void sendAutoSwitchMode(dureu::MOUSE_MODE mode);
+    void signalMouseModeSet(dureu::MOUSE_MODE mode);
 
 public slots:
     void getTabletActivity(bool active);
-    void recieveMouseMode(dureu::MOUSE_MODE mode);
     void onRequestScreenshot(QPixmap& pmap, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void onFOVChanged(double fov);
     void onFocalChanged(double focal);
@@ -77,7 +79,7 @@ private:
     bool m_DeviceDown; // pen touches the device?
     bool m_DeviceActive; // pen is in device approximation?
 
-    dureu::MOUSE_MODE m_ModeMouse;
+    dureu::MOUSE_MODE m_mouseMode;
     osg::ref_ptr<Manipulator> m_manipulator;
     osg::ref_ptr<EventHandler> m_EH;
 

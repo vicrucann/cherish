@@ -28,10 +28,10 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     , m_ModeView(1)
     , m_DeviceDown(false)
     , m_DeviceActive(false)
-    , m_ModeMouse(dureu::MOUSE_SKETCH)
+    , m_mouseMode(dureu::MOUSE_SKETCH)
 
-    , m_manipulator(new Manipulator(m_ModeMouse))
-    , m_EH(new EventHandler(m_RootScene.get(), m_ModeMouse))
+    , m_manipulator(new Manipulator(m_mouseMode))
+    , m_EH(new EventHandler(m_RootScene.get(), m_mouseMode))
 
     , m_viewStack(stack)
 {
@@ -124,17 +124,18 @@ void GLWidget::getCameraView(osg::Vec3d &eye, osg::Vec3d &center, osg::Vec3d &up
     m_manipulator->getTransformation(eye, center, up);
 }
 
+void GLWidget::setMouseMode(const dureu::MOUSE_MODE &mode)
+{
+    outLogVal("Changing mouse mode to", mode);
+    m_mouseMode = mode;
+    m_manipulator->setMode(m_mouseMode);
+    m_EH->setMode(m_mouseMode);
+    emit this->signalMouseModeSet(m_mouseMode);
+}
+
 void GLWidget::getTabletActivity(bool active)
 {
     m_DeviceActive = active;
-}
-
-void GLWidget::recieveMouseMode(dureu::MOUSE_MODE mode)
-{
-    outLogVal("Changing mouse mode to", mode);
-    m_ModeMouse = mode;
-    m_manipulator->setMode(m_ModeMouse);
-    m_EH->setMode(m_ModeMouse);
 }
 
 void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
@@ -298,7 +299,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 void GLWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     outLogMsg("double click detected");
-    emit this->sendAutoSwitchMode(m_ModeMouse);
+    emit this->sendAutoSwitchMode(m_mouseMode);
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)

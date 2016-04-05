@@ -345,17 +345,17 @@ void entity::FrameTool::setColor(const osg::Vec4f &color, const osg::Vec4f &colo
 {
     ToolGlobal::setColor(color);
     this->setColorQuadGeometry(m_geomPickable, color);
-    this->setColorQuadGeometry(m_geomCenter, solarized::yellow);
-    this->setColorQuadGeometry(m_geomAxisU, solarized::yellow);
-    this->setColorQuadGeometry(m_geomAxisV, solarized::yellow);
-    this->setColorQuadGeometry(m_geomScaleU1, solarized::cyan);
-    this->setColorQuadGeometry(m_geomScaleU2, solarized::cyan);
-    this->setColorQuadGeometry(m_geomScaleV1, solarized::cyan);
-    this->setColorQuadGeometry(m_geomScaleV2, solarized::cyan);
-    this->setColorQuadGeometry(m_geomScaleUV1, solarized::cyan);
-    this->setColorQuadGeometry(m_geomScaleUV2, solarized::cyan);
-    this->setColorQuadGeometry(m_geomScaleUV3, solarized::cyan);
-    this->setColorQuadGeometry(m_geomScaleUV4, solarized::cyan);
+    this->setColorQuadGeometry(m_geomCenter, solarized::base0);
+    this->setColorQuadGeometry(m_geomAxisU, solarized::base0);
+    this->setColorQuadGeometry(m_geomAxisV, solarized::base0);
+    this->setColorQuadGeometry(m_geomScaleU1, solarized::base00);
+    this->setColorQuadGeometry(m_geomScaleU2, solarized::base00);
+    this->setColorQuadGeometry(m_geomScaleV1, solarized::base00);
+    this->setColorQuadGeometry(m_geomScaleV2, solarized::base00);
+    this->setColorQuadGeometry(m_geomScaleUV1, solarized::base00);
+    this->setColorQuadGeometry(m_geomScaleUV2, solarized::base00);
+    this->setColorQuadGeometry(m_geomScaleUV3, solarized::base00);
+    this->setColorQuadGeometry(m_geomScaleUV4, solarized::base00);
     this->setColorIntersection(colorIntersect);
 }
 

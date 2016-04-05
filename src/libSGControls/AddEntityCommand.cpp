@@ -66,7 +66,7 @@ void AddCanvasCommand::undo()
     // now delete the canvas
     emit m_scene->canvasRemoved(m_scene->getCanvasIndex(m_canvas.get()));
     m_scene->removeChild(m_canvas);
-    m_scene->getCanvasCurrent()->updateFrame(0);
+    if (m_scene->getCanvasCurrent()) m_scene->getCanvasCurrent()->updateFrame(0);
     m_scene->updateWidgets();
 }
 

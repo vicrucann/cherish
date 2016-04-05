@@ -621,24 +621,35 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
            ))
         return;
 
+    /* if clicked outside of selected area, unselect all */
     if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && !(ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL))
         m_scene->getCanvasCurrent()->unselectEntities();
 
-    osgUtil::LineSegmentIntersector::Intersection* result_photo = new osgUtil::LineSegmentIntersector::Intersection;
-    bool inter_photo = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
-            (ea,aa, *result_photo);
-    if (inter_photo){
-        entity::Photo* photo = this->getPhoto(*result_photo);
-        if (photo) m_scene->getCanvasCurrent()->addEntitySelected(photo);
-    }
+    /* when frame is normal, perform selection of entities */
+    {
+        osgUtil::LineSegmentIntersector::Intersection* result_photo = new osgUtil::LineSegmentIntersector::Intersection;
+        bool inter_photo = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
+                (ea,aa, *result_photo);
+        if (inter_photo){
+            entity::Photo* photo = this->getPhoto(*result_photo);
+            if (photo) m_scene->getCanvasCurrent()->addEntitySelected(photo);
+        }
 
-    StrokeIntersector::Intersection* result_stroke = new StrokeIntersector::Intersection;
-    bool inter_stroke = this->getLineIntersection<StrokeIntersector::Intersection, StrokeIntersector>
-            (ea,aa, *result_stroke);
-    if (inter_stroke) {
-        entity::Stroke* stroke = this->getStroke(*result_stroke);
-        if (stroke) m_scene->getCanvasCurrent()->addEntitySelected(stroke);
+        StrokeIntersector::Intersection* result_stroke = new StrokeIntersector::Intersection;
+        bool inter_stroke = this->getLineIntersection<StrokeIntersector::Intersection, StrokeIntersector>
+                (ea,aa, *result_stroke);
+        if (inter_stroke) {
+            entity::Stroke* stroke = this->getStroke(*result_stroke);
+            if (stroke) m_scene->getCanvasCurrent()->addEntitySelected(stroke);
+        }
     }
+    /* when frame is in edit mode, see what transformation the user wants to do;
+     * perform that action;
+     * if clicked - search what drawable was clicked onto;
+     * If center drawable - switch "move all" to "move center custom",
+     * and perfrom the move.
+     * If scale drawables - perform scaling action.
+     * If rotation axis - perform rotation. */
 
     /* if some entities were selected, go into edit-frame mode for canvas frame */
     if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE){
