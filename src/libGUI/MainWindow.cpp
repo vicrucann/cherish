@@ -264,11 +264,11 @@ void MainWindow::slotMouseModeSet(dureu::MOUSE_MODE mode)
         this->statusBar()->showMessage(tr("To move image, click on it first, and then drag to desired position. "
                                           "To move set of strokes, select them first, then perform move as for image."));
         break;
-    case dureu::MOUSE_PHOTO_FLIPH:
+    case dureu::MOUSE_ENTITY_FLIPH:
         cur = new QCursor(Data::sceneImageFlipHPixmap(), -1, -1);
         this->statusBar()->showMessage(tr("To perform a horizontal flip, click on the image to flip."));
         break;
-    case dureu::MOUSE_PHOTO_FLIPV:
+    case dureu::MOUSE_ENTITY_FLIPV:
         cur = new QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
         this->statusBar()->showMessage(tr("To perform the vertical flip, click on the image to flip"));
         break;
@@ -285,8 +285,6 @@ void MainWindow::slotMouseModeSet(dureu::MOUSE_MODE mode)
         cur = new QCursor(Data::sceneImageRotatePixmap(), -1, -1);
         this->statusBar()->showMessage(tr("To rotate image, click on it and drag it til it rotates to desired angle"
                                           "To rotate set of strokes, select them first, then perform rotate as for image."));
-        break;
-    case dureu::MOUSE_BOOKMARK:
         break;
     case dureu::MOUSE_ERASE:
         cur = new QCursor(Data::sceneEraserPixmap(), -1, -1);
@@ -634,12 +632,12 @@ void MainWindow::onImageScale()
 
 void MainWindow::onImageFlipH()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_PHOTO_FLIPH);
+    m_glWidget->setMouseMode(dureu::MOUSE_ENTITY_FLIPH);
 }
 
 void MainWindow::onImageFlipV()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_PHOTO_FLIPV);
+    m_glWidget->setMouseMode(dureu::MOUSE_ENTITY_FLIPV);
 }
 
 void MainWindow::onImagePush()
@@ -810,20 +808,20 @@ void MainWindow::initializeActions()
     m_actionCanvasRotate = new QAction(Data::sceneCanvasRotateIcon(), tr("Rotate Canvas"), this);
     this->connect(m_actionCanvasRotate, SIGNAL(triggered(bool)), this, SLOT(onCanvasRotate()));
 
-    m_actionImageMove = new QAction(Data::sceneImageMoveIcon(), tr("Move Image"), this);
-    this->connect(m_actionImageMove, SIGNAL(triggered(bool)), this, SLOT(onImageMove()));
+//    m_actionImageMove = new QAction(Data::sceneImageMoveIcon(), tr("Move Image"), this);
+//    this->connect(m_actionImageMove, SIGNAL(triggered(bool)), this, SLOT(onImageMove()));
 
-    m_actionImageRotate = new QAction(Data::sceneImageRotateIcon(), tr("Rotate Image"), this);
-    this->connect(m_actionImageRotate, SIGNAL(triggered(bool)), this, SLOT(onImageRotate()));
+//    m_actionImageRotate = new QAction(Data::sceneImageRotateIcon(), tr("Rotate Image"), this);
+//    this->connect(m_actionImageRotate, SIGNAL(triggered(bool)), this, SLOT(onImageRotate()));
 
-    m_actionImageScale = new QAction(Data::sceneImageScaleIcon(), tr("Scale Image"), this);
-    this->connect(m_actionImageScale, SIGNAL(triggered(bool)), this, SLOT(onImageScale()));
+//    m_actionImageScale = new QAction(Data::sceneImageScaleIcon(), tr("Scale Image"), this);
+//    this->connect(m_actionImageScale, SIGNAL(triggered(bool)), this, SLOT(onImageScale()));
 
-    m_actionImageFlipV = new QAction(Data::sceneImageFlipVIcon(), tr("Flip Image"), this);
-    this->connect(m_actionImageFlipV, SIGNAL(triggered(bool)), this, SLOT(onImageFlipV()));
+//    m_actionImageFlipV = new QAction(Data::sceneImageFlipVIcon(), tr("Flip Image"), this);
+//    this->connect(m_actionImageFlipV, SIGNAL(triggered(bool)), this, SLOT(onImageFlipV()));
 
-    m_actionImageFlipH = new QAction(Data::sceneImageFlipHIcon(), tr("Flip Image"), this);
-    this->connect(m_actionImageFlipH, SIGNAL(triggered(bool)), this, SLOT(onImageFlipH()));
+//    m_actionImageFlipH = new QAction(Data::sceneImageFlipHIcon(), tr("Flip Image"), this);
+//    this->connect(m_actionImageFlipH, SIGNAL(triggered(bool)), this, SLOT(onImageFlipH()));
 
     m_actionImagePush = new QAction(Data::sceneImagePushIcon(), tr("Move image from current to previous canvas"), this);
     this->connect(m_actionImagePush, SIGNAL(triggered(bool)), this, SLOT(onImagePush()));
@@ -896,11 +894,11 @@ void MainWindow::initializeMenus()
     submenuEC->addAction(m_actionCanvasOffset);
     submenuEC->addAction(m_actionCanvasRotate);
     QMenu* submenuEI = menuScene->addMenu("Edit Image");
-    submenuEI->addAction(m_actionImageMove);
-    submenuEI->addAction(m_actionImageRotate);
-    submenuEI->addAction(m_actionImageScale);
-    submenuEI->addAction(m_actionImageFlipH);
-    submenuEI->addAction(m_actionImageFlipV);
+//    submenuEI->addAction(m_actionImageMove);
+//    submenuEI->addAction(m_actionImageRotate);
+//    submenuEI->addAction(m_actionImageScale);
+//    submenuEI->addAction(m_actionImageFlipH);
+//    submenuEI->addAction(m_actionImageFlipV);
     submenuEI->addAction(m_actionImagePush);
     QMenu* submenuES = menuScene->addMenu("Edit Strokes");
     submenuES->addAction(m_actionStrokesPush);
@@ -977,11 +975,11 @@ void MainWindow::initializeToolbars()
     tbEntity->addAction(m_actionCanvasOffset);
     tbEntity->addAction(m_actionCanvasRotate);
     tbEntity->addSeparator();
-    tbEntity->addAction(m_actionImageMove);
-    tbEntity->addAction(m_actionImageRotate);
-    tbEntity->addAction(m_actionImageScale);
-    tbEntity->addAction(m_actionImageFlipH);
-    tbEntity->addAction(m_actionImageFlipV);
+//    tbEntity->addAction(m_actionImageMove);
+//    tbEntity->addAction(m_actionImageRotate);
+//    tbEntity->addAction(m_actionImageScale);
+//    tbEntity->addAction(m_actionImageFlipH);
+//    tbEntity->addAction(m_actionImageFlipV);
     tbEntity->addAction(m_actionImagePush);
     tbEntity->addSeparator();
     tbEntity->addAction(m_actionStrokesPush);

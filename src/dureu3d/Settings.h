@@ -90,12 +90,11 @@ enum MOUSE_MODE
       , MOUSE_CANVAS_ROTATE
       , MOUSE_CANVAS_CLONE
       , MOUSE_ENTITY_MOVE
-      , MOUSE_PHOTO_FLIPH
-      , MOUSE_PHOTO_FLIPV
+      , MOUSE_ENTITY_FLIPH
+      , MOUSE_ENTITY_FLIPV
       , MOUSE_PHOTO_PUSH
       , MOUSE_ENTITY_SCALE
       , MOUSE_ENTITY_ROTATE
-      , MOUSE_BOOKMARK // create bookmark (take a snapshot of a selected viewer)
       , MOUSE_ERASE // deletes entyties from scene
       , MOUSE_DELETE // remove the selected element completely (photo or canvas)
       , MOUSE_ORBIT

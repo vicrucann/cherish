@@ -75,6 +75,7 @@ EditStrokesPushCommand::EditStrokesPushCommand(entity::UserScene *scene, const s
     , m_eye(eye)
 {
     m_canvasCurrent->unselectEntities();
+    m_canvasCurrent->updateFrame(m_canvasTarget.get());
     this->setText(QObject::tr("Push set of strokes from %1 to %2")
                   .arg(QString(m_canvasCurrent->getName().c_str()),
                        QString(m_canvasTarget->getName().c_str())));

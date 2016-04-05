@@ -84,8 +84,8 @@ void EventHandler::setMode(dureu::MOUSE_MODE mode)
     switch (m_mode){
     case dureu::MOUSE_ENTITY_ROTATE:
     case dureu::MOUSE_ENTITY_SCALE:
-    case dureu::MOUSE_PHOTO_FLIPH:
-    case dureu::MOUSE_PHOTO_FLIPV:
+    case dureu::MOUSE_ENTITY_FLIPH:
+    case dureu::MOUSE_ENTITY_FLIPV:
     case dureu::MOUSE_PHOTO_PUSH:
     case dureu::MOUSE_ENTITY_MOVE:
     case dureu::MOUSE_ERASE:

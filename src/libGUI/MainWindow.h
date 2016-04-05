@@ -147,8 +147,9 @@ private:
             // Edit Canvas
             , * m_actionCanvasOffset, * m_actionCanvasRotate
             // Edit Image
-            , * m_actionImageMove, * m_actionImageRotate, * m_actionImageScale, * m_actionImageFlipV
-            , * m_actionImageFlipH, * m_actionImagePush
+//            , * m_actionImageMove, * m_actionImageRotate, * m_actionImageScale, * m_actionImageFlipV
+//            , * m_actionImageFlipH
+            , * m_actionImagePush
             // Edit Strokes
             , * m_actionStrokesPush
     ;
