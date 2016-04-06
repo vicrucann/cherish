@@ -52,7 +52,9 @@ public:
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
     void resetModel(BookmarkWidget* widget);
+    void clearModel();
     std::string getBookmarkName(int row) const;
+    int getNumBookmarks() const;
 
 signals:
     void sendBookmark(int row);

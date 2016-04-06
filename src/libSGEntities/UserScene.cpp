@@ -213,6 +213,7 @@ void entity::UserScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
         return;
     }
     if (!this->containsNode(m_bookmarks)){
+        m_bookmarks->clearModel();
         if (!this->addChild(m_bookmarks)){
             outErrMsg("addBookmark: could not set up root pointer correctly");
             return;

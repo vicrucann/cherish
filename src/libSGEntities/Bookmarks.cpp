@@ -115,12 +115,29 @@ void entity::Bookmarks::resetModel(BookmarkWidget *widget)
     }
 }
 
+/* to manually clear all vectors data */
+void entity::Bookmarks::clearModel()
+{
+    m_eyes.clear();
+    m_centers.clear();
+    m_ups.clear();
+    m_names.clear();
+    m_row = -1;
+}
+
 std::string entity::Bookmarks::getBookmarkName(int row) const
 {
     if (row>=0 && row < (int)m_names.size())
         return m_names[row];
     else
         return "";
+}
+
+int entity::Bookmarks::getNumBookmarks() const
+{
+    assert(m_eyes.size() == m_ups.size() && m_ups.size() == m_centers.size()
+           && m_centers.size() == m_names.size());
+    return m_eyes.size();
 }
 
 void entity::Bookmarks::onClicked(const QModelIndex &index)
@@ -181,10 +198,11 @@ void entity::Bookmarks::deleteBookmarkData(int first, int last)
         outErrMsg("deleteBookmark: last is out of range");
         return;
     }
-    m_eyes.erase(m_eyes.begin()+first, m_eyes.begin()+last);
-    m_centers.erase(m_centers.begin()+first, m_centers.begin()+last);
-    m_ups.erase(m_ups.begin()+first, m_ups.begin()+last);
-    m_names.erase(m_names.begin()+first, m_names.begin()+last);
+    m_eyes.erase(m_eyes.begin()+first, m_eyes.begin()+last+1);
+    m_centers.erase(m_centers.begin()+first, m_centers.begin()+last+1);
+    m_ups.erase(m_ups.begin()+first, m_ups.begin()+last+1);
+    m_names.erase(m_names.begin()+first, m_names.begin()+last+1);
+    outLogVal("after removal of row[s], the size is", m_eyes.size());
 }
 
 template <typename T>
