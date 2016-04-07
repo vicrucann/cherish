@@ -24,7 +24,7 @@
 
 class EventHandler : public osgGA::GUIEventHandler {
 public:
-    EventHandler(RootScene* scene, dureu::MOUSE_MODE mode = dureu::MOUSE_SELECT_2D);
+    EventHandler(RootScene* scene, dureu::MOUSE_MODE mode = dureu::SELECT_ENTITY);
 
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 

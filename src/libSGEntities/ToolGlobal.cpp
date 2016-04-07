@@ -387,6 +387,21 @@ osg::Geometry *entity::FrameTool::getPickable() const
     return m_geomPickable;
 }
 
+osg::Geometry *entity::FrameTool::getCenterGeometry() const
+{
+    return m_geomCenter;
+}
+
+osg::Geometry *entity::FrameTool::getAxisUGeometry() const
+{
+    return m_geomAxisU;
+}
+
+osg::Geometry *entity::FrameTool::getAxisVGeometry() const
+{
+    return m_geomAxisV;
+}
+
 // TODO: put all quad and wire functions into abstract class
 void entity::FrameTool::initQuadGeometry(osg::Geometry *geom)
 {

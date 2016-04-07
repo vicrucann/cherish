@@ -28,7 +28,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     , m_ModeView(1)
     , m_DeviceDown(false)
     , m_DeviceActive(false)
-    , m_mouseMode(dureu::MOUSE_SKETCH)
+    , m_mouseMode(dureu::PEN_SKETCH)
 
     , m_manipulator(new Manipulator(m_mouseMode))
     , m_EH(new EventHandler(m_RootScene.get(), m_mouseMode))
@@ -248,6 +248,8 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         break;
     }
     if (event->modifiers() & Qt::ControlModifier){
+        if (dureu::maskMouse & dureu::MOUSE_SELECT)
+            this->setMouseMode(dureu::SELECT_CANVAS);
         std::cout << "Qt ctrl ON" << std::endl;
         this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KEY_Control_L);
     }
@@ -259,6 +261,8 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
 {
     /* http://stackoverflow.com/questions/20746488/how-to-catch-ctrl-key-release */
     if (event->key() == Qt::Key_Control){
+        if (dureu::maskMouse & dureu::MOUSE_SELECT)
+            this->setMouseMode(dureu::SELECT_ENTITY);
         std::cout << "Qt ctrl OFF" << std::endl;
         this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KEY_Control_L);
     }

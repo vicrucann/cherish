@@ -83,6 +83,10 @@ public:
     void setColorIntersection(const osg::Vec4f& colorIntersect);
 
     osg::Geometry* getPickable() const;
+    osg::Geometry* getCenterGeometry() const;
+    osg::Geometry* getAxisUGeometry() const;
+    osg::Geometry* getAxisVGeometry() const;
+
 
 protected:
     void initQuadGeometry(osg::Geometry* geom);

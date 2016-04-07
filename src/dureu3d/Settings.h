@@ -83,24 +83,36 @@ enum APPMODE{
 };
 
 enum MOUSE_MODE
-{     MOUSE_SELECT_2D // for selection and delete
-      , MOUSE_SELECT_3D // sub mode when user presses and holds CTRL
-      , MOUSE_SKETCH // to draw strokes and 2D geometric shapes
-      , MOUSE_CANVAS_OFFSET
-      , MOUSE_CANVAS_ROTATE
-      , MOUSE_CANVAS_CLONE
-      , MOUSE_ENTITY_MOVE
-      , MOUSE_ENTITY_FLIPH
-      , MOUSE_ENTITY_FLIPV
-      , MOUSE_PHOTO_PUSH
-      , MOUSE_ENTITY_SCALE
-      , MOUSE_ENTITY_ROTATE
-      , MOUSE_ERASE // deletes entyties from scene
-      , MOUSE_DELETE // remove the selected element completely (photo or canvas)
-      , MOUSE_ORBIT
-      , MOUSE_ZOOM
-      , MOUSE_PAN
-      , MOUSE_FIXEDVIEW
+{
+    MOUSE_PEN = 0x000,
+    PEN_SKETCH,
+    PEN_ERASE,
+    PEN_DELETE,
+
+    MOUSE_SELECT = 0x100,
+    SELECT_ENTITY = 0x110,
+    ENTITY_MOVE,
+    ENTITY_SCALE,
+    ENTITY_ROTATE,
+    ENTITY_FLIPH,
+    ENTITY_FLIPV,
+    PHOTO_PUSH,
+    SELECT_CANVAS = 0x120,
+    CANVAS_OFFSET,
+    CANVAS_ROTATE,
+
+    MOUSE_CAMERA = 0x200,
+    CAMERA_ORBIT,
+    CAMERA_ZOOM,
+    CAMERA_PAN,
+    CAMERA_FIXEDVIEW,
+
+    MOUSE_CREATE = 0x3000,
+    CREATE_CANVASCLONE,
+
+    maskMouse = 0xff00,
+    maskEntity = 0xff0,
+    maskAction = 0xf,
 };
 
 enum EVENT {

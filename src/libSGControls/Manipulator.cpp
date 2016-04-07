@@ -14,13 +14,13 @@ void Manipulator::setMode(dureu::MOUSE_MODE mode)
 bool Manipulator::performMovementLeftMouseButton(const double eventTimeDelta, const double dx, const double dy)
 {
     switch (m_mode){
-    case dureu::MOUSE_ZOOM:
+    case dureu::CAMERA_ZOOM:
         return this->wrapZoom(eventTimeDelta, dx, dy);
-    case dureu::MOUSE_PAN:
+    case dureu::CAMERA_PAN:
         return this->wrapPan(eventTimeDelta, dx, dy);
-    case dureu::MOUSE_ORBIT:
+    case dureu::CAMERA_ORBIT:
         return this->wrapRotation(eventTimeDelta, dx, dy);
-    case dureu::MOUSE_FIXEDVIEW:
+    case dureu::CAMERA_FIXEDVIEW:
         return this->wrapPan(eventTimeDelta, dx, dy);
     default:
         return false;
@@ -29,7 +29,7 @@ bool Manipulator::performMovementLeftMouseButton(const double eventTimeDelta, co
 
 bool Manipulator::performMovementMiddleMouseButton(const double eventTimeDelta, const double dx, const double dy)
 {
-    if (m_mode == dureu::MOUSE_FIXEDVIEW)
+    if (m_mode == dureu::CAMERA_FIXEDVIEW)
         return false;
     else
         return this->wrapRotation(eventTimeDelta, dx, dy);

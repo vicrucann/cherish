@@ -19,6 +19,7 @@
 #include "CameraProperties.h"
 #include "Settings.h"
 #include "Data.h"
+#include "Utilities.h"
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
@@ -127,13 +128,13 @@ void MainWindow::recievedRequestUpdate()
 void MainWindow::recieveAutoSwitchMode(dureu::MOUSE_MODE mode)
 {
     switch (mode){
-    case dureu::MOUSE_SELECT_2D:
+    case dureu::SELECT_ENTITY:
         emit this->onSketch();
         break;
-    case dureu::MOUSE_SKETCH:
+    case dureu::PEN_SKETCH:
         emit this->onCameraOrbit();
         break;
-    case dureu::MOUSE_ORBIT:
+    case dureu::CAMERA_ORBIT:
         emit this->onSelect();
         break;
     default:
@@ -224,96 +225,7 @@ void MainWindow::onBookmarkRemovedFromWidget(const QModelIndex &, int first, int
 
 void MainWindow::slotMouseModeSet(dureu::MOUSE_MODE mode)
 {
-    QCursor* cur;
-    switch (mode){
-    case dureu::MOUSE_SELECT_2D:
-        cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
-        this->statusBar()->showMessage(tr("Select mode is on: helps to select entities within current canvas; "
-                                          "To select strokes within CURRENT canvas, "
-                                          "use left mouse click and drag. "
-                                          "Click again to deselect all the strokes. Press <Ctrl> and hold to add more strokes to already selected strokes."));
-        break;
-    case dureu::MOUSE_SELECT_3D:
-        cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
-        this->statusBar()->showMessage(tr("Select mode is on: helps to select entities within current canvas; "
-                                          "To select strokes within CURRENT canvas, "
-                                          "use left mouse click and drag. "
-                                          "Click again to deselect all the strokes. Press <Ctrl> and hold to add more strokes to already selected strokes."));
-        break;
-    case dureu::MOUSE_SKETCH:
-        cur = new QCursor(Data::sceneSketchPixmap(), 0, Data::sceneSketchPixmap().height());
-        this->statusBar()->showMessage(tr("Pressure defines a strokes. Press and drag to create new stroke."
-                                          "Release when finished."));
-        break;
-    case dureu::MOUSE_CANVAS_OFFSET:
-        cur = new QCursor(Data::sceneCanvasOffsetCursor(), -1, -1);
-        this->statusBar()->showMessage(tr("For canvas offset, use mouse and drap and drop to desired position"));
-        break;
-    case dureu::MOUSE_CANVAS_ROTATE:
-        cur = new QCursor(Data::sceneCanvasRotateCursor(), -1, -1);
-        this->statusBar()->showMessage(tr("To switch the axis of rotation: press 'u' for local X-axis(orange), "
-                                          "and 'v' for local Y-axis(yellow)"));
-        break;
-    case dureu::MOUSE_CANVAS_CLONE:
-        cur = new QCursor(Qt::ArrowCursor);
-        this->statusBar()->showMessage(tr("Click to start displaying the position of clonned canvas, drag the new position "
-                                          "and release to fixate the position."));
-        break;
-    case dureu::MOUSE_ENTITY_MOVE:
-        cur = new QCursor(Data::sceneImageMovePixmap(), -1, -1);
-        this->statusBar()->showMessage(tr("To move image, click on it first, and then drag to desired position. "
-                                          "To move set of strokes, select them first, then perform move as for image."));
-        break;
-    case dureu::MOUSE_ENTITY_FLIPH:
-        cur = new QCursor(Data::sceneImageFlipHPixmap(), -1, -1);
-        this->statusBar()->showMessage(tr("To perform a horizontal flip, click on the image to flip."));
-        break;
-    case dureu::MOUSE_ENTITY_FLIPV:
-        cur = new QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
-        this->statusBar()->showMessage(tr("To perform the vertical flip, click on the image to flip"));
-        break;
-    case dureu::MOUSE_PHOTO_PUSH:
-        cur = new QCursor(Qt::CrossCursor);
-        this->statusBar()->showMessage(tr("Click on image, and it will be moved from current to previous canvas."));
-        break;
-    case dureu::MOUSE_ENTITY_SCALE:
-        cur = new QCursor(Data::sceneImageScalePixmap(), 0, 0);
-        this->statusBar()->showMessage(tr("To scale image, clock on it, and then drag to get the desired size"
-                                          "To scale set of strokes, select them first, then perform scale as for image."));
-        break;
-    case dureu::MOUSE_ENTITY_ROTATE:
-        cur = new QCursor(Data::sceneImageRotatePixmap(), -1, -1);
-        this->statusBar()->showMessage(tr("To rotate image, click on it and drag it til it rotates to desired angle"
-                                          "To rotate set of strokes, select them first, then perform rotate as for image."));
-        break;
-    case dureu::MOUSE_ERASE:
-        cur = new QCursor(Data::sceneEraserPixmap(), -1, -1);
-        this->statusBar()->showMessage(tr("This functionality does not exist yet."));
-        break;
-    case dureu::MOUSE_DELETE:
-        cur = new QCursor(Data::editDeleteCursor(), 0, 0);
-        this->statusBar()->showMessage(tr("Delete mode is on: helps to delete entities within current canvas; "
-                                          "to delete stroke, left mouse click and drag; "
-                                          "to delete photo, use right mouse click. "));
-        break;
-    case dureu::MOUSE_ORBIT:
-        cur = new QCursor(Data::sceneOrbitPixmap(), 0, 0);
-        this->statusBar()->showMessage(tr("Camera orbit mode."));
-        break;
-    case dureu::MOUSE_ZOOM:
-        cur = new QCursor(Data::sceneZoomPixmap(), 0, 0);
-        this->statusBar()->showMessage(tr("Camera zoom mode."));
-        break;
-    case dureu::MOUSE_PAN:
-        cur = new QCursor(Data::scenePanPixmap(), 0, 0);
-        this->statusBar()->showMessage(tr("Camera pan mode."));
-        break;
-    case dureu::MOUSE_FIXEDVIEW:
-        break;
-    default:
-        break;
-    }
-
+    QCursor* cur = Utilities::getCursorFromMode(mode);
     if (cur) m_mdiArea->setCursor(*cur);
 }
 
@@ -503,15 +415,15 @@ void MainWindow::onTools()
 }
 
 void MainWindow::onCameraOrbit(){
-    m_glWidget->setMouseMode(dureu::MOUSE_ORBIT);
+    m_glWidget->setMouseMode(dureu::CAMERA_ORBIT);
 }
 
 void MainWindow::onCameraZoom(){
-    m_glWidget->setMouseMode(dureu::MOUSE_ZOOM);
+    m_glWidget->setMouseMode(dureu::CAMERA_ZOOM);
 }
 
 void MainWindow::onCameraPan(){
-    m_glWidget->setMouseMode(dureu::MOUSE_PAN);
+    m_glWidget->setMouseMode(dureu::CAMERA_PAN);
 }
 
 void MainWindow::onCameraAperture()
@@ -522,27 +434,27 @@ void MainWindow::onCameraAperture()
 }
 
 void MainWindow::onSelect(){
-    m_glWidget->setMouseMode(dureu::MOUSE_SELECT_2D);
+    m_glWidget->setMouseMode(dureu::SELECT_ENTITY);
 }
 
 void MainWindow::onErase()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_ERASE);
+    m_glWidget->setMouseMode(dureu::PEN_ERASE);
 }
 
 void MainWindow::onDelete()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_DELETE);
+    m_glWidget->setMouseMode(dureu::PEN_DELETE);
 }
 
 void MainWindow::onSketch()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_SKETCH);
+    m_glWidget->setMouseMode(dureu::PEN_SKETCH);
 }
 
 void MainWindow::onNewCanvasClone()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_CANVAS_CLONE);
+    m_glWidget->setMouseMode(dureu::CREATE_CANVASCLONE);
 }
 
 void MainWindow::onNewCanvasXY()
@@ -607,42 +519,42 @@ void MainWindow::onNewCanvasRing()
 
 void MainWindow::onCanvasOffset()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_CANVAS_OFFSET);
+    m_glWidget->setMouseMode(dureu::CANVAS_OFFSET);
 }
 
 void MainWindow::onCanvasRotate()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_CANVAS_ROTATE);
+    m_glWidget->setMouseMode(dureu::CANVAS_ROTATE);
 }
 
 void MainWindow::onImageMove()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_ENTITY_MOVE);
+    m_glWidget->setMouseMode(dureu::ENTITY_MOVE);
 }
 
 void MainWindow::onImageRotate()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_ENTITY_ROTATE);
+    m_glWidget->setMouseMode(dureu::ENTITY_ROTATE);
 }
 
 void MainWindow::onImageScale()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_ENTITY_SCALE);
+    m_glWidget->setMouseMode(dureu::ENTITY_SCALE);
 }
 
 void MainWindow::onImageFlipH()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_ENTITY_FLIPH);
+    m_glWidget->setMouseMode(dureu::ENTITY_FLIPH);
 }
 
 void MainWindow::onImageFlipV()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_ENTITY_FLIPV);
+    m_glWidget->setMouseMode(dureu::ENTITY_FLIPV);
 }
 
 void MainWindow::onImagePush()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_PHOTO_PUSH);
+    m_glWidget->setMouseMode(dureu::PHOTO_PUSH);
 }
 
 void MainWindow::onStrokesPush()
