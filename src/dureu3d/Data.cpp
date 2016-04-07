@@ -503,6 +503,12 @@ const QPixmap &Data::sceneSelectPixmap()
     return pmap;
 }
 
+const QPixmap &Data::sceneSelect3DPixmap()
+{
+    static QPixmap pmap(":/scene-select3d-24px.svg");
+    return pmap;
+}
+
 const QPixmap &Data::sceneSketchPixmap()
 {
     static QPixmap pmap(":/scene-sketch-24px.svg");
