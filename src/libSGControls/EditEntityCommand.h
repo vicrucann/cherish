@@ -95,7 +95,7 @@ protected:
 class EditEntitiesMoveCommand : public QUndoCommand
 {
 public:
-    EditEntitiesMoveCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& strokes, entity::Canvas* canvas,
+    EditEntitiesMoveCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities, entity::Canvas* canvas,
                            double du, double dv, QUndoCommand* parent = 0);
     ~EditEntitiesMoveCommand() {}
 

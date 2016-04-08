@@ -21,10 +21,13 @@
 #include "UserScene.h"
 #include "RootScene.h"
 #include "StrokeIntersector.h"
+#include "../libGUI/GLWidget.h"
+
+class GLWidget;
 
 class EventHandler : public osgGA::GUIEventHandler {
 public:
-    EventHandler(RootScene* scene, dureu::MOUSE_MODE mode = dureu::SELECT_ENTITY);
+    EventHandler(GLWidget* widget, RootScene* scene, dureu::MOUSE_MODE mode = dureu::SELECT_ENTITY);
 
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
@@ -57,6 +60,7 @@ protected:
     entity::Stroke* getStroke(const StrokeIntersector::Intersection& result);
     entity::Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
     entity::Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
+    dureu::MOUSE_MODE getMouseMode(const osgUtil::LineSegmentIntersector::Intersection& result) const;
 
     template <typename T1, typename T2>
     bool getLineIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, T1& result);
@@ -69,8 +73,11 @@ protected:
                                       const osg::Vec3f& axis,
                                       osg::Vec3f& P);
 
+    bool setSubSelectionType(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
     void finishAll();
 
+    GLWidget* m_glWidget;
     dureu::MOUSE_MODE m_mode;
     osg::observer_ptr<RootScene> m_scene;
     osg::observer_ptr<entity::Photo> m_photo;

@@ -10,8 +10,9 @@
 
 #include "Utilities.h"
 
-EventHandler::EventHandler(RootScene* scene, dureu::MOUSE_MODE mode)
+EventHandler::EventHandler(GLWidget *widget, RootScene* scene, dureu::MOUSE_MODE mode)
     : osgGA::GUIEventHandler()
+    , m_glWidget(widget)
     , m_mode(mode)
     , m_scene(scene)
     , m_photo(0)
@@ -54,7 +55,20 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     case dureu::MOUSE_SELECT:
         switch (dureu::maskEntity & m_mode){
         case dureu::SELECT_ENTITY:
-            this->doSelectEntity(ea, aa);
+            switch (dureu::maskAction & m_mode) {
+            case (dureu::maskAction & dureu::ENTITY_MOVE):
+                this->doEditEntitiesMove(ea, aa);
+                break;
+            case (dureu::maskAction & dureu::ENTITY_ROTATE):
+                this->doEditEntitiesRotate(ea, aa);
+                break;
+            case (dureu::maskAction & dureu::ENTITY_SCALE):
+                this->doEditEntitiesScale(ea, aa);
+                break;
+            default:
+                this->doSelectEntity(ea, aa);
+                break;
+            }
             break;
         case dureu::SELECT_CANVAS:
             this->doSelectCanvas<osgUtil::LineSegmentIntersector::Intersection,
@@ -83,15 +97,6 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 //    case dureu::PHOTO_PUSH:
 //        this->doEditPhotoPush<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
 //        break;
-//    case dureu::ENTITY_MOVE:
-//        this->doEditEntitiesMove(ea, aa);
-//        break;
-//    case dureu::ENTITY_SCALE:
-//        this->doEditEntitiesScale(ea, aa);
-//        break;
-//    case dureu::ENTITY_ROTATE:
-//        this->doEditEntitiesRotate(ea, aa);
-//        break;
 //    default:
 //        break;
 //    }
@@ -101,6 +106,8 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 void EventHandler::setMode(dureu::MOUSE_MODE mode)
 {
     m_mode = mode;
+
+    // TODO: move the below content to GLWidget's function
     switch (m_mode){
     case dureu::ENTITY_ROTATE:
     case dureu::ENTITY_SCALE:
@@ -335,6 +342,8 @@ void EventHandler::doCanvasClone(const osgGA::GUIEventAdapter &ea, osgGA::GUIAct
 
 void EventHandler::doEditEntitiesMove(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    if (!this->setSubSelectionType(ea, aa)) return;
+
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
@@ -376,6 +385,8 @@ void EventHandler::doEditEntitiesMove(const osgGA::GUIEventAdapter &ea, osgGA::G
 
 void EventHandler::doEditEntitiesScale(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    if (!this->setSubSelectionType(ea, aa)) return;
+
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
@@ -417,6 +428,8 @@ void EventHandler::doEditEntitiesScale(const osgGA::GUIEventAdapter &ea, osgGA::
 
 void EventHandler::doEditEntitiesRotate(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    if (!this->setSubSelectionType(ea, aa)) return;
+
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
@@ -473,6 +486,27 @@ entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::I
 entity::Photo *EventHandler::getPhoto(const osgUtil::LineSegmentIntersector::Intersection &result)
 {
     return dynamic_cast<entity::Photo*>(result.drawable.get());
+}
+
+dureu::MOUSE_MODE EventHandler::getMouseMode(const osgUtil::LineSegmentIntersector::Intersection &result) const
+{
+    std::string name = result.drawable->getName();
+    if (name == "Pickable")
+        return dureu::SELECT_ENTITY;
+    else if (name == "Center")
+        return dureu::ENTITY_MOVE;
+    else if (name == "AxisU")
+        return dureu::ENTITY_ROTATE;
+    else if (name == "AxisV")
+        return dureu::ENTITY_ROTATE;
+    else if (name == "ScaleU1" || name == "ScaleU2")
+        return dureu::ENTITY_SCALE;
+    else if (name == "ScaleV1" || name == "ScaleV2")
+        return dureu::ENTITY_SCALE;
+    else if (name == "ScaleUV1" || name == "ScaleUV2" || name == "ScaleUV3" || name == "ScaleUV4")
+        return dureu::ENTITY_SCALE;
+    return dureu::SELECT_ENTITY;
+//    osg::Geometry* geom = dynamic_cast<osg::Geometry*>(result.drawable.get());
 }
 
 template <typename T1, typename T2>
@@ -594,6 +628,41 @@ bool EventHandler::getRaytracePlaneIntersection(const osgGA::GUIEventAdapter &ea
     return true;
 }
 
+/* Defines the mouse mode depending on location of mouse over the canvas frame;
+ * Used in entity select, entity move, entity scale, entity rotate, etc.
+ * Returns true if no need to exit the parent function, false otherwise
+*/
+bool EventHandler::setSubSelectionType(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    bool result = true;
+    /* if mouse is in drag, mode should not be changed */
+    if (ea.getEventType() == osgGA::GUIEventAdapter::DRAG &&
+            ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+        return result;
+    entity::Canvas* canvas = m_scene->getCanvasCurrent();
+    if (!canvas || !m_glWidget) return result;
+
+    /* if there is a selection frame, on every mouse move: */
+    if (canvas->isEntitiesSelected()){
+        osgUtil::LineSegmentIntersector::Intersection* result_editable = new osgUtil::LineSegmentIntersector::Intersection;
+        bool inter_editable = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
+                (ea,aa, *result_editable);
+
+        /* if mouse is hovering over certain drawable, set the corresponding mode */
+        if (inter_editable){
+            dureu::MOUSE_MODE mode = this->getMouseMode(*result_editable);
+            result = mode == m_mode;
+            m_glWidget->setMouseMode(mode);
+        }
+        /* if not, or if the mouse left the drawable area, make sure it is in entity select mode */
+        else{
+            result = m_mode == dureu::SELECT_ENTITY;
+            m_glWidget->setMouseMode(dureu::SELECT_ENTITY);
+        }
+    }
+    return result;
+}
+
 /* If any entity is in edit mode,
  * finish the edit command.
  * For example, if photo was in edit mode, set it to normal mode
@@ -637,11 +706,7 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
 {
     entity::Canvas* canvas = m_scene->getCanvasCurrent();
     if (!canvas) return;
-
-    /* if there is a selection frame */
-    if (canvas->getStrokesSelectedSize() > 0){
-
-    }
+    if (!this->setSubSelectionType(ea, aa)) return;
 
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)

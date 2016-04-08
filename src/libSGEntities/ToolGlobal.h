@@ -83,16 +83,24 @@ public:
     void setColorIntersection(const osg::Vec4f& colorIntersect);
 
     osg::Geometry* getPickable() const;
-    osg::Geometry* getCenterGeometry() const;
-    osg::Geometry* getAxisUGeometry() const;
-    osg::Geometry* getAxisVGeometry() const;
+    bool isSelected() const;
 
+    /* Entity2D API */
+    virtual void moveDelta(double du, double dv);
+    virtual void scale(double scaleX, double scaleY, osg::Vec3f center);
+    virtual void scale(double scale, osg::Vec3f center);
+    virtual void rotate(double theta, osg::Vec3f center);
 
 protected:
-    void initQuadGeometry(osg::Geometry* geom);
+    void initQuadGeometry(osg::Geometry* geom, const std::string& name = "");
     void setQuadGeometry(osg::Geometry* geom, const osg::Vec3f& P, float szX, float szY = 0);
     void setColorQuadGeometry(osg::Geometry* geom, const osg::Vec4f& color);
     void updateGeometry(osg::Geometry* geom);
+
+    void moveDeltaWireGeometry(osg::Geometry*geometry, double du, double dv);
+    void scaleWireGeometry(osg::Geometry* geometry, double scaleX, double scaleY, osg::Vec3f center);
+    void scaleWireGeometry(osg::Geometry* geometry, double scale, osg::Vec3f center);
+    void rotateWireGeometry(osg::Geometry* geometry, double theta, osg::Vec3f center);
 
 private:
     osg::Geode* m_geodePickable, * m_geodeIntersect
@@ -106,6 +114,8 @@ private:
     osg::Geometry * m_geomScaleV1, * m_geomScaleV2;
 
     osg::Camera* m_cameraAxis;
+
+    bool m_selected;
 };
 
 }

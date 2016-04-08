@@ -368,6 +368,14 @@ int entity::Canvas::getStrokesSelectedSize() const
     return m_selectedGroup.getSize();
 }
 
+/* returns whether the frame is in selected mode (true) or normal (false);
+ * used in EventHandler;
+*/
+bool entity::Canvas::isEntitiesSelected() const
+{
+    return m_toolFrame->isSelected();
+}
+
 /* returns global center of selected entities;
  * if there is no selected entities, returns canvas center
 */
@@ -376,6 +384,7 @@ osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
     return m_selectedGroup.getCenter3D(m_transform->getMatrix());
 }
 
+/* Will be most likely called from EditEntityCommand since the vector of entities is specified */
 void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, double du, double dv)
 {
     m_selectedGroup.move(entities, du, dv);
@@ -384,6 +393,7 @@ void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, dou
 void entity::Canvas::moveEntitiesSelected(double du, double dv)
 {
     m_selectedGroup.move(du, dv);
+    m_toolFrame->moveDelta(du, dv); // since we normally do not update frame when performing online motion
 }
 
 void entity::Canvas::scaleEntities(std::vector<Entity2D *> &entities, double s, osg::Vec3f center)
@@ -394,6 +404,7 @@ void entity::Canvas::scaleEntities(std::vector<Entity2D *> &entities, double s, 
 void entity::Canvas::scaleEntitiesSelected(double s, osg::Vec3f center)
 {
     m_selectedGroup.scale(s,s);
+    m_toolFrame->scale(s,s, m_selectedGroup.getCenter2DCustom());
 }
 
 void entity::Canvas::rotateEntities(std::vector<Entity2D *> entities, double theta, osg::Vec3f center)
@@ -404,6 +415,7 @@ void entity::Canvas::rotateEntities(std::vector<Entity2D *> entities, double the
 void entity::Canvas::rotateEntitiesSelected(double theta, osg::Vec3f center)
 {
     m_selectedGroup.rotate(theta);
+    m_toolFrame->rotate(theta, m_selectedGroup.getCenter2DCustom());
 }
 
 /* If no entities are selected, the update frame is performed
@@ -427,7 +439,7 @@ void entity::Canvas::updateFrame(entity::Canvas* against)
             if (bb.valid()){
                 float szX = bb.xMax() - bb.xMin();
                 float szY = bb.yMax() - bb.yMin();
-                this->setVertices(m_selectedGroup.getCenter2D(),
+                this->setVertices(m_selectedGroup.getCenter2DCustom(),
                                   szX*0.5+dureu::CANVAS_EDITSLACK, szY*0.5+dureu::CANVAS_EDITSLACK,
                                   dureu::CANVAS_EDITQUAD, dureu::CANVAS_EDITAXIS);
             }

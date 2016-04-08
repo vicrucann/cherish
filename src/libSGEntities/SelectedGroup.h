@@ -41,6 +41,7 @@ protected:
     std::vector<entity::Entity2D*> m_group;
 
     osg::Vec3f m_center; /* local center for rotation and scaling */
+    float m_theta; /* whether axis was rotated */
     bool m_centerEdited; /* whether center was edited by user or not */
 
 }; // class SelectedGroup

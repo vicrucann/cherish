@@ -214,6 +214,7 @@ entity::FrameTool::FrameTool()
     , m_geomScaleV2(new osg::Geometry)
 
     , m_cameraAxis(new osg::Camera)
+    , m_selected(false)
 {
     this->initializeSG();
     this->setColor(dureu::CANVAS_CLR_REST);
@@ -223,18 +224,18 @@ entity::FrameTool::FrameTool()
 void entity::FrameTool::initializeSG()
 {
     /* pickable settings */
-    this->initQuadGeometry(m_geomPickable);
-    this->initQuadGeometry(m_geomCenter);
-    this->initQuadGeometry(m_geomAxisU);
-    this->initQuadGeometry(m_geomAxisV);
-    this->initQuadGeometry(m_geomScaleU1);
-    this->initQuadGeometry(m_geomScaleU2);
-    this->initQuadGeometry(m_geomScaleV1);
-    this->initQuadGeometry(m_geomScaleV2);
-    this->initQuadGeometry(m_geomScaleUV1);
-    this->initQuadGeometry(m_geomScaleUV2);
-    this->initQuadGeometry(m_geomScaleUV3);
-    this->initQuadGeometry(m_geomScaleUV4);
+    this->initQuadGeometry(m_geomPickable, "Pickable");
+    this->initQuadGeometry(m_geomCenter, "Center");
+    this->initQuadGeometry(m_geomAxisU, "AxisU");
+    this->initQuadGeometry(m_geomAxisV, "AxisV");
+    this->initQuadGeometry(m_geomScaleU1, "ScaleU1");
+    this->initQuadGeometry(m_geomScaleU2, "ScaleU2");
+    this->initQuadGeometry(m_geomScaleV1, "ScaleV1");
+    this->initQuadGeometry(m_geomScaleV2, "ScaleV2");
+    this->initQuadGeometry(m_geomScaleUV1, "ScaleUV1");
+    this->initQuadGeometry(m_geomScaleUV2, "ScaleUV2");
+    this->initQuadGeometry(m_geomScaleUV3, "ScaleUV3");
+    this->initQuadGeometry(m_geomScaleUV4, "ScaleUV4");
 
     /* intersection settings */
     osg::LineStipple* ls = new osg::LineStipple;
@@ -298,6 +299,8 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
     verts.push_back(center + osg::Vec3(-szX,-szY,0.f));
     verts.push_back(center + osg::Vec3(szX,-szY,0.f));
     ToolGlobal::setVertices(verts);
+
+    m_selected = !selectionIsEmpty;
 
     osg::Vec3f p0 = verts.at(0);
     /* if normal mode, set up pickable position */
@@ -387,27 +390,86 @@ osg::Geometry *entity::FrameTool::getPickable() const
     return m_geomPickable;
 }
 
-osg::Geometry *entity::FrameTool::getCenterGeometry() const
+bool entity::FrameTool::isSelected() const
 {
-    return m_geomCenter;
+    return m_selected;
 }
 
-osg::Geometry *entity::FrameTool::getAxisUGeometry() const
+void entity::FrameTool::moveDelta(double du, double dv)
 {
-    return m_geomAxisU;
+    this->moveDeltaWireGeometry(m_geomWire, du, dv);
+    this->moveDeltaWireGeometry(m_geomCenter, du, dv);
+    this->moveDeltaWireGeometry(m_geomAxisU, du, dv);
+    this->moveDeltaWireGeometry(m_geomAxisV, du, dv);
+//    this->moveDeltaWireGeometry(m_geomNormal, du, dv);
+    this->moveDeltaWireGeometry(m_geomScaleU1, du, dv);
+    this->moveDeltaWireGeometry(m_geomScaleU2, du, dv);
+    this->moveDeltaWireGeometry(m_geomScaleV1, du, dv);
+    this->moveDeltaWireGeometry(m_geomScaleV2, du, dv);
+    this->moveDeltaWireGeometry(m_geomScaleUV1, du, dv);
+    this->moveDeltaWireGeometry(m_geomScaleUV2, du, dv);
+    this->moveDeltaWireGeometry(m_geomScaleUV3, du, dv);
+    this->moveDeltaWireGeometry(m_geomScaleUV4, du, dv);
 }
 
-osg::Geometry *entity::FrameTool::getAxisVGeometry() const
+void entity::FrameTool::scale(double scaleX, double scaleY, osg::Vec3f center)
 {
-    return m_geomAxisV;
+    this->scaleWireGeometry(m_geomWire, scaleX, scaleY, center);
+    this->scaleWireGeometry(m_geomCenter, scaleX, scaleY, center);
+    this->scaleWireGeometry(m_geomAxisU, scaleX, scaleY, center);
+    this->scaleWireGeometry(m_geomAxisV, scaleX, scaleY, center);
+//    this->scaleWireGeometry(m_geomNormal, scaleX, scaleY, center);
+    this->scaleWireGeometry(m_geomScaleU1, scaleX, scaleY, center);
+    this->scaleWireGeometry(m_geomScaleU2, scaleX, scaleY, center);
+    this->scaleWireGeometry(m_geomScaleV1, scaleX, scaleY, center);
+    this->scaleWireGeometry(m_geomScaleV2, scaleX, scaleY, center);
+    this->scaleWireGeometry(m_geomScaleUV1, scaleX, scaleY, center);
+    this->scaleWireGeometry(m_geomScaleUV2, scaleX, scaleY, center);
+    this->scaleWireGeometry(m_geomScaleUV3, scaleX, scaleY, center);
+    this->scaleWireGeometry(m_geomScaleUV4, scaleX, scaleY, center);
+}
+
+void entity::FrameTool::scale(double scale, osg::Vec3f center)
+{
+    this->scaleWireGeometry(m_geomWire, scale, center);
+    this->scaleWireGeometry(m_geomCenter, scale, center);
+    this->scaleWireGeometry(m_geomAxisU, scale, center);
+    this->scaleWireGeometry(m_geomAxisV, scale, center);
+//    this->scaleWireGeometry(m_geomNormal, scale, center);
+    this->scaleWireGeometry(m_geomScaleU1, scale, center);
+    this->scaleWireGeometry(m_geomScaleU2, scale, center);
+    this->scaleWireGeometry(m_geomScaleV1, scale, center);
+    this->scaleWireGeometry(m_geomScaleV2, scale, center);
+    this->scaleWireGeometry(m_geomScaleUV1, scale, center);
+    this->scaleWireGeometry(m_geomScaleUV2, scale, center);
+    this->scaleWireGeometry(m_geomScaleUV3, scale, center);
+    this->scaleWireGeometry(m_geomScaleUV4, scale, center);
+}
+
+void entity::FrameTool::rotate(double theta, osg::Vec3f center)
+{
+    this->rotateWireGeometry(m_geomWire, theta, center);
+    this->rotateWireGeometry(m_geomCenter, theta, center);
+    this->rotateWireGeometry(m_geomAxisU, theta, center);
+    this->rotateWireGeometry(m_geomAxisV, theta, center);
+//    this->rotateWireGeometry(m_geomNormal, theta, center);
+    this->rotateWireGeometry(m_geomScaleU1, theta, center);
+    this->rotateWireGeometry(m_geomScaleU2, theta, center);
+    this->rotateWireGeometry(m_geomScaleV1, theta, center);
+    this->rotateWireGeometry(m_geomScaleV2, theta, center);
+    this->rotateWireGeometry(m_geomScaleUV1, theta, center);
+    this->rotateWireGeometry(m_geomScaleUV2, theta, center);
+    this->rotateWireGeometry(m_geomScaleUV3, theta, center);
+    this->rotateWireGeometry(m_geomScaleUV4, theta, center);
 }
 
 // TODO: put all quad and wire functions into abstract class
-void entity::FrameTool::initQuadGeometry(osg::Geometry *geom)
+void entity::FrameTool::initQuadGeometry(osg::Geometry *geom, const std::string &name)
 {
     geom->setVertexArray(new osg::Vec3Array(4));
     geom->setColorArray(new osg::Vec4Array(4), osg::Array::BIND_OVERALL);
     geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
+    geom->setName(name);
 }
 
 void entity::FrameTool::setQuadGeometry(osg::Geometry *geom, const osg::Vec3f &P, float szX, float szY)
@@ -435,4 +497,53 @@ void entity::FrameTool::updateGeometry(osg::Geometry *geom)
 {
     geom->dirtyDisplayList();
     geom->dirtyBound();
+}
+
+void entity::FrameTool::moveDeltaWireGeometry(osg::Geometry * geometry, double du, double dv)
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+    for (unsigned int i=0; i<verts->size(); ++i){
+        osg::Vec3f vi = (*verts)[i];
+        (*verts)[i] = osg::Vec3f(du+vi.x(), dv+vi.y(), 0);
+    }
+    verts->dirty();
+    geometry->dirtyBound();
+    geometry->dirtyDisplayList();
+}
+
+void entity::FrameTool::scaleWireGeometry(osg::Geometry *geometry, double scaleX, double scaleY, osg::Vec3f center)
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+    for (unsigned int i=0; i<verts->size(); ++i){
+        osg::Vec3f vi = (*verts)[i] - center;
+        (*verts)[i] = center + osg::Vec3f(scaleX*vi.x(), scaleY*vi.y(), 0);
+    }
+    verts->dirty();
+    geometry->dirtyBound();
+    geometry->dirtyDisplayList();
+}
+
+void entity::FrameTool::scaleWireGeometry(osg::Geometry *geometry, double scale, osg::Vec3f center)
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+    for (unsigned int i=0; i<verts->size(); ++i){
+        osg::Vec3f vi = (*verts)[i] - center;
+        (*verts)[i] = center + osg::Vec3f(scale*vi.x(), scale*vi.y(), 0);
+    }
+    verts->dirty();
+    geometry->dirtyBound();
+    geometry->dirtyDisplayList();
+}
+
+void entity::FrameTool::rotateWireGeometry(osg::Geometry *geometry, double theta, osg::Vec3f center)
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+    for (unsigned int i=0; i<verts->size(); ++i){
+        osg::Vec3f vi = (*verts)[i] - center;
+        (*verts)[i] = center + osg::Vec3f(vi.x() * std::cos(theta) - vi.y() * std::sin(theta),
+                                          vi.x() * std::sin(theta) + vi.y() * std::cos(theta), 0);
+    }
+    verts->dirty();
+    geometry->dirtyBound();
+    geometry->dirtyDisplayList();
 }

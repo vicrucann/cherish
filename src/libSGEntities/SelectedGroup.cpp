@@ -12,6 +12,7 @@
 entity::SelectedGroup::SelectedGroup(const osg::Vec3f &canvasCenter)
     : m_group(0)
     , m_center(canvasCenter)
+    , m_theta(0)
     , m_centerEdited(false)
 {
 }
@@ -168,6 +169,7 @@ osg::BoundingBox entity::SelectedGroup::getBoundingBox() const
 void entity::SelectedGroup::move(double du, double dv)
 {
     this->move(m_group, du, dv);
+    m_center = m_center + osg::Vec3f(du, dv, 0);
 }
 
 void entity::SelectedGroup::move(std::vector<entity::Entity2D *> &entities, double du, double dv)
@@ -180,6 +182,7 @@ void entity::SelectedGroup::move(std::vector<entity::Entity2D *> &entities, doub
         }
         entity->moveDelta(du, dv);
     }
+    m_center = m_center + osg::Vec3f(du, dv, 0);
 }
 
 void entity::SelectedGroup::scale(double sx, double sy)
@@ -202,6 +205,7 @@ void entity::SelectedGroup::scale(std::vector<entity::Entity2D *> &entities, dou
 void entity::SelectedGroup::rotate(double theta)
 {
     this->rotate(m_group, theta, m_center);
+    m_theta += theta;
 }
 
 void entity::SelectedGroup::rotate(std::vector<entity::Entity2D *> &entities, double theta, const osg::Vec3f &center)
@@ -214,6 +218,7 @@ void entity::SelectedGroup::rotate(std::vector<entity::Entity2D *> &entities, do
         }
         entity->rotate(theta, center);
     }
+    m_theta += theta;
 }
 
 int entity::SelectedGroup::isEntitySelected(entity::Entity2D *entity) const

@@ -31,7 +31,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     , m_mouseMode(dureu::PEN_SKETCH)
 
     , m_manipulator(new Manipulator(m_mouseMode))
-    , m_EH(new EventHandler(m_RootScene.get(), m_mouseMode))
+    , m_EH(new EventHandler(this, m_RootScene.get(), m_mouseMode))
 
     , m_viewStack(stack)
 {

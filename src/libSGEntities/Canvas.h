@@ -104,7 +104,9 @@ public:
     void removeEntitySelected(entity::Entity2D* entity);
     const std::vector<Entity2D *> &getStrokesSelected() const;
     int getStrokesSelectedSize() const;
+    bool isEntitiesSelected() const;
     osg::Vec3f getStrokesSelectedCenter() const;
+
     void moveEntities(std::vector<Entity2D *> &entities, double du, double dv);
     void moveEntitiesSelected(double du, double dv);
     void scaleEntities(std::vector<Entity2D *> &entities, double s, osg::Vec3f center);
