@@ -401,7 +401,6 @@ void entity::UserScene::setCanvasSelected(bool selected)
  */
 void entity::UserScene::setCanvasesButCurrent(bool enabled)
 {
-    outLogVal("setCanvasesButCurrent to ", enabled);
     if (!m_canvasCurrent.get()){
         std::cerr << "setCanvasesButCurrent(): No current canvas on scene" << std::endl;
         return;

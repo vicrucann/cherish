@@ -126,7 +126,6 @@ void GLWidget::getCameraView(osg::Vec3d &eye, osg::Vec3d &center, osg::Vec3d &up
 
 void GLWidget::setMouseMode(const dureu::MOUSE_MODE &mode)
 {
-    outLogVal("Changing mouse mode to", mode);
     m_mouseMode = mode;
     m_manipulator->setMode(m_mouseMode);
     m_EH->setMode(m_mouseMode);

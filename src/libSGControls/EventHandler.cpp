@@ -436,6 +436,7 @@ void EventHandler::doEditEntitiesRotate(const osgGA::GUIEventAdapter &ea, osgGA:
            ))
         return;
 
+
     /* if there are no strokes in canvas, return*/
     if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0){
         outErrMsg("doEditEntitiesMove: there are no strokes to move");
@@ -635,29 +636,28 @@ bool EventHandler::getRaytracePlaneIntersection(const osgGA::GUIEventAdapter &ea
 bool EventHandler::setSubSelectionType(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     bool result = true;
-    /* if mouse is in drag, mode should not be changed */
-    if (ea.getEventType() == osgGA::GUIEventAdapter::DRAG &&
-            ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
-        return result;
-    entity::Canvas* canvas = m_scene->getCanvasCurrent();
-    if (!canvas || !m_glWidget) return result;
+    /* only on move we check if need to change the mode */
+    if (ea.getEventType() == osgGA::GUIEventAdapter::MOVE){
+        entity::Canvas* canvas = m_scene->getCanvasCurrent();
+        if (!canvas || !m_glWidget) return result;
 
-    /* if there is a selection frame, on every mouse move: */
-    if (canvas->isEntitiesSelected()){
-        osgUtil::LineSegmentIntersector::Intersection* result_editable = new osgUtil::LineSegmentIntersector::Intersection;
-        bool inter_editable = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
-                (ea,aa, *result_editable);
+        /* if there is a selection frame, on every mouse move: */
+        if (canvas->isEntitiesSelected()){
+            osgUtil::LineSegmentIntersector::Intersection* result_editable = new osgUtil::LineSegmentIntersector::Intersection;
+            bool inter_editable = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
+                    (ea,aa, *result_editable);
 
-        /* if mouse is hovering over certain drawable, set the corresponding mode */
-        if (inter_editable){
-            dureu::MOUSE_MODE mode = this->getMouseMode(*result_editable);
-            result = mode == m_mode;
-            m_glWidget->setMouseMode(mode);
-        }
-        /* if not, or if the mouse left the drawable area, make sure it is in entity select mode */
-        else{
-            result = m_mode == dureu::SELECT_ENTITY;
-            m_glWidget->setMouseMode(dureu::SELECT_ENTITY);
+            /* if mouse is hovering over certain drawable, set the corresponding mode */
+            if (inter_editable){
+                dureu::MOUSE_MODE mode = this->getMouseMode(*result_editable);
+                result = mode == m_mode;
+                m_glWidget->setMouseMode(mode);
+            }
+            /* if not, or if the mouse left the drawable area, make sure it is in entity select mode */
+            else{
+                result = m_mode == dureu::SELECT_ENTITY;
+                m_glWidget->setMouseMode(dureu::SELECT_ENTITY);
+            }
         }
     }
     return result;

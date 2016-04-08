@@ -616,6 +616,7 @@ void entity::Canvas::resetTransforms()
     }
 }
 
+// FIXME: should also take m_selectedGroup->m_theta so that rotation axis are rotated
 void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
 {
     m_toolFrame->setVertices(center, szX, szY, szCr, szAx,
