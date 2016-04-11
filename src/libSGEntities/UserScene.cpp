@@ -25,7 +25,8 @@ entity::UserScene::UserScene()
     , m_inits(false)
     , m_du(0)
     , m_dv(0)
-    , m_scale(1)
+    , m_scaleX(1)
+    , m_scaleY(1)
     , m_rotate(0)
     , m_idCanvas(0)
     , m_idPhoto(0)
@@ -49,7 +50,8 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_inits(scene.m_inits)
     , m_du(scene.m_du)
     , m_dv(scene.m_dv)
-    , m_scale(scene.m_scale)
+    , m_scaleX(scene.m_scaleX)
+    , m_scaleY(scene.m_scaleY)
     , m_rotate(scene.m_rotate)
     , m_idCanvas(scene.m_idCanvas)
     , m_idPhoto(scene.m_idPhoto)
@@ -1045,52 +1047,56 @@ void entity::UserScene::entitiesScaleStart(double u, double v)
     if (!m_canvasCurrent->getVisibilityData())
         m_canvasCurrent->setVisibilityAll(true);
 
-    osg::Vec3f center = m_canvasCurrent->getGeodeData()->getBoundingBox().center(); //m_canvasCurrent->getCenter();
-    m_du = center.x();
-    m_dv = center.y();
-    m_v = center.x();
+    osg::Vec3f center = m_canvasCurrent->getGeodeData()->getBoundingBox().center();
+    m_u = center.x();
+    m_v = center.y();
 
-    m_scale = 1;
-    m_u = std::fabs(u-m_v);
+    m_scaleX = m_scaleY = 1;
+    m_du = std::fabs(u-m_u); /* growth/scale in x */
+    m_dv = std::fabs(v-m_v); /* growth/scale in y */
     m_inits = true;
 }
 
 void entity::UserScene::entitiesScaleAppend(double u, double v)
 {
-    double s = 1;
+    double sx = 1;
+    double sy = 1;
     // make sure it's not smaller than allowed
-    if (m_u != 0 && std::fabs(u-m_v) >= 0.1)
-        s = std::fabs(u-m_v)/m_u;
+    if (m_du != 0 /*&& std::fabs(u-m_u) >= 0.1*/)
+        sx = std::fabs(u-m_u)/m_du;
+    if (m_dv != 0)
+        sy = std::fabs(v-m_v)/m_dv;
 
-    outLogVal("s", s);
-
-    m_scale *= s;
-    m_canvasCurrent->scaleEntitiesSelected(s, osg::Vec3f(m_du, m_dv, 0));
+    m_scaleX *= sx;
+    m_scaleY *= sy;
+    m_canvasCurrent->scaleEntitiesSelected(sx, sx);
     m_canvasCurrent->updateFrame(m_canvasPrevious.get());
 
     this->updateWidgets();
-    m_u = std::fabs(u-m_v);
+    m_du = std::fabs(u-m_u);
+    m_dv = std::fabs(v-m_v);
 }
 
 void entity::UserScene::entitiesScaleFinish(QUndoStack *stack)
 {
-    m_canvasCurrent->scaleEntitiesSelected(1/m_scale, osg::Vec3f(m_du, m_dv, 0));
+    m_canvasCurrent->scaleEntitiesSelected(1/m_scaleX, 1/m_scaleY);
 
-    EditEntitiesScaleCommand* cmd = new EditEntitiesScaleCommand(this,
-                                                               m_canvasCurrent->getStrokesSelected(),
-                                                               m_canvasCurrent.get(),
-                                                               m_scale, osg::Vec3f(m_du, m_dv, 0));
-    m_u = m_v = 0;
-    m_du = m_dv = 0;
+    EditEntitiesScaleCommand* cmd =
+            new EditEntitiesScaleCommand(this,
+                                         m_canvasCurrent->getStrokesSelected(),
+                                         m_canvasCurrent.get(),
+                                         m_scaleX, m_scaleY,
+                                         m_canvasCurrent->getSelectedEntitiesCenter2D() );
+    m_du = m_u = 0;
+    m_dv = m_v = 0;
     m_inits = false;
-    m_scale = 1;
+    m_scaleX = m_scaleY = 1;
 
     if (!cmd){
         outErrMsg("strokeScaleFinish: Could not allocate command");
         return;
     }
     stack->push(cmd);
-
 }
 
 void entity::UserScene::entitiesRotateStart(double u, double v)

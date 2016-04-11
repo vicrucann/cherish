@@ -400,15 +400,14 @@ void entity::Canvas::moveEntitiesSelected(double du, double dv)
     m_selectedGroup.move(du, dv);
 }
 
-void entity::Canvas::scaleEntities(std::vector<Entity2D *> &entities, double s, osg::Vec3f center)
+void entity::Canvas::scaleEntities(std::vector<Entity2D *> &entities, double sx, double sy, osg::Vec3f center)
 {
-    m_selectedGroup.scale(entities, s,s,center);
+    m_selectedGroup.scale(entities, sx,sy,center);
 }
 
-void entity::Canvas::scaleEntitiesSelected(double s, osg::Vec3f center)
+void entity::Canvas::scaleEntitiesSelected(double sx, double sy)
 {
-    m_selectedGroup.scale(s,s);
-    //m_toolFrame->scale(s,s, m_selectedGroup.getCenter2DCustom());
+    m_selectedGroup.scale(sx,sy);
 }
 
 void entity::Canvas::rotateEntities(std::vector<Entity2D *> entities, double theta, osg::Vec3f center)

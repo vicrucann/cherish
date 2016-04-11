@@ -110,8 +110,8 @@ public:
 
     void moveEntities(std::vector<Entity2D *> &entities, double du, double dv);
     void moveEntitiesSelected(double du, double dv);
-    void scaleEntities(std::vector<Entity2D *> &entities, double s, osg::Vec3f center);
-    void scaleEntitiesSelected(double s, osg::Vec3f center);
+    void scaleEntities(std::vector<Entity2D *> &entities, double sx, double sy, osg::Vec3f center);
+    void scaleEntitiesSelected(double sx, double sy);
     void rotateEntities(std::vector<entity::Entity2D*> entities, double theta, osg::Vec3f center);
     void rotateEntitiesSelected(double theta);
 

@@ -170,7 +170,7 @@ private:
     double m_u, m_v; /* move photo */
     bool m_inits;
     double m_du, m_dv; /* move strokes */
-    double m_scale; /* scale photo */
+    double m_scaleX, m_scaleY; /* scale photo */
     double m_rotate;
     unsigned int m_idCanvas;
     unsigned int m_idPhoto;

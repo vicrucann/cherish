@@ -113,8 +113,11 @@ protected:
 class EditEntitiesScaleCommand : public QUndoCommand
 {
 public:
-    EditEntitiesScaleCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities, entity::Canvas* canvas,
-                            double scale, osg::Vec3f center, QUndoCommand* parent = 0);
+    EditEntitiesScaleCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities,
+                             entity::Canvas* canvas,
+                             double scaleX, double scaleY,
+                             osg::Vec3f center,
+                             QUndoCommand* parent = 0);
     ~EditEntitiesScaleCommand() {}
 
     void undo() Q_DECL_OVERRIDE;
@@ -124,7 +127,7 @@ protected:
     osg::observer_ptr<entity::UserScene> m_scene;
     std::vector<entity::Entity2D*> m_entities;
     osg::observer_ptr<entity::Canvas> m_canvas;
-    double m_scale;
+    double m_scaleX, m_scaleY;
     osg::Vec3f m_center;
 };
 

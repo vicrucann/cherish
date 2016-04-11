@@ -230,12 +230,13 @@ void EditEntitiesMoveCommand::redo()
     m_scene->updateWidgets();
 }
 
-EditEntitiesScaleCommand::EditEntitiesScaleCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double scale, osg::Vec3f center, QUndoCommand *parent)
+EditEntitiesScaleCommand::EditEntitiesScaleCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double scaleX, double scaleY, osg::Vec3f center, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_entities(entities)
     , m_canvas(canvas)
-    , m_scale(scale)
+    , m_scaleX(scaleX)
+    , m_scaleY(scaleY)
     , m_center(center)
 {
     this->setText(QObject::tr("Scale strokes within %1")
@@ -244,14 +245,14 @@ EditEntitiesScaleCommand::EditEntitiesScaleCommand(entity::UserScene *scene, con
 
 void EditEntitiesScaleCommand::undo()
 {
-    m_canvas->scaleEntities(m_entities, 1/m_scale, m_center);
+    m_canvas->scaleEntities(m_entities, 1/m_scaleX, 1/m_scaleY, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditEntitiesScaleCommand::redo()
 {
-    m_canvas->scaleEntities(m_entities, m_scale, m_center);
+    m_canvas->scaleEntities(m_entities, m_scaleX, m_scaleY, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
