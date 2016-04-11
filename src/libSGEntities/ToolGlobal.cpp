@@ -64,6 +64,30 @@ const osg::Vec4f &entity::ToolGlobal::getColor() const
     return (*colors)[0];
 }
 
+osg::Geode *entity::ToolGlobal::getGeodeWire() const
+{
+    return m_geodeWire;
+}
+
+osg::Vec3f entity::ToolGlobal::getCenterLocal() const
+{
+    float u=0, v=0;
+    const osg::Vec3Array* verts = this->getVertices();
+    u += (*verts)[0].x();
+    u += (*verts)[1].x();
+    u += (*verts)[2].x();
+    u += (*verts)[3].x();
+    u /= 4.f;
+
+    v += (*verts)[0].y();
+    v += (*verts)[1].y();
+    v += (*verts)[2].y();
+    v += (*verts)[3].y();
+    v /= 4.f;
+
+    return osg::Vec3f(u,v,0.f);
+}
+
 void entity::ToolGlobal::updateGeometry()
 {
     m_geomWire->dirtyDisplayList();
@@ -348,9 +372,9 @@ void entity::FrameTool::setColor(const osg::Vec4f &color, const osg::Vec4f &colo
 {
     ToolGlobal::setColor(color);
     this->setColorQuadGeometry(m_geomPickable, color);
-    this->setColorQuadGeometry(m_geomCenter, solarized::base0);
-    this->setColorQuadGeometry(m_geomAxisU, solarized::base0);
-    this->setColorQuadGeometry(m_geomAxisV, solarized::base0);
+    this->setColorQuadGeometry(m_geomCenter, solarized::base00);
+    this->setColorQuadGeometry(m_geomAxisU, solarized::base00);
+    this->setColorQuadGeometry(m_geomAxisV, solarized::base00);
     this->setColorQuadGeometry(m_geomScaleU1, solarized::base00);
     this->setColorQuadGeometry(m_geomScaleU2, solarized::base00);
     this->setColorQuadGeometry(m_geomScaleV1, solarized::base00);

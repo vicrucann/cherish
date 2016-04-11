@@ -658,9 +658,31 @@ bool EventHandler::setSubSelectionType(const osgGA::GUIEventAdapter &ea, osgGA::
                 result = m_mode == dureu::SELECT_ENTITY;
                 m_glWidget->setMouseMode(dureu::SELECT_ENTITY);
             }
+            this->setDrawableColorFromMode(result_editable->drawable.get());
         }
     }
     return result;
+}
+
+/* sets colors of canvas frame drawables to colors:
+ * gray color when mouse is not hovering anything
+ * cyan color over the drawable which get the hovering
+*/
+void EventHandler::setDrawableColorFromMode(osg::Drawable *draw)
+{
+    if (!draw) {
+        /* when mouse is not hovering over anything
+         * set the color to normal (gray) for all the canvas selection frame. */
+        m_scene->getCanvasCurrent()->setColor(solarized::base00);
+        return;
+    }
+    osg::Geometry* geom = dynamic_cast<osg::Geometry*>(draw);
+    if (!geom) return;
+    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(geom->getColorArray());
+    if (colors->size() == 0) return;
+    (*colors)[0] = solarized::cyan;
+    geom->dirtyDisplayList();
+    geom->dirtyBound();
 }
 
 /* If any entity is in edit mode,

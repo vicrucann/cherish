@@ -28,6 +28,12 @@ void entity::SelectedGroup::addEntity(entity::Entity2D *entity, osg::Geode *geod
         return;
     }
 
+    /* initialize center, axis params for ToolFrame */
+    if (m_group.size() == 0){
+        m_theta = 0;
+        m_centerEdited = false;
+    }
+
     if (this->isEntitySelected(entity) == -1){
         this->setEntitySelectedColor(entity, true);
         m_group.push_back(entity);
@@ -169,7 +175,6 @@ osg::BoundingBox entity::SelectedGroup::getBoundingBox() const
 void entity::SelectedGroup::move(double du, double dv)
 {
     this->move(m_group, du, dv);
-    m_center = m_center + osg::Vec3f(du, dv, 0);
 }
 
 void entity::SelectedGroup::move(std::vector<entity::Entity2D *> &entities, double du, double dv)
@@ -205,7 +210,6 @@ void entity::SelectedGroup::scale(std::vector<entity::Entity2D *> &entities, dou
 void entity::SelectedGroup::rotate(double theta)
 {
     this->rotate(m_group, theta, m_center);
-    m_theta += theta;
 }
 
 void entity::SelectedGroup::rotate(std::vector<entity::Entity2D *> &entities, double theta, const osg::Vec3f &center)

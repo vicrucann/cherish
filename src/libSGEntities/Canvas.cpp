@@ -384,6 +384,11 @@ osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
     return m_selectedGroup.getCenter3D(m_transform->getMatrix());
 }
 
+osg::Vec3f entity::Canvas::getSelectedEntitiesCenter2D() const
+{
+    return m_selectedGroup.getCenter2DCustom();
+}
+
 /* Will be most likely called from EditEntityCommand since the vector of entities is specified */
 void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, double du, double dv)
 {
@@ -393,7 +398,6 @@ void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, dou
 void entity::Canvas::moveEntitiesSelected(double du, double dv)
 {
     m_selectedGroup.move(du, dv);
-    m_toolFrame->moveDelta(du, dv); // since we normally do not update frame when performing online motion
 }
 
 void entity::Canvas::scaleEntities(std::vector<Entity2D *> &entities, double s, osg::Vec3f center)
@@ -404,7 +408,7 @@ void entity::Canvas::scaleEntities(std::vector<Entity2D *> &entities, double s, 
 void entity::Canvas::scaleEntitiesSelected(double s, osg::Vec3f center)
 {
     m_selectedGroup.scale(s,s);
-    m_toolFrame->scale(s,s, m_selectedGroup.getCenter2DCustom());
+    //m_toolFrame->scale(s,s, m_selectedGroup.getCenter2DCustom());
 }
 
 void entity::Canvas::rotateEntities(std::vector<Entity2D *> entities, double theta, osg::Vec3f center)
@@ -412,10 +416,10 @@ void entity::Canvas::rotateEntities(std::vector<Entity2D *> entities, double the
     m_selectedGroup.rotate(entities, theta, center);
 }
 
-void entity::Canvas::rotateEntitiesSelected(double theta, osg::Vec3f center)
+void entity::Canvas::rotateEntitiesSelected(double theta)
 {
     m_selectedGroup.rotate(theta);
-    m_toolFrame->rotate(theta, m_selectedGroup.getCenter2DCustom());
+    //m_toolFrame->rotate(theta, m_selectedGroup.getCenter2DCustom());
 }
 
 /* If no entities are selected, the update frame is performed
@@ -496,6 +500,8 @@ void entity::Canvas::updateFrame(entity::Canvas* against)
         } // else no selection
 
     } // geodeData has children
+    else
+        this->setVerticesDefault(m_toolFrame->getCenterLocal());
     this->setIntersection(against);
 }
 
@@ -621,6 +627,12 @@ void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY,
 {
     m_toolFrame->setVertices(center, szX, szY, szCr, szAx,
                              m_selectedGroup.getCenter2DCustom(), m_selectedGroup.isEmpty());
+}
+
+void entity::Canvas::setVerticesDefault(const osg::Vec3f &center)
+{
+    m_toolFrame->setVertices(center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER,
+                             dureu::CANVAS_AXIS);
 }
 
 void entity::Canvas::setIntersection(entity::Canvas *against)

@@ -32,6 +32,9 @@ public:
     virtual void setVisibility(bool on) = 0;
     virtual bool getVisibility() const = 0;
 
+    osg::Geode* getGeodeWire() const;
+    osg::Vec3f getCenterLocal() const;
+
 protected:
     void updateGeometry();
 

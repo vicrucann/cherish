@@ -1004,6 +1004,7 @@ void entity::UserScene::entitiesMoveAppend(double u, double v)
 
     /* perform delta movement */
     m_canvasCurrent->moveEntitiesSelected(du, dv);
+    m_canvasCurrent->updateFrame(m_canvasPrevious.get());
 
     this->updateWidgets();
     m_du += du;
@@ -1065,6 +1066,7 @@ void entity::UserScene::entitiesScaleAppend(double u, double v)
 
     m_scale *= s;
     m_canvasCurrent->scaleEntitiesSelected(s, osg::Vec3f(m_du, m_dv, 0));
+    m_canvasCurrent->updateFrame(m_canvasPrevious.get());
 
     this->updateWidgets();
     m_u = std::fabs(u-m_v);
@@ -1150,7 +1152,7 @@ void entity::UserScene::entitiesRotateAppend(double u, double v)
     outLogVal("theta", theta);
 
     /* now rotate stroke on theta around center of coords [m_du m_dv] */
-    m_canvasCurrent->rotateEntitiesSelected(theta, osg::Vec3f(m_du, m_dv, 0));
+    m_canvasCurrent->rotateEntitiesSelected(theta);
 
     m_rotate += theta;
     m_u = u;
@@ -1161,12 +1163,13 @@ void entity::UserScene::entitiesRotateAppend(double u, double v)
 
 void entity::UserScene::entitiesRotateFinish(QUndoStack *stack)
 {
-    m_canvasCurrent->rotateEntitiesSelected(-m_rotate, osg::Vec3f(m_du, m_dv, 0));
+    m_canvasCurrent->rotateEntitiesSelected(-m_rotate);
 
     EditEntitiesRotateCommand* cmd = new EditEntitiesRotateCommand(this,
                                                                  m_canvasCurrent->getStrokesSelected(),
                                                                  m_canvasCurrent.get(),
-                                                                 m_rotate, osg::Vec3f(m_du, m_dv, 0));
+                                                                 m_rotate,
+                                                                   m_canvasCurrent->getSelectedEntitiesCenter2D());
     m_u = m_v = 0;
     m_du = m_dv = 0;
     m_rotate = 0;

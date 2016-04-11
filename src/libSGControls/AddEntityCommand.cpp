@@ -65,6 +65,7 @@ void AddCanvasCommand::undo()
     }
     // now delete the canvas
     emit m_scene->canvasRemoved(m_scene->getCanvasIndex(m_canvas.get()));
+    m_canvas->unselectAll();
     m_scene->removeChild(m_canvas);
     if (m_scene->getCanvasCurrent()) m_scene->getCanvasCurrent()->updateFrame(0);
     m_scene->updateWidgets();
@@ -103,6 +104,7 @@ void AddPhotoCommand::undo()
 {
     if (!m_canvas->getGeodeData()->removeChild(m_photo.get()))
         outErrMsg("Could not remove photo from current canvas");
+    m_canvas->removeEntitySelected(m_photo.get());
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
@@ -135,6 +137,7 @@ void AddStrokeCommand::undo()
 {
     if (!m_canvas->getGeodeData()->removeDrawable(m_stroke))
         outErrMsg("undo(): problem while removing stroke from a canvas");
+    m_canvas->removeEntitySelected(m_stroke);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }

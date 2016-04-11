@@ -106,13 +106,14 @@ public:
     int getStrokesSelectedSize() const;
     bool isEntitiesSelected() const;
     osg::Vec3f getStrokesSelectedCenter() const;
+    osg::Vec3f getSelectedEntitiesCenter2D() const;
 
     void moveEntities(std::vector<Entity2D *> &entities, double du, double dv);
     void moveEntitiesSelected(double du, double dv);
     void scaleEntities(std::vector<Entity2D *> &entities, double s, osg::Vec3f center);
     void scaleEntitiesSelected(double s, osg::Vec3f center);
     void rotateEntities(std::vector<entity::Entity2D*> entities, double theta, osg::Vec3f center);
-    void rotateEntitiesSelected(double theta, osg::Vec3f center);
+    void rotateEntitiesSelected(double theta);
 
     /* re-calculate frame's geometry and plane center transform
      * based on canvas content location */
@@ -134,6 +135,7 @@ protected:
     void updateTransforms();
     void resetTransforms();
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
+    void setVerticesDefault(const osg::Vec3f& center);
     void setIntersection(entity::Canvas* against = 0);
 
 private:

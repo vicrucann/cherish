@@ -74,6 +74,7 @@ protected:
                                       osg::Vec3f& P);
 
     bool setSubSelectionType(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void setDrawableColorFromMode(osg::Drawable* draw);
 
     void finishAll();
 
