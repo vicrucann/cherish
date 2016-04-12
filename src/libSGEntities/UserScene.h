@@ -82,7 +82,7 @@ public:
     int getNumCanvases() const;
 
     void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
-    void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event);
+    void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const osg::Vec3f& center3d, dureu::EVENT event);
     void editCanvasClone(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasDelete(QUndoStack* stack, entity::Canvas* canvas);
 
@@ -154,7 +154,7 @@ protected:
     bool canvasCloneValid() const;
 
     void canvasRotateStart();
-    void canvasRotateAppend(const osg::Quat& r);
+    void canvasRotateAppend(const osg::Quat& r, const osg::Vec3f& center3d);
     void canvasRotateFinish(QUndoStack* stack);
 
 private:

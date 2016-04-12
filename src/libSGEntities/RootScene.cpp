@@ -325,9 +325,9 @@ void RootScene::editCanvasOffset(const osg::Vec3f& translate, dureu::EVENT event
     m_saved = false;
 }
 
-void RootScene::editCanvasRotate(const osg::Quat &rotation, dureu::EVENT event)
+void RootScene::editCanvasRotate(const osg::Quat &rotation, const osg::Vec3f &center3d, dureu::EVENT event)
 {
-    m_userScene->editCanvasRotate(m_undoStack, rotation, event);
+    m_userScene->editCanvasRotate(m_undoStack, rotation, center3d, event);
     m_saved = false;
 }
 

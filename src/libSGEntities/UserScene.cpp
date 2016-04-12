@@ -499,7 +499,7 @@ void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& tr
     }
 }
 
-void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event)
+void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const osg::Vec3f &center3d, dureu::EVENT event)
 {
     if (!stack){
         fatalMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
@@ -516,19 +516,19 @@ void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rot
     case dureu::EVENT_PRESSED:
         outLogMsg("editCanvasRotate: pressed");
         this->canvasRotateStart();
-        this->canvasRotateAppend(rotation);
+        this->canvasRotateAppend(rotation, center3d);
         break;
     case dureu::EVENT_DRAGGED:
         if (!this->canvasEditValid())
             this->canvasRotateStart();
-        this->canvasRotateAppend(rotation);
+        this->canvasRotateAppend(rotation, center3d);
         break;
     case dureu::EVENT_RELEASED:
         outLogMsg("editCanvasRotate: release");
         if (!this->canvasEditValid())
             break;
         outLogMsg("editCanvasRotate: released");
-        this->canvasRotateAppend(rotation);
+        this->canvasRotateAppend(rotation, center3d);
         this->canvasRotateFinish(stack);
         break;
     default:
@@ -966,6 +966,7 @@ void entity::UserScene::strokeAppend(float u, float v)
    set the shared pointer to zero and return*/
 void entity::UserScene::strokeFinish(QUndoStack* stack)
 {
+//    m_canvasCurrent->updateFrame(m_canvasPrevious.get());
     entity::Stroke* stroke = m_canvasCurrent->getStrokeCurrent();
     if (this->strokeValid()){
         if (stroke->isLengthy()){
@@ -1340,7 +1341,7 @@ void entity::UserScene::canvasRotateStart()
     m_deltaR = osg::Quat();
 }
 
-void entity::UserScene::canvasRotateAppend(const osg::Quat &r)
+void entity::UserScene::canvasRotateAppend(const osg::Quat &r, const osg::Vec3f &center3d)
 {
     if (!this->canvasEditValid()){
         outErrMsg("canvasRotateAppend: canvas edit mode is not valid");
@@ -1351,7 +1352,7 @@ void entity::UserScene::canvasRotateAppend(const osg::Quat &r)
         return;
     }
 
-    m_canvasCurrent->rotate(osg::Matrix::rotate(r));
+    m_canvasCurrent->rotate(osg::Matrix::rotate(r), center3d);
     m_canvasCurrent->updateFrame(m_canvasPrevious.get());
     m_deltaR = r * m_deltaR;
     this->updateWidgets();
@@ -1364,7 +1365,7 @@ void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
         return;
     }
     m_canvasCurrent->setModeEdit(false);
-    m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()));
+    m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()), m_canvasCurrent->getCenterMean());
     EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(this, m_deltaR);
     stack->push(cmd);
     m_deltaR = osg::Quat(0,0,0,1);

@@ -284,13 +284,50 @@ void entity::Canvas::translate(const osg::Matrix& mt)
     this->updateTransforms();
 }
 
-// rotates the current params on mr matrix
-void entity::Canvas::rotate(const osg::Matrix& mr)
+// rotates the current params on mr matrix around point c2d_new which is given
+// in local canvas coordinates (basically, center of bounding box of geodeData)
+void entity::Canvas::rotate(const osg::Matrix& mr, const osg::Vec3f &c3d_new)
 {
     if (mr.isNaN()){
         outErrMsg("canvas-rotate: matrix is NAN");
         return;
     }
+    /* first perform transform so that rotation would be perform around the center */
+    osg::Matrix M = m_transform->getMatrix();
+    osg::Matrix invM;
+    if (!invM.invert(M)){
+        outErrMsg("canvas rotate: could not invert matrix");
+        return;
+    }
+    osg::Vec3f c2d_new = c3d_new * invM;
+    osg::Vec3f c2d_old = m_center * invM;
+    if (m_center != c3d_new){
+        if (std::fabs(c2d_old.z()) > dureu::EPSILON){
+            outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
+            return;
+        }
+        if (std::fabs(c2d_new.z()) > dureu::EPSILON){
+            outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
+            return;
+        }
+        /* move every child back in local delta translation (diff between old and new centers) */
+        osg::Vec3f delta2d = c2d_old - c2d_new;
+        for (size_t i=0; i<m_geodeData->getNumChildren(); ++i){
+            entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
+            if (!entity){
+                outErrMsg("rotate canvas: could not dynamic_cast to Entity2D*");
+                return;
+            }
+            entity->moveDelta(delta2d.x(), delta2d.y());
+        }
+
+        /* new global center coordinate and delta translate in 3D */
+        osg::Vec3f delta3d = c3d_new - m_center;
+        /* move whole canvas and its drawables to be positioned at new global center */
+        this->translate(osg::Matrix::translate(delta3d.x(), delta3d.y(), delta3d.z()));
+    }
+
+    /* now rotate the canvas */
     m_mR = m_mR * mr;
     this->updateTransforms();
 }
@@ -389,6 +426,18 @@ osg::Vec3f entity::Canvas::getSelectedEntitiesCenter2D() const
     return m_selectedGroup.getCenter2DCustom();
 }
 
+osg::Vec3f entity::Canvas::getCenter2D() const
+{
+    return m_center * m_transform->getMatrix();
+}
+
+osg::Vec3f entity::Canvas::getCenterMean() const
+{
+    osg::BoundingBox bb = m_geodeData->getBoundingBox();
+    if (!bb.valid()) return m_center;
+    return bb.center() * m_transform->getMatrix();
+}
+
 /* Will be most likely called from EditEntityCommand since the vector of entities is specified */
 void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, double du, double dv)
 {
@@ -452,54 +501,23 @@ void entity::Canvas::updateFrame(entity::Canvas* against)
             /* local bounding box */
             osg::BoundingBox bb = m_geodeData->getBoundingBox();
             if (bb.valid()){
-                /* 2d <--> 2d transform matrices */
-                osg::Matrix M = m_transform->getMatrix();
-                osg::Matrix invM;
-                if (invM.invert(M)){
-                    /* old 2d local canvas center */
-                    osg::Vec3f c2d_old = m_center * invM;
-                    if (std::fabs(c2d_old.z()) > dureu::EPSILON){
-                        outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
-                        return;
-                    }
+                /* new 2d local center */
+                osg::Vec3f c2d_new = bb.center();
+                if (std::fabs(c2d_new.z()) > dureu::EPSILON){
+                    outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
+                    return;
+                }
 
-                    /* new 2d local center */
-                    osg::Vec3f c2d_new = bb.center();
-                    if (std::fabs(c2d_new.z()) > dureu::EPSILON){
-                        outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
-                        return;
-                    }
-
-                    /* move every child back in local delta translation (diff between old and new centers) */
-                    osg::Vec3f delta2d = c2d_old - c2d_new;
-                    for (unsigned int i=0; i<m_geodeData->getNumChildren(); ++i){
-                        entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
-                        if (!entity){
-                            outErrMsg("updateFrame: could not dynamic_cast to Entity2D*");
-                            return;
-                        }
-                        entity->moveDelta(delta2d.x(), delta2d.y());
-                    }
-
-                    /* adjust the size of the canvas drawables in old location */
-                    float dx = 0.5*(bb.xMax()-bb.xMin())+dureu::CANVAS_CORNER;
-                    float dy = 0.5*(bb.yMax()-bb.yMin())+dureu::CANVAS_CORNER;
-                    float szX = std::max(dx, dureu::CANVAS_MINW);
-                    float szY = std::max(dy, dureu::CANVAS_MINW);
-                    this->setVertices(c2d_old, szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
-
-                    /* new global center coordinate and delta translate in 3D */
-                    osg::Vec3f c3d_new = c2d_new * M;
-                    osg::Vec3f delta3d = c3d_new - m_center;
-
-                    /* move whole canvas and its drawables to be positioned at new global center */
-                    this->translate(osg::Matrix::translate(delta3d.x(), delta3d.y(), delta3d.z()));
-                } // M is invertable
-            } // bb is valid
-        } // else no selection
-
-    } // geodeData has children
-    else
+                /* adjust the size of the canvas drawables in old location */
+                float dx = 0.5*(bb.xMax()-bb.xMin())+dureu::CANVAS_CORNER;
+                float dy = 0.5*(bb.yMax()-bb.yMin())+dureu::CANVAS_CORNER;
+                float szX = std::max(dx, dureu::CANVAS_MINW);
+                float szY = std::max(dy, dureu::CANVAS_MINW);
+                this->setVertices(c2d_new, szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+            } /* bb is valid */
+        } /* else no selection */
+    }
+    else /* geodeData has no childer, empty canvas case */
         this->setVerticesDefault(m_toolFrame->getCenterLocal());
     this->setIntersection(against);
 }

@@ -40,6 +40,7 @@ protected:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::Quat m_rotate;
+    osg::Vec3f m_center;
 };
 
 class EditCanvasDeleteCommand : public QUndoCommand

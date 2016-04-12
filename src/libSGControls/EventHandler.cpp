@@ -71,8 +71,18 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             }
             break;
         case dureu::SELECT_CANVAS:
-            this->doSelectCanvas<osgUtil::LineSegmentIntersector::Intersection,
-                    osgUtil::LineSegmentIntersector>(ea, aa);
+            switch (dureu::maskAction & m_mode) {
+            case (dureu::maskAction & dureu::CANVAS_OFFSET):
+                this->doEditCanvasOffset(ea, aa);
+                break;
+            case (dureu::maskAction & dureu::CANVAS_ROTATE):
+                this->doEditCanvasRotate(ea, aa);
+                break;
+            default:
+                this->doSelectCanvas<osgUtil::LineSegmentIntersector::Intersection,
+                        osgUtil::LineSegmentIntersector>(ea, aa);
+                break;
+            }
             break;
         default:
             break;
@@ -85,12 +95,6 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     }
 
 //    switch (m_mode){
-//    case dureu::CANVAS_OFFSET:
-//        this->doEditCanvasOffset(ea, aa);
-//        break;
-//    case dureu::CANVAS_ROTATE:
-//        this->doEditCanvasRotate(ea, aa);
-//        break;
 //    case dureu::CREATE_CANVASCLONE:
 //        this->doCanvasClone(ea, aa);
 //        break;
@@ -296,15 +300,15 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     case osgGA::GUIEventAdapter::PUSH:
         outLogVec("canvas-rotate pressed, quat", rot.x(), rot.y(), rot.z());
         outLogVal("canvas-rotate pressed, quat.w", rot.w());
-        m_scene->editCanvasRotate(rot, dureu::EVENT_PRESSED);
+        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), dureu::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         outLogVec("canvas-rotate released, quat", rot.x(), rot.y(), rot.z());
         outLogVal("canvas-rotate released, quat.w", rot.w());
-        m_scene->editCanvasRotate(rot, dureu::EVENT_RELEASED);
+        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), dureu::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        m_scene->editCanvasRotate(rot, dureu::EVENT_DRAGGED);
+        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), dureu::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -704,7 +708,7 @@ void EventHandler::finishAll()
         m_scene->editCanvasOffset(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
         break;
     case dureu::CANVAS_ROTATE:
-        m_scene->editCanvasRotate(osg::Quat(0,0,0,1), dureu::EVENT_OFF);
+        m_scene->editCanvasRotate(osg::Quat(0,0,0,1), m_scene->getCanvasCurrent()->getCenter(), dureu::EVENT_OFF);
         break;
     case dureu::CREATE_CANVASCLONE:
         m_scene->editCanvasClone(osg::Vec3f(0,0,0), dureu::EVENT_OFF);

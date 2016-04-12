@@ -90,7 +90,7 @@ public:
     osg::Geometry* getGeometryPickable() const;
 
     void translate(const osg::Matrix& mt);
-    void rotate(const osg::Matrix& mr);
+    void rotate(const osg::Matrix& mr, const osg::Vec3f& c3d_new);
 
     void unselectAll(); /* includes current strokes and selection group */
     void unselectEntities();
@@ -107,6 +107,8 @@ public:
     bool isEntitiesSelected() const;
     osg::Vec3f getStrokesSelectedCenter() const;
     osg::Vec3f getSelectedEntitiesCenter2D() const;
+    osg::Vec3f getCenter2D() const;
+    osg::Vec3f getCenterMean() const;
 
     void moveEntities(std::vector<Entity2D *> &entities, double du, double dv);
     void moveEntitiesSelected(double du, double dv);

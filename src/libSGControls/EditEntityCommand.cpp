@@ -35,6 +35,7 @@ EditCanvasRotateCommand::EditCanvasRotateCommand(entity::UserScene *scene, const
     , m_scene(scene)
     , m_canvas(scene->getCanvasCurrent())
     , m_rotate(rotate)
+    , m_center(m_canvas->getCenter())
 {
     this->setText(QObject::tr("Rotate %1")
                   .arg(QString(m_canvas->getName().c_str())));
@@ -50,14 +51,14 @@ void EditCanvasRotateCommand::undo()
     double angle;
     osg::Vec3d axis;
     m_rotate.getRotate(angle, axis);
-    m_canvas->rotate(osg::Matrix::rotate(-angle, axis));
+    m_canvas->rotate(osg::Matrix::rotate(-angle, axis), m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditCanvasRotateCommand::redo()
 {
-    m_canvas->rotate(osg::Matrix::rotate(m_rotate));
+    m_canvas->rotate(osg::Matrix::rotate(m_rotate), m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }

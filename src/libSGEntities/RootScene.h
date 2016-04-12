@@ -96,7 +96,7 @@ public:
     entity::Bookmarks* getBookmarksModel() const;
 
     void editCanvasOffset(const osg::Vec3f& translate, dureu::EVENT event);
-    void editCanvasRotate(const osg::Quat& rotation, dureu::EVENT event);
+    void editCanvasRotate(const osg::Quat& rotation, const osg::Vec3f& center3d, dureu::EVENT event);
     void editCanvasClone(const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasDelete(entity::Canvas* canvas);
 
