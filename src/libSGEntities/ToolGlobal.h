@@ -77,9 +77,13 @@ public:
     void initializeSG();
     void setVisibility(bool on);
     bool getVisibility() const;
+
     /* the bounding box frame, also updates all other geometries */
     void setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx,
-                     const osg::Vec3f& centerCustom = dureu::CENTER ,bool selectionIsEmpty = true);
+                     const osg::Vec3f& centerCustom = dureu::CENTER ,
+                     double theta = 0,
+                     bool selectionIsEmpty = true);
+
     void setColor(const osg::Vec4f& color, const osg::Vec4f& colorIntersect = dureu::CANVAS_CLR_PREVIOUS);
 
     void setIntersection(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4);
@@ -96,7 +100,11 @@ public:
 
 protected:
     void initQuadGeometry(osg::Geometry* geom, const std::string& name = "");
-    void setQuadGeometry(osg::Geometry* geom, const osg::Vec3f& P, float szX, float szY = 0);
+//    void setQuadGeometry(osg::Geometry* geom, const osg::Vec3f& P, float szX,
+//                         float theta = 0, float szY = 0);
+
+    void setQuadGeometry(osg::Geometry* geom, const osg::Vec3f& P, float szX, float szY, float theta = 0, const osg::Vec3f& center = dureu::CENTER);
+
     void setColorQuadGeometry(osg::Geometry* geom, const osg::Vec4f& color);
     void updateGeometry(osg::Geometry* geom);
 

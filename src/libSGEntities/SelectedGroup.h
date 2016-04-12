@@ -26,6 +26,7 @@ public:
     osg::Vec3f getCenter2DCustom() const;
     void setCenter2DCustom(const osg::Vec3f& center);
     osg::BoundingBox getBoundingBox() const;
+    double getRotationAngle() const;
 
     void move(double du, double dv);
     void move(std::vector<Entity2D *> &entities, double du, double dv);

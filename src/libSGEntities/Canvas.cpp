@@ -625,7 +625,9 @@ void entity::Canvas::resetTransforms()
 void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
 {
     m_toolFrame->setVertices(center, szX, szY, szCr, szAx,
-                             m_selectedGroup.getCenter2DCustom(), m_selectedGroup.isEmpty());
+                             m_selectedGroup.getCenter2DCustom(),
+                             m_selectedGroup.getRotationAngle(),
+                             m_selectedGroup.isEmpty());
 }
 
 void entity::Canvas::setVerticesDefault(const osg::Vec3f &center)

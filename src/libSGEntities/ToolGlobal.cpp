@@ -314,7 +314,9 @@ bool entity::FrameTool::getVisibility() const
 }
 
 void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float szY,
-                                    float szCr, float szAx, const osg::Vec3f &centerCustom, bool selectionIsEmpty)
+                                    float szCr, float szAx,
+                                    const osg::Vec3f &centerCustom, double theta,
+                                    bool selectionIsEmpty)
 {
     /* wireframe drawables */
     std::vector<osg::Vec3f> verts;
@@ -329,7 +331,7 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
     osg::Vec3f p0 = verts.at(0);
     /* if normal mode, set up pickable position */
     if (selectionIsEmpty){
-        this->setQuadGeometry(m_geomPickable, p0, szCr);
+        this->setQuadGeometry(m_geomPickable, p0, szCr, szCr);
         m_switch->setChildValue(m_geodePickable, true);
         m_switch->setChildValue(m_cameraAxis, false);
         m_switch->setChildValue(m_geodeScales, false);
@@ -341,13 +343,13 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
         m_switch->setChildValue(m_geodeScales, true);
 
         osg::Vec3f Pc = centerCustom + osg::Vec3f(szCr*0.5, szCr*0.5, 0);
-        this->setQuadGeometry(m_geomCenter, Pc, szCr);
+        this->setQuadGeometry(m_geomCenter, Pc, szCr, szCr);
 
         osg::Vec3f Pau = Pc + osg::Vec3f(szAx + 0.1, 0, 0);
-        this->setQuadGeometry(m_geomAxisU, Pau, szAx, szCr);
+        this->setQuadGeometry(m_geomAxisU, Pau, szAx, szCr, theta, centerCustom);
 
         osg::Vec3f Pav = Pc + osg::Vec3f(0, szAx + 0.1, 0);
-        this->setQuadGeometry(m_geomAxisV, Pav, szCr, szAx);
+        this->setQuadGeometry(m_geomAxisV, Pav, szCr, szAx, theta, centerCustom);
 
         float sz05 = szCr*0.5;
         osg::Vec3f p1 = verts.at(1) + osg::Vec3f(szCr,0,0);
@@ -357,14 +359,14 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
         osg::Vec3f p23 = p2 + osg::Vec3f(szX-sz05,0,0);
         osg::Vec3f p12 = p2 + osg::Vec3f(0,szY-sz05,0);
         osg::Vec3f p30 = p3 + osg::Vec3f(0,szY-sz05,0);
-        this->setQuadGeometry(m_geomScaleUV1, p0, szCr);
-        this->setQuadGeometry(m_geomScaleUV2, p1, szCr);
-        this->setQuadGeometry(m_geomScaleUV3, p2, szCr);
-        this->setQuadGeometry(m_geomScaleUV4, p3, szCr);
-        this->setQuadGeometry(m_geomScaleU1, p01, szCr);
-        this->setQuadGeometry(m_geomScaleU2, p23, szCr);
-        this->setQuadGeometry(m_geomScaleV1, p12, szCr);
-        this->setQuadGeometry(m_geomScaleV2, p30, szCr);
+        this->setQuadGeometry(m_geomScaleUV1, p0, szCr, szCr);
+        this->setQuadGeometry(m_geomScaleUV2, p1, szCr, szCr);
+        this->setQuadGeometry(m_geomScaleUV3, p2, szCr, szCr);
+        this->setQuadGeometry(m_geomScaleUV4, p3, szCr, szCr);
+        this->setQuadGeometry(m_geomScaleU1, p01, szCr, szCr);
+        this->setQuadGeometry(m_geomScaleU2, p23, szCr, szCr);
+        this->setQuadGeometry(m_geomScaleV1, p12, szCr, szCr);
+        this->setQuadGeometry(m_geomScaleV2, p30, szCr, szCr);
     }
 }
 
@@ -496,17 +498,54 @@ void entity::FrameTool::initQuadGeometry(osg::Geometry *geom, const std::string 
     geom->setName(name);
 }
 
-void entity::FrameTool::setQuadGeometry(osg::Geometry *geom, const osg::Vec3f &P, float szX, float szY)
+/*
+ * sxY
+ * ^
+ * |
+ * |
+ *
+ * v1--v0 (P)
+ * |    |
+ * |    |
+ * v2--v3   ----> szX
+ *
+ *
+ * v0 = P
+ * theta is measured from center
+ */
+void entity::FrameTool::setQuadGeometry(osg::Geometry *geom, const osg::Vec3f &P, float szX, float szY, float theta, const osg::Vec3f &center)
 {
-    szY = (!szY)? szX : szY;
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geom->getVertexArray());
     assert(verts->size() == 4);
     (*verts)[0] = P;
     (*verts)[1] = P + osg::Vec3(-szX, 0.f, 0.f);
     (*verts)[2] = P + osg::Vec3(-szX, -szY, 0.f);
-    (*verts)[3] = P + osg::Vec3(.0f, -szY, 0.f);
+    (*verts)[3] = P + osg::Vec3(0.f, -szY, 0.f);
+
+    if (theta != 0){
+        for (size_t i=0; i<verts->size(); ++i){
+            osg::Vec3f vi = (*verts)[i] - center;
+            (*verts)[i] = center + osg::Vec3f(vi.x() * std::cos(theta) - vi.y() * std::sin(theta),
+                                              vi.x() * std::sin(theta) + vi.y() * std::cos(theta), 0);
+        }
+    }
     this->updateGeometry(geom);
 }
+
+
+
+//void entity::FrameTool::setQuadGeometry(osg::Geometry *geom, const osg::Vec3f &P, float szX, float theta, float szY)
+//{
+//    szY = (!szY)? szX : szY;
+//    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geom->getVertexArray());
+//    assert(verts->size() == 4);
+//    (*verts)[0] = P;
+//    (*verts)[1] = P + osg::Vec3(-szX * std::cos(theta), -szX * std::sin(theta), 0.f);
+//    (*verts)[2] = P + osg::Vec3(-szX * std::cos(theta) + szY * std::sin(theta),
+//                                -szX * std::sin(theta) -szY * std::cos(theta), 0.f);
+//    (*verts)[3] = P + osg::Vec3(szY * std::sin(theta), -szY * std::cos(theta), 0.f);
+//    this->updateGeometry(geom);
+//}
 
 void entity::FrameTool::setColorQuadGeometry(osg::Geometry *geom, const osg::Vec4f &color)
 {

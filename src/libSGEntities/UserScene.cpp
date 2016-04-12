@@ -1159,6 +1159,7 @@ void entity::UserScene::entitiesRotateAppend(double u, double v)
 
     /* now rotate stroke on theta around center of coords [m_du m_dv] */
     m_canvasCurrent->rotateEntitiesSelected(theta);
+    m_canvasCurrent->updateFrame(m_canvasPrevious.get());
 
     m_rotate += theta;
     m_u = u;

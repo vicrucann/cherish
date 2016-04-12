@@ -172,6 +172,11 @@ osg::BoundingBox entity::SelectedGroup::getBoundingBox() const
     return bb;
 }
 
+double entity::SelectedGroup::getRotationAngle() const
+{
+    return m_theta;
+}
+
 void entity::SelectedGroup::move(double du, double dv)
 {
     this->move(m_group, du, dv);
