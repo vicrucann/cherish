@@ -218,6 +218,15 @@ void entity::Photo::scale(double scaleX, double scaleY, osg::Vec3f center)
     m_width *= scaleX;
     m_height *= scaleY;
     m_center = center;
+
+//    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+//    for (unsigned int i=0; i<verts->size(); ++i){
+//        osg::Vec3f vi = (*verts)[i] - center;
+//        (*verts)[i] = center + osg::Vec3f(scaleX*vi.x(), scaleY*vi.y(), 0);
+//    }
+//    this->dirtyDisplayList();
+//    this->dirtyBound();
+
     this->updateVertices();
 }
 

@@ -1080,13 +1080,13 @@ void entity::UserScene::entitiesScaleAppend(double u, double v)
 
 void entity::UserScene::entitiesScaleFinish(QUndoStack *stack)
 {
-    m_canvasCurrent->scaleEntitiesSelected(1/m_scaleX, 1/m_scaleY);
+    m_canvasCurrent->scaleEntitiesSelected(1/m_scaleX, 1/m_scaleX);
 
     EditEntitiesScaleCommand* cmd =
             new EditEntitiesScaleCommand(this,
                                          m_canvasCurrent->getStrokesSelected(),
                                          m_canvasCurrent.get(),
-                                         m_scaleX, m_scaleY,
+                                         m_scaleX, m_scaleX,
                                          m_canvasCurrent->getSelectedEntitiesCenter2D() );
     m_du = m_u = 0;
     m_dv = m_v = 0;
