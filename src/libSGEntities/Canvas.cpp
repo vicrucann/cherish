@@ -679,6 +679,11 @@ osg::Node* entity::Canvas::getTool(const std::string &name)
     return fnv.getNode();
 }
 
+entity::FrameTool *entity::Canvas::getToolFrame() const
+{
+    return m_toolFrame;
+}
+
 REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
                         , new entity::Canvas
                         , entity::Canvas

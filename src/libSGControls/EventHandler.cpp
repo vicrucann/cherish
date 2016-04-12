@@ -677,7 +677,8 @@ void EventHandler::setDrawableColorFromMode(osg::Drawable *draw)
     if (!draw) {
         /* when mouse is not hovering over anything
          * set the color to normal (gray) for all the canvas selection frame. */
-        m_scene->getCanvasCurrent()->setColor(solarized::base00);
+        m_scene->getCanvasCurrent()->getToolFrame()->setColor(dureu::CANVAS_CLR_CURRENT,
+                                                              dureu::CANVAS_CLR_INTERSECTION);
         return;
     }
     osg::Geometry* geom = dynamic_cast<osg::Geometry*>(draw);

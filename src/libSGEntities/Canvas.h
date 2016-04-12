@@ -130,6 +130,7 @@ public:
     entity::Canvas* clone() const;
 
     osg::Node* getTool(const std::string& name);
+    entity::FrameTool* getToolFrame() const;
 
 protected:
     ~Canvas();
