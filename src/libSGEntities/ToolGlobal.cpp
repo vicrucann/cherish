@@ -232,10 +232,10 @@ entity::FrameTool::FrameTool()
     , m_geomScaleUV2(new osg::Geometry)
     , m_geomScaleUV3(new osg::Geometry)
     , m_geomScaleUV4(new osg::Geometry)
-    , m_geomScaleU1(new osg::Geometry)
-    , m_geomScaleU2(new osg::Geometry)
-    , m_geomScaleV1(new osg::Geometry)
-    , m_geomScaleV2(new osg::Geometry)
+//    , m_geomScaleU1(new osg::Geometry)
+//    , m_geomScaleU2(new osg::Geometry)
+//    , m_geomScaleV1(new osg::Geometry)
+//    , m_geomScaleV2(new osg::Geometry)
 
     , m_cameraAxis(new osg::Camera)
     , m_selected(false)
@@ -252,10 +252,10 @@ void entity::FrameTool::initializeSG()
     this->initQuadGeometry(m_geomCenter, "Center");
     this->initQuadGeometry(m_geomAxisU, "AxisU");
     this->initQuadGeometry(m_geomAxisV, "AxisV");
-    this->initQuadGeometry(m_geomScaleU1, "ScaleU1");
-    this->initQuadGeometry(m_geomScaleU2, "ScaleU2");
-    this->initQuadGeometry(m_geomScaleV1, "ScaleV1");
-    this->initQuadGeometry(m_geomScaleV2, "ScaleV2");
+//    this->initQuadGeometry(m_geomScaleU1, "ScaleU1");
+//    this->initQuadGeometry(m_geomScaleU2, "ScaleU2");
+//    this->initQuadGeometry(m_geomScaleV1, "ScaleV1");
+//    this->initQuadGeometry(m_geomScaleV2, "ScaleV2");
     this->initQuadGeometry(m_geomScaleUV1, "ScaleUV1");
     this->initQuadGeometry(m_geomScaleUV2, "ScaleUV2");
     this->initQuadGeometry(m_geomScaleUV3, "ScaleUV3");
@@ -277,10 +277,10 @@ void entity::FrameTool::initializeSG()
     m_geodeAxis->addDrawable(m_geomCenter);
     m_geodeAxis->addDrawable(m_geomAxisU);
     m_geodeAxis->addDrawable(m_geomAxisV);
-    m_geodeScales->addDrawable(m_geomScaleU1);
-    m_geodeScales->addDrawable(m_geomScaleU2);
-    m_geodeScales->addDrawable(m_geomScaleV1);
-    m_geodeScales->addDrawable(m_geomScaleV2);
+//    m_geodeScales->addDrawable(m_geomScaleU1);
+//    m_geodeScales->addDrawable(m_geomScaleU2);
+//    m_geodeScales->addDrawable(m_geomScaleV1);
+//    m_geodeScales->addDrawable(m_geomScaleV2);
     m_geodeScales->addDrawable(m_geomScaleUV1);
     m_geodeScales->addDrawable(m_geomScaleUV2);
     m_geodeScales->addDrawable(m_geomScaleUV3);
@@ -363,10 +363,10 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
         this->setQuadGeometry(m_geomScaleUV2, p1, szCr, szCr);
         this->setQuadGeometry(m_geomScaleUV3, p2, szCr, szCr);
         this->setQuadGeometry(m_geomScaleUV4, p3, szCr, szCr);
-        this->setQuadGeometry(m_geomScaleU1, p01, szCr, szCr);
-        this->setQuadGeometry(m_geomScaleU2, p23, szCr, szCr);
-        this->setQuadGeometry(m_geomScaleV1, p12, szCr, szCr);
-        this->setQuadGeometry(m_geomScaleV2, p30, szCr, szCr);
+//        this->setQuadGeometry(m_geomScaleU1, p01, szCr, szCr);
+//        this->setQuadGeometry(m_geomScaleU2, p23, szCr, szCr);
+//        this->setQuadGeometry(m_geomScaleV1, p12, szCr, szCr);
+//        this->setQuadGeometry(m_geomScaleV2, p30, szCr, szCr);
     }
 }
 
@@ -377,10 +377,10 @@ void entity::FrameTool::setColor(const osg::Vec4f &color, const osg::Vec4f &colo
     this->setColorQuadGeometry(m_geomCenter, solarized::base00);
     this->setColorQuadGeometry(m_geomAxisU, solarized::base00);
     this->setColorQuadGeometry(m_geomAxisV, solarized::base00);
-    this->setColorQuadGeometry(m_geomScaleU1, solarized::base00);
-    this->setColorQuadGeometry(m_geomScaleU2, solarized::base00);
-    this->setColorQuadGeometry(m_geomScaleV1, solarized::base00);
-    this->setColorQuadGeometry(m_geomScaleV2, solarized::base00);
+//    this->setColorQuadGeometry(m_geomScaleU1, solarized::base00);
+//    this->setColorQuadGeometry(m_geomScaleU2, solarized::base00);
+//    this->setColorQuadGeometry(m_geomScaleV1, solarized::base00);
+//    this->setColorQuadGeometry(m_geomScaleV2, solarized::base00);
     this->setColorQuadGeometry(m_geomScaleUV1, solarized::base00);
     this->setColorQuadGeometry(m_geomScaleUV2, solarized::base00);
     this->setColorQuadGeometry(m_geomScaleUV3, solarized::base00);
@@ -428,10 +428,10 @@ void entity::FrameTool::moveDelta(double du, double dv)
     this->moveDeltaWireGeometry(m_geomAxisU, du, dv);
     this->moveDeltaWireGeometry(m_geomAxisV, du, dv);
 //    this->moveDeltaWireGeometry(m_geomNormal, du, dv);
-    this->moveDeltaWireGeometry(m_geomScaleU1, du, dv);
-    this->moveDeltaWireGeometry(m_geomScaleU2, du, dv);
-    this->moveDeltaWireGeometry(m_geomScaleV1, du, dv);
-    this->moveDeltaWireGeometry(m_geomScaleV2, du, dv);
+//    this->moveDeltaWireGeometry(m_geomScaleU1, du, dv);
+//    this->moveDeltaWireGeometry(m_geomScaleU2, du, dv);
+//    this->moveDeltaWireGeometry(m_geomScaleV1, du, dv);
+//    this->moveDeltaWireGeometry(m_geomScaleV2, du, dv);
     this->moveDeltaWireGeometry(m_geomScaleUV1, du, dv);
     this->moveDeltaWireGeometry(m_geomScaleUV2, du, dv);
     this->moveDeltaWireGeometry(m_geomScaleUV3, du, dv);
@@ -445,10 +445,10 @@ void entity::FrameTool::scale(double scaleX, double scaleY, osg::Vec3f center)
     this->scaleWireGeometry(m_geomAxisU, scaleX, scaleY, center);
     this->scaleWireGeometry(m_geomAxisV, scaleX, scaleY, center);
 //    this->scaleWireGeometry(m_geomNormal, scaleX, scaleY, center);
-    this->scaleWireGeometry(m_geomScaleU1, scaleX, scaleY, center);
-    this->scaleWireGeometry(m_geomScaleU2, scaleX, scaleY, center);
-    this->scaleWireGeometry(m_geomScaleV1, scaleX, scaleY, center);
-    this->scaleWireGeometry(m_geomScaleV2, scaleX, scaleY, center);
+//    this->scaleWireGeometry(m_geomScaleU1, scaleX, scaleY, center);
+//    this->scaleWireGeometry(m_geomScaleU2, scaleX, scaleY, center);
+//    this->scaleWireGeometry(m_geomScaleV1, scaleX, scaleY, center);
+//    this->scaleWireGeometry(m_geomScaleV2, scaleX, scaleY, center);
     this->scaleWireGeometry(m_geomScaleUV1, scaleX, scaleY, center);
     this->scaleWireGeometry(m_geomScaleUV2, scaleX, scaleY, center);
     this->scaleWireGeometry(m_geomScaleUV3, scaleX, scaleY, center);
@@ -462,10 +462,10 @@ void entity::FrameTool::scale(double scale, osg::Vec3f center)
     this->scaleWireGeometry(m_geomAxisU, scale, center);
     this->scaleWireGeometry(m_geomAxisV, scale, center);
 //    this->scaleWireGeometry(m_geomNormal, scale, center);
-    this->scaleWireGeometry(m_geomScaleU1, scale, center);
-    this->scaleWireGeometry(m_geomScaleU2, scale, center);
-    this->scaleWireGeometry(m_geomScaleV1, scale, center);
-    this->scaleWireGeometry(m_geomScaleV2, scale, center);
+//    this->scaleWireGeometry(m_geomScaleU1, scale, center);
+//    this->scaleWireGeometry(m_geomScaleU2, scale, center);
+//    this->scaleWireGeometry(m_geomScaleV1, scale, center);
+//    this->scaleWireGeometry(m_geomScaleV2, scale, center);
     this->scaleWireGeometry(m_geomScaleUV1, scale, center);
     this->scaleWireGeometry(m_geomScaleUV2, scale, center);
     this->scaleWireGeometry(m_geomScaleUV3, scale, center);
@@ -479,10 +479,10 @@ void entity::FrameTool::rotate(double theta, osg::Vec3f center)
     this->rotateWireGeometry(m_geomAxisU, theta, center);
     this->rotateWireGeometry(m_geomAxisV, theta, center);
 //    this->rotateWireGeometry(m_geomNormal, theta, center);
-    this->rotateWireGeometry(m_geomScaleU1, theta, center);
-    this->rotateWireGeometry(m_geomScaleU2, theta, center);
-    this->rotateWireGeometry(m_geomScaleV1, theta, center);
-    this->rotateWireGeometry(m_geomScaleV2, theta, center);
+//    this->rotateWireGeometry(m_geomScaleU1, theta, center);
+//    this->rotateWireGeometry(m_geomScaleU2, theta, center);
+//    this->rotateWireGeometry(m_geomScaleV1, theta, center);
+//    this->rotateWireGeometry(m_geomScaleV2, theta, center);
     this->rotateWireGeometry(m_geomScaleUV1, theta, center);
     this->rotateWireGeometry(m_geomScaleUV2, theta, center);
     this->rotateWireGeometry(m_geomScaleUV3, theta, center);

@@ -121,8 +121,8 @@ private:
 
     /* tools to scale entities: uniform scaling and axis aligned */
     osg::Geometry * m_geomScaleUV1, * m_geomScaleUV2, * m_geomScaleUV3, * m_geomScaleUV4;
-    osg::Geometry * m_geomScaleU1, * m_geomScaleU2;
-    osg::Geometry * m_geomScaleV1, * m_geomScaleV2;
+//    osg::Geometry * m_geomScaleU1, * m_geomScaleU2;
+//    osg::Geometry * m_geomScaleV1, * m_geomScaleV2;
 
     osg::Camera* m_cameraAxis;
 

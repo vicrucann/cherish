@@ -500,10 +500,10 @@ dureu::MOUSE_MODE EventHandler::getMouseMode(const osgUtil::LineSegmentIntersect
         return dureu::ENTITY_ROTATE;
     else if (name == "AxisV")
         return dureu::ENTITY_ROTATE;
-    else if (name == "ScaleU1" || name == "ScaleU2")
-        return dureu::ENTITY_SCALE;
-    else if (name == "ScaleV1" || name == "ScaleV2")
-        return dureu::ENTITY_SCALE;
+//    else if (name == "ScaleU1" || name == "ScaleU2")
+//        return dureu::ENTITY_SCALE;
+//    else if (name == "ScaleV1" || name == "ScaleV2")
+//        return dureu::ENTITY_SCALE;
     else if (name == "ScaleUV1" || name == "ScaleUV2" || name == "ScaleUV3" || name == "ScaleUV4")
         return dureu::ENTITY_SCALE;
     return dureu::SELECT_ENTITY;
