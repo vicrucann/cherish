@@ -1,6 +1,7 @@
 #include "Utilities.h"
 
 #include "Settings.h"
+#include "Data.h"
 
 QColor Utilities::getQColor(const osg::Vec4f &color)
 {
@@ -344,4 +345,69 @@ int Utilities::getPlanesIntersection(entity::Canvas *canvas1, entity::Canvas *ca
 osg::Vec3f Utilities::projectPointOnLine(const osg::Vec3f &iP, const osg::Vec3f &u, const osg::Vec3f &P)
 {
     return iP + u * ((P-iP)*u)/(u*u);
+}
+
+QCursor *Utilities::getCursorFromMode(dureu::MOUSE_MODE mode)
+{
+    QCursor* cur;
+    switch (mode) {
+    case dureu::SELECT_ENTITY:
+        cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
+        break;
+    case dureu::ENTITY_MOVE:
+        cur = new QCursor(Data::sceneImageMovePixmap(), -1, -1);
+        break;
+    case dureu::ENTITY_SCALE:
+        cur = new QCursor(Data::sceneImageScalePixmap(), 0, 0);
+        break;
+    case dureu::ENTITY_ROTATE:
+        cur = new QCursor(Data::sceneImageRotatePixmap(), -1, -1);
+        break;
+    case dureu::ENTITY_FLIPH:
+        cur = new QCursor(Data::sceneImageFlipHPixmap(), -1, -1);
+        break;
+    case dureu::ENTITY_FLIPV:
+        cur = new QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
+        break;
+
+    case dureu::SELECT_CANVAS:
+        cur = new QCursor(Data::sceneSelect3DPixmap(), 0,0);
+        break;
+    case dureu::CANVAS_OFFSET:
+        cur = new QCursor(Data::sceneCanvasOffsetCursor(), -1, -1);
+        break;
+    case dureu::CANVAS_ROTATE:
+        cur = new QCursor(Data::sceneCanvasRotateCursor(), -1, -1);
+        break;
+
+    case dureu::PEN_SKETCH:
+        cur = new QCursor(Data::sceneSketchPixmap(), 0, Data::sceneSketchPixmap().height());
+        break;
+    case dureu::PEN_DELETE:
+        cur = new QCursor(Data::editDeleteCursor(), 0, 0);
+        break;
+    case dureu::PEN_ERASE:
+        cur = new QCursor(Data::sceneEraserPixmap(), -1, -1);
+        break;
+
+    case dureu::CAMERA_ORBIT:
+        cur = new QCursor(Data::sceneOrbitPixmap(), 0, 0);
+        break;
+    case dureu::CAMERA_ZOOM:
+        cur = new QCursor(Data::sceneZoomPixmap(), 0, 0);
+        break;
+    case dureu::CAMERA_PAN:
+        cur = new QCursor(Data::scenePanPixmap(), 0, 0);
+        break;
+    case dureu::CAMERA_FIXEDVIEW:
+        cur = 0;
+        break;
+
+    case dureu::CREATE_CANVASCLONE:
+        cur = new QCursor(Data::sceneCanvasCloneCursor());
+        break;
+    default:
+        break;
+    }
+    return cur;
 }

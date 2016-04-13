@@ -40,6 +40,7 @@ protected:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::Quat m_rotate;
+    osg::Vec3f m_center;
 };
 
 class EditCanvasDeleteCommand : public QUndoCommand
@@ -54,70 +55,6 @@ public:
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::ref_ptr<entity::Canvas> m_canvas;
-};
-
-class EditPhotoMoveCommand : public QUndoCommand
-{
-public:
-    EditPhotoMoveCommand(entity::UserScene* scene, const double u, const double v, QUndoCommand* parent = 0);
-    ~EditPhotoMoveCommand();
-
-    void undo() Q_DECL_OVERRIDE;
-    void redo() Q_DECL_OVERRIDE;
-
-protected:
-    osg::observer_ptr<entity::UserScene> m_scene;
-    osg::observer_ptr<entity::Canvas> m_canvas;
-    osg::observer_ptr<entity::Photo> m_photo;
-    double m_u0, m_v0, m_u1, m_v1;
-};
-
-class EditPhotoScaleCommand : public QUndoCommand
-{
-public:
-    EditPhotoScaleCommand(entity::UserScene* scene, const double scale, QUndoCommand* parent = 0);
-    ~EditPhotoScaleCommand() {}
-
-    void undo() Q_DECL_OVERRIDE;
-    void redo() Q_DECL_OVERRIDE;
-
-protected:
-    osg::observer_ptr<entity::UserScene> m_scene;
-    osg::observer_ptr<entity::Canvas> m_canvas;
-    osg::observer_ptr<entity::Photo> m_photo;
-    double m_scale;
-};
-
-class EditPhotoFlipCommand : public QUndoCommand
-{
-public:
-    EditPhotoFlipCommand(entity::UserScene* scene, bool horizontal, QUndoCommand* parent = 0);
-    ~EditPhotoFlipCommand(){}
-
-    void undo() Q_DECL_OVERRIDE;
-    void redo() Q_DECL_OVERRIDE;
-
-protected:
-    osg::observer_ptr<entity::UserScene> m_scene;
-    osg::observer_ptr<entity::Canvas> m_canvas;
-    osg::observer_ptr<entity::Photo> m_photo;
-    bool m_horizontal;
-};
-
-class EditPhotoRotateCommand : public QUndoCommand
-{
-public:
-    EditPhotoRotateCommand(entity::UserScene* scene, const double angle, QUndoCommand* parent = 0);
-    ~EditPhotoRotateCommand(){}
-
-    void undo() Q_DECL_OVERRIDE;
-    void redo() Q_DECL_OVERRIDE;
-
-protected:
-    osg::observer_ptr<entity::UserScene> m_scene;
-    osg::observer_ptr<entity::Canvas> m_canvas;
-    osg::observer_ptr<entity::Photo> m_photo;
-    double m_angle;
 };
 
 class EditPhotoDeleteCommand : public QUndoCommand
@@ -138,7 +75,7 @@ protected:
 class EditStrokesPushCommand : public QUndoCommand
 {
 public:
-    EditStrokesPushCommand(entity::UserScene* scene, const std::vector<entity::Stroke*>& strokes, entity::Canvas* current, entity::Canvas* target,
+    EditStrokesPushCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities, entity::Canvas* current, entity::Canvas* target,
                            const osg::Vec3f& eye, QUndoCommand* parent = 0);
     ~EditStrokesPushCommand() {}
 
@@ -150,61 +87,64 @@ protected:
     void doPushStrokes(entity::Canvas& source, entity::Canvas& target);
 
     osg::observer_ptr<entity::UserScene> m_scene;
-    const std::vector<entity::Stroke*> m_strokes;
+    const std::vector<entity::Entity2D*> m_entities;
     osg::observer_ptr<entity::Canvas> m_canvasCurrent;
     osg::observer_ptr<entity::Canvas> m_canvasTarget;
     osg::Vec3f m_eye;
 };
 
-class EditStrokesMoveCommand : public QUndoCommand
+class EditEntitiesMoveCommand : public QUndoCommand
 {
 public:
-    EditStrokesMoveCommand(entity::UserScene* scene, const std::vector<entity::Stroke*>& strokes, entity::Canvas* canvas,
+    EditEntitiesMoveCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities, entity::Canvas* canvas,
                            double du, double dv, QUndoCommand* parent = 0);
-    ~EditStrokesMoveCommand() {}
+    ~EditEntitiesMoveCommand() {}
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
-    std::vector<entity::Stroke*> m_strokes;
+    std::vector<entity::Entity2D*> m_entities;
     osg::observer_ptr<entity::Canvas> m_canvas;
     double m_du;
     double m_dv;
 };
 
-class EditStrokesScaleCommand : public QUndoCommand
+class EditEntitiesScaleCommand : public QUndoCommand
 {
 public:
-    EditStrokesScaleCommand(entity::UserScene* scene, const std::vector<entity::Stroke*>& strokes, entity::Canvas* canvas,
-                            double scale, osg::Vec3f center, QUndoCommand* parent = 0);
-    ~EditStrokesScaleCommand() {}
+    EditEntitiesScaleCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities,
+                             entity::Canvas* canvas,
+                             double scaleX, double scaleY,
+                             osg::Vec3f center,
+                             QUndoCommand* parent = 0);
+    ~EditEntitiesScaleCommand() {}
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
-    std::vector<entity::Stroke*> m_strokes;
+    std::vector<entity::Entity2D*> m_entities;
     osg::observer_ptr<entity::Canvas> m_canvas;
-    double m_scale;
+    double m_scaleX, m_scaleY;
     osg::Vec3f m_center;
 };
 
-class EditStrokesRotateCommand : public QUndoCommand
+class EditEntitiesRotateCommand : public QUndoCommand
 {
 public:
-    EditStrokesRotateCommand(entity::UserScene* scene, const std::vector<entity::Stroke*>& strokes, entity::Canvas* canvas,
+    EditEntitiesRotateCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities, entity::Canvas* canvas,
                              double theta, osg::Vec3f center, QUndoCommand* parent = 0);
-    ~EditStrokesRotateCommand() {}
+    ~EditEntitiesRotateCommand() {}
 
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
-    std::vector<entity::Stroke*> m_strokes;
+    std::vector<entity::Entity2D*> m_entities;
     osg::observer_ptr<entity::Canvas> m_canvas;
     double m_theta;
     osg::Vec3f m_center;
@@ -228,7 +168,7 @@ class EditPasteCommand : public QUndoCommand
 {
 public:
     EditPasteCommand(entity::UserScene* scene, entity::Canvas* target,
-                     const std::vector< osg::ref_ptr<entity::Stroke> >& buffer, QUndoCommand* parent=0);
+                     const std::vector< osg::ref_ptr<entity::Entity2D> >& buffer, QUndoCommand* parent=0);
     ~EditPasteCommand() {}
 
     void undo() Q_DECL_OVERRIDE;
@@ -237,15 +177,15 @@ public:
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
-    std::vector<entity::Stroke*> m_strokes;
+    std::vector<entity::Entity2D*> m_entities;
 };
 
 class EditCutCommand : public QUndoCommand
 {
 public:
     EditCutCommand(entity::UserScene* scene, entity::Canvas*  canvas,
-                   const std::vector<entity::Stroke*>& selected,
-                   std::vector< osg::ref_ptr<entity::Stroke> >& buffer, QUndoCommand* parent=0);
+                   const std::vector<entity::Entity2D*>& selected,
+                   std::vector< osg::ref_ptr<entity::Entity2D> >& buffer, QUndoCommand* parent=0);
     ~EditCutCommand() {}
 
     void undo() Q_DECL_OVERRIDE;
@@ -254,8 +194,8 @@ public:
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
-    std::vector< osg::ref_ptr<entity::Stroke> >& m_buffer;
-    const std::vector<entity::Stroke*>& m_selected;
+    std::vector< osg::ref_ptr<entity::Entity2D> >& m_buffer;
+    const std::vector<entity::Entity2D*>& m_selected;
 };
 
 class EditPhotoPushCommand : public QUndoCommand

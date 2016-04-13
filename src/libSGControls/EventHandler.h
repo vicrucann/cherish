@@ -21,10 +21,13 @@
 #include "UserScene.h"
 #include "RootScene.h"
 #include "StrokeIntersector.h"
+#include "../libGUI/GLWidget.h"
+
+class GLWidget;
 
 class EventHandler : public osgGA::GUIEventHandler {
 public:
-    EventHandler(RootScene* scene, dureu::MOUSE_MODE mode = dureu::MOUSE_SELECT_2D);
+    EventHandler(GLWidget* widget, RootScene* scene, dureu::MOUSE_MODE mode = dureu::SELECT_ENTITY);
 
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
@@ -33,8 +36,7 @@ public:
 
     void doEraseStroke(entity::Stroke *stroke, int first, int last, dureu::EVENT event = dureu::EVENT_DRAGGED);
 
-    template <typename T1, typename T2>
-    void doSelectStroke(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doSelectEntity(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     template <typename T1, typename T2>
     void doSelectCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa);
@@ -48,31 +50,20 @@ public:
     void doCanvasClone(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     template <typename T1, typename T2>
-    void doEditPhotoMove(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-
-    template <typename T1, typename T2>
     void doEditPhotoPush(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
-    void doEditStrokesMove(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-    void doEditStrokesScale(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-    void doEditStrokesRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-
-    template <typename T1, typename T2>
-    void doEditPhotoFlip(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, bool horizontal);
-
-    template <typename T1, typename T2>
-    void doEditPhotoScale(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
-
-    template <typename T1, typename T2>
-    void doEditPhotoRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doEditEntitiesMove(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doEditEntitiesScale(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doEditEntitiesRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
 protected:
     entity::Stroke* getStroke(const StrokeIntersector::Intersection& result);
     entity::Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
     entity::Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
+    dureu::MOUSE_MODE getMouseMode(const osgUtil::LineSegmentIntersector::Intersection& result) const;
 
     template <typename T1, typename T2>
-    bool getLineIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, T1& result);
+    bool getLineIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, unsigned int mask, T1& result);
 
     bool getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                                  double& u, double& v);
@@ -82,8 +73,12 @@ protected:
                                       const osg::Vec3f& axis,
                                       osg::Vec3f& P);
 
+    bool setSubSelectionType(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void setDrawableColorFromMode(osg::Drawable* draw);
+
     void finishAll();
 
+    GLWidget* m_glWidget;
     dureu::MOUSE_MODE m_mode;
     osg::observer_ptr<RootScene> m_scene;
     osg::observer_ptr<entity::Photo> m_photo;

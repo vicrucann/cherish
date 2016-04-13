@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <QColor>
+#include <QCursor>
 
 #include <osgGA/GUIEventAdapter>
 #include <osgViewer/View>
@@ -59,6 +60,8 @@ public:
     static int getPlanesIntersection(entity::Canvas* canvas1, entity::Canvas* canvas2, osg::Vec3f& iP, osg::Vec3f& u);
 
     static osg::Vec3f projectPointOnLine(const osg::Vec3f& iP, const osg::Vec3f& u, const osg::Vec3f& P);
+
+    static QCursor* getCursorFromMode(dureu::MOUSE_MODE mode);
 };
 
 #endif // UTILITIES_H

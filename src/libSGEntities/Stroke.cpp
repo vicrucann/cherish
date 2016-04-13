@@ -82,7 +82,7 @@ const osg::DrawArrays*entity::Stroke::getLines() const
     return m_lines.get();
 }
 
-void entity::Stroke::setColor(const osg::Vec4f &color)
+void entity::Stroke::setColor(const osg::Vec4f& color)
 {
     m_color = color;
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());

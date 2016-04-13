@@ -82,14 +82,10 @@ public:
     int getNumCanvases() const;
 
     void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
-    void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, dureu::EVENT event);
+    void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const osg::Vec3f& center3d, dureu::EVENT event);
     void editCanvasClone(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasDelete(QUndoStack* stack, entity::Canvas* canvas);
 
-    void editPhotoMove(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
-    void editPhotoScale(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
-    void editPhotoRotate(QUndoStack* stack, entity::Photo* photo, const double u, const double v, dureu::EVENT event);
-    void editPhotoFlip(QUndoStack* stack, entity::Photo* photo, bool horizontal);
     void editPhotoDelete(QUndoStack* stack, entity::Photo* photo);
     void editPhotoPush(QUndoStack* stack, entity::Photo* photo);
 
@@ -129,18 +125,18 @@ protected:
     void strokeFinish(QUndoStack* stack);
     bool strokeValid() const;
 
-    void strokesMoveStart(double u, double v);
-    void strokesMoveAppend(double u, double v);
-    void strokesMoveFinish(QUndoStack* stack);
-    bool strokesSelectedValid() const;
+    void entitiesMoveStart(double u, double v);
+    void entitiesMoveAppend(double u, double v);
+    void entitiesMoveFinish(QUndoStack* stack);
+    bool entitiesSelectedValid() const;
 
-    void strokesScaleStart(double u, double v);
-    void strokesScaleAppend(double u, double v);
-    void strokesScaleFinish(QUndoStack* stack);
+    void entitiesScaleStart(double u, double v);
+    void entitiesScaleAppend(double u, double v);
+    void entitiesScaleFinish(QUndoStack* stack);
 
-    void strokesRotateStart(double u, double v);
-    void strokesRotateAppend(double u, double v);
-    void strokesRotateFinish(QUndoStack* stack);
+    void entitiesRotateStart(double u, double v);
+    void entitiesRotateAppend(double u, double v);
+    void entitiesRotateFinish(QUndoStack* stack);
 
     void eraseStart(entity::Stroke* stroke, osg::Vec3d& hit);
     void eraseAppend(entity::Stroke* stroke, osg::Vec3d& hit);
@@ -158,21 +154,8 @@ protected:
     bool canvasCloneValid() const;
 
     void canvasRotateStart();
-    void canvasRotateAppend(const osg::Quat& r);
+    void canvasRotateAppend(const osg::Quat& r, const osg::Vec3f& center3d);
     void canvasRotateFinish(QUndoStack* stack);
-
-    void photoMoveStart(entity::Photo* photo);
-    void photoMoveAppend(const double u, const double v);
-    void photoMoveFinish(QUndoStack* stack, const double u, const double v);
-    bool photoEditValid() const;
-
-    void photoScaleStart(entity::Photo* photo);
-    void photoScaleAppend(double u, double v);
-    void photoScaleFinish(QUndoStack* stack, double u, double v);
-
-    void photoRotateStart(entity::Photo* photo, double u, double v);
-    void photoRotateAppend(double u, double v);
-    void photoRotateFinish(QUndoStack* stack, double u, double v);
 
 private:
     osg::ref_ptr<entity::Bookmarks> m_bookmarks;
@@ -182,14 +165,12 @@ private:
     osg::observer_ptr<entity::Canvas> m_canvasTarget; /* for push operations */
     osg::observer_ptr<entity::Canvas> m_canvasClone; /* for clone current canvas */
 
-    osg::ref_ptr<entity::ToolIntersectionLine> m_intersection; /* debug version */
-
     osg::Vec3f m_deltaT; /* for edit operations: translate */
     osg::Quat m_deltaR; /* for edit operation: rotate */
     double m_u, m_v; /* move photo */
     bool m_inits;
     double m_du, m_dv; /* move strokes */
-    double m_scale; /* scale photo */
+    double m_scaleX, m_scaleY; /* scale photo */
     double m_rotate;
     unsigned int m_idCanvas;
     unsigned int m_idPhoto;

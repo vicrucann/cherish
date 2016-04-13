@@ -35,6 +35,7 @@ EditCanvasRotateCommand::EditCanvasRotateCommand(entity::UserScene *scene, const
     , m_scene(scene)
     , m_canvas(scene->getCanvasCurrent())
     , m_rotate(rotate)
+    , m_center(m_canvas->getCenter())
 {
     this->setText(QObject::tr("Rotate %1")
                   .arg(QString(m_canvas->getName().c_str())));
@@ -50,65 +51,32 @@ void EditCanvasRotateCommand::undo()
     double angle;
     osg::Vec3d axis;
     m_rotate.getRotate(angle, axis);
-    m_canvas->rotate(osg::Matrix::rotate(-angle, axis));
+    m_canvas->rotate(osg::Matrix::rotate(-angle, axis), m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditCanvasRotateCommand::redo()
 {
-    m_canvas->rotate(osg::Matrix::rotate(m_rotate));
+    m_canvas->rotate(osg::Matrix::rotate(m_rotate), m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-
-
-EditPhotoMoveCommand::EditPhotoMoveCommand(entity::UserScene *scene, const double u, const double v, QUndoCommand *parent)
-    : QUndoCommand(parent)
-    , m_scene(scene)
-    , m_canvas(scene->getCanvasCurrent())
-    , m_photo(m_canvas->getPhotoCurrent())
-    , m_u0(m_photo->getCenter().x())
-    , m_v0(m_photo->getCenter().y())
-    , m_u1(u)
-    , m_v1(v)
-{
-    this->setText(QObject::tr("Move %1 within %2")
-                  .arg(QString(m_photo->getName().c_str()),
-                       QString(m_canvas->getName().c_str())));
-}
-
-EditPhotoMoveCommand::~EditPhotoMoveCommand()
-{
-}
-
-void EditPhotoMoveCommand::undo()
-{
-    m_photo->move(m_u0, m_v0);
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
-}
-
-void EditPhotoMoveCommand::redo()
-{
-    m_photo->move(m_u1, m_v1);
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
-}
-
-EditStrokesPushCommand::EditStrokesPushCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes,
+/* only works for strokes, any photos remain unchanged */
+EditStrokesPushCommand::EditStrokesPushCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities,
                                                entity::Canvas *current, entity::Canvas *target,
                                                const osg::Vec3f &eye,
                                                QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
-    , m_strokes(strokes)
+    , m_entities(entities)
     , m_canvasCurrent(current)
     , m_canvasTarget(target)
     , m_eye(eye)
 {
-    m_canvasCurrent->unselectStrokes();
+    m_canvasCurrent->unselectEntities();
+    m_canvasCurrent->updateFrame(m_canvasTarget.get());
     this->setText(QObject::tr("Push set of strokes from %1 to %2")
                   .arg(QString(m_canvasCurrent->getName().c_str()),
                        QString(m_canvasTarget->getName().c_str())));
@@ -134,8 +102,9 @@ void EditStrokesPushCommand::doPushStrokes(entity::Canvas& source, entity::Canva
     const osg::Plane plane = target.getPlane();
     const osg::Vec3f center = target.getCenter();
 
-    for (unsigned int i=0; i<m_strokes.size(); ++i){
-        entity::Stroke* s = m_strokes.at(i);
+    for (unsigned int i=0; i<m_entities.size(); ++i){
+        entity::Stroke* s = dynamic_cast<entity::Stroke*> (m_entities.at(i));
+        if (!s) continue;
         osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(s->getVertexArray());
         for (unsigned int j=0; j<verts->size(); ++j){
             osg::Vec3f p = (*verts)[j];
@@ -153,90 +122,6 @@ void EditStrokesPushCommand::doPushStrokes(entity::Canvas& source, entity::Canva
         s->dirtyBound();
     }
     target.updateFrame();
-}
-
-EditPhotoFlipCommand::EditPhotoFlipCommand(entity::UserScene *scene, bool horizontal, QUndoCommand *parent)
-    : QUndoCommand(parent)
-    , m_scene(scene)
-    , m_canvas(m_scene->getCanvasCurrent())
-    , m_photo(m_canvas->getPhotoCurrent())
-    , m_horizontal(horizontal)
-{
-    QString str = horizontal? "Horizontal" : "Vertical";
-    this->setText(QObject::tr("%1 Flip photo %2 within %3")
-                  .arg(str,
-                       QString(m_photo->getName().c_str()),
-                       QString(m_canvas->getName().c_str())));
-}
-
-void EditPhotoFlipCommand::undo()
-{
-    if (m_horizontal)
-        m_photo->flipH();
-    else
-        m_photo->flipV();
-    m_scene->updateWidgets();
-}
-
-void EditPhotoFlipCommand::redo()
-{
-    if (m_horizontal)
-        m_photo->flipH();
-    else
-        m_photo->flipV();
-    m_scene->updateWidgets();
-}
-
-EditPhotoScaleCommand::EditPhotoScaleCommand(entity::UserScene *scene, const double scale, QUndoCommand *parent)
-    : QUndoCommand(parent)
-    , m_scene(scene)
-    , m_canvas(scene->getCanvasCurrent())
-    , m_photo(m_canvas->getPhotoCurrent())
-    , m_scale(scale)
-{
-    this->setText(QObject::tr("Scale %1 within %2")
-                  .arg(QString(m_photo->getName().c_str()),
-                       QString(m_canvas->getName().c_str())) );
-}
-
-void EditPhotoScaleCommand::undo()
-{
-    m_photo->scale(1.f/m_scale, 1.f/m_scale, m_photo->getCenter());
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
-}
-
-void EditPhotoScaleCommand::redo()
-{
-    m_photo->scale(m_scale, m_scale, m_photo->getCenter());
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
-}
-
-EditPhotoRotateCommand::EditPhotoRotateCommand(entity::UserScene *scene, const double angle, QUndoCommand *parent)
-    : QUndoCommand(parent)
-    , m_scene(scene)
-    , m_canvas(scene->getCanvasCurrent())
-    , m_photo(m_canvas->getPhotoCurrent())
-    , m_angle(angle)
-{
-    this->setText(QObject::tr("Rotate %1 within %2")
-                  .arg(QString(m_photo->getName().c_str()),
-                       QString(m_canvas->getName().c_str())) );
-}
-
-void EditPhotoRotateCommand::undo()
-{
-    m_photo->rotate(-m_angle);
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
-}
-
-void EditPhotoRotateCommand::redo()
-{
-    m_photo->rotate(m_angle);
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
 }
 
 EditCanvasDeleteCommand::EditCanvasDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, QUndoCommand *parent)
@@ -320,10 +205,10 @@ void EditPhotoDeleteCommand::redo()
     m_scene->updateWidgets();
 }
 
-EditStrokesMoveCommand::EditStrokesMoveCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes, entity::Canvas *canvas, double du, double dv, QUndoCommand *parent)
+EditEntitiesMoveCommand::EditEntitiesMoveCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double du, double dv, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
-    , m_strokes(strokes)
+    , m_entities(entities)
     , m_canvas(canvas)
     , m_du(du)
     , m_dv(dv)
@@ -332,50 +217,51 @@ EditStrokesMoveCommand::EditStrokesMoveCommand(entity::UserScene *scene, const s
                   .arg(QString(m_canvas->getName().c_str())));
 }
 
-void EditStrokesMoveCommand::undo()
+void EditEntitiesMoveCommand::undo()
 {
-    m_canvas->moveStrokes(m_strokes, -m_du, -m_dv);
+    m_canvas->moveEntities(m_entities, -m_du, -m_dv);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-void EditStrokesMoveCommand::redo()
+void EditEntitiesMoveCommand::redo()
 {
-    m_canvas->moveStrokes(m_strokes, m_du, m_dv);
+    m_canvas->moveEntities(m_entities, m_du, m_dv);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-EditStrokesScaleCommand::EditStrokesScaleCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes, entity::Canvas *canvas, double scale, osg::Vec3f center, QUndoCommand *parent)
+EditEntitiesScaleCommand::EditEntitiesScaleCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double scaleX, double scaleY, osg::Vec3f center, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
-    , m_strokes(strokes)
+    , m_entities(entities)
     , m_canvas(canvas)
-    , m_scale(scale)
+    , m_scaleX(scaleX)
+    , m_scaleY(scaleY)
     , m_center(center)
 {
     this->setText(QObject::tr("Scale strokes within %1")
                   .arg(QString(m_canvas->getName().c_str())));
 }
 
-void EditStrokesScaleCommand::undo()
+void EditEntitiesScaleCommand::undo()
 {
-    m_canvas->scaleStrokes(m_strokes, 1/m_scale, m_center);
+    m_canvas->scaleEntities(m_entities, 1/m_scaleX, 1/m_scaleY, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-void EditStrokesScaleCommand::redo()
+void EditEntitiesScaleCommand::redo()
 {
-    m_canvas->scaleStrokes(m_strokes, m_scale, m_center);
+    m_canvas->scaleEntities(m_entities, m_scaleX, m_scaleY, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-EditStrokesRotateCommand::EditStrokesRotateCommand(entity::UserScene *scene, const std::vector<entity::Stroke *> &strokes, entity::Canvas *canvas, double theta, osg::Vec3f center, QUndoCommand *parent)
+EditEntitiesRotateCommand::EditEntitiesRotateCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double theta, osg::Vec3f center, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
-    , m_strokes(strokes)
+    , m_entities(entities)
     , m_canvas(canvas)
     , m_theta(theta)
     , m_center(center)
@@ -384,30 +270,30 @@ EditStrokesRotateCommand::EditStrokesRotateCommand(entity::UserScene *scene, con
                   .arg(QString(m_canvas->getName().c_str())));
 }
 
-void EditStrokesRotateCommand::undo()
+void EditEntitiesRotateCommand::undo()
 {
-    m_canvas->rotateStrokes(m_strokes, -m_theta, m_center);
+    m_canvas->rotateEntities(m_entities, -m_theta, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-void EditStrokesRotateCommand::redo()
+void EditEntitiesRotateCommand::redo()
 {
-    m_canvas->rotateStrokes(m_strokes, m_theta, m_center);
+    m_canvas->rotateEntities(m_entities, m_theta, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas *target, const std::vector<osg::ref_ptr<entity::Stroke> > &buffer, QUndoCommand *parent)
+EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas *target, const std::vector<osg::ref_ptr<entity::Entity2D> > &buffer, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(target)
 {
     for (size_t i=0; i<buffer.size(); ++i){
-        const entity::Stroke& copy = *buffer.at(i);
+        const entity::Stroke& copy = dynamic_cast<const entity::Stroke&> (*buffer.at(i));
         entity::Stroke* stroke = new entity::Stroke(copy, osg::CopyOp::DEEP_COPY_ALL);
         if (!stroke) continue;
-        m_strokes.push_back(stroke);
+        m_entities.push_back(stroke);
     }
 
     this->setText(QObject::tr("Paste strokes to canvas %1")
@@ -416,9 +302,9 @@ EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas *tar
 
 void EditPasteCommand::undo()
 {
-    m_canvas->unselectStrokes();
-    for (size_t i=0; i<m_strokes.size();++i){
-        m_canvas->getGeodeData()->removeDrawable(m_strokes.at(i));
+    m_canvas->unselectEntities();
+    for (size_t i=0; i<m_entities.size();++i){
+        m_canvas->getGeodeData()->removeDrawable(m_entities.at(i));
     }
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
@@ -426,21 +312,21 @@ void EditPasteCommand::undo()
 
 void EditPasteCommand::redo()
 {
-    m_canvas->unselectStrokes();
-    for (size_t i=0; i<m_strokes.size(); ++i){
-        entity::Stroke* stroke = m_strokes.at(i);
-        if (!stroke) continue;
-        stroke->moveDelta(0.2, 0.2);
-        m_canvas->getGeodeData()->addDrawable(stroke);
-        m_canvas->addStrokesSelected(stroke);
+    m_canvas->unselectEntities();
+    for (size_t i=0; i<m_entities.size(); ++i){
+        entity::Entity2D* entity = m_entities.at(i);
+        if (!entity) continue;
+        entity->moveDelta(0.2, 0.2);
+        m_canvas->getGeodeData()->addDrawable(entity);
+        m_canvas->addEntitySelected(entity);
     }
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 EditCutCommand::EditCutCommand(entity::UserScene* scene, entity::Canvas*  canvas,
-                               const std::vector<entity::Stroke*>& selected,
-                               std::vector< osg::ref_ptr<entity::Stroke> >& buffer, QUndoCommand* parent)
+                               const std::vector<entity::Entity2D *> &selected,
+                               std::vector<osg::ref_ptr<entity::Entity2D> > &buffer, QUndoCommand* parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(canvas)
@@ -455,10 +341,10 @@ void EditCutCommand::undo()
 {
     m_scene->setCanvasCurrent(m_canvas.get());
     for (size_t i=0; i<m_buffer.size(); ++i){
-        entity::Stroke* stroke = m_buffer.at(i);
-        if (!stroke) continue;
-        m_canvas->getGeodeData()->addDrawable(stroke);
-        m_canvas->addStrokesSelected(stroke);
+        entity::Entity2D* entity = m_buffer.at(i).get();
+        if (!entity) continue;
+        m_canvas->getGeodeData()->addDrawable(entity);
+        m_canvas->addEntitySelected(entity);
     }
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
@@ -467,7 +353,7 @@ void EditCutCommand::undo()
 void EditCutCommand::redo()
 {
     for (size_t i=0; i<m_selected.size(); ++i){
-        entity::Stroke* stroke = m_selected.at(i);
+        entity::Stroke* stroke = dynamic_cast<entity::Stroke*> ( m_selected.at(i));
         if (!stroke) continue;
         m_buffer.push_back(stroke);
     }

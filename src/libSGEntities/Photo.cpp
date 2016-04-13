@@ -17,6 +17,7 @@ entity::Photo::Photo()
     , m_edit(false)
 {
     outLogMsg("New Photo ctor complete");
+    this->setName("Photo");
 }
 
 entity::Photo::Photo(const entity::Photo& photo, const osg::CopyOp& copyop)
@@ -136,7 +137,7 @@ void entity::Photo::setFrameColor(const osg::Vec4 color)
 void entity::Photo::setModeEdit(bool edit)
 {
     if (edit)
-        this->setFrameColor(dureu::CANVAS_CLR_EDIT);
+        this->setFrameColor(dureu::PHOTO_CLR_SELECTED);
     else
         this->setFrameColor(dureu::PHOTO_CLR_REST);
     m_edit = edit;
@@ -218,7 +219,29 @@ void entity::Photo::scale(double scaleX, double scaleY, osg::Vec3f center)
     m_width *= scaleX;
     m_height *= scaleY;
     m_center = center;
+
+//    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+//    for (unsigned int i=0; i<verts->size(); ++i){
+//        osg::Vec3f vi = (*verts)[i] - center;
+//        (*verts)[i] = center + osg::Vec3f(scaleX*vi.x(), scaleY*vi.y(), 0);
+//    }
+//    this->dirtyDisplayList();
+//    this->dirtyBound();
+
     this->updateVertices();
+}
+
+void entity::Photo::setColor(const osg::Vec4f &color)
+{
+    outLogMsg("photo color resetting");
+    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+    if (color != dureu::STROKE_CLR_NORMAL)
+        (*colors)[0] = color;
+    else
+        (*colors)[0] = dureu::PHOTO_CLR_REST;
+    colors->dirty();
+    this->dirtyDisplayList();
+    this->dirtyBound();
 }
 
 dureu::ENTITY_TYPE entity::Photo::getEntityType() const

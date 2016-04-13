@@ -101,8 +101,10 @@ public:
 
     static const QPixmap& sceneCanvasOffsetCursor();
     static const QPixmap& sceneCanvasRotateCursor();
+    static const QPixmap& sceneCanvasCloneCursor();
 
     static const QPixmap& sceneSelectPixmap();
+    static const QPixmap& sceneSelect3DPixmap();
     static const QPixmap& sceneSketchPixmap();
     static const QPixmap& sceneEraserPixmap();
     static const QPixmap& sceneImageFlipHPixmap();

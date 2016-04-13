@@ -19,6 +19,7 @@
 #include "CameraProperties.h"
 #include "Settings.h"
 #include "Data.h"
+#include "Utilities.h"
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
@@ -116,7 +117,7 @@ void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) 
 }
 
 void MainWindow::getTabletActivity(bool active){
-    emit sendTabletActivity(active);
+    emit signalTabletActivity(active);
 }
 
 void MainWindow::recievedRequestUpdate()
@@ -127,13 +128,13 @@ void MainWindow::recievedRequestUpdate()
 void MainWindow::recieveAutoSwitchMode(dureu::MOUSE_MODE mode)
 {
     switch (mode){
-    case dureu::MOUSE_SELECT_2D:
+    case dureu::SELECT_ENTITY:
         emit this->onSketch();
         break;
-    case dureu::MOUSE_SKETCH:
+    case dureu::PEN_SKETCH:
         emit this->onCameraOrbit();
         break;
-    case dureu::MOUSE_ORBIT:
+    case dureu::CAMERA_ORBIT:
         emit this->onSelect();
         break;
     default:
@@ -222,6 +223,12 @@ void MainWindow::onBookmarkRemovedFromWidget(const QModelIndex &, int first, int
     m_rootScene->deleteBookmarkTool(first, last);
 }
 
+void MainWindow::slotMouseModeSet(dureu::MOUSE_MODE mode)
+{
+    QCursor* cur = Utilities::getCursorFromMode(mode);
+    if (cur) m_mdiArea->setCursor(*cur);
+}
+
 /* Create an ordinary single view window on the scene _root
  * To create outside viewer, use:
  * GLWidget* vwid = createViewer(Qt::Window);
@@ -264,17 +271,16 @@ void MainWindow::onFileOpen()
 
     QString fname = QFileDialog::getOpenFileName(this, tr("Open a scene from file"),
                                                  QString(), tr("OSG files (*.osg *.osgt)"));
-    if (fname.isEmpty()){
-        QMessageBox::critical(this, tr("Error"), tr("Could not obtain a file name"));
-        return;
+    if (!fname.isEmpty()){
+        m_rootScene->setFilePath(fname.toStdString());
+        if (!m_rootScene->loadSceneFromFile()){
+            QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
+            m_rootScene->setFilePath("");
+        }
+        else
+            this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
     }
-    m_rootScene->setFilePath(fname.toStdString());
-    if (!m_rootScene->loadSceneFromFile()){
-        QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
-        m_rootScene->setFilePath("");
-    }
-    else
-        this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
+
     m_glWidget->update();
     this->initializeCallbacks();
     m_rootScene->resetBookmarks(m_bookmarkWidget);
@@ -409,24 +415,15 @@ void MainWindow::onTools()
 }
 
 void MainWindow::onCameraOrbit(){
-    QCursor* cur = new QCursor(Data::sceneOrbitPixmap(), 0, 0);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_ORBIT);
-    this->statusBar()->showMessage(tr("Camera orbit mode."));
+    m_glWidget->setMouseMode(dureu::CAMERA_ORBIT);
 }
 
 void MainWindow::onCameraZoom(){
-    QCursor* cur = new QCursor(Data::sceneZoomPixmap(), 0, 0);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_ZOOM);
-    this->statusBar()->showMessage(tr("Camera zoom mode."));
+    m_glWidget->setMouseMode(dureu::CAMERA_ZOOM);
 }
 
 void MainWindow::onCameraPan(){
-    QCursor* cur = new QCursor(Data::scenePanPixmap(), 0, 0);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_PAN);
-    this->statusBar()->showMessage(tr("Camera pan mode."));
+    m_glWidget->setMouseMode(dureu::CAMERA_PAN);
 }
 
 void MainWindow::onCameraAperture()
@@ -437,54 +434,31 @@ void MainWindow::onCameraAperture()
 }
 
 void MainWindow::onSelect(){
-
-    QCursor* cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_SELECT_2D);
-    this->statusBar()->showMessage(tr("Select mode is on: helps to select entities within current canvas; "
-                                      "To select strokes within CURRENT canvas, "
-                                      "use left mouse click and drag. "
-                                      "Click again to deselect all the strokes. Press <Ctrl> and hold to add more strokes to already selected strokes."));
+    m_glWidget->setMouseMode(dureu::SELECT_ENTITY);
 }
 
 void MainWindow::onErase()
 {
-    QCursor* cur = new QCursor(Data::sceneEraserPixmap(), -1, -1);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_ERASE);
-    this->statusBar()->showMessage(tr("This functionality does not exist yet."));
+    m_glWidget->setMouseMode(dureu::PEN_ERASE);
 }
 
 void MainWindow::onDelete()
 {
-    QCursor* cur = new QCursor(Data::editDeleteCursor(), 0, 0);
-    m_mdiArea->setCursor(*cur);
-    this->statusBar()->showMessage(tr("Delete mode is on: helps to delete entities within current canvas; "
-                                      "to delete stroke, left mouse click and drag; "
-                                      "to delete photo, use right mouse click. "));
-    emit sendMouseMode(dureu::MOUSE_DELETE);
+    m_glWidget->setMouseMode(dureu::PEN_DELETE);
 }
 
 void MainWindow::onSketch()
 {
-    QCursor* cur = new QCursor(Data::sceneSketchPixmap(), 0, Data::sceneSketchPixmap().height());
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_SKETCH);
-    this->statusBar()->showMessage(tr("Pressure defines a strokes. Press and drag to create new stroke."
-                                      "Release when finished."));
+    m_glWidget->setMouseMode(dureu::PEN_SKETCH);
 }
 
 void MainWindow::onNewCanvasClone()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
-    emit sendMouseMode(dureu::MOUSE_CANVAS_CLONE);
-    this->statusBar()->showMessage(tr("Click to start displaying the position of clonned canvas, drag the new position "
-                                      "and release to fixate the position."));
+    m_glWidget->setMouseMode(dureu::CREATE_CANVASCLONE);
 }
 
 void MainWindow::onNewCanvasXY()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::identity(), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
@@ -492,7 +466,6 @@ void MainWindow::onNewCanvasXY()
 
 void MainWindow::onNewCanvasYZ()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
@@ -500,7 +473,6 @@ void MainWindow::onNewCanvasYZ()
 
 void MainWindow::onNewCanvasXZ()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
@@ -516,7 +488,6 @@ void MainWindow::onNewCanvasOrtho()
 
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas perpendicular to previous was created"));
-
 }
 
 void MainWindow::onNewCanvasStandard()
@@ -533,92 +504,62 @@ void MainWindow::onNewCanvasStandard()
 
 void MainWindow::onNewCanvasCoaxial()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
     this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
 void MainWindow::onNewCanvasParallel()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
     this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
 void MainWindow::onNewCanvasRing()
 {
-    m_mdiArea->setCursor(Qt::ArrowCursor);
     this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
 void MainWindow::onCanvasOffset()
 {
-    QCursor* cur = new QCursor(Data::sceneCanvasOffsetCursor(), -1, -1);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_CANVAS_OFFSET);
-    this->statusBar()->showMessage(tr("For canvas offset, use mouse and drap and drop to desired position"));
+    m_glWidget->setMouseMode(dureu::CANVAS_OFFSET);
 }
 
 void MainWindow::onCanvasRotate()
 {
-    QCursor* cur = new QCursor(Data::sceneCanvasRotateCursor(), -1, -1);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_CANVAS_ROTATE);
-    this->statusBar()->showMessage(tr("To switch the axis of rotation: press 'u' for local X-axis(orange), "
-                                      "and 'v' for local Y-axis(yellow)"));
+    m_glWidget->setMouseMode(dureu::CANVAS_ROTATE);
 }
 
 void MainWindow::onImageMove()
 {
-    QCursor* cur = new QCursor(Data::sceneImageMovePixmap(), -1, -1);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_ENTITY_MOVE);
-    this->statusBar()->showMessage(tr("To move image, click on it first, and then drag to desired position. "
-                                      "To move set of strokes, select them first, then perform move as for image."));
+    m_glWidget->setMouseMode(dureu::ENTITY_MOVE);
 }
 
 void MainWindow::onImageRotate()
 {
-    QCursor* cur = new QCursor(Data::sceneImageRotatePixmap(), -1, -1);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_ENTITY_ROTATE);
-    this->statusBar()->showMessage(tr("To rotate image, click on it and drag it til it rotates to desired angle"
-                                      "To rotate set of strokes, select them first, then perform rotate as for image."));
+    m_glWidget->setMouseMode(dureu::ENTITY_ROTATE);
 }
 
 void MainWindow::onImageScale()
 {
-    QCursor* cur = new QCursor(Data::sceneImageScalePixmap(), 0, 0);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_ENTITY_SCALE);
-    this->statusBar()->showMessage(tr("To scale image, clock on it, and then drag to get the desired size"
-                                      "To scale set of strokes, select them first, then perform scale as for image."));
+    m_glWidget->setMouseMode(dureu::ENTITY_SCALE);
 }
 
 void MainWindow::onImageFlipH()
 {
-    QCursor* cur = new QCursor(Data::sceneImageFlipHPixmap(), -1, -1);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_PHOTO_FLIPH);
-    this->statusBar()->showMessage(tr("To perform a horizontal flip, click on the image to flip."));
+    m_glWidget->setMouseMode(dureu::ENTITY_FLIPH);
 }
 
 void MainWindow::onImageFlipV()
 {
-    QCursor* cur = new QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
-    m_mdiArea->setCursor(*cur);
-    emit sendMouseMode(dureu::MOUSE_PHOTO_FLIPV);
-    this->statusBar()->showMessage(tr("To perform the vertical flip, click on the image to flip"));
+    m_glWidget->setMouseMode(dureu::ENTITY_FLIPV);
 }
 
 void MainWindow::onImagePush()
 {
-    m_mdiArea->setCursor(Qt::CrossCursor);
-    emit sendMouseMode(dureu::MOUSE_PHOTO_PUSH);
-    this->statusBar()->showMessage(tr("Click on image, and it will be moved from current to previous canvas."));
+    this->statusBar()->showMessage(tr("This functionality is turned off temporarly."));
+    //m_glWidget->setMouseMode(dureu::PHOTO_PUSH);
 }
 
 void MainWindow::onStrokesPush()
 {
-    m_mdiArea->setCursor(Qt::CrossCursor);
     osg::Camera* camera = m_glWidget->getCamera();
     if (!camera)
     {
@@ -641,9 +582,9 @@ void MainWindow::onBookmark()
 /*GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
 {
     GLWidget* vwid = new GLWidget(m_rootScene.get(), this, f);
-    QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
+    QObject::connect(this, SIGNAL(signalTabletActivity(bool)),
                      vwid, SLOT(getTabletActivity(bool)));
-    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)),
+    QObject::connect(this, SIGNAL(signalMouseMode(dureu::MOUSE_MODE)),
                      vwid, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
     return vwid;
 }*/
@@ -780,20 +721,20 @@ void MainWindow::initializeActions()
     m_actionCanvasRotate = new QAction(Data::sceneCanvasRotateIcon(), tr("Rotate Canvas"), this);
     this->connect(m_actionCanvasRotate, SIGNAL(triggered(bool)), this, SLOT(onCanvasRotate()));
 
-    m_actionImageMove = new QAction(Data::sceneImageMoveIcon(), tr("Move Image"), this);
-    this->connect(m_actionImageMove, SIGNAL(triggered(bool)), this, SLOT(onImageMove()));
+//    m_actionImageMove = new QAction(Data::sceneImageMoveIcon(), tr("Move Image"), this);
+//    this->connect(m_actionImageMove, SIGNAL(triggered(bool)), this, SLOT(onImageMove()));
 
-    m_actionImageRotate = new QAction(Data::sceneImageRotateIcon(), tr("Rotate Image"), this);
-    this->connect(m_actionImageRotate, SIGNAL(triggered(bool)), this, SLOT(onImageRotate()));
+//    m_actionImageRotate = new QAction(Data::sceneImageRotateIcon(), tr("Rotate Image"), this);
+//    this->connect(m_actionImageRotate, SIGNAL(triggered(bool)), this, SLOT(onImageRotate()));
 
-    m_actionImageScale = new QAction(Data::sceneImageScaleIcon(), tr("Scale Image"), this);
-    this->connect(m_actionImageScale, SIGNAL(triggered(bool)), this, SLOT(onImageScale()));
+//    m_actionImageScale = new QAction(Data::sceneImageScaleIcon(), tr("Scale Image"), this);
+//    this->connect(m_actionImageScale, SIGNAL(triggered(bool)), this, SLOT(onImageScale()));
 
-    m_actionImageFlipV = new QAction(Data::sceneImageFlipVIcon(), tr("Flip Image"), this);
-    this->connect(m_actionImageFlipV, SIGNAL(triggered(bool)), this, SLOT(onImageFlipV()));
+//    m_actionImageFlipV = new QAction(Data::sceneImageFlipVIcon(), tr("Flip Image"), this);
+//    this->connect(m_actionImageFlipV, SIGNAL(triggered(bool)), this, SLOT(onImageFlipV()));
 
-    m_actionImageFlipH = new QAction(Data::sceneImageFlipHIcon(), tr("Flip Image"), this);
-    this->connect(m_actionImageFlipH, SIGNAL(triggered(bool)), this, SLOT(onImageFlipH()));
+//    m_actionImageFlipH = new QAction(Data::sceneImageFlipHIcon(), tr("Flip Image"), this);
+//    this->connect(m_actionImageFlipH, SIGNAL(triggered(bool)), this, SLOT(onImageFlipH()));
 
     m_actionImagePush = new QAction(Data::sceneImagePushIcon(), tr("Move image from current to previous canvas"), this);
     this->connect(m_actionImagePush, SIGNAL(triggered(bool)), this, SLOT(onImagePush()));
@@ -866,11 +807,11 @@ void MainWindow::initializeMenus()
     submenuEC->addAction(m_actionCanvasOffset);
     submenuEC->addAction(m_actionCanvasRotate);
     QMenu* submenuEI = menuScene->addMenu("Edit Image");
-    submenuEI->addAction(m_actionImageMove);
-    submenuEI->addAction(m_actionImageRotate);
-    submenuEI->addAction(m_actionImageScale);
-    submenuEI->addAction(m_actionImageFlipH);
-    submenuEI->addAction(m_actionImageFlipV);
+//    submenuEI->addAction(m_actionImageMove);
+//    submenuEI->addAction(m_actionImageRotate);
+//    submenuEI->addAction(m_actionImageScale);
+//    submenuEI->addAction(m_actionImageFlipH);
+//    submenuEI->addAction(m_actionImageFlipV);
     submenuEI->addAction(m_actionImagePush);
     QMenu* submenuES = menuScene->addMenu("Edit Strokes");
     submenuES->addAction(m_actionStrokesPush);
@@ -947,11 +888,11 @@ void MainWindow::initializeToolbars()
     tbEntity->addAction(m_actionCanvasOffset);
     tbEntity->addAction(m_actionCanvasRotate);
     tbEntity->addSeparator();
-    tbEntity->addAction(m_actionImageMove);
-    tbEntity->addAction(m_actionImageRotate);
-    tbEntity->addAction(m_actionImageScale);
-    tbEntity->addAction(m_actionImageFlipH);
-    tbEntity->addAction(m_actionImageFlipV);
+//    tbEntity->addAction(m_actionImageMove);
+//    tbEntity->addAction(m_actionImageRotate);
+//    tbEntity->addAction(m_actionImageScale);
+//    tbEntity->addAction(m_actionImageFlipH);
+//    tbEntity->addAction(m_actionImageFlipV);
     tbEntity->addAction(m_actionImagePush);
     tbEntity->addSeparator();
     tbEntity->addAction(m_actionStrokesPush);
@@ -972,12 +913,12 @@ void MainWindow::initializeToolbars()
 void MainWindow::initializeCallbacks()
 {
     /* connect MainWindow with GLWidget */
-    QObject::connect(this, SIGNAL(sendTabletActivity(bool)),
+    QObject::connect(this, SIGNAL(signalTabletActivity(bool)),
                      m_glWidget, SLOT(getTabletActivity(bool)),
                      Qt::UniqueConnection);
 
-    QObject::connect(this, SIGNAL(sendMouseMode(dureu::MOUSE_MODE)),
-                     m_glWidget, SLOT(recieveMouseMode(dureu::MOUSE_MODE)),
+    QObject::connect(m_glWidget, SIGNAL(signalMouseModeSet(dureu::MOUSE_MODE)),
+                     this, SLOT(slotMouseModeSet(dureu::MOUSE_MODE)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(dureu::MOUSE_MODE)),

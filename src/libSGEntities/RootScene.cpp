@@ -78,8 +78,6 @@ void RootScene::setToolsVisibility(bool vis)
         if (!cnv)
             continue;
         cnv->setVisibilityFrame(vis);
-        if (cnv == this->getCanvasCurrent())
-            cnv->setVisibilityLocalAxis(vis);
     }
 }
 
@@ -327,9 +325,9 @@ void RootScene::editCanvasOffset(const osg::Vec3f& translate, dureu::EVENT event
     m_saved = false;
 }
 
-void RootScene::editCanvasRotate(const osg::Quat &rotation, dureu::EVENT event)
+void RootScene::editCanvasRotate(const osg::Quat &rotation, const osg::Vec3f &center3d, dureu::EVENT event)
 {
-    m_userScene->editCanvasRotate(m_undoStack, rotation, event);
+    m_userScene->editCanvasRotate(m_undoStack, rotation, center3d, event);
     m_saved = false;
 }
 
@@ -342,30 +340,6 @@ void RootScene::editCanvasClone(const osg::Vec3f &translate, dureu::EVENT event)
 void RootScene::editCanvasDelete(entity::Canvas *canvas)
 {
     m_userScene->editCanvasDelete(m_undoStack, canvas);
-}
-
-void RootScene::editPhotoMove(entity::Photo *photo, const double u, const double v, dureu::EVENT event)
-{
-    m_userScene->editPhotoMove(m_undoStack, photo, u, v, event);
-    m_saved = false;
-}
-
-void RootScene::editPhotoScale(entity::Photo *photo, const double u, const double v, dureu::EVENT event)
-{
-    m_userScene->editPhotoScale(m_undoStack, photo, u, v, event);
-    m_saved = false;
-}
-
-void RootScene::editPhotoRotate(entity::Photo *photo, const double u, const double v, dureu::EVENT event)
-{
-    m_userScene->editPhotoRotate(m_undoStack, photo, u, v, event);
-    m_saved = false;
-}
-
-void RootScene::editPhotoFlip(entity::Photo *photo, bool horizontal)
-{
-    m_userScene->editPhotoFlip(m_undoStack, photo, horizontal);
-    m_saved = false;
 }
 
 void RootScene::editPhotoDelete(entity::Photo *photo)
@@ -416,11 +390,11 @@ void RootScene::copyToBuffer()
     m_buffer.clear();
     if (!m_userScene->getCanvasCurrent()) return;
 
-    const std::vector<entity::Stroke*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
+    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
     if (selected.size()==0) return;
 
     for (size_t i=0; i<selected.size(); ++i){
-        const entity::Stroke& copy = *selected.at(i);
+        const entity::Stroke& copy = dynamic_cast<const entity::Stroke&>( *selected.at(i));
         entity::Stroke* stroke = new entity::Stroke(copy, osg::CopyOp::DEEP_COPY_ALL);
         if (!stroke) continue;
         m_buffer.push_back(stroke);
@@ -432,7 +406,7 @@ void RootScene::cutToBuffer()
 {
     m_buffer.clear();
     if (!m_userScene->getCanvasCurrent()) return;
-    const std::vector<entity::Stroke*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
+    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
     if (selected.size()==0) return;
 
     EditCutCommand* cmd = new EditCutCommand(m_userScene.get(), this->getCanvasCurrent(),

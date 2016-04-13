@@ -83,25 +83,36 @@ enum APPMODE{
 };
 
 enum MOUSE_MODE
-{     MOUSE_SELECT_2D // for selection and delete
-      , MOUSE_SELECT_3D // sub mode when user presses and holds CTRL
-      , MOUSE_SKETCH // to draw strokes and 2D geometric shapes
-      , MOUSE_CANVAS_OFFSET
-      , MOUSE_CANVAS_ROTATE
-      , MOUSE_CANVAS_CLONE
-      , MOUSE_ENTITY_MOVE
-      , MOUSE_PHOTO_FLIPH
-      , MOUSE_PHOTO_FLIPV
-      , MOUSE_PHOTO_PUSH
-      , MOUSE_ENTITY_SCALE
-      , MOUSE_ENTITY_ROTATE
-      , MOUSE_BOOKMARK // create bookmark (take a snapshot of a selected viewer)
-      , MOUSE_ERASE // deletes entyties from scene
-      , MOUSE_DELETE // remove the selected element completely (photo or canvas)
-      , MOUSE_ORBIT
-      , MOUSE_ZOOM
-      , MOUSE_PAN
-      , MOUSE_FIXEDVIEW
+{
+    MOUSE_PEN = 0x000,
+    PEN_SKETCH,
+    PEN_ERASE,
+    PEN_DELETE,
+
+    MOUSE_SELECT = 0x100,
+    SELECT_ENTITY = 0x110,
+    ENTITY_MOVE,
+    ENTITY_SCALE,
+    ENTITY_ROTATE,
+    ENTITY_FLIPH,
+    ENTITY_FLIPV,
+    PHOTO_PUSH,
+    SELECT_CANVAS = 0x120,
+    CANVAS_OFFSET,
+    CANVAS_ROTATE,
+
+    MOUSE_CAMERA = 0x200,
+    CAMERA_ORBIT,
+    CAMERA_ZOOM,
+    CAMERA_PAN,
+    CAMERA_FIXEDVIEW,
+
+    MOUSE_CREATE = 0x300,
+    CREATE_CANVASCLONE,
+
+    maskMouse = 0xff00,
+    maskEntity = 0xff0,
+    maskAction = 0xf,
 };
 
 enum EVENT {
@@ -109,6 +120,13 @@ enum EVENT {
     EVENT_PRESSED,
     EVENT_DRAGGED,
     EVENT_RELEASED
+};
+
+enum TraversalMask{
+    MASK_CANVAS_IN = 0x110,
+    MASK_CANVAS_OUT = 0x001,
+    MASK_CANVASDATA_IN = 0x010,
+    MASK_CANVASFRAME_IN = 0x100,
 };
 
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;
@@ -140,7 +158,10 @@ const float CANVAS_MINW = 1.2f; // half width
 const float CANVAS_MINH = 1.0f; // half height
 const float CANVAS_MINB = 0.1f; // bound
 const float CANVAS_CORNER = 0.3f; // corner size
+const float CANVAS_EDITQUAD = CANVAS_CORNER/5;
+const float CANVAS_EDITSLACK = CANVAS_CORNER + 0.1;
 const float CANVAS_AXIS = 0.5f; // loxal axis size
+const float CANVAS_EDITAXIS = CANVAS_AXIS*0.5;
 const float CANVAS_LINE_WIDTH = 1.5f;
 
 const float PHOTO_MINW = 1; // half width

@@ -70,5 +70,6 @@
         <file>control-images-24px.svg</file>
         <file>scene-newcanvas-ortho-24px.svg</file>
         <file>file-export-24px.svg</file>
+        <file>scene-select3d-24px.svg</file>
     </qresource>
 </RCC>

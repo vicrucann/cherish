@@ -25,14 +25,10 @@ entity::Canvas::Canvas()
     , m_switch(new osg::Switch)
     , m_geodeData(new osg::Geode)
 
-    , m_toolNormal(new entity::ToolNormal)
-    , m_toolAxis(new entity::ToolAxisLocal)
-    , m_toolFrame(new entity::ToolFrame)
+    , m_toolFrame(new entity::FrameTool)
 
     , m_strokeCurrent(0)
-    , m_strokesSelected(0)
-    , m_strokeSelected(0)
-    , m_photoCurrent(0)
+//    , m_selectedGroup(0)
 
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
     , m_normal(dureu::NORMAL)
@@ -56,6 +52,11 @@ entity::Canvas::Canvas()
     m_transform->setName("Transform");
     m_switch->setName("Switch");
 
+    /*  set traversal masks */
+    this->setNodeMask(dureu::MASK_CANVAS_IN);
+    m_geodeData->setNodeMask(dureu::MASK_CANVASDATA_IN);
+    m_toolFrame->setNodeMask(dureu::MASK_CANVASFRAME_IN);
+
     outLogMsg("New Canvas ctor complete");
 }
 
@@ -67,20 +68,20 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_switch(cnv.m_switch)
     , m_geodeData(cnv.m_geodeData)
 
-    , m_toolNormal(cnv.m_toolNormal)
-    , m_toolAxis(cnv.m_toolAxis)
     , m_toolFrame(cnv.m_toolFrame)
 
     , m_strokeCurrent(0)
-    , m_strokesSelected(0)
-    , m_strokeSelected(0)
-    , m_photoCurrent(0)
+//    , m_selectedGroup(0)
 
     , m_center(cnv.m_center)
     , m_normal(cnv.m_normal)
     , m_edit(cnv.m_edit)
     , m_rotaxis(osg::Vec3f(0.f, 1.f, 0.f))
 {
+    this->setNodeMask(dureu::MASK_CANVAS_IN);
+    m_geodeData->setNodeMask(dureu::MASK_CANVASDATA_IN);
+    m_toolFrame->setNodeMask(dureu::MASK_CANVASFRAME_IN);
+
     outLogMsg("new Canvas by copy ctor complete");
 }
 
@@ -90,37 +91,13 @@ void entity::Canvas::initializeTools()
     if (m_switch->getNumChildren() == 0){
         outLogMsg("  from scratch");
         m_switch->addChild(m_toolFrame, true);
-        m_switch->addChild(m_toolAxis, true);
-        m_switch->addChild(m_toolNormal, false);
         outLogMsg("canvas tools added");
     }
     /* remove all but geode data */
-    else if (m_switch->getNumChildren() == 4 || m_switch->getNumChildren() == 3 ){
-
-        osg::Node* tnn = this->getTool("groupNormal");
-        if (tnn) m_switch->replaceChild(tnn, m_toolNormal);
-        else {
-            outErrMsg("normal node is null, trying to fix manually...");
-            if (m_switch->getChild(2))
-                m_switch->replaceChild(m_switch->getChild(0), m_toolNormal);
-        }
-
-        osg::Node* tan = this->getTool("groupAxisLocal");
-        if (tan) m_switch->replaceChild(tan, m_toolAxis);
-        else {
-            outErrMsg("axis node is null, trying to fix manually...");
-            if (m_switch->getChild(1))
-                m_switch->replaceChild(m_switch->getChild(1), m_toolAxis);
-        }
-
+    else if (m_switch->getNumChildren() >=1 && m_switch->getNumChildren() <= 4 ){
         osg::Node* tfn = this->getTool("groupFrame");
         if (tfn) m_switch->replaceChild(tfn, m_toolFrame);
-        else{
-            outErrMsg("framel node is null, trying to fix manually...");
-            if (m_switch->getChild(0))
-                m_switch->replaceChild(m_switch->getChild(2), m_toolFrame);
-        }
-
+        else outErrMsg("frame node is null, construction tools are not initialized");
         this->updateFrame();
     }
     else
@@ -235,13 +212,6 @@ const osg::Vec3f& entity::Canvas::getNormal() const
 
 void entity::Canvas::setColor(const osg::Vec4f &color)
 {
-    if (color == dureu::CANVAS_CLR_CURRENT){
-        if (this->getVisibility())
-            this->setVisibilityLocalAxis(true);
-    }
-    else
-        this->setVisibilityLocalAxis(false);
-
     m_toolFrame->setColor(color);
 }
 
@@ -263,28 +233,17 @@ const osg::Vec3f &entity::Canvas::getRotationAxis() const
 
 void entity::Canvas::setVisibilityFrame(bool vis)
 {
-    m_switch->setChildValue(m_toolFrame, vis);
+    m_toolFrame->setVisibility(vis);
 }
 
 bool entity::Canvas::getVisibility() const{
-    return m_switch->getChildValue(m_toolFrame);
-}
-
-void entity::Canvas::setVisibilityLocalAxis(bool vis)
-{
-    m_switch->setChildValue(m_toolAxis, vis);
-}
-
-bool entity::Canvas::getVisibilityLocalAxis() const
-{
-    return m_switch->getChildValue(m_toolAxis);
+    return m_toolFrame->getVisibility();
 }
 
 void entity::Canvas::setVisibilityAll(bool vis)
 {
     m_switch->setChildValue(m_geodeData, vis);
     this->setVisibilityFrame(vis);
-    this->setVisibilityLocalAxis(vis);
 }
 
 bool entity::Canvas::getVisibilityData() const
@@ -318,6 +277,11 @@ osg::Vec3f entity::Canvas::getGlobalAxisV() const
     return M * v_loc;
 }
 
+osg::Geometry *entity::Canvas::getGeometryPickable() const
+{
+    return m_toolFrame->getPickable();
+}
+
 // translates the current params on mt matrix
 void entity::Canvas::translate(const osg::Matrix& mt)
 {
@@ -329,37 +293,75 @@ void entity::Canvas::translate(const osg::Matrix& mt)
     this->updateTransforms();
 }
 
-// rotates the current params on mr matrix
-void entity::Canvas::rotate(const osg::Matrix& mr)
+// rotates the current params on mr matrix around point c2d_new which is given
+// in local canvas coordinates (basically, center of bounding box of geodeData)
+void entity::Canvas::rotate(const osg::Matrix& mr, const osg::Vec3f &c3d_new)
 {
     if (mr.isNaN()){
         outErrMsg("canvas-rotate: matrix is NAN");
         return;
     }
+    /* first perform transform so that rotation would be perform around the center */
+    osg::Matrix M = m_transform->getMatrix();
+    osg::Matrix invM;
+    if (!invM.invert(M)){
+        outErrMsg("canvas rotate: could not invert matrix");
+        return;
+    }
+    osg::Vec3f c2d_new = c3d_new * invM;
+    osg::Vec3f c2d_old = m_center * invM;
+    if (m_center != c3d_new){
+        if (std::fabs(c2d_old.z()) > dureu::EPSILON){
+            outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
+            return;
+        }
+        if (std::fabs(c2d_new.z()) > dureu::EPSILON){
+            outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
+            return;
+        }
+        /* move every child back in local delta translation (diff between old and new centers) */
+        osg::Vec3f delta2d = c2d_old - c2d_new;
+        for (size_t i=0; i<m_geodeData->getNumChildren(); ++i){
+            entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
+            if (!entity){
+                outErrMsg("rotate canvas: could not dynamic_cast to Entity2D*");
+                return;
+            }
+            entity->moveDelta(delta2d.x(), delta2d.y());
+        }
+
+        /* new global center coordinate and delta translate in 3D */
+        osg::Vec3f delta3d = c3d_new - m_center;
+        /* move whole canvas and its drawables to be positioned at new global center */
+        this->translate(osg::Matrix::translate(delta3d.x(), delta3d.y(), delta3d.z()));
+    }
+
+    /* now rotate the canvas */
     m_mR = m_mR * mr;
     this->updateTransforms();
 }
 
 void entity::Canvas::unselectAll()
 {
-    this->setPhotoCurrent(false);
     this->setStrokeCurrent(false);
-    this->unselectStrokes();
+    this->unselectEntities();
 }
 
-void entity::Canvas::unselectStrokes()
+void entity::Canvas::unselectEntities()
 {
-    this->resetStrokesSelected();
+    m_selectedGroup.resetAll();
 }
 
 void entity::Canvas::selectAllStrokes()
 {
-    this->resetStrokesSelected();
-    for (unsigned int i = 0; i < m_geodeData->getNumChildren(); ++i){
-        entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_geodeData->getChild(i));
-        if (!stroke)
-            continue;
-        this->addStrokesSelected(stroke);
+    this->unselectEntities();
+    for (unsigned int i = 0; i < m_geodeData->getNumChildren(); i++){
+        entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
+        if (!entity) continue;
+        this->addEntitySelected(entity);
+//        entity::Entity2D* entity = dynamic_cast<entity::Entity2D>(m_geodeData->getChild(i));
+//        if (!entity) continue;
+//        this->addEntitySelected(entity);
     }
 }
 
@@ -383,77 +385,41 @@ entity::Stroke *entity::Canvas::getStrokeCurrent() const
     return m_strokeCurrent.get();
 }
 
-void entity::Canvas::addStrokesSelectedAll()
+/* whenever new entity is added to selection,
+ * update the selection frame;
+ * if the entity is the first, then create the selection frame and
+ * add it to the scene graph
+ */
+void entity::Canvas::addEntitySelected(Entity2D *entity)
 {
-    this->resetStrokesSelected();
-    for (unsigned int i = 0; i < m_geodeData->getNumChildren(); i++){
-        entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
-        if (!entity){
-            outErrMsg("addStrokesSelectedAll: could not dynamic_cast to Entity2D*");
-            continue;
-        }
-        if (entity->getEntityType() == dureu::ENTITY_STROKE){
-            entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(entity);
-            if (!stroke){
-                outErrMsg("addStrokesSelectedAll: could not dynamic_cast to Stroke*");
-                continue;
-            }
-            this->addStrokesSelected(stroke);
-        }
-    }
+    m_selectedGroup.addEntity(entity, m_geodeData.get());
 }
 
-void entity::Canvas::addStrokesSelected(entity::Stroke* stroke)
+/* whenever an entity is substracted from selection,
+ * update the selection frame;
+ * if no entities left, remove the selection frame from scene graph
+*/
+void entity::Canvas::removeEntitySelected(Entity2D *entity)
 {
-    if (!stroke){
-        outErrMsg("addStrokesSelected: stroke ptr is NULL");
-        return;
-    }
-    if (!m_geodeData->containsDrawable(stroke)){
-        outErrMsg("The stroke does not belong to Canvas, selection is impossible");
-        return;
-    }
-    if (!this->isStrokeSelected(stroke)){
-        this->setStrokeSelected(stroke);
-        m_strokesSelected.push_back(stroke);
-    }
-//    else{
-//        outLogMsg("stroke is already selected, do unselect");
-//        this->resetStrokeSelected(stroke);
-//    }
+    m_selectedGroup.removeEntity(entity);
 }
 
-void entity::Canvas::resetStrokesSelected()
+const std::vector<entity::Entity2D* >& entity::Canvas::getStrokesSelected() const
 {
-    for (unsigned int i = 0; i < m_strokesSelected.size(); ++i){
-        entity::Stroke* stroke = m_strokesSelected.at(i);
-        this->setStrokeSelected(stroke);
-        this->setStrokeSelected(false);
-    }
-    m_strokesSelected.clear();
-}
-
-void entity::Canvas::resetStrokeSelected(entity::Stroke *stroke)
-{
-    unsigned int i;
-    for (i = 0; i < m_strokesSelected.size(); ++i){
-        entity::Stroke* s = m_strokesSelected.at(i);
-        if (stroke == s)
-            break;
-    }
-    this->setStrokeSelected(stroke);
-    this->setStrokeSelected(false);
-    m_strokesSelected.erase(m_strokesSelected.begin()+i);
-}
-
-const std::vector<entity::Stroke* >& entity::Canvas::getStrokesSelected() const
-{
-    return m_strokesSelected;
+    return m_selectedGroup.getEntities();
 }
 
 int entity::Canvas::getStrokesSelectedSize() const
 {
-    return m_strokesSelected.size();
+    return m_selectedGroup.getSize();
+}
+
+/* returns whether the frame is in selected mode (true) or normal (false);
+ * used in EventHandler;
+*/
+bool entity::Canvas::isEntitiesSelected() const
+{
+    return m_toolFrame->isSelected();
 }
 
 /* returns global center of selected entities;
@@ -461,161 +427,89 @@ int entity::Canvas::getStrokesSelectedSize() const
 */
 osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
 {
-    double mu = 0, mv = 0;
-    for (unsigned int i=0; i<m_strokesSelected.size(); ++i)
-    {
-        entity::Stroke* stroke = m_strokesSelected.at(i);
-        if (!stroke){
-            outErrMsg("getStrokesSelecterCenter: one of strokes ptr is NULL");
-            break;
-        }
-        osg::BoundingSphere bs = stroke->getBound();
-        osg::BoundingBox bb = stroke->getBoundingBox();
-        mu += bb.center().x();
-        mv += bb.center().y();
-    }
-    if (m_strokesSelected.size() > 0){
-        mu /= m_strokesSelected.size();
-        mv /= m_strokesSelected.size();
-    }
-    osg::Matrix M = m_transform->getMatrix();
-    osg::Vec3f center_loc = osg::Vec3f(mu, mv, 0);
-    osg::Vec3f center_glo = center_loc * M;
-    return center_glo;
+    return m_selectedGroup.getCenter3D(m_transform->getMatrix());
 }
 
-void entity::Canvas::moveStrokes(std::vector<entity::Stroke *>& strokes, double du, double dv)
+osg::Vec3f entity::Canvas::getSelectedEntitiesCenter2D() const
 {
-    for (unsigned int i=0; i<strokes.size(); ++i){
-        entity::Stroke* stroke = strokes.at(i);
-        if (!stroke){
-            outErrMsg("moveStrokes: one of strokes ptr is NULL");
-            break;
-        }
-        stroke->moveDelta(du, dv);
-    }
+    return m_selectedGroup.getCenter2DCustom();
 }
 
-void entity::Canvas::moveStrokesSelected(double du, double dv)
+osg::Vec3f entity::Canvas::getCenter2D() const
 {
-    this->moveStrokes(m_strokesSelected, du, dv);
+    return m_center * m_transform->getMatrix();
 }
 
-void entity::Canvas::scaleStrokes(std::vector<entity::Stroke *> &strokes, double s, osg::Vec3f center)
+osg::Vec3f entity::Canvas::getCenterMean() const
 {
-    for (unsigned int i=0; i<strokes.size(); ++i){
-        entity::Stroke* stroke = strokes.at(i);
-        if (!stroke){
-            outErrMsg("moveStrokes: one of strokes ptr is NULL");
-            break;
-        }
-        stroke->scale(s, center);
-    }
+    osg::BoundingBox bb = m_geodeData->getBoundingBox();
+    if (!bb.valid()) return m_center;
+    return bb.center() * m_transform->getMatrix();
 }
 
-void entity::Canvas::scaleStrokesSelected(double s, osg::Vec3f center)
+/* Will be most likely called from EditEntityCommand since the vector of entities is specified */
+void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, double du, double dv)
 {
-    this->scaleStrokes(m_strokesSelected, s, center);
+    m_selectedGroup.move(entities, du, dv);
 }
 
-void entity::Canvas::rotateStrokes(std::vector<entity::Stroke *> strokes, double theta, osg::Vec3f center)
+void entity::Canvas::moveEntitiesSelected(double du, double dv)
 {
-    for (unsigned int i=0; i<strokes.size(); ++i){
-        entity::Stroke* stroke = strokes.at(i);
-        if (!stroke){
-            outErrMsg("moveStrokes: one of strokes ptr is NULL");
-            break;
-        }
-        stroke->rotate(theta, center);
-    }
+    m_selectedGroup.move(du, dv);
 }
 
-void entity::Canvas::rotateStrokesSelected(double theta, osg::Vec3f center)
+void entity::Canvas::scaleEntities(std::vector<Entity2D *> &entities, double sx, double sy, osg::Vec3f center)
 {
-    this->rotateStrokes(m_strokesSelected, theta, center);
+    m_selectedGroup.scale(entities, sx,sy,center);
 }
 
-void entity::Canvas::setStrokeSelected(entity::Stroke *stroke)
+void entity::Canvas::scaleEntitiesSelected(double sx, double sy)
 {
-    if (m_strokeSelected.get() == stroke){
-        return;
-    }
-    //if (m_strokeSelected.get() != 0)
-    //    this->setStrokeSelected(false);
-    m_strokeSelected = stroke;
-    this->setStrokeSelected(true);
+    m_selectedGroup.scale(sx,sy);
 }
 
-void entity::Canvas::setStrokeSelected(bool selected)
+void entity::Canvas::rotateEntities(std::vector<Entity2D *> entities, double theta, osg::Vec3f center)
 {
-    if (!m_strokeSelected.get())
-        return;
-    if (!selected){
-        m_strokeSelected->setColor(dureu::STROKE_CLR_NORMAL);
-        m_strokeSelected = 0;
-    }
-    else{
-        m_strokeSelected->setColor(dureu::STROKE_CLR_SELECTED);
-    }
+    m_selectedGroup.rotate(entities, theta, center);
 }
 
-bool entity::Canvas::isStrokeSelected(entity::Stroke *stroke) const
+void entity::Canvas::rotateEntitiesSelected(double theta)
 {
-    for (unsigned int i = 0; i < m_strokesSelected.size(); ++i){
-        if (stroke == m_strokesSelected.at(i))
-            return true;
-    }
-    return false;
+    m_selectedGroup.rotate(theta);
+    //m_toolFrame->rotate(theta, m_selectedGroup.getCenter2DCustom());
 }
 
-entity::Stroke *entity::Canvas::getStrokeSelected() const
-{
-    return m_strokeSelected.get();
-}
-
-bool entity::Canvas::setPhotoCurrent(entity::Photo *photo)
-{
-    if (m_photoCurrent.get() == photo)
-        return true;
-    if (!this->getGeodeData()->containsNode(photo))
-        return false;
-    if (m_photoCurrent.get()!=0)
-        this->setPhotoCurrent(false);
-    m_photoCurrent = photo;
-    this->setPhotoCurrent(true);
-    return true;
-}
-
-// changes photo frame color based on bool varialbe
-void entity::Canvas::setPhotoCurrent(bool current)
-{
-    if (!m_photoCurrent)
-        return;
-    if (!current){
-        m_photoCurrent->setFrameColor(dureu::PHOTO_CLR_REST);
-        m_photoCurrent = 0;
-    }
-    else
-        m_photoCurrent->setFrameColor(dureu::PHOTO_CLR_SELECTED);
-}
-
+/* If no entities are selected, the update frame is performed
+ * so that to take into account new mean canvas center
+ * When we update the frame in normal mode, we have to re-calculate
+ * the new canvas center and move the virtual plane correspondingly.
+ * For that reason we first perform movement back (opposite to the
+ * necessary direction); and then after we draw the new canvas vertices,
+ * we move the whole canvas by using translate operator.
+ * For the frame in edit mode (when there are selected items),
+ * we do not have to take this into account since the center is fixed there
+ * and it does not represent the virtual plane's center.
+ */
 void entity::Canvas::updateFrame(entity::Canvas* against)
 {
     if (m_geodeData->getNumChildren() > 0){
-        /* local bounding box */
-        osg::BoundingBox bb = m_geodeData->getBoundingBox();
-        if (bb.valid()){
-            /* 2d <--> 2d transform matrices */
-            osg::Matrix M = m_transform->getMatrix();
-            osg::Matrix invM;
-            if (invM.invert(M)){
-                /* old 2d local canvas center */
-                osg::Vec3f c2d_old = m_center * invM;
-                if (std::fabs(c2d_old.z()) > dureu::EPSILON){
-                    outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
-                    return;
-                }
-
+        /* if there is a selected group, draw edit frame around it
+         * the frame will allow to perform move, scale, rotate */
+        if (m_selectedGroup.getSize() > 0){
+            osg::BoundingBox bb = m_selectedGroup.getBoundingBox();
+            if (bb.valid()){
+                float szX = bb.xMax() - bb.xMin();
+                float szY = bb.yMax() - bb.yMin();
+                this->setVertices(m_selectedGroup.getCenter2DCustom(),
+                                  szX*0.5+dureu::CANVAS_EDITSLACK, szY*0.5+dureu::CANVAS_EDITSLACK,
+                                  dureu::CANVAS_EDITQUAD, dureu::CANVAS_EDITAXIS);
+            }
+        }
+        /* if there is no selection, draw a normal canvas frame */
+        else{
+            /* local bounding box */
+            osg::BoundingBox bb = m_geodeData->getBoundingBox();
+            if (bb.valid()){
                 /* new 2d local center */
                 osg::Vec3f c2d_new = bb.center();
                 if (std::fabs(c2d_new.z()) > dureu::EPSILON){
@@ -623,33 +517,17 @@ void entity::Canvas::updateFrame(entity::Canvas* against)
                     return;
                 }
 
-                /* move every child back in local delta translation (diff between old and new centers) */
-                osg::Vec3f delta2d = c2d_old - c2d_new;
-                for (unsigned int i=0; i<m_geodeData->getNumChildren(); ++i){
-                    entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
-                    if (!entity){
-                        outErrMsg("updateFrame: could not dynamic_cast to Entity2D*");
-                        return;
-                    }
-                    entity->moveDelta(delta2d.x(), delta2d.y());
-                }
-
                 /* adjust the size of the canvas drawables in old location */
                 float dx = 0.5*(bb.xMax()-bb.xMin())+dureu::CANVAS_CORNER;
                 float dy = 0.5*(bb.yMax()-bb.yMin())+dureu::CANVAS_CORNER;
                 float szX = std::max(dx, dureu::CANVAS_MINW);
                 float szY = std::max(dy, dureu::CANVAS_MINW);
-                this->setVertices(c2d_old, szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
-
-                /* new global center coordinate and delta translate in 3D */
-                osg::Vec3f c3d_new = c2d_new * M;
-                osg::Vec3f delta3d = c3d_new - m_center;
-
-                /* move whole canvas and its drawables to be positioned at new global center */
-                this->translate(osg::Matrix::translate(delta3d.x(), delta3d.y(), delta3d.z()));
-            }
-        }
+                this->setVertices(c2d_new, szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+            } /* bb is valid */
+        } /* else no selection */
     }
+    else /* geodeData has no childer, empty canvas case */
+        this->setVerticesDefault(m_toolFrame->getCenterLocal());
     this->setIntersection(against);
 }
 
@@ -664,16 +542,11 @@ void entity::Canvas::setModeEdit(bool on)
         std::cout << "setModeEdit(): ON - " << on << std::endl;
         this->setColor(dureu::CANVAS_CLR_EDIT);
         this->setVisibilityAll(true);
-        this->setVisibilityLocalAxis(false);
     }
     else{
         std::cout << "setModeEdit(): OFF - " << on << std::endl;
         this->setColor(dureu::CANVAS_CLR_CURRENT);
-        if (this->getVisibility()){
-            this->setVisibilityLocalAxis(true); // could be bug here, when originally local axis is off by user
-        }
     }
-    m_switch->setChildValue(m_toolNormal, on);
     m_edit = on;
 }
 
@@ -729,11 +602,6 @@ entity::Canvas *entity::Canvas::clone() const
     return clone.release();
 }
 
-entity::Photo* entity::Canvas::getPhotoCurrent() const
-{
-    return m_photoCurrent.get();
-}
-
 entity::Canvas::~Canvas()
 {
 }
@@ -780,11 +648,19 @@ void entity::Canvas::resetTransforms()
     }
 }
 
+// FIXME: should also take m_selectedGroup->m_theta so that rotation axis are rotated
 void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx)
 {
-    m_toolFrame->setVertices(center, szX, szY, szCr, szAx);
-    m_toolAxis->setVertices(center, szX, szY, szCr, szAx);
-    m_toolNormal->setVertices(center, szX, szY, szCr, szAx);
+    m_toolFrame->setVertices(center, szX, szY, szCr, szAx,
+                             m_selectedGroup.getCenter2DCustom(),
+                             m_selectedGroup.getRotationAngle(),
+                             m_selectedGroup.isEmpty());
+}
+
+void entity::Canvas::setVerticesDefault(const osg::Vec3f &center)
+{
+    m_toolFrame->setVertices(center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER,
+                             dureu::CANVAS_AXIS);
 }
 
 void entity::Canvas::setIntersection(entity::Canvas *against)
@@ -810,6 +686,11 @@ osg::Node* entity::Canvas::getTool(const std::string &name)
         return 0;
     }
     return fnv.getNode();
+}
+
+entity::FrameTool *entity::Canvas::getToolFrame() const
+{
+    return m_toolFrame;
 }
 
 REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
