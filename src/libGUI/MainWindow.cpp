@@ -554,7 +554,8 @@ void MainWindow::onImageFlipV()
 
 void MainWindow::onImagePush()
 {
-    m_glWidget->setMouseMode(dureu::PHOTO_PUSH);
+    this->statusBar()->showMessage(tr("This functionality is turned off temporarly."));
+    //m_glWidget->setMouseMode(dureu::PHOTO_PUSH);
 }
 
 void MainWindow::onStrokesPush()
