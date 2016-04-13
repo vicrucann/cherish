@@ -17,6 +17,7 @@ entity::Photo::Photo()
     , m_edit(false)
 {
     outLogMsg("New Photo ctor complete");
+    this->setName("Photo");
 }
 
 entity::Photo::Photo(const entity::Photo& photo, const osg::CopyOp& copyop)
@@ -136,7 +137,7 @@ void entity::Photo::setFrameColor(const osg::Vec4 color)
 void entity::Photo::setModeEdit(bool edit)
 {
     if (edit)
-        this->setFrameColor(dureu::CANVAS_CLR_EDIT);
+        this->setFrameColor(dureu::PHOTO_CLR_SELECTED);
     else
         this->setFrameColor(dureu::PHOTO_CLR_REST);
     m_edit = edit;

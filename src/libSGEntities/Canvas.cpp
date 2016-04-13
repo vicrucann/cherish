@@ -52,6 +52,11 @@ entity::Canvas::Canvas()
     m_transform->setName("Transform");
     m_switch->setName("Switch");
 
+    /*  set traversal masks */
+    this->setNodeMask(dureu::MASK_CANVAS_IN);
+    m_geodeData->setNodeMask(dureu::MASK_CANVASDATA_IN);
+    m_toolFrame->setNodeMask(dureu::MASK_CANVASFRAME_IN);
+
     outLogMsg("New Canvas ctor complete");
 }
 

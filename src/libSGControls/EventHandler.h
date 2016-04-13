@@ -63,7 +63,7 @@ protected:
     dureu::MOUSE_MODE getMouseMode(const osgUtil::LineSegmentIntersector::Intersection& result) const;
 
     template <typename T1, typename T2>
-    bool getLineIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, T1& result);
+    bool getLineIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, unsigned int mask, T1& result);
 
     bool getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                                  double& u, double& v);

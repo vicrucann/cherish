@@ -413,9 +413,9 @@ void entity::UserScene::setCanvasesButCurrent(bool enabled)
         if (!cnv) return;
         if (cnv != m_canvasCurrent.get()){
             if (enabled)
-                cnv->setNodeMask(~0x0);
+                cnv->setNodeMask(dureu::MASK_CANVAS_IN);
             else
-                cnv->setNodeMask(0x1); // see EventHandler when we set iv.setTraversalMask(~0x1);
+                cnv->setNodeMask(dureu::MASK_CANVAS_OUT); // see EventHandler when we set iv.setTraversalMask(~0x1);
         }
     }
 }

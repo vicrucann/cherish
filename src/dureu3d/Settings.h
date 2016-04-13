@@ -122,6 +122,13 @@ enum EVENT {
     EVENT_RELEASED
 };
 
+enum TraversalMask{
+    MASK_CANVAS_IN = 0x110,
+    MASK_CANVAS_OUT = 0x001,
+    MASK_CANVASDATA_IN = 0x010,
+    MASK_CANVASFRAME_IN = 0x100,
+};
+
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;
 
 const osg::Vec3f NORMAL = osg::Vec3f(0.f,0.f,1.f);
