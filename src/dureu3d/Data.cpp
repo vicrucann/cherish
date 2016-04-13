@@ -497,6 +497,12 @@ const QPixmap &Data::sceneCanvasRotateCursor()
     return pmap;
 }
 
+const QPixmap &Data::sceneCanvasCloneCursor()
+{
+    static QPixmap pmap(":/scene-newcanvas-24px.svg");
+    return pmap;
+}
+
 const QPixmap &Data::sceneSelectPixmap()
 {
     static QPixmap pmap(":/scene-select-24px.svg");

@@ -243,6 +243,8 @@ entity::FrameTool::FrameTool()
     this->initializeSG();
     this->setColor(dureu::CANVAS_CLR_REST);
     this->setVisibility(true);
+
+    this->setName("groupFrame");
 }
 
 void entity::FrameTool::initializeSG()

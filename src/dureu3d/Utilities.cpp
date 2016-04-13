@@ -400,6 +400,11 @@ QCursor *Utilities::getCursorFromMode(dureu::MOUSE_MODE mode)
         cur = new QCursor(Data::scenePanPixmap(), 0, 0);
         break;
     case dureu::CAMERA_FIXEDVIEW:
+        cur = 0;
+        break;
+
+    case dureu::CREATE_CANVASCLONE:
+        cur = new QCursor(Data::sceneCanvasCloneCursor());
         break;
     default:
         break;

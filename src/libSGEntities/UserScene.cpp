@@ -835,8 +835,8 @@ bool entity::UserScene::printScene()
         osg::Switch* sw = dynamic_cast<osg::Switch*>(t->getChild(0));
         assert(sw == cnv->getSwitch());
 
-        osg::Geode* data = dynamic_cast<osg::Geode*>(sw->getChild(1));
-        assert(data == cnv->getGeodeData());
+//        osg::Geode* data = dynamic_cast<osg::Geode*>(sw->getChild(1));
+//        assert(data == cnv->getGeodeData());
     }
     return true;
 }

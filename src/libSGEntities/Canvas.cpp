@@ -78,6 +78,10 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_edit(cnv.m_edit)
     , m_rotaxis(osg::Vec3f(0.f, 1.f, 0.f))
 {
+    this->setNodeMask(dureu::MASK_CANVAS_IN);
+    m_geodeData->setNodeMask(dureu::MASK_CANVASDATA_IN);
+    m_toolFrame->setNodeMask(dureu::MASK_CANVASFRAME_IN);
+
     outLogMsg("new Canvas by copy ctor complete");
 }
 
@@ -90,10 +94,10 @@ void entity::Canvas::initializeTools()
         outLogMsg("canvas tools added");
     }
     /* remove all but geode data */
-    else if (m_switch->getNumChildren() == 2 || m_switch->getNumChildren() == 1 ){
+    else if (m_switch->getNumChildren() >=1 && m_switch->getNumChildren() <= 4 ){
         osg::Node* tfn = this->getTool("groupFrame");
         if (tfn) m_switch->replaceChild(tfn, m_toolFrame);
-        else outErrMsg("framel node is null, construction tools are not initialized");
+        else outErrMsg("frame node is null, construction tools are not initialized");
         this->updateFrame();
     }
     else

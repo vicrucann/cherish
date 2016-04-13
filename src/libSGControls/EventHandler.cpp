@@ -89,15 +89,15 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         }
         break;
     case dureu::MOUSE_CREATE:
+        if (m_mode == dureu::CREATE_CANVASCLONE){
+            this->doCanvasClone(ea, aa);
+        }
         break;
     default:
         break;
     }
 
 //    switch (m_mode){
-//    case dureu::CREATE_CANVASCLONE:
-//        this->doCanvasClone(ea, aa);
-//        break;
 //    case dureu::PHOTO_PUSH:
 //        this->doEditPhotoPush<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
 //        break;
