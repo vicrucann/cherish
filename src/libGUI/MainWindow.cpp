@@ -250,13 +250,7 @@ void MainWindow::onFileNew()
 {
     outLogMsg("onFileNew called");
     this->onFileClose();
-    m_undoStack->clear();
-    m_viewStack->clear();
-    outLogVal("bookmark items to remove", m_bookmarkWidget->count());
-    m_bookmarkWidget->model()->removeRows(0,m_bookmarkWidget->count());
-//    m_bookmarkWidget->clear();
-//    m_canvasWidget->clear();
-    m_canvasWidget->model()->removeRows(0, m_canvasWidget->count());
+
     this->recievedRequestUpdate();
     this->statusBar()->showMessage(tr("Scene is cleared."));
 }
@@ -375,6 +369,12 @@ void MainWindow::onFileClose()
             return;
     }
     m_rootScene->clearUserData();
+
+    m_undoStack->clear();
+    m_viewStack->clear();
+    m_bookmarkWidget->model()->removeRows(0,m_bookmarkWidget->count());
+    m_canvasWidget->model()->removeRows(0, m_canvasWidget->count());
+
     this->statusBar()->showMessage(tr("Current project is closed"));
 }
 
