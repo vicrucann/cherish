@@ -221,6 +221,8 @@ entity::FrameTool::FrameTool()
     , m_geodeIntersect(new osg::Geode)
     , m_geodeAxis(new osg::Geode)
     , m_geodeScales(new osg::Geode)
+    , m_geodeNormal(new osg::Geode)
+    , m_geodeRotation(new osg::Geode)
 
     , m_geomPickable(new osg::Geometry)
     , m_geomIntersect(new osg::Geometry)
@@ -232,13 +234,17 @@ entity::FrameTool::FrameTool()
     , m_geomScaleUV2(new osg::Geometry)
     , m_geomScaleUV3(new osg::Geometry)
     , m_geomScaleUV4(new osg::Geometry)
-//    , m_geomScaleU1(new osg::Geometry)
-//    , m_geomScaleU2(new osg::Geometry)
-//    , m_geomScaleV1(new osg::Geometry)
-//    , m_geomScaleV2(new osg::Geometry)
+
+    , m_geomNormal1(new osg::Geometry)
+    , m_geomNormal2(new osg::Geometry)
+    , m_geomRotateX1(new osg::Geometry)
+    , m_geomRotateX2(new osg::Geometry)
+    , m_geomRotateY1(new osg::Geometry)
+    , m_geomRotateY2(new osg::Geometry)
 
     , m_cameraAxis(new osg::Camera)
     , m_selected(false)
+    , m_editable(false)
 {
     this->initializeSG();
     this->setColor(dureu::CANVAS_CLR_REST);
@@ -254,14 +260,17 @@ void entity::FrameTool::initializeSG()
     this->initQuadGeometry(m_geomCenter, "Center");
     this->initQuadGeometry(m_geomAxisU, "AxisU");
     this->initQuadGeometry(m_geomAxisV, "AxisV");
-//    this->initQuadGeometry(m_geomScaleU1, "ScaleU1");
-//    this->initQuadGeometry(m_geomScaleU2, "ScaleU2");
-//    this->initQuadGeometry(m_geomScaleV1, "ScaleV1");
-//    this->initQuadGeometry(m_geomScaleV2, "ScaleV2");
     this->initQuadGeometry(m_geomScaleUV1, "ScaleUV1");
     this->initQuadGeometry(m_geomScaleUV2, "ScaleUV2");
     this->initQuadGeometry(m_geomScaleUV3, "ScaleUV3");
     this->initQuadGeometry(m_geomScaleUV4, "ScaleUV4");
+
+    this->initLineGeometry(m_geomNormal1, 10.f, "Normal1");
+    this->initLineGeometry(m_geomNormal2, 10.f,  "Normal2");
+    this->initLineGeometry(m_geomRotateX1, 10.f, "RotateX1");
+    this->initLineGeometry(m_geomRotateY1, 10.f, "RotateX2");
+    this->initLineGeometry(m_geomRotateX2, 10.f,  "RotateY1");
+    this->initLineGeometry(m_geomRotateY2, 10.f, "RotateY2");
 
     /* intersection settings */
     osg::LineStipple* ls = new osg::LineStipple;
@@ -279,14 +288,18 @@ void entity::FrameTool::initializeSG()
     m_geodeAxis->addDrawable(m_geomCenter);
     m_geodeAxis->addDrawable(m_geomAxisU);
     m_geodeAxis->addDrawable(m_geomAxisV);
-//    m_geodeScales->addDrawable(m_geomScaleU1);
-//    m_geodeScales->addDrawable(m_geomScaleU2);
-//    m_geodeScales->addDrawable(m_geomScaleV1);
-//    m_geodeScales->addDrawable(m_geomScaleV2);
+
     m_geodeScales->addDrawable(m_geomScaleUV1);
     m_geodeScales->addDrawable(m_geomScaleUV2);
     m_geodeScales->addDrawable(m_geomScaleUV3);
     m_geodeScales->addDrawable(m_geomScaleUV4);
+
+    m_geodeNormal->addDrawable(m_geomNormal1);
+    m_geodeNormal->addDrawable(m_geomNormal2);
+    m_geodeRotation->addDrawable(m_geomRotateX1);
+    m_geodeRotation->addDrawable(m_geomRotateY1);
+    m_geodeRotation->addDrawable(m_geomRotateX2);
+    m_geodeRotation->addDrawable(m_geomRotateY2);
 
     m_cameraAxis->setClearMask(GL_DEPTH_BUFFER_BIT);
     m_cameraAxis->setRenderOrder(osg::Camera::POST_RENDER);
@@ -297,6 +310,8 @@ void entity::FrameTool::initializeSG()
     m_switch->addChild(m_geodePickable);
     m_switch->addChild(m_cameraAxis);
     m_switch->addChild(m_geodeScales);
+    m_switch->addChild(m_geodeNormal);
+    m_switch->addChild(m_geodeRotation);
 }
 
 // TODO: push to stack visibility values, and then pop them
@@ -308,6 +323,8 @@ void entity::FrameTool::setVisibility(bool on)
     m_switch->setChildValue(m_geodeIntersect, on);
     m_switch->setChildValue(m_cameraAxis, false); // FIXME
     m_switch->setChildValue(m_geodeScales, false); // FIXME
+    m_switch->setChildValue(m_geodeNormal, false); // FIXME
+    m_switch->setChildValue(m_geodeRotation, false); // FIXME
 }
 
 bool entity::FrameTool::getVisibility() const
@@ -327,6 +344,7 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
     verts.push_back(center + osg::Vec3(-szX,-szY,0.f));
     verts.push_back(center + osg::Vec3(szX,-szY,0.f));
     ToolGlobal::setVertices(verts);
+    m_switch->setChildValue(m_geodeWire, true);
 
     m_selected = !selectionIsEmpty;
 
@@ -337,12 +355,33 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
         m_switch->setChildValue(m_geodePickable, true);
         m_switch->setChildValue(m_cameraAxis, false);
         m_switch->setChildValue(m_geodeScales, false);
+        m_switch->setChildValue(m_geodeNormal, false);
+        m_switch->setChildValue(m_geodeRotation, false);
+
+        if (m_editable){
+            m_switch->setChildValue(m_geodeNormal, true);
+            m_switch->setChildValue(m_geodeRotation, true);
+            m_switch->setChildValue(m_geodePickable, false);
+            m_switch->setChildValue(m_geodeWire, false);
+
+            osg::Vec3f deltaN = osg::Vec3f(0.f, 0.f, szAx);
+            osg::Vec3f deltaC = osg::Vec3f(0.f, 0.f, szAx*0.2f);
+            this->setLineGeometry(m_geomNormal1, center + deltaC, center + deltaN);
+            this->setLineGeometry(m_geomNormal2, center - deltaC, center - deltaN);
+
+            this->setLineGeometry(m_geomRotateX1, verts[0], verts[1]);
+            this->setLineGeometry(m_geomRotateX2, verts[2], verts[3]);
+            this->setLineGeometry(m_geomRotateY1, verts[1], verts[2]);
+            this->setLineGeometry(m_geomRotateY2, verts[3], verts[0]);
+        }
     }
     /* if edit mode, set up selected drawables */
     else {
         m_switch->setChildValue(m_geodePickable, false);
         m_switch->setChildValue(m_cameraAxis, true);
         m_switch->setChildValue(m_geodeScales, true);
+        m_switch->setChildValue(m_geodeNormal, false);
+        m_switch->setChildValue(m_geodeRotation, false);
 
         osg::Vec3f Pc = centerCustom + osg::Vec3f(szCr*0.5, szCr*0.5, 0);
         this->setQuadGeometry(m_geomCenter, Pc, szCr, szCr);
@@ -365,29 +404,30 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
         this->setQuadGeometry(m_geomScaleUV2, p1, szCr, szCr);
         this->setQuadGeometry(m_geomScaleUV3, p2, szCr, szCr);
         this->setQuadGeometry(m_geomScaleUV4, p3, szCr, szCr);
-//        this->setQuadGeometry(m_geomScaleU1, p01, szCr, szCr);
-//        this->setQuadGeometry(m_geomScaleU2, p23, szCr, szCr);
-//        this->setQuadGeometry(m_geomScaleV1, p12, szCr, szCr);
-//        this->setQuadGeometry(m_geomScaleV2, p30, szCr, szCr);
     }
 }
 
 void entity::FrameTool::setColor(const osg::Vec4f &color, const osg::Vec4f &colorIntersect)
 {
     ToolGlobal::setColor(color);
-    this->setColorQuadGeometry(m_geomPickable, color);
-    this->setColorQuadGeometry(m_geomCenter, solarized::base00);
-    this->setColorQuadGeometry(m_geomAxisU, solarized::base00);
-    this->setColorQuadGeometry(m_geomAxisV, solarized::base00);
-//    this->setColorQuadGeometry(m_geomScaleU1, solarized::base00);
-//    this->setColorQuadGeometry(m_geomScaleU2, solarized::base00);
-//    this->setColorQuadGeometry(m_geomScaleV1, solarized::base00);
-//    this->setColorQuadGeometry(m_geomScaleV2, solarized::base00);
-    this->setColorQuadGeometry(m_geomScaleUV1, solarized::base00);
-    this->setColorQuadGeometry(m_geomScaleUV2, solarized::base00);
-    this->setColorQuadGeometry(m_geomScaleUV3, solarized::base00);
-    this->setColorQuadGeometry(m_geomScaleUV4, solarized::base00);
     this->setColorIntersection(colorIntersect);
+
+    this->setColorGeometry(m_geomPickable, color);
+    this->setColorGeometry(m_geomCenter, solarized::base00);
+    this->setColorGeometry(m_geomAxisU, solarized::base00);
+    this->setColorGeometry(m_geomAxisV, solarized::base00);
+
+    this->setColorGeometry(m_geomScaleUV1, solarized::base00);
+    this->setColorGeometry(m_geomScaleUV2, solarized::base00);
+    this->setColorGeometry(m_geomScaleUV3, solarized::base00);
+    this->setColorGeometry(m_geomScaleUV4, solarized::base00);
+
+    this->setColorGeometry(m_geomNormal1, solarized::blue);
+    this->setColorGeometry(m_geomNormal2, solarized::blue);
+    this->setColorGeometry(m_geomRotateX1, solarized::violet);
+    this->setColorGeometry(m_geomRotateX2, solarized::violet);
+    this->setColorGeometry(m_geomRotateY1, solarized::yellow);
+    this->setColorGeometry(m_geomRotateY2, solarized::yellow);
 }
 
 void entity::FrameTool::setIntersection(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4)
@@ -413,6 +453,11 @@ void entity::FrameTool::setColorIntersection(const osg::Vec4f &colorIntersect)
     m_geomIntersect->dirtyBound();
 }
 
+void entity::FrameTool::setEditable(bool editable)
+{
+    m_editable = editable;
+}
+
 osg::Geometry *entity::FrameTool::getPickable() const
 {
     return m_geomPickable;
@@ -429,11 +474,7 @@ void entity::FrameTool::moveDelta(double du, double dv)
     this->moveDeltaWireGeometry(m_geomCenter, du, dv);
     this->moveDeltaWireGeometry(m_geomAxisU, du, dv);
     this->moveDeltaWireGeometry(m_geomAxisV, du, dv);
-//    this->moveDeltaWireGeometry(m_geomNormal, du, dv);
-//    this->moveDeltaWireGeometry(m_geomScaleU1, du, dv);
-//    this->moveDeltaWireGeometry(m_geomScaleU2, du, dv);
-//    this->moveDeltaWireGeometry(m_geomScaleV1, du, dv);
-//    this->moveDeltaWireGeometry(m_geomScaleV2, du, dv);
+
     this->moveDeltaWireGeometry(m_geomScaleUV1, du, dv);
     this->moveDeltaWireGeometry(m_geomScaleUV2, du, dv);
     this->moveDeltaWireGeometry(m_geomScaleUV3, du, dv);
@@ -446,11 +487,7 @@ void entity::FrameTool::scale(double scaleX, double scaleY, osg::Vec3f center)
     this->scaleWireGeometry(m_geomCenter, scaleX, scaleY, center);
     this->scaleWireGeometry(m_geomAxisU, scaleX, scaleY, center);
     this->scaleWireGeometry(m_geomAxisV, scaleX, scaleY, center);
-//    this->scaleWireGeometry(m_geomNormal, scaleX, scaleY, center);
-//    this->scaleWireGeometry(m_geomScaleU1, scaleX, scaleY, center);
-//    this->scaleWireGeometry(m_geomScaleU2, scaleX, scaleY, center);
-//    this->scaleWireGeometry(m_geomScaleV1, scaleX, scaleY, center);
-//    this->scaleWireGeometry(m_geomScaleV2, scaleX, scaleY, center);
+
     this->scaleWireGeometry(m_geomScaleUV1, scaleX, scaleY, center);
     this->scaleWireGeometry(m_geomScaleUV2, scaleX, scaleY, center);
     this->scaleWireGeometry(m_geomScaleUV3, scaleX, scaleY, center);
@@ -463,11 +500,7 @@ void entity::FrameTool::scale(double scale, osg::Vec3f center)
     this->scaleWireGeometry(m_geomCenter, scale, center);
     this->scaleWireGeometry(m_geomAxisU, scale, center);
     this->scaleWireGeometry(m_geomAxisV, scale, center);
-//    this->scaleWireGeometry(m_geomNormal, scale, center);
-//    this->scaleWireGeometry(m_geomScaleU1, scale, center);
-//    this->scaleWireGeometry(m_geomScaleU2, scale, center);
-//    this->scaleWireGeometry(m_geomScaleV1, scale, center);
-//    this->scaleWireGeometry(m_geomScaleV2, scale, center);
+
     this->scaleWireGeometry(m_geomScaleUV1, scale, center);
     this->scaleWireGeometry(m_geomScaleUV2, scale, center);
     this->scaleWireGeometry(m_geomScaleUV3, scale, center);
@@ -480,11 +513,7 @@ void entity::FrameTool::rotate(double theta, osg::Vec3f center)
     this->rotateWireGeometry(m_geomCenter, theta, center);
     this->rotateWireGeometry(m_geomAxisU, theta, center);
     this->rotateWireGeometry(m_geomAxisV, theta, center);
-//    this->rotateWireGeometry(m_geomNormal, theta, center);
-//    this->rotateWireGeometry(m_geomScaleU1, theta, center);
-//    this->rotateWireGeometry(m_geomScaleU2, theta, center);
-//    this->rotateWireGeometry(m_geomScaleV1, theta, center);
-//    this->rotateWireGeometry(m_geomScaleV2, theta, center);
+
     this->rotateWireGeometry(m_geomScaleUV1, theta, center);
     this->rotateWireGeometry(m_geomScaleUV2, theta, center);
     this->rotateWireGeometry(m_geomScaleUV3, theta, center);
@@ -498,6 +527,18 @@ void entity::FrameTool::initQuadGeometry(osg::Geometry *geom, const std::string 
     geom->setColorArray(new osg::Vec4Array(4), osg::Array::BIND_OVERALL);
     geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
     geom->setName(name);
+}
+
+void entity::FrameTool::initLineGeometry(osg::Geometry *geom, float lineWidth, const std::string &name)
+{
+    geom->setVertexArray(new osg::Vec3Array(2));
+    geom->setColorArray(new osg::Vec4Array(2), osg::Array::BIND_OVERALL);
+    geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, 2));
+    geom->setName(name);
+
+    osg::LineWidth* lw = new osg::LineWidth;
+    lw->setWidth(lineWidth);
+    geom->getOrCreateStateSet()->setAttributeAndModes(lw, osg::StateAttribute::ON);
 }
 
 /*
@@ -534,22 +575,16 @@ void entity::FrameTool::setQuadGeometry(osg::Geometry *geom, const osg::Vec3f &P
     this->updateGeometry(geom);
 }
 
+void entity::FrameTool::setLineGeometry(osg::Geometry *geom, const osg::Vec3f &P1, const osg::Vec3f &P2)
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geom->getVertexArray());
+    assert(verts->size() == 2);
+    (*verts)[0] = P1;
+    (*verts)[1] = P2;
+    this->updateGeometry(geom);
+}
 
-
-//void entity::FrameTool::setQuadGeometry(osg::Geometry *geom, const osg::Vec3f &P, float szX, float theta, float szY)
-//{
-//    szY = (!szY)? szX : szY;
-//    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geom->getVertexArray());
-//    assert(verts->size() == 4);
-//    (*verts)[0] = P;
-//    (*verts)[1] = P + osg::Vec3(-szX * std::cos(theta), -szX * std::sin(theta), 0.f);
-//    (*verts)[2] = P + osg::Vec3(-szX * std::cos(theta) + szY * std::sin(theta),
-//                                -szX * std::sin(theta) -szY * std::cos(theta), 0.f);
-//    (*verts)[3] = P + osg::Vec3(szY * std::sin(theta), -szY * std::cos(theta), 0.f);
-//    this->updateGeometry(geom);
-//}
-
-void entity::FrameTool::setColorQuadGeometry(osg::Geometry *geom, const osg::Vec4f &color)
+void entity::FrameTool::setColorGeometry(osg::Geometry *geom, const osg::Vec4f &color)
 {
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(geom->getColorArray());
     assert(colors->size() > 0);

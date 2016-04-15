@@ -98,8 +98,6 @@ enum MOUSE_MODE
     ENTITY_FLIPV,
     PHOTO_PUSH,
     SELECT_CANVAS = 0x120,
-    CANVAS_OFFSET,
-    CANVAS_ROTATE,
 
     MOUSE_CAMERA = 0x200,
     CAMERA_ORBIT,
@@ -109,6 +107,10 @@ enum MOUSE_MODE
 
     MOUSE_CREATE = 0x300,
     CREATE_CANVASCLONE,
+
+    MOUSE_CANVAS = 0x400,
+    CANVAS_OFFSET,
+    CANVAS_ROTATE,
 
     maskMouse = 0xff00,
     maskEntity = 0xff0,
@@ -123,10 +125,10 @@ enum EVENT {
 };
 
 enum TraversalMask{
-    MASK_CANVAS_IN = 0x110,
-    MASK_CANVAS_OUT = 0x001,
-    MASK_CANVASDATA_IN = 0x010,
-    MASK_CANVASFRAME_IN = 0x100,
+    MASK_CANVAS_IN = 0x110, /* sees all canvas data */
+    MASK_CANVAS_OUT = 0x001, /* does not see any of canvas data */
+    MASK_CANVASDATA_IN = 0x010, /* sees only geodeData geometries */
+    MASK_CANVASFRAME_IN = 0x100, /* sees only canvas frame drawables */
 };
 
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;

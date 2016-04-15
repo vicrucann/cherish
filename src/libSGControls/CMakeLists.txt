@@ -18,6 +18,8 @@ set (libSGControls_SRCS
     EditEntityCommand.cpp
     StrokeIntersector.h
     StrokeIntersector.cpp
+    LineIntersector.h
+    LineIntersector.cpp
     ViewerCommand.h
     ViewerCommand.cpp
 )

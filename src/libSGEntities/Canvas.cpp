@@ -538,15 +538,15 @@ const osg::Vec3Array *entity::Canvas::getFrame() const
 
 void entity::Canvas::setModeEdit(bool on)
 {
-    if (on){
-        std::cout << "setModeEdit(): ON - " << on << std::endl;
-        this->setColor(dureu::CANVAS_CLR_EDIT);
-        this->setVisibilityAll(true);
-    }
-    else{
-        std::cout << "setModeEdit(): OFF - " << on << std::endl;
-        this->setColor(dureu::CANVAS_CLR_CURRENT);
-    }
+//    if (on){
+//        std::cout << "setModeEdit(): ON - " << on << std::endl;
+//        this->setColor(dureu::CANVAS_CLR_EDIT);
+//        this->setVisibilityAll(true);
+//    }
+//    else{
+//        std::cout << "setModeEdit(): OFF - " << on << std::endl;
+//        this->setColor(dureu::CANVAS_CLR_CURRENT);
+//    }
     m_edit = on;
 }
 

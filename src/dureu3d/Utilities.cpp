@@ -373,6 +373,9 @@ QCursor *Utilities::getCursorFromMode(dureu::MOUSE_MODE mode)
     case dureu::SELECT_CANVAS:
         cur = new QCursor(Data::sceneSelect3DPixmap(), 0,0);
         break;
+    case dureu::MOUSE_CANVAS:
+        cur = new QCursor(Qt::CrossCursor);
+        break;
     case dureu::CANVAS_OFFSET:
         cur = new QCursor(Data::sceneCanvasOffsetCursor(), -1, -1);
         break;

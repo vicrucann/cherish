@@ -88,6 +88,7 @@ public:
 
     void setIntersection(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4);
     void setColorIntersection(const osg::Vec4f& colorIntersect);
+    void setEditable(bool editable);
 
     osg::Geometry* getPickable() const;
     bool isSelected() const;
@@ -96,16 +97,16 @@ public:
     virtual void moveDelta(double du, double dv);
     virtual void scale(double scaleX, double scaleY, osg::Vec3f center);
     virtual void scale(double scale, osg::Vec3f center);
-    virtual void rotate(double theta, osg::Vec3f center);
+    virtual void rotate(double theta, osg::Vec3f center); /* 2d rotation: within canvas */
 
 protected:
     void initQuadGeometry(osg::Geometry* geom, const std::string& name = "");
-//    void setQuadGeometry(osg::Geometry* geom, const osg::Vec3f& P, float szX,
-//                         float theta = 0, float szY = 0);
+    void initLineGeometry(osg::Geometry* geom, float lineWidth, const std::string& name = "");
 
     void setQuadGeometry(osg::Geometry* geom, const osg::Vec3f& P, float szX, float szY, float theta = 0, const osg::Vec3f& center = dureu::CENTER);
+    void setLineGeometry(osg::Geometry* geom, const osg::Vec3f& P1, const osg::Vec3f& P2);
 
-    void setColorQuadGeometry(osg::Geometry* geom, const osg::Vec4f& color);
+    void setColorGeometry(osg::Geometry* geom, const osg::Vec4f& color);
     void updateGeometry(osg::Geometry* geom);
 
     void moveDeltaWireGeometry(osg::Geometry*geometry, double du, double dv);
@@ -115,18 +116,21 @@ protected:
 
 private:
     osg::Geode* m_geodePickable, * m_geodeIntersect
-                , * m_geodeAxis, * m_geodeNormal, * m_geodeScales;
+                , * m_geodeAxis, * m_geodeScales, * m_geodeNormal, * m_geodeRotation;
     osg::Geometry* m_geomPickable, * m_geomIntersect, * m_geomCenter
-                , * m_geomAxisU, * m_geomAxisV, * m_geomNormal;
+                , * m_geomAxisU, * m_geomAxisV;
 
     /* tools to scale entities: uniform scaling and axis aligned */
     osg::Geometry * m_geomScaleUV1, * m_geomScaleUV2, * m_geomScaleUV3, * m_geomScaleUV4;
-//    osg::Geometry * m_geomScaleU1, * m_geomScaleU2;
-//    osg::Geometry * m_geomScaleV1, * m_geomScaleV2;
 
-    osg::Camera* m_cameraAxis;
+    /* canvas offset and 3d rotation drawables */
+    osg::Geometry * m_geomNormal1, * m_geomNormal2;
+    osg::Geometry * m_geomRotateX1, * m_geomRotateX2, * m_geomRotateY1, * m_geomRotateY2;
 
-    bool m_selected;
+    osg::Camera* m_cameraAxis; /* so that local axis always renders on top of photos */
+
+    bool m_selected; // if there is selection present on scene
+    bool m_editable; // if canvas is in edit mode: offset and rotation
 };
 
 }

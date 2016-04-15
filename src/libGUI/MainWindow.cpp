@@ -527,6 +527,11 @@ void MainWindow::onCanvasRotate()
     m_glWidget->setMouseMode(dureu::CANVAS_ROTATE);
 }
 
+void MainWindow::onCanvasEdit()
+{
+    m_glWidget->setMouseMode(dureu::MOUSE_CANVAS);
+}
+
 void MainWindow::onImageMove()
 {
     m_glWidget->setMouseMode(dureu::ENTITY_MOVE);
@@ -721,6 +726,9 @@ void MainWindow::initializeActions()
     m_actionCanvasRotate = new QAction(Data::sceneCanvasRotateIcon(), tr("Rotate Canvas"), this);
     this->connect(m_actionCanvasRotate, SIGNAL(triggered(bool)), this, SLOT(onCanvasRotate()));
 
+    m_actionCanvasEdit = new QAction(Data::sceneCanvasEditIcon(), tr("Edit canvas location"), this);
+    this->connect(m_actionCanvasEdit, SIGNAL(triggered(bool)), this, SLOT(onCanvasEdit()));
+
 //    m_actionImageMove = new QAction(Data::sceneImageMoveIcon(), tr("Move Image"), this);
 //    this->connect(m_actionImageMove, SIGNAL(triggered(bool)), this, SLOT(onImageMove()));
 
@@ -788,6 +796,7 @@ void MainWindow::initializeMenus()
     menuScene->addAction(m_actionSelect);
     menuScene->addAction(m_actionSketch);
     menuScene->addAction(m_actionEraser);
+    menuScene->addAction(m_actionCanvasEdit);
     menuScene->addSeparator();
     QMenu* submenuCanvas = menuScene->addMenu("New Canvas");
     submenuCanvas->setIcon(Data::sceneNewCanvasIcon());
@@ -803,9 +812,9 @@ void MainWindow::initializeMenus()
 //    submenuSet->addAction(m_actionSetParallel);
 //    submenuSet->addAction(m_actionSetRing);
     menuScene->addSeparator();
-    QMenu* submenuEC = menuScene->addMenu("Edit Canvas");
-    submenuEC->addAction(m_actionCanvasOffset);
-    submenuEC->addAction(m_actionCanvasRotate);
+//    QMenu* submenuEC = menuScene->addMenu("Edit Canvas");
+//    submenuEC->addAction(m_actionCanvasOffset);
+//    submenuEC->addAction(m_actionCanvasRotate);
     QMenu* submenuEI = menuScene->addMenu("Edit Image");
 //    submenuEI->addAction(m_actionImageMove);
 //    submenuEI->addAction(m_actionImageRotate);
@@ -852,6 +861,7 @@ void MainWindow::initializeToolbars()
     tbInput->addAction(m_actionSelect);
     tbInput->addAction(m_actionSketch);
     tbInput->addAction(m_actionEraser);
+    tbInput->addAction(m_actionCanvasEdit);
 
     QMenu* menuNewCanvas = new QMenu();
     menuNewCanvas->addAction(m_actionCanvasXY);
@@ -885,16 +895,16 @@ void MainWindow::initializeToolbars()
     QToolBar* tbEntity = new QToolBar(tr("Edit entity"));
     //QToolBar* tbEntity = this->addToolBar(tr("Edit entity"));
     this->addToolBar(Qt::LeftToolBarArea, tbEntity);
-    tbEntity->addAction(m_actionCanvasOffset);
-    tbEntity->addAction(m_actionCanvasRotate);
-    tbEntity->addSeparator();
+//    tbEntity->addAction(m_actionCanvasOffset);
+//    tbEntity->addAction(m_actionCanvasRotate);
+//    tbEntity->addSeparator();
 //    tbEntity->addAction(m_actionImageMove);
 //    tbEntity->addAction(m_actionImageRotate);
 //    tbEntity->addAction(m_actionImageScale);
 //    tbEntity->addAction(m_actionImageFlipH);
 //    tbEntity->addAction(m_actionImageFlipV);
     tbEntity->addAction(m_actionImagePush);
-    tbEntity->addSeparator();
+    //tbEntity->addSeparator();
     tbEntity->addAction(m_actionStrokesPush);
 
     /* VIEWER bar */

@@ -45,6 +45,7 @@ public:
 
     void doDeleteEntity(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
+    void doEditCanvas(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void doEditCanvasOffset(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void doEditCanvasRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void doCanvasClone(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
@@ -60,7 +61,9 @@ protected:
     entity::Stroke* getStroke(const StrokeIntersector::Intersection& result);
     entity::Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
     entity::Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
-    dureu::MOUSE_MODE getMouseMode(const osgUtil::LineSegmentIntersector::Intersection& result) const;
+
+    template <typename T>
+    dureu::MOUSE_MODE getMouseMode(const T& result, dureu::MOUSE_MODE mode_default) const;
 
     template <typename T1, typename T2>
     bool getLineIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, unsigned int mask, T1& result);
@@ -73,7 +76,9 @@ protected:
                                       const osg::Vec3f& axis,
                                       osg::Vec3f& P);
 
-    bool setSubSelectionType(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    template <typename TResult, typename TIntersector>
+    bool setSubMouseMode(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, dureu::MOUSE_MODE modeDefault, bool selected = true);
+
     void setDrawableColorFromMode(osg::Drawable* draw);
 
     void finishAll();
