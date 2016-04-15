@@ -53,6 +53,7 @@ public:
     static const QIcon& scenePushStrokesIcon();
     static const QIcon& scenePushImagesIcon();
 
+    static const QIcon& sceneCanvasEditIcon();
     static const QIcon& sceneCanvasOffsetIcon();
     static const QIcon& sceneCanvasRotateIcon();
     static const QIcon& sceneImageMoveIcon();

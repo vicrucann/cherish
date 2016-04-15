@@ -241,6 +241,13 @@ const QIcon &Data::scenePushImagesIcon()
     return icon;
 }
 
+const QIcon &Data::sceneCanvasEditIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-canvas-edit-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/scene-canvas-edit-24px.svg");
+    return icon;
+}
+
 const QIcon &Data::sceneCanvasOffsetIcon()
 {
     Q_ASSERT_X(!QPixmap(":/scene-canvas-offset-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
