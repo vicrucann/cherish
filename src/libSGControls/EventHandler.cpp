@@ -88,6 +88,8 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             this->doEditCanvasOffset(ea, aa);
         else if (m_mode == dureu::CANVAS_ROTATE)
             this->doEditCanvasRotate(ea, aa);
+        else if (m_mode == dureu::CANVAS_ROTATE_V)
+            this->doEditCanvasRotate(ea, aa, false);
         else
             this->doEditCanvas(ea, aa);
         break;
@@ -279,7 +281,7 @@ void EventHandler::doEditCanvasOffset(const osgGA::GUIEventAdapter &ea, osgGA::G
 
 // TODO: pass rotaxis based on the mode
 // FIXME: rotation need to track canvas frame not normal
-void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, bool alongV)
 {
     entity::Canvas* canvas = m_scene->getCanvasCurrent();
     if (!canvas) return;
@@ -298,17 +300,25 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     osg::Vec3f P = osg::Vec3f(0.f,0.f,0.f);
     osg::Vec3f center = m_scene->getCanvasCurrent()->getCenter();
     osg::Matrix M = m_scene->getCanvasCurrent()->getTransform()->getMatrix();
-    osg::Vec3f rotaxis = m_scene->getCanvasCurrent()->getRotationAxis() * M - center;
-    rotaxis.normalize();
-    if (!this->getRaytracePlaneIntersection(ea, aa, rotaxis, P))
+
+    osg::Vec3f along_axis = osg::Vec3f(0.f,1.f,0.f);
+    osg::Vec3f rot_axis = osg::Vec3f(1.f, 0.f, 0.f);
+    if (!alongV){
+        along_axis = osg::Vec3f(1.f, 0.f, 0.f);
+        rot_axis = osg::Vec3f(0.f, 1.f, 0.f);
+    }
+    along_axis = along_axis * M - center;
+    along_axis.normalize();
+    if (!this->getRaytracePlaneIntersection(ea, aa, along_axis, P))
         return;
 
-    osg::Vec3f n0 = m_scene->getCanvasCurrent()->getNormal();
-    n0.normalize();
-    osg::Vec3f n1 = P-center;
-    n1.normalize();
+    rot_axis = rot_axis * M - center;
+    rot_axis.normalize();
 
-    double atheta = n0 * n1;
+    osg::Vec3f new_axis = P - center;
+    new_axis.normalize();
+
+    double atheta = rot_axis * new_axis;
     if (atheta > 1 && atheta < -1) atheta = 1;
 
     errno = 0;
@@ -324,15 +334,15 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
 
     /* need to figure out direction of rotation
      * http://stackoverflow.com/questions/11022446/direction-of-shortest-rotation-between-two-vectors */
-    osg::Vec3f r = n0 ^ n1;
-    double sign = r * rotaxis;
+    osg::Vec3f r = rot_axis ^ new_axis;
+    double sign = r * along_axis;
     theta *= (sign<0? -1 : 1);
     if (std::fabs(theta) > dureu::PI){
         outErrMsg("doEditCanvasRotate: theta is out of range. Fixing.");
         theta = 0;
     }
 
-    osg::Quat rot(theta, rotaxis);
+    osg::Quat rot(theta, along_axis);
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
@@ -351,11 +361,6 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     default:
         break;
     }
-}
-
-void EventHandler::doEditCanvasRotateV(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
-{
-
 }
 
 void EventHandler::doCanvasClone(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
@@ -567,7 +572,9 @@ dureu::MOUSE_MODE EventHandler::getMouseMode(const T &result, dureu::MOUSE_MODE 
         return dureu::ENTITY_SCALE;
     else if (name == "Normal1" || name == "Normal2")
         return dureu::CANVAS_OFFSET;
-    else if (name == "RotateX1" || name == "RotateX2" || name == "RotateY1" || name == "RotateY2")
+    else if (name == "RotateX1" || name == "RotateX2")
+        return dureu::CANVAS_ROTATE_V;
+    else if (name == "RotateY1" || name == "RotateY2")
         return dureu::CANVAS_ROTATE;
     return mode_default;
 }
@@ -702,7 +709,6 @@ bool EventHandler::setSubMouseMode(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
     if (ea.getEventType() == osgGA::GUIEventAdapter::MOVE){
         if (!m_glWidget) return result;
         if (selected){
-            outLogMsg("searching for drawables");
             TResult* result_drawable = new TResult;
             bool inter_occured = this->getLineIntersection<TResult, TIntersector>(ea,aa, dureu::MASK_CANVASFRAME_IN, *result_drawable);
 

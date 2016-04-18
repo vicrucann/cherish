@@ -268,8 +268,8 @@ void entity::FrameTool::initializeSG()
     this->initLineGeometry(m_geomNormal1, 10.f, "Normal1");
     this->initLineGeometry(m_geomNormal2, 10.f,  "Normal2");
     this->initLineGeometry(m_geomRotateX1, 10.f, "RotateX1");
-    this->initLineGeometry(m_geomRotateY1, 10.f, "RotateX2");
-    this->initLineGeometry(m_geomRotateX2, 10.f,  "RotateY1");
+    this->initLineGeometry(m_geomRotateY1, 10.f, "RotateY1");
+    this->initLineGeometry(m_geomRotateX2, 10.f,  "RotateX2");
     this->initLineGeometry(m_geomRotateY2, 10.f, "RotateY2");
 
     /* intersection settings */
