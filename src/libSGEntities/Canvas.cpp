@@ -345,6 +345,7 @@ void entity::Canvas::unselectAll()
 {
     this->setStrokeCurrent(false);
     this->unselectEntities();
+    this->getToolFrame()->setEditable(false);
 }
 
 void entity::Canvas::unselectEntities()

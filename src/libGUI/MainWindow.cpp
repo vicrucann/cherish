@@ -435,26 +435,31 @@ void MainWindow::onCameraAperture()
 
 void MainWindow::onSelect(){
     m_glWidget->setMouseMode(dureu::SELECT_ENTITY);
+    this->recievedRequestUpdate();
 }
 
 void MainWindow::onErase()
 {
     m_glWidget->setMouseMode(dureu::PEN_ERASE);
+    this->recievedRequestUpdate();
 }
 
 void MainWindow::onDelete()
 {
     m_glWidget->setMouseMode(dureu::PEN_DELETE);
+    this->recievedRequestUpdate();
 }
 
 void MainWindow::onSketch()
 {
     m_glWidget->setMouseMode(dureu::PEN_SKETCH);
+    this->recievedRequestUpdate();
 }
 
 void MainWindow::onNewCanvasClone()
 {
     m_glWidget->setMouseMode(dureu::CREATE_CANVASCLONE);
+    this->recievedRequestUpdate();
 }
 
 void MainWindow::onNewCanvasXY()
@@ -462,6 +467,7 @@ void MainWindow::onNewCanvasXY()
     m_rootScene->addCanvas(osg::Matrix::identity(), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
+    this->recievedRequestUpdate();
 }
 
 void MainWindow::onNewCanvasYZ()
@@ -469,6 +475,7 @@ void MainWindow::onNewCanvasYZ()
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
+    this->recievedRequestUpdate();
 }
 
 void MainWindow::onNewCanvasXZ()
@@ -476,6 +483,7 @@ void MainWindow::onNewCanvasXZ()
     m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
+    this->recievedRequestUpdate();
 }
 
 void MainWindow::onNewCanvasOrtho()
@@ -488,6 +496,7 @@ void MainWindow::onNewCanvasOrtho()
 
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas perpendicular to previous was created"));
+    this->recievedRequestUpdate();
 }
 
 void MainWindow::onNewCanvasStandard()
@@ -500,6 +509,7 @@ void MainWindow::onNewCanvasStandard()
                            osg::Matrix::translate(0.f, 0.f, 0.f));
     this->onSketch();
     this->statusBar()->showMessage(tr("Set of canvases created."));
+    this->recievedRequestUpdate();
 }
 
 void MainWindow::onNewCanvasCoaxial()
@@ -530,6 +540,7 @@ void MainWindow::onCanvasRotate()
 void MainWindow::onCanvasEdit()
 {
     m_glWidget->setMouseMode(dureu::MOUSE_CANVAS);
+    this->recievedRequestUpdate();
 }
 
 void MainWindow::onImageMove()

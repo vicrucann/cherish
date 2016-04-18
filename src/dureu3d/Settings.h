@@ -111,6 +111,7 @@ enum MOUSE_MODE
     MOUSE_CANVAS = 0x400,
     CANVAS_OFFSET,
     CANVAS_ROTATE,
+    CANVAS_ROTATE_V,
 
     maskMouse = 0xff00,
     maskEntity = 0xff0,

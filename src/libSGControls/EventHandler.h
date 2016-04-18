@@ -48,6 +48,7 @@ public:
     void doEditCanvas(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void doEditCanvasOffset(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void doEditCanvasRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doEditCanvasRotateV(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
     void doCanvasClone(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     template <typename T1, typename T2>

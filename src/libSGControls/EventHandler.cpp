@@ -353,6 +353,11 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     }
 }
 
+void EventHandler::doEditCanvasRotateV(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+
+}
+
 void EventHandler::doCanvasClone(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
