@@ -84,8 +84,8 @@ private slots:
     void onNewCanvasParallel();
     void onNewCanvasRing();
 
-    void onCanvasOffset();
-    void onCanvasRotate();
+//    void onCanvasOffset();
+//    void onCanvasRotate();
     void onCanvasEdit();
 
     void onImageMove();
@@ -146,7 +146,8 @@ private:
             , * m_actionSetStandard
 //            , * m_actionSetParallel, * m_actionSetCoaxial, * m_actionSetRing
             // Edit Canvas
-            , * m_actionCanvasOffset, * m_actionCanvasRotate, * m_actionCanvasEdit
+//            , * m_actionCanvasOffset, * m_actionCanvasRotate
+            , * m_actionCanvasEdit
             // Edit Image
 //            , * m_actionImageMove, * m_actionImageRotate, * m_actionImageScale, * m_actionImageFlipV
 //            , * m_actionImageFlipH

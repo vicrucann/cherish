@@ -84,14 +84,26 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         }
         break;
     case dureu::MOUSE_CANVAS:
-        if (m_mode == dureu::CANVAS_OFFSET)
+        switch (m_mode){
+        case dureu::CANVAS_OFFSET:
             this->doEditCanvasOffset(ea, aa);
-        else if (m_mode == dureu::CANVAS_ROTATE)
-            this->doEditCanvasRotate(ea, aa);
-        else if (m_mode == dureu::CANVAS_ROTATE_V)
-            this->doEditCanvasRotate(ea, aa, false);
-        else
+            break;
+        case dureu::CANVAS_ROTATE_UPLUS:
+            this->doEditCanvasRotate(ea, aa, osg::Vec3f(0,1,0), osg::Vec3f(-1,0,0));
+            break;
+        case dureu::CANVAS_ROTATE_UMINUS:
+            this->doEditCanvasRotate(ea, aa, osg::Vec3f(0,1,0), osg::Vec3f(1,0,0));
+            break;
+        case dureu::CANVAS_ROTATE_VPLUS:
+            this->doEditCanvasRotate(ea, aa, osg::Vec3f(1,0,0), osg::Vec3f(0,1,0));
+            break;
+        case dureu::CANVAS_ROTATE_VMINUS:
+            this->doEditCanvasRotate(ea, aa, osg::Vec3f(1,0,0), osg::Vec3f(0,-1,0));
+            break;
+        default:
             this->doEditCanvas(ea, aa);
+            break;
+        }
         break;
     default:
         break;
@@ -281,7 +293,7 @@ void EventHandler::doEditCanvasOffset(const osgGA::GUIEventAdapter &ea, osgGA::G
 
 // TODO: pass rotaxis based on the mode
 // FIXME: rotation need to track canvas frame not normal
-void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, bool alongV)
+void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, osg::Vec3f alongAxis, osg::Vec3f rotAxis)
 {
     entity::Canvas* canvas = m_scene->getCanvasCurrent();
     if (!canvas) return;
@@ -301,24 +313,18 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     osg::Vec3f center = m_scene->getCanvasCurrent()->getCenter();
     osg::Matrix M = m_scene->getCanvasCurrent()->getTransform()->getMatrix();
 
-    osg::Vec3f along_axis = osg::Vec3f(0.f,1.f,0.f);
-    osg::Vec3f rot_axis = osg::Vec3f(1.f, 0.f, 0.f);
-    if (!alongV){
-        along_axis = osg::Vec3f(1.f, 0.f, 0.f);
-        rot_axis = osg::Vec3f(0.f, 1.f, 0.f);
-    }
-    along_axis = along_axis * M - center;
-    along_axis.normalize();
-    if (!this->getRaytracePlaneIntersection(ea, aa, along_axis, P))
+    alongAxis = alongAxis * M - center;
+    alongAxis.normalize();
+    if (!this->getRaytracePlaneIntersection(ea, aa, alongAxis, P))
         return;
 
-    rot_axis = rot_axis * M - center;
-    rot_axis.normalize();
+    rotAxis = rotAxis * M - center;
+    rotAxis.normalize();
 
     osg::Vec3f new_axis = P - center;
     new_axis.normalize();
 
-    double atheta = rot_axis * new_axis;
+    double atheta = rotAxis * new_axis;
     if (atheta > 1 && atheta < -1) atheta = 1;
 
     errno = 0;
@@ -334,15 +340,15 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
 
     /* need to figure out direction of rotation
      * http://stackoverflow.com/questions/11022446/direction-of-shortest-rotation-between-two-vectors */
-    osg::Vec3f r = rot_axis ^ new_axis;
-    double sign = r * along_axis;
+    osg::Vec3f r = rotAxis ^ new_axis;
+    double sign = r * alongAxis;
     theta *= (sign<0? -1 : 1);
     if (std::fabs(theta) > dureu::PI){
         outErrMsg("doEditCanvasRotate: theta is out of range. Fixing.");
         theta = 0;
     }
 
-    osg::Quat rot(theta, along_axis);
+    osg::Quat rot(theta, alongAxis);
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
@@ -572,10 +578,14 @@ dureu::MOUSE_MODE EventHandler::getMouseMode(const T &result, dureu::MOUSE_MODE 
         return dureu::ENTITY_SCALE;
     else if (name == "Normal1" || name == "Normal2")
         return dureu::CANVAS_OFFSET;
-    else if (name == "RotateX1" || name == "RotateX2")
-        return dureu::CANVAS_ROTATE_V;
-    else if (name == "RotateY1" || name == "RotateY2")
-        return dureu::CANVAS_ROTATE;
+    else if (name == "RotateX1")
+        return dureu::CANVAS_ROTATE_VPLUS;
+    else if (name == "RotateX2")
+        return dureu::CANVAS_ROTATE_VMINUS;
+    else if (name == "RotateY1")
+        return dureu::CANVAS_ROTATE_UPLUS;
+    else if (name == "RotateY2")
+        return dureu::CANVAS_ROTATE_UMINUS;
     return mode_default;
 }
 
@@ -769,7 +779,10 @@ void EventHandler::finishAll()
     case dureu::CANVAS_OFFSET:
         m_scene->editCanvasOffset(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
         break;
-    case dureu::CANVAS_ROTATE:
+    case dureu::CANVAS_ROTATE_UPLUS:
+    case dureu::CANVAS_ROTATE_UMINUS:
+    case dureu::CANVAS_ROTATE_VPLUS:
+    case dureu::CANVAS_ROTATE_VMINUS:
         m_scene->editCanvasRotate(osg::Quat(0,0,0,1), m_scene->getCanvasCurrent()->getCenter(), dureu::EVENT_OFF);
         break;
     case dureu::CREATE_CANVASCLONE:

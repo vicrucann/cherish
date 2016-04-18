@@ -33,7 +33,6 @@ entity::Canvas::Canvas()
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
     , m_normal(dureu::NORMAL)
     , m_edit(false)
-    , m_rotaxis(osg::Vec3f(0.f, 1.f, 0.f))
 {
     /* OpenGL state machine for the canvas */
     osg::StateSet* stateset = new osg::StateSet;
@@ -76,7 +75,6 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_center(cnv.m_center)
     , m_normal(cnv.m_normal)
     , m_edit(cnv.m_edit)
-    , m_rotaxis(osg::Vec3f(0.f, 1.f, 0.f))
 {
     this->setNodeMask(dureu::MASK_CANVAS_IN);
     m_geodeData->setNodeMask(dureu::MASK_CANVASDATA_IN);
@@ -218,17 +216,6 @@ void entity::Canvas::setColor(const osg::Vec4f &color)
 const osg::Vec4f &entity::Canvas::getColor() const
 {
     return m_toolFrame->getColor();
-}
-
-void entity::Canvas::setRotationAxis(const osg::Vec3f &axis)
-{
-    outLogVec("canvas setting rotation axis to", axis.x(), axis.y(), axis.z());
-    m_rotaxis = axis;
-}
-
-const osg::Vec3f &entity::Canvas::getRotationAxis() const
-{
-    return m_rotaxis;
 }
 
 void entity::Canvas::setVisibilityFrame(bool vis)

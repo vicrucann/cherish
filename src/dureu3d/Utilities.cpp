@@ -379,8 +379,10 @@ QCursor *Utilities::getCursorFromMode(dureu::MOUSE_MODE mode)
     case dureu::CANVAS_OFFSET:
         cur = new QCursor(Data::sceneCanvasOffsetCursor(), -1, -1);
         break;
-    case dureu::CANVAS_ROTATE:
-    case dureu::CANVAS_ROTATE_V:
+    case dureu::CANVAS_ROTATE_UPLUS:
+    case dureu::CANVAS_ROTATE_UMINUS:
+    case dureu::CANVAS_ROTATE_VPLUS:
+    case dureu::CANVAS_ROTATE_VMINUS:
         cur = new QCursor(Data::sceneCanvasRotateCursor(), -1, -1);
         break;
 

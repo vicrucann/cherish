@@ -75,9 +75,6 @@ public:
     void setColor(const osg::Vec4f& color);
     const osg::Vec4f& getColor() const;
 
-    void setRotationAxis(const osg::Vec3f& axis);
-    const osg::Vec3f& getRotationAxis() const;
-
     void setVisibilityFrame(bool vis);
     bool getVisibility() const;
 
@@ -158,7 +155,6 @@ private:
     osg::Vec3f m_normal; /* 3D global - virtual plane parameter*/
 
     bool m_edit;
-    osg::Vec3f m_rotaxis;
 
 };
 }

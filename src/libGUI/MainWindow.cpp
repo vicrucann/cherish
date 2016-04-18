@@ -527,15 +527,15 @@ void MainWindow::onNewCanvasRing()
     this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
 
-void MainWindow::onCanvasOffset()
-{
-    m_glWidget->setMouseMode(dureu::CANVAS_OFFSET);
-}
+//void MainWindow::onCanvasOffset()
+//{
+//    m_glWidget->setMouseMode(dureu::CANVAS_OFFSET);
+//}
 
-void MainWindow::onCanvasRotate()
-{
-    m_glWidget->setMouseMode(dureu::CANVAS_ROTATE);
-}
+//void MainWindow::onCanvasRotate()
+//{
+//    m_glWidget->setMouseMode(dureu::CANVAS_ROTATE_U);
+//}
 
 void MainWindow::onCanvasEdit()
 {
@@ -731,11 +731,11 @@ void MainWindow::initializeActions()
 //    m_actionSetRing = new QAction(Data::sceneNewCanvasSetRingIcon(), tr("Ring"), this);
 //    this->connect(m_actionSetRing, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasRing()));
 
-    m_actionCanvasOffset = new QAction(Data::sceneCanvasOffsetIcon(), tr("Offset Canvas"), this);
-    this->connect(m_actionCanvasOffset, SIGNAL(triggered(bool)), this, SLOT(onCanvasOffset()));
+//    m_actionCanvasOffset = new QAction(Data::sceneCanvasOffsetIcon(), tr("Offset Canvas"), this);
+//    this->connect(m_actionCanvasOffset, SIGNAL(triggered(bool)), this, SLOT(onCanvasOffset()));
 
-    m_actionCanvasRotate = new QAction(Data::sceneCanvasRotateIcon(), tr("Rotate Canvas"), this);
-    this->connect(m_actionCanvasRotate, SIGNAL(triggered(bool)), this, SLOT(onCanvasRotate()));
+//    m_actionCanvasRotate = new QAction(Data::sceneCanvasRotateIcon(), tr("Rotate Canvas"), this);
+//    this->connect(m_actionCanvasRotate, SIGNAL(triggered(bool)), this, SLOT(onCanvasRotate()));
 
     m_actionCanvasEdit = new QAction(Data::sceneCanvasEditIcon(), tr("Edit canvas location"), this);
     this->connect(m_actionCanvasEdit, SIGNAL(triggered(bool)), this, SLOT(onCanvasEdit()));

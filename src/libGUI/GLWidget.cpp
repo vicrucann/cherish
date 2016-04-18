@@ -235,14 +235,6 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         if ((event->modifiers() & Qt::ControlModifier))
             m_RootScene->selectAllStrokes();
         return;
-    case Qt::Key_U:
-        if (m_RootScene->getCanvasCurrent())
-            m_RootScene->getCanvasCurrent()->setRotationAxis(osg::Vec3f(1.f, 0.f, 0.f));
-        return;
-    case Qt::Key_V:
-        if (m_RootScene->getCanvasCurrent())
-            m_RootScene->getCanvasCurrent()->setRotationAxis(osg::Vec3f(0.f, 1.f, 0.f));
-        return;
     default:
         break;
     }
