@@ -245,6 +245,9 @@ entity::FrameTool::FrameTool()
     , m_cameraAxis(new osg::Camera)
     , m_selected(false)
     , m_editable(false)
+    , m_visible(true)
+
+    , m_visibilityState(0)
 {
     this->initializeSG();
     this->setColor(dureu::CANVAS_CLR_REST);
@@ -314,22 +317,50 @@ void entity::FrameTool::initializeSG()
     m_switch->addChild(m_geodeRotation);
 }
 
-// TODO: push to stack visibility values, and then pop them
+// push to stack visibility values, and then pop them
 // when visibility is turned on back
 void entity::FrameTool::setVisibility(bool on)
 {
+    m_visible = on;
     m_switch->setChildValue(m_geodeWire, on);
-    m_switch->setChildValue(m_geodePickable, on);
-    m_switch->setChildValue(m_geodeIntersect, on);
-    m_switch->setChildValue(m_cameraAxis, false); // FIXME
-    m_switch->setChildValue(m_geodeScales, false); // FIXME
-    m_switch->setChildValue(m_geodeNormal, false); // FIXME
-    m_switch->setChildValue(m_geodeRotation, false); // FIXME
+
+    if (on && m_visibilityState.size() == 6){
+        m_switch->setChildValue(m_cameraAxis, m_visibilityState.at(0));
+        m_switch->setChildValue(m_geodeScales, m_visibilityState.at(1));
+        m_switch->setChildValue(m_geodeNormal, m_visibilityState.at(2));
+        m_switch->setChildValue(m_geodeRotation, m_visibilityState.at(3));
+        m_switch->setChildValue(m_geodePickable, m_visibilityState.at(4));
+        m_switch->setChildValue(m_geodeIntersect, m_visibilityState.at(5));
+        m_visibilityState.clear();
+    }
+    else if (!on && m_visibilityState.size() == 0){
+        m_visibilityState.push_back(m_switch->getChildValue(m_cameraAxis));
+        m_visibilityState.push_back(m_switch->getChildValue(m_geodeScales));
+        m_visibilityState.push_back(m_switch->getChildValue(m_geodeNormal));
+        m_visibilityState.push_back(m_switch->getChildValue(m_geodeRotation));
+        m_visibilityState.push_back(m_switch->getChildValue(m_geodePickable));
+        m_visibilityState.push_back(m_switch->getChildValue(m_geodeIntersect));
+
+        m_switch->setChildValue(m_cameraAxis, false);
+        m_switch->setChildValue(m_geodeScales, false);
+        m_switch->setChildValue(m_geodeNormal, false);
+        m_switch->setChildValue(m_geodeRotation, false);
+        m_switch->setChildValue(m_geodePickable, false);
+        m_switch->setChildValue(m_geodeIntersect, false);
+    }
+    else {
+        m_switch->setChildValue(m_cameraAxis, false);
+        m_switch->setChildValue(m_geodeScales, false);
+        m_switch->setChildValue(m_geodeNormal, false);
+        m_switch->setChildValue(m_geodeRotation, false);
+        m_switch->setChildValue(m_geodePickable, on);
+        m_switch->setChildValue(m_geodeIntersect, on);
+    }
 }
 
 bool entity::FrameTool::getVisibility() const
 {
-    return m_switch->getChildValue(m_geodeWire);
+    return m_visible;
 }
 
 void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float szY,
@@ -337,73 +368,75 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
                                     const osg::Vec3f &centerCustom, double theta,
                                     bool selectionIsEmpty)
 {
-    /* wireframe drawables */
-    std::vector<osg::Vec3f> verts;
-    verts.push_back(center + osg::Vec3(szX,szY,0.f));
-    verts.push_back(center + osg::Vec3(-szX,szY,0.f));
-    verts.push_back(center + osg::Vec3(-szX,-szY,0.f));
-    verts.push_back(center + osg::Vec3(szX,-szY,0.f));
-    ToolGlobal::setVertices(verts);
-    m_switch->setChildValue(m_geodeWire, true);
+    if (m_visible){
+        /* wireframe drawables */
+        std::vector<osg::Vec3f> verts;
+        verts.push_back(center + osg::Vec3(szX,szY,0.f));
+        verts.push_back(center + osg::Vec3(-szX,szY,0.f));
+        verts.push_back(center + osg::Vec3(-szX,-szY,0.f));
+        verts.push_back(center + osg::Vec3(szX,-szY,0.f));
+        ToolGlobal::setVertices(verts);
+        m_switch->setChildValue(m_geodeWire, true);
 
-    m_selected = !selectionIsEmpty;
+        m_selected = !selectionIsEmpty;
 
-    osg::Vec3f p0 = verts.at(0);
-    /* if normal mode, set up pickable position */
-    if (selectionIsEmpty){
-        this->setQuadGeometry(m_geomPickable, p0, szCr, szCr);
-        m_switch->setChildValue(m_geodePickable, true);
-        m_switch->setChildValue(m_cameraAxis, false);
-        m_switch->setChildValue(m_geodeScales, false);
-        m_switch->setChildValue(m_geodeNormal, false);
-        m_switch->setChildValue(m_geodeRotation, false);
+        osg::Vec3f p0 = verts.at(0);
+        /* if normal mode, set up pickable position */
+        if (selectionIsEmpty){
+            this->setQuadGeometry(m_geomPickable, p0, szCr, szCr);
+            m_switch->setChildValue(m_geodePickable, true);
+            m_switch->setChildValue(m_cameraAxis, false);
+            m_switch->setChildValue(m_geodeScales, false);
+            m_switch->setChildValue(m_geodeNormal, false);
+            m_switch->setChildValue(m_geodeRotation, false);
 
-        if (m_editable){
-            m_switch->setChildValue(m_geodeNormal, true);
-            m_switch->setChildValue(m_geodeRotation, true);
-            m_switch->setChildValue(m_geodePickable, false);
-            m_switch->setChildValue(m_geodeWire, false);
+            if (m_editable){
+                m_switch->setChildValue(m_geodeNormal, true);
+                m_switch->setChildValue(m_geodeRotation, true);
+                m_switch->setChildValue(m_geodePickable, false);
+                m_switch->setChildValue(m_geodeWire, false);
 
-            osg::Vec3f deltaN = osg::Vec3f(0.f, 0.f, szAx);
-            osg::Vec3f deltaC = osg::Vec3f(0.f, 0.f, szAx*0.2f);
-            this->setLineGeometry(m_geomNormal1, center + deltaC, center + deltaN);
-            this->setLineGeometry(m_geomNormal2, center - deltaC, center - deltaN);
+                osg::Vec3f deltaN = osg::Vec3f(0.f, 0.f, szAx);
+                osg::Vec3f deltaC = osg::Vec3f(0.f, 0.f, szAx*0.2f);
+                this->setLineGeometry(m_geomNormal1, center + deltaC, center + deltaN);
+                this->setLineGeometry(m_geomNormal2, center - deltaC, center - deltaN);
 
-            this->setLineGeometry(m_geomRotateX1, verts[0], verts[1]);
-            this->setLineGeometry(m_geomRotateX2, verts[2], verts[3]);
-            this->setLineGeometry(m_geomRotateY1, verts[1], verts[2]);
-            this->setLineGeometry(m_geomRotateY2, verts[3], verts[0]);
+                this->setLineGeometry(m_geomRotateX1, verts[0], verts[1]);
+                this->setLineGeometry(m_geomRotateX2, verts[2], verts[3]);
+                this->setLineGeometry(m_geomRotateY1, verts[1], verts[2]);
+                this->setLineGeometry(m_geomRotateY2, verts[3], verts[0]);
+            }
         }
-    }
-    /* if edit mode, set up selected drawables */
-    else {
-        m_switch->setChildValue(m_geodePickable, false);
-        m_switch->setChildValue(m_cameraAxis, true);
-        m_switch->setChildValue(m_geodeScales, true);
-        m_switch->setChildValue(m_geodeNormal, false);
-        m_switch->setChildValue(m_geodeRotation, false);
+        /* if edit mode, set up selected drawables */
+        else {
+            m_switch->setChildValue(m_geodePickable, false);
+            m_switch->setChildValue(m_cameraAxis, true);
+            m_switch->setChildValue(m_geodeScales, true);
+            m_switch->setChildValue(m_geodeNormal, false);
+            m_switch->setChildValue(m_geodeRotation, false);
 
-        osg::Vec3f Pc = centerCustom + osg::Vec3f(szCr*0.5, szCr*0.5, 0);
-        this->setQuadGeometry(m_geomCenter, Pc, szCr, szCr);
+            osg::Vec3f Pc = centerCustom + osg::Vec3f(szCr*0.5, szCr*0.5, 0);
+            this->setQuadGeometry(m_geomCenter, Pc, szCr, szCr);
 
-        osg::Vec3f Pau = Pc + osg::Vec3f(szAx + 0.1, 0, 0);
-        this->setQuadGeometry(m_geomAxisU, Pau, szAx, szCr, theta, centerCustom);
+            osg::Vec3f Pau = Pc + osg::Vec3f(szAx + 0.1, 0, 0);
+            this->setQuadGeometry(m_geomAxisU, Pau, szAx, szCr, theta, centerCustom);
 
-        osg::Vec3f Pav = Pc + osg::Vec3f(0, szAx + 0.1, 0);
-        this->setQuadGeometry(m_geomAxisV, Pav, szCr, szAx, theta, centerCustom);
+            osg::Vec3f Pav = Pc + osg::Vec3f(0, szAx + 0.1, 0);
+            this->setQuadGeometry(m_geomAxisV, Pav, szCr, szAx, theta, centerCustom);
 
-        float sz05 = szCr*0.5;
-        osg::Vec3f p1 = verts.at(1) + osg::Vec3f(szCr,0,0);
-        osg::Vec3f p2 = verts.at(2) + osg::Vec3f(szCr, szCr, 0);
-        osg::Vec3f p3 = verts.at(3) + osg::Vec3f(0, szCr, 0);
-        osg::Vec3f p01 = p1 + osg::Vec3f(szX-sz05,0,0);
-        osg::Vec3f p23 = p2 + osg::Vec3f(szX-sz05,0,0);
-        osg::Vec3f p12 = p2 + osg::Vec3f(0,szY-sz05,0);
-        osg::Vec3f p30 = p3 + osg::Vec3f(0,szY-sz05,0);
-        this->setQuadGeometry(m_geomScaleUV1, p0, szCr, szCr);
-        this->setQuadGeometry(m_geomScaleUV2, p1, szCr, szCr);
-        this->setQuadGeometry(m_geomScaleUV3, p2, szCr, szCr);
-        this->setQuadGeometry(m_geomScaleUV4, p3, szCr, szCr);
+    //        float sz05 = szCr*0.5;
+            osg::Vec3f p1 = verts.at(1) + osg::Vec3f(szCr,0,0);
+            osg::Vec3f p2 = verts.at(2) + osg::Vec3f(szCr, szCr, 0);
+            osg::Vec3f p3 = verts.at(3) + osg::Vec3f(0, szCr, 0);
+    //        osg::Vec3f p01 = p1 + osg::Vec3f(szX-sz05,0,0);
+    //        osg::Vec3f p23 = p2 + osg::Vec3f(szX-sz05,0,0);
+    //        osg::Vec3f p12 = p2 + osg::Vec3f(0,szY-sz05,0);
+    //        osg::Vec3f p30 = p3 + osg::Vec3f(0,szY-sz05,0);
+            this->setQuadGeometry(m_geomScaleUV1, p0, szCr, szCr);
+            this->setQuadGeometry(m_geomScaleUV2, p1, szCr, szCr);
+            this->setQuadGeometry(m_geomScaleUV3, p2, szCr, szCr);
+            this->setQuadGeometry(m_geomScaleUV4, p3, szCr, szCr);
+        }
     }
 }
 

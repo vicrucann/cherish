@@ -208,6 +208,7 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
     stack->push(cmd);
 }
 
+// FIXME: when bookmark is added while all the tools are turned off?
 void entity::UserScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     if (!m_bookmarks.get()){

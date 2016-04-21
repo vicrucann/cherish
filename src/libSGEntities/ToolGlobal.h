@@ -131,6 +131,9 @@ private:
 
     bool m_selected; // if there is selection present on scene
     bool m_editable; // if canvas is in edit mode: offset and rotation
+    bool m_visible;
+
+    std::vector<bool> m_visibilityState;
 };
 
 }
