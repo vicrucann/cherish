@@ -118,17 +118,9 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     buttonVis.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
     buttonVis.icon = Data::controlCanvasVisibilityIcon();
 
-    if (option.state.testFlag(QStyle::State_Sunken)){
-        outLogMsg("option is sunken");
-        buttonVis.state = QStyle::State_Enabled | QStyle::State_Off;
-    }
-    else
-        buttonVis.state = QStyle::State_Enabled | QStyle::State_On;
-
-    //buttonVis.state = QStyle::State_Enabled | QStyle::State_On;
-
-    buttonVis.features = QStyleOptionButton::None;
-    buttonVis.icon.On;
+    bool isNotChecked = index.data(Qt::UserRole).toBool();
+    buttonVis.state |= QStyle::State_Enabled;
+    buttonVis.state |= isNotChecked? QStyle::State_Off : QStyle::State_On;
 
     QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonDelete, painter);
     QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonVis, painter);
@@ -164,10 +156,9 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
                 if (event->type() == QEvent::MouseButtonPress){
                     outLogMsg("canvas delegate: clicked visibility");
                     emit this->clickedVisibility(index);
-//                    if (option.checkState == Qt::Checked)
-//                        option.checkState = QStyle::State_Enabled | QStyle::State_Off;
-//                    else option.checkState = QStyle::State_Enabled | QStyle::State_On;
 
+                    bool value = index.data(Qt::UserRole).toBool();
+                    model->setData(index, !value, Qt::UserRole);
                 }
                 return true;
             }
