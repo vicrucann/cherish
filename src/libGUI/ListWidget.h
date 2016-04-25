@@ -41,4 +41,19 @@ protected:
     virtual void mousePressEvent(QMouseEvent* event);
 };
 
+class PhotoWidget : public QListWidget
+{
+    Q_OBJECT
+public:
+    PhotoWidget(QWidget* parent = 0);
+
+    PhotoDelegate* getPhotoDelegate() const;
+
+signals:
+
+public slots:
+
+protected:
+};
+
 #endif // LISTWIDGET_H

@@ -54,4 +54,18 @@ private:
 
 };
 
+class PhotoDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
+public:
+    PhotoDelegate(QObject* parent = 0);
+
+    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
+
+signals:
+
+private:
+};
+
 #endif // LISTDELEGATE_H

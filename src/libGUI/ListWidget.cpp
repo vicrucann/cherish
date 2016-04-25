@@ -115,3 +115,20 @@ void CanvasWidget::mousePressEvent(QMouseEvent *event)
     }
     QListWidget::mousePressEvent(event);
 }
+
+PhotoWidget::PhotoWidget(QWidget *parent)
+    : QListWidget(parent)
+{
+    this->setSelectionBehavior(QAbstractItemView::SelectItems);
+    this->setSelectionMode(QAbstractItemView::SingleSelection);
+    this->setDragDropMode(QAbstractItemView::NoDragDrop);
+    this->setSpacing(2);
+    this->setEditTriggers(QListWidget::DoubleClicked);
+    this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
+    this->setTabKeyNavigation(false);
+}
+
+PhotoDelegate *PhotoWidget::getPhotoDelegate() const
+{
+    return dynamic_cast<PhotoDelegate*>(this->itemDelegate());
+}

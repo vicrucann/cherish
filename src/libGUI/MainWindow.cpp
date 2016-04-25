@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_tabWidget(new QTabWidget())
     , m_bookmarkWidget(new BookmarkWidget())
     , m_canvasWidget(new CanvasWidget())
+    , m_photoWidget(new PhotoWidget())
 
     , m_undoStack(new QUndoStack(this))
 
@@ -59,8 +60,10 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     m_tabWidget->setTabPosition(QTabWidget::West);
     m_tabWidget->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
     m_tabWidget->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
+    m_tabWidget->addTab(m_photoWidget, Data::controlImagesIcon(), QString(""));
     m_bookmarkWidget->setItemDelegate(new BookmarkDelegate);
     m_canvasWidget->setItemDelegate(new CanvasDelegate);
+    m_photoWidget->setItemDelegate(new PhotoDelegate);
 
     /* viewer stack */
     m_viewStack->setUndoLimit(50);

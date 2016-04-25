@@ -185,3 +185,18 @@ QRect CanvasDelegate::getButtonVisibilityRect(const QRect &rect) const
     w = h = sz;
     return QRect(x,y,w,h);
 }
+
+PhotoDelegate::PhotoDelegate(QObject *parent)
+    : QStyledItemDelegate(parent)
+{
+}
+
+void PhotoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    QStyledItemDelegate::paint(painter, option, index);
+}
+
+bool PhotoDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    return QStyledItemDelegate::editorEvent(event, model, option, index);
+}
