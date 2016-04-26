@@ -64,8 +64,14 @@ public:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 signals:
+    void clickedDelete(const QModelIndex& index);
+    void clickedTransparencyPlus(const QModelIndex& index);
+    void clickedTransparencyMinus(const QModelIndex& index);
 
 private:
+    QRect getButtonDeleteRect(const QRect& rect) const;
+    QRect getButtonPlus(const QRect& rect) const;
+    QRect getButtonMinus(const QRect& rect) const;
 };
 
 #endif // LISTDELEGATE_H

@@ -62,6 +62,8 @@ public:
     static const QIcon& sceneImageFlipVIcon();
     static const QIcon& sceneImageFlipHIcon();
     static const QIcon& sceneImagePushIcon();
+    static const QIcon& sceneImageTransparencyOnIcon();
+    static const QIcon& sceneImageTransparencyOffIcon();
 
     static const QIcon& sceneRectangleIcon();
     static const QIcon& sceneArcIcon();

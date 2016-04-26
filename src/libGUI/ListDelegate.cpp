@@ -194,9 +194,107 @@ PhotoDelegate::PhotoDelegate(QObject *parent)
 void PhotoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QStyledItemDelegate::paint(painter, option, index);
+
+    QRect r = option.rect;
+    QStyleOptionButton buttonDelete;
+    QStyleOptionButton buttonPlus, buttonMinus; // photo transparency
+
+    buttonDelete.rect = getButtonDeleteRect(r);
+    buttonDelete.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+    buttonDelete.icon = Data::editDeleteIcon();
+    buttonDelete.state = QStyle::State_Enabled;
+    buttonDelete.features = QStyleOptionButton::None;
+
+    buttonPlus.rect = getButtonPlus(r);
+    buttonPlus.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+    buttonPlus.icon = Data::sceneImageTransparencyOnIcon();
+    buttonPlus.state = QStyle::State_Enabled;
+    buttonPlus.features = QStyleOptionButton::None;
+
+    buttonMinus.rect = getButtonMinus(r);
+    buttonMinus.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+    buttonMinus.icon = Data::sceneImageTransparencyOffIcon();
+    buttonMinus.state = QStyle::State_Enabled;
+    buttonMinus.features = QStyleOptionButton::None;
+
+//    QStyleOptionSlider slider;
+//    slider.rect = getButtonTransparencyRect(r);
+//    slider.state = QStyle::State_Enabled;
+//    slider.minimum = 0;
+//    slider.maximum = 100;
+//    slider.singleStep = 25;
+//    slider.sliderPosition = 100;
+//    slider.tickPosition = QSlider::TicksBelow;
+//    QApplication::style()->drawComplexControl(QStyle::CC_Slider, &slider, painter);
+
+    QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonDelete, painter);
+    QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonMinus, painter);
+    QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonPlus, painter);
 }
 
 bool PhotoDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
+    if (event->type() == QEvent::MouseButtonRelease) {
+        QMouseEvent * e = (QMouseEvent *)event;
+        int clickX = e->x();
+        int clickY = e->y();
+
+        QRect r = option.rect;
+        QRect bplus = this->getButtonPlus(r);
+        QRect bminus = this->getButtonMinus(r);
+        QRect br = this->getButtonDeleteRect(r);
+
+        if( clickX > br.x() && clickX < br.x() + br.width() )
+            if( clickY > br.y() && clickY < br.y() + br.height() )
+            {
+                emit this->clickedDelete(index);
+                return true;
+            }
+
+        if( clickX > bplus.x() && clickX < bplus.x() + bplus.width() )
+            if( clickY > bplus.y() && clickY < bplus.y() + bplus.height() )
+            {
+                emit this->clickedTransparencyPlus(index);
+                return true;
+            }
+
+        if( clickX > bminus.x() && clickX < bminus.x() + bminus.width() )
+            if( clickY > bminus.y() && clickY < bminus.y() + bminus.height() )
+            {
+                emit this->clickedTransparencyMinus(index);
+                return true;
+            }
+    }
+
     return QStyledItemDelegate::editorEvent(event, model, option, index);
+}
+
+QRect PhotoDelegate::getButtonDeleteRect(const QRect &rect) const
+{
+    int sz = dureu::APP_WIDGET_BUTTON;
+    int x,y,w,h;
+    x = rect.left() + rect.width() - sz;
+    y = rect.top() + (rect.height() - sz)/2;
+    w = h = sz;
+    return QRect(x,y,w,h);
+}
+
+QRect PhotoDelegate::getButtonPlus(const QRect &rect) const
+{
+    int sz = dureu::APP_WIDGET_BUTTON;
+    int x,y,w,h;
+    x = rect.left() + rect.width() - sz*2 - sz/2;
+    y = rect.top() + (rect.height() - sz)/2;
+    w = h = sz;
+    return QRect(x,y,w,h);
+}
+
+QRect PhotoDelegate::getButtonMinus(const QRect &rect) const
+{
+    int sz = dureu::APP_WIDGET_BUTTON;
+    int x,y,w,h;
+    x = rect.left() + rect.width() - sz*3 - sz;
+    y = rect.top() + (rect.height() - sz)/2;
+    w = h = sz;
+    return QRect(x,y,w,h);
 }

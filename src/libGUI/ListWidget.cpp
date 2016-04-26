@@ -132,3 +132,30 @@ PhotoDelegate *PhotoWidget::getPhotoDelegate() const
 {
     return dynamic_cast<PhotoDelegate*>(this->itemDelegate());
 }
+
+void PhotoWidget::onPhotoAdded(const std::string &name)
+{
+    this->addItem(QString(name.c_str()));
+    QListWidgetItem* item = this->item(this->count()-1);
+    if (!item){
+        outLogMsg("onCanvasAdded: could not extract just added item, "
+                  "properties are not set correctly");
+        return;
+    }
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
+    outLogVal("Photo added to widget", name);
+}
+
+void PhotoWidget::onPhotoRemoved(int row)
+{
+    if (row >= this->count()){
+        outErrMsg("onPhotoRemoved: photo index is out of range, "
+                  "removed will not be performed");
+        outLogVal("row", row);
+        outLogVal("count", this->count());
+        return;
+    }
+    QListWidgetItem* item = this->takeItem(row);
+    if (item)
+        delete item;
+}

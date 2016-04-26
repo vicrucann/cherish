@@ -281,7 +281,7 @@ void MainWindow::onFileOpen()
     m_glWidget->update();
     this->initializeCallbacks();
     m_rootScene->resetBookmarks(m_bookmarkWidget);
-    m_rootScene->getUserScene()->resetModel(m_canvasWidget);
+    m_rootScene->getUserScene()->resetModel(m_canvasWidget, m_photoWidget);
 
     this->statusBar()->showMessage(tr("Scene loaded."));
 }
@@ -1029,6 +1029,16 @@ void MainWindow::initializeCallbacks()
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedVisibility(QModelIndex)),
                      this, SLOT(onVisibilityCanvas(QModelIndex)),
                      Qt::UniqueConnection);
+
+    /* photo widget */
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(photoAdded(std::string)),
+                     m_photoWidget, SLOT(onPhotoAdded(std::string)),
+                     Qt::UniqueConnection);
+
+//    QObject::connect(m_rootScene->getUserScene(), SIGNAL(photoRemoved(int)),
+//                     m_photoWidget, SLOT(onPhotoRemoved(int)),
+//                     Qt::UniqueConnection);
+
 
     /* UI forms */
     QObject::connect(m_cameraProperties, SIGNAL(fovChanged(double)),

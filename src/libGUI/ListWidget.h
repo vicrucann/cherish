@@ -52,6 +52,8 @@ public:
 signals:
 
 public slots:
+    void onPhotoAdded(const std::string& name);
+    void onPhotoRemoved(int row);
 
 protected:
 };

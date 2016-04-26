@@ -304,6 +304,20 @@ const QIcon &Data::sceneImagePushIcon()
     return icon;
 }
 
+const QIcon &Data::sceneImageTransparencyOnIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/edit-photo-transparency-on-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/edit-photo-transparency-on-24px.svg");
+    return icon;
+}
+
+const QIcon &Data::sceneImageTransparencyOffIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/edit-photo-transparency-off-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/edit-photo-transparency-off-24px.svg");
+    return icon;
+}
+
 const QIcon &Data::sceneRectangleIcon()
 {
     Q_ASSERT_X(!QPixmap(":/scene-rectangle-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");

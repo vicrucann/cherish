@@ -72,5 +72,7 @@
         <file>file-export-24px.svg</file>
         <file>scene-select3d-24px.svg</file>
         <file>scene-canvas-edit-24px.svg</file>
+        <file>edit-photo-transparency-on-24px.svg</file>
+        <file>edit-photo-transparency-off-24px.svg</file>
     </qresource>
 </RCC>
