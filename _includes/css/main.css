@@ -28,7 +28,7 @@ html { box-sizing: border-box; }
 
 /* ----- code, syntax highlighting, etc ----- */
 
-code, pre { font-family: Menlo, Consolas, Monaco, "Courier New", monospace; }
+code, pre { font-family: Monaco, Menlo, Consolas, "Courier New", monospace; }
 
 /* spesifically inline code */
 code {
@@ -114,9 +114,7 @@ hr {
 {% assign navborder = 3 %}
 {% assign navborder_active = 6 %}
 
-
 nav {
-  font-family: "PT Sans", "HelveticaNeue-Light", Arial, sans-serif;
   font-size:15px;
   width:100%;
   position:fixed;
@@ -137,7 +135,7 @@ nav ul {
 nav ul li {
   display:inline-block;
   border-top:{{navborder}}px solid;
-  padding: {{navborder}}px 0;
+  padding: {{navborder}}px;
   *display:inline;
   zoom:1;
   line-height:normal;
@@ -173,7 +171,7 @@ nav ul li:hover, nav ul li.active {
   width:100%;
   min-height:300px;
   padding:210px 0;
-  background:url(../images/bgnoise.png);
+  background:url(img/bgnoise.png);
   /* generated noise from noisetexturegenerator.com */
 }
 
@@ -189,12 +187,7 @@ nav ul li:hover, nav ul li.active {
   background-color:#2e2e2e;
   background-image:none;
 }
-#footer .container p { font-size:14px; margin:0; }
-
-#footer .container p,
-#footer .container a {
-	font-family: "PT Sans", "HelveticaNeue-Light", Arial, sans-serif;;
-}
+#footer .container p { font-size:13px; margin:0; }
 
 .subtlecircle {
   text-align:center;
