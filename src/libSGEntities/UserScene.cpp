@@ -848,10 +848,10 @@ void entity::UserScene::updateWidgets()
     emit sendRequestUpdate();
 }
 
-void entity::UserScene::resetModel(CanvasWidget *widget, PhotoWidget *widPhoto)
+void entity::UserScene::resetModel(CanvasWidget *widget)
 {
     widget->clear();
-    widPhoto->clear();
+//    widPhoto->clear();
     for (size_t i=0; i<this->getNumChildren(); ++i){
         entity::Canvas* cnv = this->getCanvas(i);
         if (!cnv) continue;
@@ -865,12 +865,12 @@ void entity::UserScene::resetModel(CanvasWidget *widget, PhotoWidget *widPhoto)
             emit this->canvasSelectedColor(this->getCanvasIndex(cnv),0);
 
         /* if canvas has any photoes, reset photowidget */
-        if (!cnv->getGeodeData()) continue;
-        for (size_t j=0; j<cnv->getGeodeData()->getNumChildren(); ++j){
-            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGeodeData()->getChild(j));
-            if (!photo) continue;
-            emit this->photoAdded(photo->getName().c_str());
-        }
+//        if (!cnv->getGeodeData()) continue;
+//        for (size_t j=0; j<cnv->getGeodeData()->getNumChildren(); ++j){
+//            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGeodeData()->getChild(j));
+//            if (!photo) continue;
+//            emit this->photoAdded(photo->getName().c_str());
+//        }
     }
 }
 

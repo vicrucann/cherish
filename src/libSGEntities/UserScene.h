@@ -99,16 +99,13 @@ public:
     bool clearUserData();
     bool printScene();
     void updateWidgets();
-    void resetModel(CanvasWidget* widget, PhotoWidget* widPhoto);
+    void resetModel(CanvasWidget* widget);
 
 signals:
     void sendRequestUpdate();
     void canvasAdded(const std::string& name);
     void canvasRemoved(int row);
     void canvasSelectedColor(int row, int color);
-
-    void photoAdded(const std::string& name);
-    void photoRemoved(int row);
 
 public slots:
     void onCanvasEdited(QListWidgetItem* item);

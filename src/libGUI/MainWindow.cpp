@@ -29,7 +29,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_tabWidget(new QTabWidget())
     , m_bookmarkWidget(new BookmarkWidget())
     , m_canvasWidget(new CanvasWidget())
-    , m_photoWidget(new PhotoWidget())
 
     , m_undoStack(new QUndoStack(this))
 
@@ -60,10 +59,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     m_tabWidget->setTabPosition(QTabWidget::West);
     m_tabWidget->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
     m_tabWidget->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
-    m_tabWidget->addTab(m_photoWidget, Data::controlImagesIcon(), QString(""));
     m_bookmarkWidget->setItemDelegate(new BookmarkDelegate);
     m_canvasWidget->setItemDelegate(new CanvasDelegate);
-    m_photoWidget->setItemDelegate(new PhotoDelegate);
 
     /* viewer stack */
     m_viewStack->setUndoLimit(50);
@@ -281,7 +278,7 @@ void MainWindow::onFileOpen()
     m_glWidget->update();
     this->initializeCallbacks();
     m_rootScene->resetBookmarks(m_bookmarkWidget);
-    m_rootScene->getUserScene()->resetModel(m_canvasWidget, m_photoWidget);
+    m_rootScene->getUserScene()->resetModel(m_canvasWidget);
 
     this->statusBar()->showMessage(tr("Scene loaded."));
 }
@@ -1029,15 +1026,6 @@ void MainWindow::initializeCallbacks()
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedVisibility(QModelIndex)),
                      this, SLOT(onVisibilityCanvas(QModelIndex)),
                      Qt::UniqueConnection);
-
-    /* photo widget */
-    QObject::connect(m_rootScene->getUserScene(), SIGNAL(photoAdded(std::string)),
-                     m_photoWidget, SLOT(onPhotoAdded(std::string)),
-                     Qt::UniqueConnection);
-
-//    QObject::connect(m_rootScene->getUserScene(), SIGNAL(photoRemoved(int)),
-//                     m_photoWidget, SLOT(onPhotoRemoved(int)),
-//                     Qt::UniqueConnection);
 
 
     /* UI forms */

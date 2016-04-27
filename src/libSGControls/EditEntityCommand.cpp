@@ -196,7 +196,6 @@ this->setText(QObject::tr("Delete photo from %1")
 void EditPhotoDeleteCommand::undo()
 {
     m_canvas->getGeodeData()->addDrawable(m_photo.get());
-    emit m_scene->photoAdded(m_photo->getName());
     m_scene->updateWidgets();
 }
 

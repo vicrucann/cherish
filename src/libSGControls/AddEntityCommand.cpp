@@ -114,7 +114,6 @@ void AddPhotoCommand::redo()
     if (!m_canvas->getGeodeData()->addDrawable(m_photo.get()))
         outErrMsg("Could not add photo to current canvas");
 
-    emit m_scene->photoAdded(m_photo->getName());
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }

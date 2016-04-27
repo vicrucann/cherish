@@ -112,7 +112,6 @@ private:
     QTabWidget*     m_tabWidget;
     BookmarkWidget*    m_bookmarkWidget;
     CanvasWidget*    m_canvasWidget;
-    PhotoWidget*    m_photoWidget;
 
 
     // http://doc.qt.io/qt-5/qtwidgets-tools-undoframework-example.html
