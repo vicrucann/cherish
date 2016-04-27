@@ -18,6 +18,8 @@ set(libGUI_SRCS
     GLWidget.cpp
     ListWidget.h
     ListWidget.cpp
+    TreeWidget.h
+    TreeWidget.cpp
     ListDelegate.h
     ListDelegate.cpp
     CameraProperties.h
