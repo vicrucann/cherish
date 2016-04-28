@@ -28,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     , m_tabWidget(new QTabWidget())
     , m_bookmarkWidget(new BookmarkWidget())
-    , m_canvasWidget(new CanvasWidget())
+    , m_canvasWidget(new CanvasPhotoWidget())
 
     , m_undoStack(new QUndoStack(this))
 
@@ -373,7 +373,8 @@ void MainWindow::onFileClose()
     m_undoStack->clear();
     m_viewStack->clear();
     m_bookmarkWidget->model()->removeRows(0,m_bookmarkWidget->count());
-    m_canvasWidget->model()->removeRows(0, m_canvasWidget->count());
+//    m_canvasWidget->model()->removeRows(0, m_canvasWidget->count());
+    m_canvasWidget->model()->removeRows(0, m_canvasWidget->topLevelItemCount());
 
     this->statusBar()->showMessage(tr("Current project is closed"));
 }
@@ -1015,8 +1016,8 @@ void MainWindow::initializeCallbacks()
                      m_rootScene->getUserScene(), SLOT(onRightClicked(QModelIndex)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_canvasWidget, SIGNAL(itemChanged(QListWidgetItem*)),
-                     m_rootScene->getUserScene(), SLOT(onCanvasEdited(QListWidgetItem*)),
+    QObject::connect(m_canvasWidget, SIGNAL(itemChanged(QTreeWidgetItem*)),
+                     m_rootScene->getUserScene(), SLOT(onCanvasEdited(QTreeWidgetItem*)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedDelete(QModelIndex)),

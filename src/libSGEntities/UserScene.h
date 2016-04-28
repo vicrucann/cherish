@@ -6,6 +6,7 @@
 #include <QUndoStack>
 #include <QObject>
 #include <QModelIndex>
+#include <QTreeWidgetItem>
 
 #include <osg/Group>
 #include <osg/ref_ptr>
@@ -17,6 +18,7 @@
 #include "Photo.h"
 #include "Bookmarks.h"
 #include "../libGUI/ListWidget.h"
+#include "../libGUI/TreeWidget.h"
 
 // multiple inheritance requires QObject to be first,
 // for more, see:
@@ -100,6 +102,7 @@ public:
     bool printScene();
     void updateWidgets();
     void resetModel(CanvasWidget* widget);
+    void resetModel(CanvasPhotoWidget* widget);
 
 signals:
     void sendRequestUpdate();
@@ -109,6 +112,7 @@ signals:
 
 public slots:
     void onCanvasEdited(QListWidgetItem* item);
+    void onCanvasEdited(QTreeWidgetItem* item);
     void onClicked(const QModelIndex& index);
     void onRightClicked(const QModelIndex& index);
 

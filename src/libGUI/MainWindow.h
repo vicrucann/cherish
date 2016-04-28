@@ -20,6 +20,7 @@
 #include "GLWidget.h"
 #include "CameraProperties.h"
 #include "ListWidget.h"
+#include "TreeWidget.h"
 #include "Data.h"
 
 class MainWindow : public QMainWindow {
@@ -111,7 +112,7 @@ private:
 
     QTabWidget*     m_tabWidget;
     BookmarkWidget*    m_bookmarkWidget;
-    CanvasWidget*    m_canvasWidget;
+    CanvasPhotoWidget*    m_canvasWidget;
 
 
     // http://doc.qt.io/qt-5/qtwidgets-tools-undoframework-example.html

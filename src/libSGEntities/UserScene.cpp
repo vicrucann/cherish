@@ -874,6 +874,31 @@ void entity::UserScene::resetModel(CanvasWidget *widget)
     }
 }
 
+void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
+{
+    widget->clear();
+    for (size_t i=0; i<this->getNumChildren(); ++i){
+        entity::Canvas* cnv = this->getCanvas(i);
+        if (!cnv) continue;
+        emit this->canvasAdded(cnv->getName().c_str());
+
+        if (cnv == m_canvasCurrent.get())
+            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),1);
+        else if (cnv == m_canvasPrevious.get())
+            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),2);
+        else
+            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),0);
+
+        /* if canvas has any photoes, reset photowidget */
+//        if (!cnv->getGeodeData()) continue;
+//        for (size_t j=0; j<cnv->getGeodeData()->getNumChildren(); ++j){
+//            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGeodeData()->getChild(j));
+//            if (!photo) continue;
+//            emit this->photoAdded(photo->getName().c_str());
+//        }
+    }
+}
+
 /* to change name from canvas delegate */
 void entity::UserScene::onCanvasEdited(QListWidgetItem *item)
 {
@@ -885,6 +910,17 @@ void entity::UserScene::onCanvasEdited(QListWidgetItem *item)
     entity::Canvas* cnv = this->getCanvasFromIndex(row);
     if (!cnv) return;
     cnv->setName(item->text().toStdString());
+}
+
+void entity::UserScene::onCanvasEdited(QTreeWidgetItem *item)
+{
+    QTreeWidget* widget = item->treeWidget();
+    if (!widget) return;
+    int row = widget->indexOfTopLevelItem(item);
+    if (row == this->getNumCanvases() || row < 0) return;
+    entity::Canvas* cnv = this->getCanvasFromIndex(row);
+    if (!cnv) return;
+    cnv->setName(item->text(0).toStdString());
 }
 
 /* to selec as current from canvas delegate */

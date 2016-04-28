@@ -4,19 +4,14 @@
 
 #include "Settings.h"
 #include "Utilities.h"
-
+#include <QHeaderView>
 
 CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
     : QTreeWidget(parent)
 {
-    this->setColumnCount(1);
-    this->setAnimated(true);
-    this->setSelectionBehavior(QAbstractItemView::SelectItems);
-    this->setSelectionMode(QAbstractItemView::SingleSelection);
-    this->setDragDropMode(QAbstractItemView::NoDragDrop);
-    this->setEditTriggers(QTreeWidget::DoubleClicked);
     this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
-    this->setTabKeyNavigation(false);
+    this->header()->close();
+    this->setIndentation(0); // will have to remove when adding photos to tree
 }
 
 CanvasDelegate *CanvasPhotoWidget::getCanvasDelegate() const
@@ -26,8 +21,9 @@ CanvasDelegate *CanvasPhotoWidget::getCanvasDelegate() const
 
 void CanvasPhotoWidget::onCanvasAdded(const std::string &name)
 {
-    QTreeWidgetItem* item = new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString(name.c_str())));
+    QTreeWidgetItem* item = new QTreeWidgetItem(this);
     if (!item) return;
+    item->setText(0, QString(name.c_str()));
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     this->addTopLevelItem(item);
 }
@@ -56,7 +52,8 @@ void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
         outLogVal("count", this->topLevelItemCount());
         return;
     }
-    QTreeWidgetItem* item = this->takeTopLevelItem(row);
+
+    QTreeWidgetItem* item = this->topLevelItem(row);
     if (!item) return;
     QColor qcolor;
     switch (color){
@@ -73,7 +70,7 @@ void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
         qcolor = Utilities::getQColor(dureu::CANVAS_CLR_REST);
         break;
     }
-    item->setBackgroundColor(1, qcolor);
+    item->setBackgroundColor(0, qcolor);
 }
 
 void CanvasPhotoWidget::mousePressEvent(QMouseEvent *event)
