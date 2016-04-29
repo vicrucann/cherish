@@ -19,6 +19,7 @@ set(DureuApplication_SRCS
 qt5_add_resources(IMG_RSC_ADDED
     Data/Actions.qrc
     Data/Logo.qrc
+    Styles/Stylesheets.qrc
 )
 
 file(GLOB_RECURSE SHADER_RSC_ADDED

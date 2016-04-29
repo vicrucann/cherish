@@ -103,7 +103,13 @@ CanvasDelegate::CanvasDelegate(QObject *parent)
 
 void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QStyledItemDelegate::paint(painter, option, index);
+    if( (option.state & QStyle::State_Selected) || (option.state & QStyle::State_MouseOver) ){
+        QVariant var = index.model()->data(index, Qt::BackgroundRole);
+        painter->fillRect(option.rect, var.value<QColor>());
+        painter->drawText(option.rect, index.model()->data(index, Qt::DisplayRole).toString());
+    }
+    else
+        QStyledItemDelegate::paint(painter, option, index);
 
     QRect r = option.rect;
     QStyleOptionButton buttonDelete, buttonVis;

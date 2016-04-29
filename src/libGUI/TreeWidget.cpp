@@ -1,10 +1,12 @@
 #include "TreeWidget.h"
 
 #include <QMouseEvent>
+#include <QHeaderView>
+#include <QPalette>
+#include <QFile>
 
 #include "Settings.h"
 #include "Utilities.h"
-#include <QHeaderView>
 
 CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
     : QTreeWidget(parent)
@@ -12,6 +14,12 @@ CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
     this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
     this->header()->close();
     this->setIndentation(0); // will have to remove when adding photos to tree
+
+//    QFile file(":/CanvasWidget.qss");
+//    if (file.open(QIODevice::ReadOnly | QIODevice::Text)){
+//        this->setStyleSheet(file.readAll());
+//        file.close();
+//    }
 }
 
 CanvasDelegate *CanvasPhotoWidget::getCanvasDelegate() const
@@ -70,6 +78,9 @@ void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
         qcolor = Utilities::getQColor(dureu::CANVAS_CLR_REST);
         break;
     }
+//    this->style()->unpolish(this);
+//    this->style()->polish(this);
+//    this->update();
     item->setBackgroundColor(0, qcolor);
 }
 

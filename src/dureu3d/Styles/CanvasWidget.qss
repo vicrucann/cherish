@@ -1,0 +1,17 @@
+QTreeWidget::item
+{
+    background-color: rgb(147, 161, 161);
+    color: rgb(0,0,0);
+}
+
+QTreeWidget::item:selected
+{
+    background-color: rgb(211, 54, 130);
+    color: rgb(0,0,0);
+}
+
+QTreeWidget::item[Previous="true"]
+{
+    background-color: rgb(108, 113, 196);
+    color: rgb(0,0,0);
+}
