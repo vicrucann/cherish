@@ -13,12 +13,6 @@ CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
 {
     this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
     this->header()->close();
-
-//    QFile file(":/CanvasWidget.qss");
-//    if (file.open(QIODevice::ReadOnly | QIODevice::Text)){
-//        this->setStyleSheet(file.readAll());
-//        file.close();
-//    }
 }
 
 CanvasDelegate *CanvasPhotoWidget::getCanvasDelegate() const
@@ -87,7 +81,7 @@ void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
     QColor qcolor;
     switch (color){
     case 0:
-        qcolor = Utilities::getQColor(dureu::CANVAS_CLR_REST);
+        qcolor = Qt::white;
         break;
     case 1:
         qcolor = Utilities::getQColor(dureu::CANVAS_CLR_CURRENT);
@@ -96,13 +90,11 @@ void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
         qcolor = Utilities::getQColor(dureu::CANVAS_CLR_PREVIOUS);
         break;
     default:
-        qcolor = Utilities::getQColor(dureu::CANVAS_CLR_REST);
+        qcolor = Qt::white;
         break;
     }
-//    this->style()->unpolish(this);
-//    this->style()->polish(this);
-//    this->update();
-    item->setBackgroundColor(0, qcolor);
+//    item->setBackgroundColor(0, qcolor);
+    item->setData(0, dureu::DelegateBGColor, qcolor);
 }
 
 void CanvasPhotoWidget::mousePressEvent(QMouseEvent *event)

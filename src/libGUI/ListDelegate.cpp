@@ -103,15 +103,29 @@ CanvasDelegate::CanvasDelegate(QObject *parent)
 
 void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    /* delegate for parent */
+    /* delegate for parent (canvas) */
     if (index.data(dureu::DelegateChildRole).toInt() == 1){
-        if( (option.state & QStyle::State_Selected) || (option.state & QStyle::State_MouseOver) ){
-            QVariant var = index.model()->data(index, Qt::BackgroundRole);
-            painter->fillRect(option.rect, var.value<QColor>());
-            painter->drawText(option.rect, index.model()->data(index, Qt::DisplayRole).toString());
+        QStyledItemDelegate::paint(painter, option, index);
+
+        QVariant var = index.model()->data(index, dureu::DelegateBGColor);
+        QColor color = var.value<QColor>();
+        if (color != Qt::white){
+            QString text = index.model()->data(index, Qt::DisplayRole).toString();
+            QFontMetrics fm = painter->fontMetrics();
+            int width = fm.width(text);
+            int lineWidth = 4;
+
+            /* make sure line is drawn strictly within a row, for this
+             * we substract in y coordinate according to linewidth, and
+             * we add same value in x coordinate */
+            QPoint P1 = option.rect.bottomLeft() - QPoint(-lineWidth/2, lineWidth/2);
+            QPoint P2 = P1 + QPoint(width, 0);
+            QPen pen(color);
+            pen.setWidth(lineWidth);
+
+            painter->setPen(pen);
+            painter->drawLine(P1, P2);
         }
-        else
-            QStyledItemDelegate::paint(painter, option, index);
 
         QRect r = option.rect;
         QStyleOptionButton buttonDelete, buttonVis;

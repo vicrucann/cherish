@@ -204,6 +204,7 @@ const size_t APP_WIDGET_BUTTON = 24;
 
 const int DelegateVisibilityRole = Qt::UserRole + 1;
 const int DelegateChildRole = Qt::UserRole + 2;
+const int DelegateBGColor = Qt::UserRole + 3;
 
 } // namespace dura
 
