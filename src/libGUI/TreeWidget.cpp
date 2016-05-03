@@ -13,15 +13,6 @@ CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
 {
     this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
     this->header()->close();
-    //this->setIndentation(0); // will have to remove when adding photos to tree
-
-//    QTreeWidgetItem* test = new QTreeWidgetItem();
-//    test->setText(0,"Test-parent");
-//    this->addTopLevelItem(test);
-
-//    QTreeWidgetItem* child = new QTreeWidgetItem();
-//    child->setText(0,"Test-child");
-//    test->addChild(child);
 
 //    QFile file(":/CanvasWidget.qss");
 //    if (file.open(QIODevice::ReadOnly | QIODevice::Text)){

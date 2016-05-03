@@ -942,19 +942,22 @@ void entity::UserScene::onCanvasEdited(QTreeWidgetItem *item)
 /* to selec as current from canvas delegate */
 void entity::UserScene::onClicked(const QModelIndex &index)
 {
-    /* get corresponding canvas ptr
+    /* if clicked on parent (canvas):
+     * get corresponding canvas ptr
      * make sure you consider bookmark ptr index
      * set that canvas as current */
-    if (index.row()<0)
-        return;
-    entity::Canvas* cnv = this->getCanvasFromIndex(index.row());
-    if (!cnv){
-        outErrMsg("UserScene onClicked: canvas ptr is NULL");
-        return;
+    if (index.data(dureu::DelegateChildRole).toInt() == 1){
+        if (index.row()<0)
+            return;
+        entity::Canvas* cnv = this->getCanvasFromIndex(index.row());
+        if (!cnv){
+            outErrMsg("UserScene onClicked: canvas ptr is NULL");
+            return;
+        }
+        outLogMsg("Changing current canvas from canvas widget");
+        this->setCanvasCurrent(cnv);
+        this->updateWidgets();
     }
-    outLogMsg("Changing current canvas from canvas widget");
-    this->setCanvasCurrent(cnv);
-    this->updateWidgets();
 }
 
 /* to select as previous from canvas delegate */
