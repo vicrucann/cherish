@@ -681,6 +681,41 @@ entity::FrameTool *entity::Canvas::getToolFrame() const
     return m_toolFrame;
 }
 
+/* returnds total number of photos that belong to the canvas */
+int entity::Canvas::getNumPhotos() const
+{
+    int res = 0;
+    for (size_t i=0; i<m_geodeData->getNumChildren(); ++i){
+        entity::Photo* photo = dynamic_cast<entity::Photo*>(m_geodeData->getChild(i));
+        if (photo)
+            res++;
+    }
+    return res;
+}
+
+/* returns row's consequitive photo from scene graph;
+ * it will skip all other data counts (e.g. strokes);
+ * used to modify photo from canvas tree widget
+ * TODO : re-design geodeData scene graph so that each type (photos, strokes, point cloud)
+ * would have their own pointer like so:
+ * geodeData -> photos -> ...
+ *          \-> strokes -> ...
+ *          \-> pointClouds -> ...
+ * It will allow to skip looping through all the elements in the below function.
+*/
+entity::Photo *entity::Canvas::getPhotoFromIndex(int row) const
+{
+    int idx = -1;
+    for (size_t i=0; i<m_geodeData->getNumChildren(); ++i){
+        entity::Photo* photo = dynamic_cast<entity::Photo*>(m_geodeData->getChild(i));
+        if (photo){
+            idx++;
+            if (idx == row) return photo;
+        }
+    }
+    return 0;
+}
+
 REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
                         , new entity::Canvas
                         , entity::Canvas

@@ -82,7 +82,9 @@ public:
     int getCanvasIndex(entity::Canvas* canvas) const;
     int getPhotoIndex(entity::Photo* photo, entity::Canvas* canvas) const;
     entity::Canvas* getCanvasFromIndex(int row);
+    entity::Photo* getPhotoFromIndex(entity::Canvas* canvas, int row);
     int getNumCanvases() const;
+    int getNumPhotos(entity::Canvas* canvas) const;
 
     void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const osg::Vec3f& center3d, dureu::EVENT event);
@@ -115,6 +117,7 @@ signals:
 public slots:
     void onCanvasEdited(QListWidgetItem* item);
     void onCanvasEdited(QTreeWidgetItem* item);
+    void onItemChanged(QTreeWidgetItem* item, int column);
     void onClicked(const QModelIndex& index);
     void onRightClicked(const QModelIndex& index);
 

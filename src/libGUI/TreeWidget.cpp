@@ -33,6 +33,7 @@ void CanvasPhotoWidget::onCanvasAdded(const std::string &name)
     item->setText(0, QString(name.c_str()));
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     item->setData(0,dureu::DelegateChildRole,1);
+    item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
     this->addTopLevelItem(item);
 }
 

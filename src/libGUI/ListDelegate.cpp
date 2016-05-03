@@ -184,6 +184,7 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
     else{
         //return QStyledItemDelegate::editorEvent(event, model, option, index);
     }
+    return QStyledItemDelegate::editorEvent(event, model, option, index);
 }
 
 QRect CanvasDelegate::getButtonDeleteRect(const QRect &rect) const

@@ -477,11 +477,21 @@ entity::Canvas *entity::UserScene::getCanvasFromIndex(int row)
                      dynamic_cast<entity::Canvas*>(this->getChild(row));
 }
 
+entity::Photo *entity::UserScene::getPhotoFromIndex(Canvas *canvas, int row)
+{
+    return canvas->getPhotoFromIndex(row);
+}
+
 int entity::UserScene::getNumCanvases() const
 {
     int bms = this->getChildIndex(m_bookmarks.get());
     int numChild = this->getNumChildren();
     return bms == numChild? numChild : numChild-1;
+}
+
+int entity::UserScene::getNumPhotos(entity::Canvas *canvas) const
+{
+    return canvas->getNumPhotos();
 }
 
 void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event)
@@ -939,6 +949,38 @@ void entity::UserScene::onCanvasEdited(QTreeWidgetItem *item)
     cnv->setName(item->text(0).toStdString());
 }
 
+void entity::UserScene::onItemChanged(QTreeWidgetItem *item, int column)
+{
+    QTreeWidget* widget = item->treeWidget();
+    if (!widget) return;
+
+    /* determine if canvas or photo was changed
+     * canvas would not have any parents */
+    if (!item->parent()){
+        int row = widget->indexOfTopLevelItem(item);
+        if (row >= this->getNumCanvases() || row < 0) return;
+        entity::Canvas* cnv = this->getCanvasFromIndex(row);
+        if (!cnv) return;
+        cnv->setName(item->text(column).toStdString());
+    }
+    /* if photo */
+    else{
+        QTreeWidgetItem* parent = item->parent();
+        if (!parent) return;
+        int rowP = widget->indexOfTopLevelItem(parent);
+        if (rowP >= this->getNumCanvases() || rowP < 0) return;
+        entity::Canvas* canvas = this->getCanvasFromIndex(rowP);
+        if (!canvas) return;
+        int row = parent->indexOfChild(item);
+        if (row >= this->getNumPhotos(canvas) || row < 0) return;
+
+        entity::Photo* photo = this->getPhotoFromIndex(canvas, row);
+        if (!photo) return;
+        photo->setName(item->text(column).toStdString());
+        outLogMsg("photo name changed");
+    }
+}
+
 /* to selec as current from canvas delegate */
 void entity::UserScene::onClicked(const QModelIndex &index)
 {
@@ -960,19 +1002,22 @@ void entity::UserScene::onClicked(const QModelIndex &index)
     }
 }
 
-/* to select as previous from canvas delegate */
+/* if clicked on parent (canvas):
+ * to select as previous from canvas delegate */
 void entity::UserScene::onRightClicked(const QModelIndex &index)
 {
-    entity::Canvas* cnv = this->getCanvasFromIndex(index.row());
-    if (!cnv){
-        outErrMsg("UserScene onRightClicked: canvas ptr is NULL");
-        return;
+    if (index.data(dureu::DelegateChildRole).toInt() == 1){
+        entity::Canvas* cnv = this->getCanvasFromIndex(index.row());
+        if (!cnv){
+            outErrMsg("UserScene onRightClicked: canvas ptr is NULL");
+            return;
+        }
+        outLogMsg("Changing previous/target canvas from canvas widget");
+        if (cnv == m_canvasCurrent.get() || cnv == m_canvasPrevious.get())
+            return;
+        this->setCanvasPrevious(cnv);
+        this->updateWidgets();
     }
-    outLogMsg("Changing previous/target canvas from canvas widget");
-    if (cnv == m_canvasCurrent.get() || cnv == m_canvasPrevious.get())
-        return;
-    this->setCanvasPrevious(cnv);
-    this->updateWidgets();
 }
 
 std::string entity::UserScene::getCanvasName()

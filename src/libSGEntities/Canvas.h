@@ -129,6 +129,9 @@ public:
     osg::Node* getTool(const std::string& name);
     entity::FrameTool* getToolFrame() const;
 
+    int getNumPhotos() const;
+    entity::Photo* getPhotoFromIndex(int row) const;
+
 protected:
     ~Canvas();
 

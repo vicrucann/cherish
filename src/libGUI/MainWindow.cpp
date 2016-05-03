@@ -1021,8 +1021,8 @@ void MainWindow::initializeCallbacks()
                      m_rootScene->getUserScene(), SLOT(onRightClicked(QModelIndex)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_canvasWidget, SIGNAL(itemChanged(QTreeWidgetItem*)),
-                     m_rootScene->getUserScene(), SLOT(onCanvasEdited(QTreeWidgetItem*)),
+    QObject::connect(m_canvasWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+                     m_rootScene->getUserScene(), SLOT(onItemChanged(QTreeWidgetItem*,int)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedDelete(QModelIndex)),
