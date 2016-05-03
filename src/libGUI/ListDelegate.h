@@ -46,6 +46,7 @@ public:
 
 signals:
     void clickedDelete(const QModelIndex& index);
+    void clickedDeletePhoto(const QModelIndex& index);
     void clickedVisibility(const QModelIndex& index);
 
 private:

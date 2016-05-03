@@ -66,6 +66,24 @@ void CanvasPhotoWidget::onCanvasRemoved(int row)
     delete item;
 }
 
+void CanvasPhotoWidget::onPhotoRemoved(int rowP, int row)
+{
+    if (rowP >= this->topLevelItemCount() || rowP < 0){
+        outErrMsg("onPhotoRemoved: canvas index is out of range, "
+                  "removed will not be performed");
+        outLogVal("rowP", rowP);
+        outLogVal("count", this->topLevelItemCount());
+        return;
+    }
+    QTreeWidgetItem* parent = this->topLevelItem(rowP);
+    if (!parent) return;
+
+    QTreeWidgetItem* item = parent->takeChild(row);
+    if (!item) return;
+
+    delete item;
+}
+
 void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
 {
     if (row >= this->topLevelItemCount() || row < 0){

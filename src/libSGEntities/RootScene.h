@@ -100,7 +100,7 @@ public:
     void editCanvasClone(const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasDelete(entity::Canvas* canvas);
 
-    void editPhotoDelete(entity::Photo* photo);
+    void editPhotoDelete(entity::Photo* photo, entity::Canvas* canvas);
     void editPhotoPush(entity::Photo* photo);
 
     void editStrokesPush(osg::Camera *camera);

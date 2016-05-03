@@ -20,6 +20,7 @@ public slots:
     void onCanvasAdded(const std::string& name);
     void onPhotoAdded(const std::string& name, int rowParent);
     void onCanvasRemoved(int row);
+    void onPhotoRemoved(int rowP, int row);
     void onCanvasSelectedColor(int row, int color);
 
 protected:

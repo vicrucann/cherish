@@ -226,7 +226,7 @@ void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         if (!inter_photo) return;
         entity::Photo* photo = this->getPhoto(*result_photo);
         if (!photo) return;
-        m_scene->editPhotoDelete(photo);
+        m_scene->editPhotoDelete(photo, m_scene->getCanvasCurrent());
     }
     else{
         /* see if there is a stroke */

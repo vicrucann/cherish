@@ -91,7 +91,7 @@ public:
     void editCanvasClone(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasDelete(QUndoStack* stack, entity::Canvas* canvas);
 
-    void editPhotoDelete(QUndoStack* stack, entity::Photo* photo);
+    void editPhotoDelete(QUndoStack* stack, entity::Photo* photo, entity::Canvas* canvas);
     void editPhotoPush(QUndoStack* stack, entity::Photo* photo);
 
     void editStrokesPush(QUndoStack* stack, osg::Camera* camera);
@@ -112,6 +112,7 @@ signals:
     void canvasAdded(const std::string& name);
     void photoAdded(const std::string& name, int idxCanvas);
     void canvasRemoved(int row);
+    void photoRemoved(int rowCanvas, int rowPhoto);
     void canvasSelectedColor(int row, int color);
 
 public slots:

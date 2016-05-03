@@ -184,6 +184,27 @@ void MainWindow::onDeleteCanvas(const QModelIndex &index)
         m_rootScene->editCanvasDelete(cnv);
 }
 
+void MainWindow::onDeletePhoto(const QModelIndex &index)
+{
+    const QModelIndex parent = index.parent();
+    if (!parent.isValid()){
+        outErrMsg("onDeletePhoto: cannot find parent canvas");
+        return;
+    }
+    entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
+    if (!cnv) return;
+
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
+    if (!photo) return;
+
+    QMessageBox::StandardButton reply = QMessageBox::question(this,
+                                                              tr("Photo deletion"),
+                                                              QString("Are you sure you want to delete photo %1?").arg(photo->getName().c_str()),
+                                                              QMessageBox::Yes | QMessageBox::No);
+    if (reply == QMessageBox::Yes)
+        m_rootScene->editPhotoDelete(photo, cnv);
+}
+
 void MainWindow::onVisibilityCanvas(const QModelIndex &index)
 {
     entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(index.row());
@@ -1009,8 +1030,14 @@ void MainWindow::initializeCallbacks()
                      m_canvasWidget, SLOT(onCanvasSelectedColor(int,int)),
                      Qt::UniqueConnection);
 
+    /* canvasRemoved and deleteCanvas - are two different slots because
+     * we use undo/redo framework to invoke the second signal */
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasRemoved(int)),
                      m_canvasWidget, SLOT(onCanvasRemoved(int)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(photoRemoved(int,int)),
+                     m_canvasWidget, SLOT(onPhotoRemoved(int,int)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_canvasWidget, SIGNAL(clicked(QModelIndex)),
@@ -1027,6 +1054,10 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedDelete(QModelIndex)),
                      this, SLOT(onDeleteCanvas(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedDeletePhoto(QModelIndex)),
+                     this, SLOT(onDeletePhoto(QModelIndex)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedVisibility(QModelIndex)),

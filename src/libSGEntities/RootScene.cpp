@@ -342,9 +342,9 @@ void RootScene::editCanvasDelete(entity::Canvas *canvas)
     m_userScene->editCanvasDelete(m_undoStack, canvas);
 }
 
-void RootScene::editPhotoDelete(entity::Photo *photo)
+void RootScene::editPhotoDelete(entity::Photo *photo, entity::Canvas *canvas)
 {
-    m_userScene->editPhotoDelete(m_undoStack, photo);
+    m_userScene->editPhotoDelete(m_undoStack, photo, canvas);
     m_saved = false;
 }
 

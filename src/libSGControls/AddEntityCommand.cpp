@@ -102,6 +102,8 @@ AddPhotoCommand::~AddPhotoCommand()
 
 void AddPhotoCommand::undo()
 {
+    emit m_scene->photoRemoved(m_scene->getCanvasIndex(m_canvas.get()),
+                               m_scene->getPhotoIndex(m_photo.get(), m_canvas.get()));
     if (!m_canvas->getGeodeData()->removeChild(m_photo.get()))
         outErrMsg("Could not remove photo from current canvas");
     m_canvas->removeEntitySelected(m_photo.get());

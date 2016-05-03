@@ -103,6 +103,8 @@ CanvasDelegate::CanvasDelegate(QObject *parent)
 
 void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    QRect r = option.rect;
+
     /* delegate for parent (canvas) */
     if (index.data(dureu::DelegateChildRole).toInt() == 1){
         QStyledItemDelegate::paint(painter, option, index);
@@ -118,7 +120,7 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
             /* make sure line is drawn strictly within a row, for this
              * we substract in y coordinate according to linewidth, and
              * we add same value in x coordinate */
-            QPoint P1 = option.rect.bottomLeft() - QPoint(-lineWidth/2, lineWidth/2);
+            QPoint P1 = r.bottomLeft() - QPoint(-lineWidth/2, lineWidth/2);
             QPoint P2 = P1 + QPoint(width, 0);
             QPen pen(color);
             pen.setWidth(lineWidth);
@@ -127,7 +129,7 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
             painter->drawLine(P1, P2);
         }
 
-        QRect r = option.rect;
+
         QStyleOptionButton buttonDelete, buttonVis;
 
         buttonDelete.rect = getButtonDeleteRect(r);
@@ -144,12 +146,22 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
         buttonVis.state |= QStyle::State_Enabled;
         buttonVis.state |= isNotChecked? QStyle::State_Off : QStyle::State_On;
 
-        QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonDelete, painter);
-        QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonVis, painter);
+        QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonDelete, painter);
+        QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonVis, painter);
     }
     /* delegate for child */
     else{
         QStyledItemDelegate::paint(painter, option, index);
+
+        QStyleOptionButton buttonDelete;
+
+        buttonDelete.rect = getButtonDeleteRect(r);
+        buttonDelete.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+        buttonDelete.icon = Data::editDeleteIcon();
+        buttonDelete.state = QStyle::State_Enabled;
+        buttonDelete.features = QStyleOptionButton::None;
+
+        QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonDelete, painter);
     }
 }
 
@@ -192,11 +204,28 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
                     return true;
                 }
         }
-        return QStyledItemDelegate::editorEvent(event, model, option, index);
     }
     /* delegate for child */
     else{
-        //return QStyledItemDelegate::editorEvent(event, model, option, index);
+        if (event->type() == QEvent::MouseButtonPress ||
+                event->type() == QEvent::MouseButtonRelease){
+            QMouseEvent * e = (QMouseEvent *)event;
+            int clickX = e->x();
+            int clickY = e->y();
+            QRect r = option.rect;
+            QRect rDelete = this->getButtonDeleteRect(r);
+            if( clickX > rDelete.x() && clickX < rDelete.x() + rDelete.width() )
+                if( clickY > rDelete.y() && clickY < rDelete.y() + rDelete.height() )
+                {
+                    if (event->type() == QEvent::MouseButtonPress)
+                        return true;
+                    else{
+                        outLogMsg("canvas delegate: clicked delete photo");
+                        emit this->clickedDeletePhoto(index);
+                    }
+                    return true;
+                }
+        }
     }
     return QStyledItemDelegate::editorEvent(event, model, option, index);
 }

@@ -202,6 +202,10 @@ void EditPhotoDeleteCommand::undo()
 
 void EditPhotoDeleteCommand::redo()
 {
+    /* order is important: first remove from widget tree;
+     * then remove from scene graph */
+    emit m_scene->photoRemoved(m_scene->getCanvasIndex(m_canvas.get()),
+                               m_scene->getPhotoIndex(m_photo.get(), m_canvas.get()));
     m_canvas->getGeodeData()->removeDrawable(m_photo.get());
     m_scene->updateWidgets();
 }
