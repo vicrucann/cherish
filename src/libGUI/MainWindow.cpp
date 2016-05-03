@@ -998,7 +998,12 @@ void MainWindow::initializeCallbacks()
 
     /* canvas widget area */
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasAdded(std::string)),
-                     m_canvasWidget, SLOT(onCanvasAdded(std::string)), Qt::UniqueConnection);
+                     m_canvasWidget, SLOT(onCanvasAdded(std::string)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(photoAdded(std::string,int)),
+                     m_canvasWidget, SLOT(onPhotoAdded(std::string,int)),
+                     Qt::UniqueConnection);
 
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasSelectedColor(int,int)),
                      m_canvasWidget, SLOT(onCanvasSelectedColor(int,int)),

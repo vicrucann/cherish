@@ -13,7 +13,15 @@ CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
 {
     this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
     this->header()->close();
-    this->setIndentation(0); // will have to remove when adding photos to tree
+    //this->setIndentation(0); // will have to remove when adding photos to tree
+
+//    QTreeWidgetItem* test = new QTreeWidgetItem();
+//    test->setText(0,"Test-parent");
+//    this->addTopLevelItem(test);
+
+//    QTreeWidgetItem* child = new QTreeWidgetItem();
+//    child->setText(0,"Test-child");
+//    test->addChild(child);
 
 //    QFile file(":/CanvasWidget.qss");
 //    if (file.open(QIODevice::ReadOnly | QIODevice::Text)){
@@ -29,11 +37,32 @@ CanvasDelegate *CanvasPhotoWidget::getCanvasDelegate() const
 
 void CanvasPhotoWidget::onCanvasAdded(const std::string &name)
 {
-    QTreeWidgetItem* item = new QTreeWidgetItem(this);
+    QTreeWidgetItem* item = new QTreeWidgetItem();
     if (!item) return;
     item->setText(0, QString(name.c_str()));
     item->setFlags(item->flags() | Qt::ItemIsEditable);
+    item->setData(0,dureu::DelegateChildRole,1);
     this->addTopLevelItem(item);
+}
+
+void CanvasPhotoWidget::onPhotoAdded(const std::string &name, int rowParent)
+{
+    if (rowParent < 0 || rowParent >= this->topLevelItemCount())
+    {
+        outErrMsg("onPhotoAdded: canvas index is out of range, "
+                  "addition will not be performed");
+        outLogVal("row", rowParent);
+        outLogVal("count", this->topLevelItemCount());
+        return;
+    }
+    QTreeWidgetItem* parent = this->topLevelItem(rowParent);
+    if (!parent) return;
+    QTreeWidgetItem* child = new QTreeWidgetItem();
+    if (!child) return;
+    child->setText(0, QString(name.c_str()));
+    child->setFlags(child->flags() | Qt::ItemIsEditable);
+    child->setData(0,dureu::DelegateChildRole,2);
+    parent->addChild(child);
 }
 
 void CanvasPhotoWidget::onCanvasRemoved(int row)

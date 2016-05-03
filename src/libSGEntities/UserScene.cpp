@@ -288,16 +288,19 @@ entity::Canvas* entity::UserScene::getCanvas(const std::string& name)
     return dynamic_cast<entity::Canvas*>(fnv.getNode());
 }
 
+/* to use in EventHandler */
 int entity::UserScene::getStrokeLevel() const
 {
     return this->getCanvasLevel() + 4;
 }
 
+/* to use in EventHandler */
 int entity::UserScene::getCanvasLevel() const
 {
     return 3;
 }
 
+/* to use in EventHandler */
 int entity::UserScene::getPhotoLevel() const
 {
     return this->getCanvasLevel() + 4;
@@ -452,6 +455,19 @@ int entity::UserScene::getCanvasIndex(entity::Canvas *canvas) const
     int bms = this->getChildIndex(m_bookmarks);
     int cnv = this->getChildIndex(canvas);
     return (cnv<bms? cnv : cnv-1);
+}
+
+int entity::UserScene::getPhotoIndex(entity::Photo *photo, Canvas *canvas) const
+{
+    int idx = -1;
+    if (!canvas->getGeodeData()) return idx;
+    for (size_t i=0; i< canvas->getGeodeData()->getNumChildren(); ++i){
+        entity::Photo* pi = dynamic_cast<entity::Photo*>(canvas->getGeodeData()->getChild(i));
+        if (!pi) continue;
+        idx++;
+        if (pi == photo) idx;
+    }
+    return idx;
 }
 
 entity::Canvas *entity::UserScene::getCanvasFromIndex(int row)
@@ -890,12 +906,12 @@ void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
             emit this->canvasSelectedColor(this->getCanvasIndex(cnv),0);
 
         /* if canvas has any photoes, reset photowidget */
-//        if (!cnv->getGeodeData()) continue;
-//        for (size_t j=0; j<cnv->getGeodeData()->getNumChildren(); ++j){
-//            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGeodeData()->getChild(j));
-//            if (!photo) continue;
-//            emit this->photoAdded(photo->getName().c_str());
-//        }
+        if (!cnv->getGeodeData()) continue;
+        for (size_t j=0; j<cnv->getGeodeData()->getNumChildren(); ++j){
+            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGeodeData()->getChild(j));
+            if (!photo) continue;
+            emit this->photoAdded(photo->getName(), this->getCanvasIndex(cnv));
+        }
     }
 }
 

@@ -5,6 +5,7 @@
 #include <string>
 
 #include <osg/Vec4>
+#include <QVariant>
 
 /*
  * SETTINGS is a configuration variables file for Dureu3d
@@ -200,6 +201,9 @@ const float HUD_TEXT_POSZ = 0.f;
 
 const size_t APP_SCREENSHOT_HEIGHT = 100;
 const size_t APP_WIDGET_BUTTON = 24;
+
+const int DelegateVisibilityRole = Qt::UserRole + 1;
+const int DelegateChildRole = Qt::UserRole + 2;
 
 } // namespace dura
 

@@ -80,6 +80,7 @@ public:
     entity::Canvas* getCanvasPrevious() const;
     entity::Canvas* getCanvasSelected() const;
     int getCanvasIndex(entity::Canvas* canvas) const;
+    int getPhotoIndex(entity::Photo* photo, entity::Canvas* canvas) const;
     entity::Canvas* getCanvasFromIndex(int row);
     int getNumCanvases() const;
 
@@ -107,6 +108,7 @@ public:
 signals:
     void sendRequestUpdate();
     void canvasAdded(const std::string& name);
+    void photoAdded(const std::string& name, int idxCanvas);
     void canvasRemoved(int row);
     void canvasSelectedColor(int row, int color);
 
