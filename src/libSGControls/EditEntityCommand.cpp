@@ -138,6 +138,14 @@ void EditCanvasDeleteCommand::undo()
     emit m_scene->canvasAdded(m_canvas->getName());
     m_scene->addChild(m_canvas);
     m_scene->setCanvasCurrent(m_canvas);
+    /* see if any canvas contains any photos, they will be added to canvas widget */
+    if (m_canvas->getGeodeData()){
+        for (size_t i=0; i<m_canvas->getGeodeData()->getNumChildren(); ++i){
+            entity::Photo* photo = dynamic_cast<entity::Photo*>(m_canvas->getGeodeData()->getChild(i));
+            if (!photo) continue;
+            emit m_scene->photoAdded(photo->getName(), m_scene->getCanvasIndex(m_canvas.get()));
+        }
+    }
     m_scene->updateWidgets();
 }
 
