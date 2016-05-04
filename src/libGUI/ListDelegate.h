@@ -52,6 +52,8 @@ signals:
 private:
     QRect getButtonDeleteRect(const QRect& rect) const;
     QRect getButtonVisibilityRect(const QRect& rect) const;
+    QRect getButtonPlusRect(const QRect& rect) const;
+    QRect getButtonMinusRect(const QRect& rect) const;
 
 };
 

@@ -37,8 +37,8 @@ void BookmarkDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     buttonMove.state = QStyle::State_Enabled;
     buttonMove.features = QStyleOptionButton::None;
 
-    QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonDelete, painter);
-    QApplication::style()->drawControl(QStyle::CE_PushButton, &buttonMove, painter);
+    QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonDelete, painter);
+    QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonMove, painter);
 }
 
 bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
@@ -149,19 +149,33 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
         QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonDelete, painter);
         QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonVis, painter);
     }
-    /* delegate for child */
+    /* delegate for child photo */
     else{
         QStyledItemDelegate::paint(painter, option, index);
 
         QStyleOptionButton buttonDelete;
-
         buttonDelete.rect = getButtonDeleteRect(r);
         buttonDelete.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
         buttonDelete.icon = Data::editDeleteIcon();
         buttonDelete.state = QStyle::State_Enabled;
         buttonDelete.features = QStyleOptionButton::None;
-
         QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonDelete, painter);
+
+        QStyleOptionButton buttonPlus;
+        buttonPlus.rect = getButtonPlusRect(r);
+        buttonPlus.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+        buttonPlus.icon = Data::sceneImageTransparencyOnIcon();
+        buttonPlus.state = QStyle::State_Enabled;
+        buttonPlus.features = QStyleOptionButton::None;
+        QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonPlus, painter);
+
+        QStyleOptionButton buttonMinus;
+        buttonMinus.rect = getButtonMinusRect(r);
+        buttonMinus.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+        buttonMinus.icon = Data::sceneImageTransparencyOffIcon();
+        buttonMinus.state = QStyle::State_Enabled;
+        buttonMinus.features = QStyleOptionButton::None;
+        QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonMinus, painter);
     }
 }
 
@@ -241,6 +255,26 @@ QRect CanvasDelegate::getButtonDeleteRect(const QRect &rect) const
 }
 
 QRect CanvasDelegate::getButtonVisibilityRect(const QRect &rect) const
+{
+    int sz = dureu::APP_WIDGET_BUTTON;
+    int x,y,w,h;
+    x = rect.left() + rect.width() - 2.5*sz;
+    y = rect.top() + (rect.height() - sz)/2;
+    w = h = sz;
+    return QRect(x,y,w,h);
+}
+
+QRect CanvasDelegate::getButtonPlusRect(const QRect &rect) const
+{
+    int sz = dureu::APP_WIDGET_BUTTON;
+    int x,y,w,h;
+    x = rect.left() + rect.width() - 4*sz;
+    y = rect.top() + (rect.height() - sz)/2;
+    w = h = sz;
+    return QRect(x,y,w,h);
+}
+
+QRect CanvasDelegate::getButtonMinusRect(const QRect &rect) const
 {
     int sz = dureu::APP_WIDGET_BUTTON;
     int x,y,w,h;

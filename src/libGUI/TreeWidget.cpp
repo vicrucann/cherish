@@ -11,7 +11,7 @@
 CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
     : QTreeWidget(parent)
 {
-    this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
+    this->setMinimumWidth(dureu::APP_WIDGET_WIDTH);
     this->header()->close();
 }
 

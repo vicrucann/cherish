@@ -16,7 +16,7 @@ BookmarkWidget::BookmarkWidget(QWidget *parent)
     this->setDragDropMode(QAbstractItemView::InternalMove);
     this->setSpacing(2);
     this->setEditTriggers(QListWidget::DoubleClicked);
-    this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
+    this->setMinimumWidth(dureu::APP_WIDGET_WIDTH);
     this->setTabKeyNavigation(false);
 }
 
@@ -33,7 +33,7 @@ CanvasWidget::CanvasWidget(QWidget *parent)
     this->setDragDropMode(QAbstractItemView::NoDragDrop);
     this->setSpacing(2);
     this->setEditTriggers(QListWidget::DoubleClicked);
-    this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
+    this->setMinimumWidth(dureu::APP_WIDGET_WIDTH);
     this->setTabKeyNavigation(false);
 }
 
@@ -124,7 +124,7 @@ PhotoWidget::PhotoWidget(QWidget *parent)
     this->setDragDropMode(QAbstractItemView::NoDragDrop);
     this->setSpacing(2);
     this->setEditTriggers(QListWidget::DoubleClicked);
-    this->setMinimumWidth(dureu::APP_SCREENSHOT_HEIGHT*2+50);
+    this->setMinimumWidth(dureu::APP_WIDGET_WIDTH);
     this->setTabKeyNavigation(false);
 }
 
