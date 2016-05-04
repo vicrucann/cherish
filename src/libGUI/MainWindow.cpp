@@ -250,6 +250,40 @@ void MainWindow::slotMouseModeSet(dureu::MOUSE_MODE mode)
     if (cur) m_mdiArea->setCursor(*cur);
 }
 
+void MainWindow::slotPhotoTransparencyPlus(const QModelIndex &index)
+{
+    const QModelIndex parent = index.parent();
+    if (!parent.isValid()){
+        outErrMsg("onPhotoTransparency+: cannot find parent canvas");
+        return;
+    }
+    entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
+    if (!cnv) return;
+
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
+    if (!photo) return;
+
+    photo->setTransparency(photo->getTransparency()+0.2f);
+    this->recievedRequestUpdate();
+}
+
+void MainWindow::slotPhotoTransparencyMinus(const QModelIndex &index)
+{
+    const QModelIndex parent = index.parent();
+    if (!parent.isValid()){
+        outErrMsg("onPhotoTransparency-: cannot find parent canvas");
+        return;
+    }
+    entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
+    if (!cnv) return;
+
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
+    if (!photo) return;
+
+    photo->setTransparency(photo->getTransparency()-0.2f);
+    this->recievedRequestUpdate();
+}
+
 /* Create an ordinary single view window on the scene _root
  * To create outside viewer, use:
  * GLWidget* vwid = createViewer(Qt::Window);
@@ -1062,6 +1096,14 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedVisibility(QModelIndex)),
                      this, SLOT(onVisibilityCanvas(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedTransparencyPlus(QModelIndex)),
+                     this, SLOT(slotPhotoTransparencyPlus(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedTransparencyMinus(QModelIndex)),
+                     this, SLOT(slotPhotoTransparencyMinus(QModelIndex)),
                      Qt::UniqueConnection);
 
 

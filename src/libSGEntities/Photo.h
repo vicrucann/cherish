@@ -39,10 +39,6 @@ public:
     void loadImage(const std::string& fname);
     osg::StateAttribute* getTextureAsAttribute() const;
 
-    void setFrameColor(const osg::Vec4 color); // degenerated, will be removed
-    void setModeEdit(bool edit);
-    bool getModeEdit() const;
-
     void move(const double u, const double v);
     void moveDelta(double du, double dv);
     void rotate(double angle);
@@ -52,6 +48,8 @@ public:
     void scale(double scale, osg::Vec3f center);
     void scale(double scaleX, double scaleY, osg::Vec3f center);
     void setColor(const osg::Vec4f& color);
+    void setTransparency(float alpha);
+    float getTransparency() const;
 
     dureu::ENTITY_TYPE getEntityType() const;
 
@@ -63,7 +61,6 @@ private:
     osg::Vec3f m_center;
     float m_width, m_height;
     float m_angle;
-    bool m_edit;
 };
 }
 

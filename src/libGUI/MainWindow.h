@@ -44,6 +44,8 @@ public slots:
     void onBookmarkAddedToWidget(const QModelIndex &, int first, int last);
     void onBookmarkRemovedFromWidget(const QModelIndex &, int first, int last);
     void slotMouseModeSet(dureu::MOUSE_MODE mode);
+    void slotPhotoTransparencyPlus(const QModelIndex& index);
+    void slotPhotoTransparencyMinus(const QModelIndex& index);
 
 signals:
     void signalTabletActivity(bool active);

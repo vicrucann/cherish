@@ -239,6 +239,29 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
                     }
                     return true;
                 }
+
+            // TODO: should the transparency be included in undo/redo FW?
+            QRect rPlus = this->getButtonPlusRect(r);
+            if( clickX > rPlus.x() && clickX < rPlus.x() + rPlus.width() )
+                if( clickY > rPlus.y() && clickY < rPlus.y() + rPlus.height() )
+                {
+                    if (event->type() == QEvent::MouseButtonPress)
+                        return true;
+                    outLogMsg("canvas delegate: photo transparency plus");
+                    emit this->clickedTransparencyPlus(index);
+                    return true;
+                }
+
+            QRect rMinus = this->getButtonMinusRect(r);
+            if( clickX > rMinus.x() && clickX < rMinus.x() + rMinus.width() )
+                if( clickY > rMinus.y() && clickY < rMinus.y() + rMinus.height() )
+                {
+                    if (event->type() == QEvent::MouseButtonPress)
+                        return true;
+                    outLogMsg("canvas delegate: photo transparency minus");
+                    emit this->clickedTransparencyMinus(index);
+                    return true;
+                }
         }
     }
     return QStyledItemDelegate::editorEvent(event, model, option, index);
@@ -268,7 +291,7 @@ QRect CanvasDelegate::getButtonPlusRect(const QRect &rect) const
 {
     int sz = dureu::APP_WIDGET_BUTTON;
     int x,y,w,h;
-    x = rect.left() + rect.width() - 4*sz;
+    x = rect.left() + rect.width() - 2.5*sz;
     y = rect.top() + (rect.height() - sz)/2;
     w = h = sz;
     return QRect(x,y,w,h);
@@ -278,7 +301,7 @@ QRect CanvasDelegate::getButtonMinusRect(const QRect &rect) const
 {
     int sz = dureu::APP_WIDGET_BUTTON;
     int x,y,w,h;
-    x = rect.left() + rect.width() - 2.5*sz;
+    x = rect.left() + rect.width() - 4*sz;
     y = rect.top() + (rect.height() - sz)/2;
     w = h = sz;
     return QRect(x,y,w,h);

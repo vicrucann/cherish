@@ -6,6 +6,8 @@
 #include <osg/Image>
 #include <osg/StateSet>
 #include <osg/TexMat>
+#include <osg/BlendFunc>
+#include <osg/Material>
 
 entity::Photo::Photo()
     : entity::Entity2D()
@@ -14,10 +16,12 @@ entity::Photo::Photo()
     , m_width(0)
     , m_height(0)
     , m_angle(0)
-    , m_edit(false)
 {
     outLogMsg("New Photo ctor complete");
     this->setName("Photo");
+    this->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
+    this->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+    this->getOrCreateStateSet()->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 }
 
 entity::Photo::Photo(const entity::Photo& photo, const osg::CopyOp& copyop)
@@ -27,7 +31,6 @@ entity::Photo::Photo(const entity::Photo& photo, const osg::CopyOp& copyop)
     , m_width(photo.m_width)
     , m_height(photo.m_height)
     , m_angle(photo.m_angle)
-    , m_edit(photo.m_edit)
 {
     outLogMsg("New Photo ctor by copy complete");
 }
@@ -125,29 +128,6 @@ osg::StateAttribute* entity::Photo::getTextureAsAttribute() const
     return dynamic_cast<osg::StateAttribute*>(m_texture.get());
 }
 
-void entity::Photo::setFrameColor(const osg::Vec4 color)
-{
-    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
-    (*colors)[0] = color;
-    colors->dirty();
-    this->dirtyDisplayList();
-    this->dirtyBound();
-}
-
-void entity::Photo::setModeEdit(bool edit)
-{
-    if (edit)
-        this->setFrameColor(dureu::PHOTO_CLR_SELECTED);
-    else
-        this->setFrameColor(dureu::PHOTO_CLR_REST);
-    m_edit = edit;
-}
-
-bool entity::Photo::getModeEdit() const
-{
-    return m_edit;
-}
-
 void entity::Photo::move(const double u, const double v)
 {
     m_center = osg::Vec3f(u, v, 0.f);
@@ -242,6 +222,34 @@ void entity::Photo::setColor(const osg::Vec4f &color)
     colors->dirty();
     this->dirtyDisplayList();
     this->dirtyBound();
+}
+
+void entity::Photo::setTransparency(float alpha)
+{
+    alpha = alpha<0? 0.f : alpha;
+    alpha = alpha>1? 1.f : alpha;
+
+    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+    if (colors->size() == 0) return;
+
+    osg::Vec4f color = (*colors)[0];
+    if (color.isNaN()) return;
+    (*colors)[0] = osg::Vec4f(color.x(), color.y(), color.z(), alpha);
+    colors->dirty();
+    this->dirtyDisplayList();
+    this->dirtyBound();
+}
+
+float entity::Photo::getTransparency() const
+{
+    const osg::Vec4Array* colors = static_cast<const osg::Vec4Array*>(this->getColorArray());
+    if (colors->size() == 0) {
+        outErrMsg("photo: color array is not set");
+        return 1.f;
+    }
+    return ((*colors)[0]).a();
+//    osg::Material* mat = dynamic_cast< osg::Material* >(this->getOrCreateStateSet()->getAttribute(osg::StateAttribute::MATERIAL));
+//    if (!mat) return 1.f;
 }
 
 dureu::ENTITY_TYPE entity::Photo::getEntityType() const

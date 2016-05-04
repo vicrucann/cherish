@@ -48,6 +48,8 @@ signals:
     void clickedDelete(const QModelIndex& index);
     void clickedDeletePhoto(const QModelIndex& index);
     void clickedVisibility(const QModelIndex& index);
+    void clickedTransparencyPlus(const QModelIndex& index);
+    void clickedTransparencyMinus(const QModelIndex& index);
 
 private:
     QRect getButtonDeleteRect(const QRect& rect) const;
