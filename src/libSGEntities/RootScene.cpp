@@ -348,9 +348,9 @@ void RootScene::editPhotoDelete(entity::Photo *photo, entity::Canvas *canvas)
     m_saved = false;
 }
 
-void RootScene::editPhotoPush(entity::Photo *photo)
+void RootScene::editPhotoPush(entity::Photo *photo, entity::Canvas *source, entity::Canvas *destination)
 {
-    m_userScene->editPhotoPush(m_undoStack, photo);
+    m_userScene->editPhotoPush(m_undoStack, photo, source, destination);
     m_saved = false;
 }
 

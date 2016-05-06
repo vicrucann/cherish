@@ -46,6 +46,7 @@ public slots:
     void slotMouseModeSet(dureu::MOUSE_MODE mode);
     void slotPhotoTransparencyPlus(const QModelIndex& index);
     void slotPhotoTransparencyMinus(const QModelIndex& index);
+    void slotPhotoPushed(int parent, int start, int, int destination, int);
 
 signals:
     void signalTabletActivity(bool active);
@@ -97,7 +98,6 @@ private slots:
     void onImageScale();
     void onImageFlipH();
     void onImageFlipV();
-    void onImagePush();
 
     void onStrokesPush();
 
@@ -155,7 +155,6 @@ private:
             // Edit Image
 //            , * m_actionImageMove, * m_actionImageRotate, * m_actionImageScale, * m_actionImageFlipV
 //            , * m_actionImageFlipH
-            , * m_actionImagePush
             // Edit Strokes
             , * m_actionStrokesPush
     ;

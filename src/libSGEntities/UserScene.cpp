@@ -640,26 +640,22 @@ void entity::UserScene::editPhotoDelete(QUndoStack *stack, entity::Photo *photo,
     stack->push(cmd);
 }
 
-void entity::UserScene::editPhotoPush(QUndoStack *stack, entity::Photo *photo)
+void entity::UserScene::editPhotoPush(QUndoStack *stack, entity::Photo *photo, Canvas *source, Canvas *destination)
 {
     if (!stack){
         outErrMsg("editPhotoDelete(): undo stack is NULL.");
         return;
     }
-    if (!photo)
+    if (!photo || !destination || !source)
         return;
-    if (!this->getCanvasCurrent()->getGeodeData()->containsDrawable(photo)){
-        outErrMsg("editPhotoDelete: current canvas does not contain that photo."
-                  "Deletion is not possible.");
-        return;
-    }
-    if (!this->getCanvasPrevious()){
-        outErrMsg("editPhotoPush: previous canvas is null");
-        return;
+
+    if (!source->getGeodeData()->containsDrawable(photo)){
+        outErrMsg("editPhotoDelete: source canvas does not contain that photo."
+                          "Scene movement is not possible.");
+                return;
     }
 
-    EditPhotoPushCommand* cmd = new EditPhotoPushCommand(this, m_canvasCurrent.get(),
-                                                         m_canvasPrevious.get(), photo);
+    EditPhotoPushCommand* cmd = new EditPhotoPushCommand(this, source, destination, photo);
     if (!cmd) return;
     stack->push(cmd);
 }

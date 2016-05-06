@@ -101,7 +101,7 @@ public:
     void editCanvasDelete(entity::Canvas* canvas);
 
     void editPhotoDelete(entity::Photo* photo, entity::Canvas* canvas);
-    void editPhotoPush(entity::Photo* photo);
+    void editPhotoPush(entity::Photo* photo, entity::Canvas* source, entity::Canvas* destination);
 
     void editStrokesPush(osg::Camera *camera);
     void editStrokesMove(double u, double v, dureu::EVENT event);

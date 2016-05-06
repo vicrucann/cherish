@@ -201,7 +201,7 @@ protected:
 class EditPhotoPushCommand : public QUndoCommand
 {
 public:
-    EditPhotoPushCommand(entity::UserScene* scene, entity::Canvas* current, entity::Canvas* previous,
+    EditPhotoPushCommand(entity::UserScene* scene, entity::Canvas* source, entity::Canvas* destination,
                          entity::Photo* photo, QUndoCommand* parent=0);
     ~EditPhotoPushCommand() {}
 
@@ -210,8 +210,8 @@ public:
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
-    osg::observer_ptr<entity::Canvas> m_current;
-    osg::observer_ptr<entity::Canvas> m_previous;
+    osg::observer_ptr<entity::Canvas> m_source;
+    osg::observer_ptr<entity::Canvas> m_destination;
     osg::observer_ptr<entity::Photo> m_photo;
 };
 

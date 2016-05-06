@@ -92,7 +92,8 @@ public:
     void editCanvasDelete(QUndoStack* stack, entity::Canvas* canvas);
 
     void editPhotoDelete(QUndoStack* stack, entity::Photo* photo, entity::Canvas* canvas);
-    void editPhotoPush(QUndoStack* stack, entity::Photo* photo);
+    void editPhotoPush(QUndoStack* stack, entity::Photo* photo, entity::Canvas* source,
+                       entity::Canvas* destination);
 
     void editStrokesPush(QUndoStack* stack, osg::Camera* camera);
     void editStrokesMove(QUndoStack* stack, double u, double v, dureu::EVENT event);

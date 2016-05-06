@@ -284,6 +284,20 @@ void MainWindow::slotPhotoTransparencyMinus(const QModelIndex &index)
     this->recievedRequestUpdate();
 }
 
+void MainWindow::slotPhotoPushed(int parent, int start, int, int destination, int)
+{
+    entity::Canvas* canvas_old = m_rootScene->getUserScene()->getCanvasFromIndex(parent);
+    if (!canvas_old) return;
+
+    entity::Canvas* canvas_new = m_rootScene->getUserScene()->getCanvasFromIndex(destination);
+    if (!canvas_new) return;
+
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(canvas_old, start);
+    if (!photo) return;
+
+    m_rootScene->editPhotoPush(photo, canvas_old, canvas_new);
+}
+
 /* Create an ordinary single view window on the scene _root
  * To create outside viewer, use:
  * GLWidget* vwid = createViewer(Qt::Window);
@@ -624,12 +638,6 @@ void MainWindow::onImageFlipV()
     m_glWidget->setMouseMode(dureu::ENTITY_FLIPV);
 }
 
-void MainWindow::onImagePush()
-{
-    this->statusBar()->showMessage(tr("This functionality is turned off temporarly."));
-    //m_glWidget->setMouseMode(dureu::PHOTO_PUSH);
-}
-
 void MainWindow::onStrokesPush()
 {
     osg::Camera* camera = m_glWidget->getCamera();
@@ -811,9 +819,6 @@ void MainWindow::initializeActions()
 //    m_actionImageFlipH = new QAction(Data::sceneImageFlipHIcon(), tr("Flip Image"), this);
 //    this->connect(m_actionImageFlipH, SIGNAL(triggered(bool)), this, SLOT(onImageFlipH()));
 
-    m_actionImagePush = new QAction(Data::sceneImagePushIcon(), tr("Move image from current to previous canvas"), this);
-    this->connect(m_actionImagePush, SIGNAL(triggered(bool)), this, SLOT(onImagePush()));
-
     m_actionStrokesPush = new QAction(Data::scenePushStrokesIcon(), tr("Push Strokes"), this);
     this->connect(m_actionStrokesPush, SIGNAL(triggered(bool)), this, SLOT(onStrokesPush()));
 
@@ -888,7 +893,6 @@ void MainWindow::initializeMenus()
 //    submenuEI->addAction(m_actionImageScale);
 //    submenuEI->addAction(m_actionImageFlipH);
 //    submenuEI->addAction(m_actionImageFlipV);
-    submenuEI->addAction(m_actionImagePush);
     QMenu* submenuES = menuScene->addMenu("Edit Strokes");
     submenuES->addAction(m_actionStrokesPush);
 }
@@ -970,7 +974,6 @@ void MainWindow::initializeToolbars()
 //    tbEntity->addAction(m_actionImageScale);
 //    tbEntity->addAction(m_actionImageFlipH);
 //    tbEntity->addAction(m_actionImageFlipV);
-    tbEntity->addAction(m_actionImagePush);
     //tbEntity->addSeparator();
     tbEntity->addAction(m_actionStrokesPush);
 
@@ -1104,6 +1107,10 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedTransparencyMinus(QModelIndex)),
                      this, SLOT(slotPhotoTransparencyMinus(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_canvasWidget, SIGNAL(photoDraggedAndDropped(int,int,int,int,int)),
+                     this, SLOT(slotPhotoPushed(int,int,int,int,int)),
                      Qt::UniqueConnection);
 
 

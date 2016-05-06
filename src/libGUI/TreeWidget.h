@@ -15,6 +15,7 @@ public:
 
 signals:
     void rightClicked(const QModelIndex& index);
+    void photoDraggedAndDropped(int parent, int start, int end, int destination, int row);
 
 public slots:
     void onCanvasAdded(const std::string& name);
@@ -25,6 +26,7 @@ public slots:
 
 protected:
     virtual void mousePressEvent(QMouseEvent* event);
+    virtual void dropEvent(QDropEvent* event);
 
 };
 

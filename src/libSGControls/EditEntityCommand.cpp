@@ -378,33 +378,33 @@ void EditCutCommand::redo()
     m_scene->updateWidgets();
 }
 
-EditPhotoPushCommand::EditPhotoPushCommand(entity::UserScene *scene, entity::Canvas *current, entity::Canvas *previous, entity::Photo *photo, QUndoCommand *parent)
+EditPhotoPushCommand::EditPhotoPushCommand(entity::UserScene *scene, entity::Canvas *source, entity::Canvas *destination, entity::Photo *photo, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
-    , m_current(current)
-    , m_previous(previous)
+    , m_source(source)
+    , m_destination(destination)
     , m_photo(photo)
 {
     this->setText(QObject::tr("Move photo %1 from canvas %2 to canvas %3")
                   .arg(QString(m_photo->getName().c_str()) ,
-                       QString(m_current->getName().c_str()),
-                       QString(m_previous->getName().c_str()) ));
+                       QString(m_source->getName().c_str()),
+                       QString(m_destination->getName().c_str()) ));
 }
 
 void EditPhotoPushCommand::undo()
 {
-    m_current->getGeodeData()->addDrawable(m_photo.get());
-    //m_current->getGeodeData()->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
-    m_previous->getGeodeData()->removeChild(m_photo.get());
-    m_current->updateFrame(m_scene->getCanvasPrevious());
+//    m_source->getGeodeData()->insertChild(m_start, m_photo.get());
+    m_source->getGeodeData()->addDrawable(m_photo.get());
+    m_destination->getGeodeData()->removeChild(m_photo.get());
+    m_source->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void EditPhotoPushCommand::redo()
 {
-    m_previous->getGeodeData()->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
-    m_previous->getGeodeData()->addDrawable(m_photo.get());
-    m_current->getGeodeData()->removeDrawable(m_photo.get());
-    m_previous->updateFrame(m_scene->getCanvasPrevious());
+    m_destination->getGeodeData()->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
+    m_destination->getGeodeData()->addDrawable(m_photo.get());
+    m_source->getGeodeData()->removeDrawable(m_photo.get());
+    m_destination->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
