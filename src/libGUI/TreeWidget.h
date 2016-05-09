@@ -26,7 +26,7 @@ public slots:
 
 protected:
     virtual void mousePressEvent(QMouseEvent* event);
-    virtual void dropEvent(QDropEvent* event);
+//    virtual void dropEvent(QDropEvent* event);
 
 };
 

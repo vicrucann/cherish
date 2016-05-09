@@ -1109,9 +1109,9 @@ void MainWindow::initializeCallbacks()
                      this, SLOT(slotPhotoTransparencyMinus(QModelIndex)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_canvasWidget, SIGNAL(photoDraggedAndDropped(int,int,int,int,int)),
-                     this, SLOT(slotPhotoPushed(int,int,int,int,int)),
-                     Qt::UniqueConnection);
+//    QObject::connect(m_canvasWidget, SIGNAL(photoDraggedAndDropped(int,int,int,int,int)),
+//                     this, SLOT(slotPhotoPushed(int,int,int,int,int)),
+//                     Qt::UniqueConnection);
 
 
     /* UI forms */

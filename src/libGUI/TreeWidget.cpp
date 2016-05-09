@@ -12,11 +12,11 @@ CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
     : QTreeWidget(parent)
 {
     this->setMinimumWidth(dureu::APP_WIDGET_WIDTH);
-    this->setDragEnabled(true);
-    this->setAcceptDrops(true);
+//    this->setDragEnabled(false);
+//    this->setAcceptDrops(false);
     this->setDropIndicatorShown(true);
-    this->setDragDropMode(QAbstractItemView::InternalMove);
-    this->invisibleRootItem()->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+//    this->setDragDropMode(QAbstractItemView::InternalMove);
+//    this->invisibleRootItem()->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
     this->header()->close();
 }
 
@@ -30,8 +30,8 @@ void CanvasPhotoWidget::onCanvasAdded(const std::string &name)
     QTreeWidgetItem* item = new QTreeWidgetItem();
     if (!item) return;
     item->setText(0, QString(name.c_str()));
-    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled |
-                   Qt::ItemIsEditable | Qt::ItemIsDropEnabled);
+//    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled |
+//                   Qt::ItemIsEditable | Qt::ItemIsDropEnabled);
     item->setData(0,dureu::DelegateChildRole,1);
     item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
     this->addTopLevelItem(item);
@@ -52,8 +52,8 @@ void CanvasPhotoWidget::onPhotoAdded(const std::string &name, int rowParent)
     QTreeWidgetItem* child = new QTreeWidgetItem();
     if (!child) return;
     child->setText(0, QString(name.c_str()));
-    child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled |
-                    Qt::ItemIsEditable | Qt::ItemIsDragEnabled );
+//    child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled |
+//                    Qt::ItemIsEditable | Qt::ItemIsDragEnabled );
     child->setData(0,dureu::DelegateChildRole,2);
     parent->addChild(child);
 }
@@ -135,35 +135,35 @@ void CanvasPhotoWidget::mousePressEvent(QMouseEvent *event)
     QTreeWidget::mousePressEvent(event);
 }
 
-void CanvasPhotoWidget::dropEvent(QDropEvent *event)
-{
-    /* list of items that are about to be dragged */
-    QList< QTreeWidgetItem* > kids = this->selectedItems();
+//void CanvasPhotoWidget::dropEvent(QDropEvent *event)
+//{
+//    /* list of items that are about to be dragged */
+//    QList< QTreeWidgetItem* > kids = this->selectedItems();
 
-    /* row number before the drag - initial position */
-    if (kids.size() == 0) return;
-    int start = this->indexFromItem(kids.at(0)).row();
-    int end = start;
-    QTreeWidgetItem* parent = kids.at(0)->parent();
+//    /* row number before the drag - initial position */
+//    if (kids.size() == 0) return;
+//    int start = this->indexFromItem(kids.at(0)).row();
+//    int end = start;
+//    QTreeWidgetItem* parent = kids.at(0)->parent();
 
-    /* perform the default implementation */
-    QTreeWidget::dropEvent(event);
+//    /* perform the default implementation */
+//    QTreeWidget::dropEvent(event);
 
-    /* get new index */
-    int row = this->indexFromItem(kids.at(0)).row();
-    QTreeWidgetItem* destination = kids.at(0)->parent();
+//    /* get new index */
+//    int row = this->indexFromItem(kids.at(0)).row();
+//    QTreeWidgetItem* destination = kids.at(0)->parent();
 
-    if (!parent || !destination){
-        event->setDropAction(Qt::IgnoreAction);
-        return;
-    }
+//    if (!parent || !destination){
+//        event->setDropAction(Qt::IgnoreAction);
+//        return;
+//    }
 
-    QTreeWidgetItem* child = destination->child(row);
-    destination->removeChild(child);
-    outLogVal("inserting to end", destination->childCount());
-    destination->insertChild(destination->childCount(), child);
-    outLogVal("inserted", destination->childCount());
+//    QTreeWidgetItem* child = destination->child(row);
+//    destination->removeChild(child);
+//    outLogVal("inserting to end", destination->childCount());
+//    destination->insertChild(destination->childCount(), child);
+//    outLogVal("inserted", destination->childCount());
 
-    /* emit signal about the move */
-    emit this->photoDraggedAndDropped(this->indexOfTopLevelItem(parent), start, end, this->indexOfTopLevelItem(destination), row);
-}
+//    /* emit signal about the move */
+//    emit this->photoDraggedAndDropped(this->indexOfTopLevelItem(parent), start, end, this->indexOfTopLevelItem(destination), row);
+//}
