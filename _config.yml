@@ -6,7 +6,7 @@ safe: true
 
 
 ### site serving configuration ###
-baseurl: http://vicrucann.github.io/dura-europos-insitu
+baseurl: http://vicrucann.github.io/cherish
 exclude: [CNAME, README.md, .gitignore]
 #permalink: / ## disables post output
 timezone: null
