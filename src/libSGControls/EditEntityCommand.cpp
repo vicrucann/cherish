@@ -402,7 +402,8 @@ void EditPhotoPushCommand::undo()
 
 void EditPhotoPushCommand::redo()
 {
-    m_destination->getGeodeData()->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
+    m_photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
+//    m_destination->getGeodeData()->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
     m_destination->getGeodeData()->addDrawable(m_photo.get());
     m_source->getGeodeData()->removeDrawable(m_photo.get());
     m_destination->updateFrame(m_scene->getCanvasPrevious());
