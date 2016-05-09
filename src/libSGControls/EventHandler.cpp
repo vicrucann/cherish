@@ -868,7 +868,7 @@ void EventHandler::doEditPhotoPush(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
     if (!intersects) return;
     entity::Photo* photo = this->getPhoto(*result);
     if (!photo) return;
-    m_scene->editPhotoPush(photo);
+//    m_scene->editPhotoPush(photo);
 }
 
 template <typename T1, typename T2>

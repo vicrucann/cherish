@@ -200,7 +200,7 @@ const float HUD_TEXT_POSY = HUD_BOTTOM + 15.f;
 const float HUD_TEXT_POSZ = 0.f;
 
 const size_t APP_SCREENSHOT_HEIGHT = 100;
-const size_t APP_WIDGET_BUTTON = 24;
+const size_t APP_WIDGET_BUTTON = 16;
 const size_t APP_WIDGET_WIDTH = APP_SCREENSHOT_HEIGHT*2+150;
 
 const int DelegateVisibilityRole = Qt::UserRole + 1;
