@@ -88,6 +88,12 @@ const std::vector<entity::Entity2D *> &entity::SelectedGroup::getEntities() cons
     return m_group;
 }
 
+entity::Entity2D *entity::SelectedGroup::getEntity(int i) const
+{
+    if (i<0 || i>= (int)m_group.size()) return 0;
+    return m_group.at(i);
+}
+
 int entity::SelectedGroup::getSize() const
 {
     return m_group.size();

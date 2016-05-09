@@ -410,6 +410,7 @@ QCursor *Utilities::getCursorFromMode(dureu::MOUSE_MODE mode)
         break;
 
     case dureu::CREATE_CANVASCLONE:
+    case dureu::CREATE_CANVASSEPARATE:
         cur = new QCursor(Data::sceneCanvasCloneCursor());
         break;
     default:

@@ -74,5 +74,6 @@
         <file>scene-canvas-edit-24px.svg</file>
         <file>edit-photo-transparency-on-24px.svg</file>
         <file>edit-photo-transparency-off-24px.svg</file>
+        <file>scene-newcanvas-separate-24px.svg</file>
     </qresource>
 </RCC>

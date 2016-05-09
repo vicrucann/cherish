@@ -43,6 +43,7 @@ public:
     static const QIcon& sceneNewCanvasYZIcon();
     static const QIcon& sceneNewCanvasXZIcon();
     static const QIcon& sceneNewCanvasOrthoIcon();
+    static const QIcon& sceneNewCanvasSeparateIcon();
 
     static const QIcon& sceneNewCanvasSetIcon();
     static const QIcon& sceneNewCanvasSetParallelIcon();

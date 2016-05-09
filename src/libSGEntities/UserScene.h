@@ -89,6 +89,7 @@ public:
     void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const osg::Vec3f& center3d, dureu::EVENT event);
     void editCanvasClone(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
+    void editCanvasSeparate(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
     void editCanvasDelete(QUndoStack* stack, entity::Canvas* canvas);
 
     void editPhotoDelete(QUndoStack* stack, entity::Photo* photo, entity::Canvas* canvas);
@@ -163,6 +164,11 @@ protected:
     void canvasCloneAppend(const osg::Vec3f& t);
     void canvasCloneFinish(QUndoStack* stack);
     bool canvasCloneValid() const;
+
+    void canvasSeparateStart();
+    void canvasSeparateAppend(const osg::Vec3f& t);
+    void canvasSeparateFinish(QUndoStack* stack);
+    bool canvasSeparateValid() const;
 
     void canvasRotateStart();
     void canvasRotateAppend(const osg::Quat& r, const osg::Vec3f& center3d);

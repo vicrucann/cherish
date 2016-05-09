@@ -17,6 +17,7 @@ public:
     void resetAll();
     void selectAll(osg::Geode* geodeData);
     const std::vector<Entity2D *> &getEntities() const;
+    entity::Entity2D* getEntity(int i) const;
     int getSize() const;
     bool isEmpty() const;
     osg::Vec3f getCenter3D(const osg::Matrix& M) const;

@@ -337,6 +337,12 @@ void RootScene::editCanvasClone(const osg::Vec3f &translate, dureu::EVENT event)
     m_saved = false;
 }
 
+void RootScene::editCanvasSeparate(const osg::Vec3f &translate, dureu::EVENT event)
+{
+    m_userScene->editCanvasSeparate(m_undoStack, translate, event);
+    m_saved = false;
+}
+
 void RootScene::editCanvasDelete(entity::Canvas *canvas)
 {
     m_userScene->editCanvasDelete(m_undoStack, canvas);

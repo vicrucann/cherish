@@ -61,7 +61,7 @@ const osg::Vec4 cyan = osg::Vec4(float(42)/255.0f, float(161)/255.0f, float(152)
 const osg::Vec4 green = osg::Vec4(float(133)/255.0f, float(153)/255.0f, float(0)/255.0f, 1.0f);
 } // solarized
 
-
+// TODO: settings must be initialized based on screen resolution
 
 namespace dureu{
 
@@ -108,6 +108,7 @@ enum MOUSE_MODE
 
     MOUSE_CREATE = 0x300,
     CREATE_CANVASCLONE,
+    CREATE_CANVASSEPARATE,
 
     MOUSE_CANVAS = 0x400,
     CANVAS_OFFSET,

@@ -84,6 +84,7 @@ private slots:
     void onNewCanvasYZ();
     void onNewCanvasXZ();
     void onNewCanvasOrtho();
+    void onNewCanvasSeparate();
     void onNewCanvasStandard();
     void onNewCanvasCoaxial();
     void onNewCanvasParallel();
@@ -142,19 +143,15 @@ private:
             , * m_actionCameraSettings;
 
     // SCENE actions
-    QAction * m_actionSketch, * m_actionEraser, * m_actionSelect            
+    QAction * m_actionSketch, * m_actionEraser, * m_actionSelect
             // New Canvas sub-menu
             , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasXZ
-            , * m_actionCanvasOrtho
+            , * m_actionCanvasOrtho, * m_actionCanvasSeparate
             // New Canvas Set sub-menu
             , * m_actionSetStandard
 //            , * m_actionSetParallel, * m_actionSetCoaxial, * m_actionSetRing
             // Edit Canvas
-//            , * m_actionCanvasOffset, * m_actionCanvasRotate
             , * m_actionCanvasEdit
-            // Edit Image
-//            , * m_actionImageMove, * m_actionImageRotate, * m_actionImageScale, * m_actionImageFlipV
-//            , * m_actionImageFlipH
             // Edit Strokes
             , * m_actionStrokesPush
     ;

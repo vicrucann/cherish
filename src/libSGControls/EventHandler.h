@@ -50,6 +50,7 @@ public:
     void doEditCanvasRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                             osg::Vec3f alongAxis, osg::Vec3f rotAxis);
     void doCanvasClone(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+    void doCanvasSeparate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     template <typename T1, typename T2>
     void doEditPhotoPush(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);

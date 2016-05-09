@@ -597,6 +597,39 @@ void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &tra
     }
 }
 
+void entity::UserScene::editCanvasSeparate(QUndoStack *stack, const osg::Vec3f &translate, dureu::EVENT event)
+{
+    if (!stack){
+        fatalMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
+                 "Editing is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
+    }
+
+    switch (event){
+    case dureu::EVENT_OFF:
+        this->canvasSeparateFinish(stack);
+        break;
+    case dureu::EVENT_PRESSED:
+        this->canvasSeparateStart();
+        this->canvasSeparateAppend(translate);
+        break;
+    case dureu::EVENT_DRAGGED:
+        if (!this->canvasSeparateValid())
+            this->canvasSeparateStart();
+        this->canvasSeparateAppend(translate);
+        break;
+    case dureu::EVENT_RELEASED:
+        if (!this->canvasSeparateValid())
+            break;
+        this->canvasSeparateAppend(translate);
+        this->canvasSeparateFinish(stack);
+        break;
+    default:
+        break;
+    }
+}
+
 void entity::UserScene::editCanvasDelete(QUndoStack *stack, entity::Canvas *canvas)
 {
     outLogVal("Attempting to delete", canvas->getName());
@@ -1426,6 +1459,26 @@ void entity::UserScene::canvasCloneFinish(QUndoStack *stack)
 }
 
 bool entity::UserScene::canvasCloneValid() const
+{
+    return m_canvasClone.get();
+}
+
+void entity::UserScene::canvasSeparateStart()
+{
+
+}
+
+void entity::UserScene::canvasSeparateAppend(const osg::Vec3f &t)
+{
+
+}
+
+void entity::UserScene::canvasSeparateFinish(QUndoStack *stack)
+{
+
+}
+
+bool entity::UserScene::canvasSeparateValid() const
 {
     return m_canvasClone.get();
 }

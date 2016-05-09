@@ -569,6 +569,12 @@ void MainWindow::onNewCanvasOrtho()
     this->recievedRequestUpdate();
 }
 
+void MainWindow::onNewCanvasSeparate()
+{
+    m_glWidget->setMouseMode(dureu::CREATE_CANVASSEPARATE);
+    this->recievedRequestUpdate();
+}
+
 void MainWindow::onNewCanvasStandard()
 {
     m_rootScene->addCanvas(osg::Matrix::identity(),
@@ -774,6 +780,9 @@ void MainWindow::initializeActions()
     m_actionCanvasOrtho = new QAction(Data::sceneNewCanvasOrthoIcon(), tr("Perpendicular to current"), this);
     this->connect(m_actionCanvasOrtho, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasOrtho()));
 
+    m_actionCanvasSeparate = new QAction(Data::sceneNewCanvasSeparateIcon(), tr("Separate selected strokes"), this);
+    this->connect(m_actionCanvasSeparate, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasSeparate()));
+
     m_actionCanvasXY = new QAction(Data::sceneNewCanvasXYIcon(), tr("Plane XY"), this);
     this->connect(m_actionCanvasXY, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasXY()));
 
@@ -877,6 +886,7 @@ void MainWindow::initializeMenus()
     submenuCanvas->addAction(m_actionCanvasYZ);
     submenuCanvas->addAction(m_actionCanvasXZ);
     submenuCanvas->addAction(m_actionCanvasOrtho);
+    submenuCanvas->addAction(m_actionCanvasSeparate);
     QMenu* submenuSet = menuScene->addMenu("New Canvas Set");
     submenuSet->setIcon(Data::sceneNewCanvasSetIcon());
     submenuSet->addAction(m_actionSetStandard);
@@ -940,6 +950,7 @@ void MainWindow::initializeToolbars()
     menuNewCanvas->addAction(m_actionCanvasXZ);
     menuNewCanvas->addAction(m_actionCanvasClone);
     menuNewCanvas->addAction(m_actionCanvasOrtho);
+    menuNewCanvas->addAction(m_actionCanvasSeparate);
     QToolButton* tbNewCanvas = new QToolButton();
     tbNewCanvas->setIcon(Data::sceneNewCanvasIcon());
     tbNewCanvas->setMenu(menuNewCanvas);

@@ -82,6 +82,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         if (m_mode == dureu::CREATE_CANVASCLONE){
             this->doCanvasClone(ea, aa);
         }
+        else if (m_mode == dureu::CREATE_CANVASSEPARATE){
+            this->doCanvasSeparate(ea, aa);
+        }
         break;
     case dureu::MOUSE_CANVAS:
         switch (m_mode){
@@ -392,6 +395,37 @@ void EventHandler::doCanvasClone(const osgGA::GUIEventAdapter &ea, osgGA::GUIAct
         if (!this->getRaytraceNormalProjection(ea,aa,XC))
             this->finishAll();
         m_scene->editCanvasClone(XC, dureu::EVENT_DRAGGED);
+        break;
+    default:
+        break;
+    }
+}
+
+void EventHandler::doCanvasSeparate(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           ))
+        return;
+    if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0)
+        return;
+
+    osg::Vec3f XC = osg::Vec3f(0.f,0.f,0.f);
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        if (!this->getRaytraceNormalProjection(ea,aa,XC)) return;
+        m_scene->editCanvasSeparate(XC, dureu::EVENT_PRESSED);
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        if (!this->getRaytraceNormalProjection(ea,aa,XC))
+            this->finishAll();
+        m_scene->editCanvasSeparate(XC, dureu::EVENT_RELEASED);
+        break;
+    case osgGA::GUIEventAdapter::DRAG:
+        if (!this->getRaytraceNormalProjection(ea,aa,XC))
+            this->finishAll();
+        m_scene->editCanvasSeparate(XC, dureu::EVENT_DRAGGED);
         break;
     default:
         break;
