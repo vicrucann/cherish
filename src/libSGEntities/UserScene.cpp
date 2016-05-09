@@ -1405,6 +1405,8 @@ void entity::UserScene::canvasCloneStart()
     if (!m_canvasCurrent->getVisibilityData())
         m_canvasCurrent->setVisibilityAll(true);
 
+    m_canvasCurrent->unselectAll();
+
     entity::Canvas* cnv = m_canvasCurrent->clone();
     cnv->setName(this->getCanvasName());
     if (!cnv){
