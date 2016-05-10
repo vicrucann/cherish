@@ -30,6 +30,24 @@ private:
     osg::ref_ptr<entity::Canvas> m_canvas;
 };
 
+class AddCanvasSeparationCommand : public QUndoCommand
+{
+public:
+    AddCanvasSeparationCommand(entity::UserScene* scene, entity::Canvas* source, entity::Canvas* copy,
+                               QUndoCommand* parent = 0);
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+private:
+    void moveEntities(entity::Canvas* from, entity::Canvas* to);
+
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_source;
+    osg::ref_ptr<entity::Canvas> m_target;
+    std::vector<entity::Entity2D*> m_entities;
+};
+
 class AddPhotoCommand : public QUndoCommand
 {
 public:

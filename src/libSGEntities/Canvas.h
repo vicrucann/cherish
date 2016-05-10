@@ -125,6 +125,7 @@ public:
     osg::Plane getPlane() const;
     osg::MatrixTransform* getMatrixTransform() const;
     entity::Canvas* clone() const;
+    entity::Canvas* separate();
 
     osg::Node* getTool(const std::string& name);
     entity::FrameTool* getToolFrame() const;

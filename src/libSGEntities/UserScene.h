@@ -168,7 +168,6 @@ protected:
     void canvasSeparateStart();
     void canvasSeparateAppend(const osg::Vec3f& t);
     void canvasSeparateFinish(QUndoStack* stack);
-    bool canvasSeparateValid() const;
 
     void canvasRotateStart();
     void canvasRotateAppend(const osg::Quat& r, const osg::Vec3f& center3d);
@@ -180,7 +179,7 @@ private:
     osg::observer_ptr<entity::Canvas> m_canvasPrevious;
     osg::observer_ptr<entity::Canvas> m_canvasSelected;
     osg::observer_ptr<entity::Canvas> m_canvasTarget; /* for push operations */
-    osg::observer_ptr<entity::Canvas> m_canvasClone; /* for clone current canvas */
+    osg::ref_ptr<entity::Canvas> m_canvasClone; /* for clone current canvas */
 
     osg::Vec3f m_deltaT; /* for edit operations: translate */
     osg::Quat m_deltaR; /* for edit operation: rotate */

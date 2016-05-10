@@ -568,7 +568,7 @@ entity::Canvas *entity::Canvas::clone() const
         switch(entcopy->getEntityType()){
         case dureu::ENTITY_STROKE:
         {
-            entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(m_geodeData->getChild(i));
+            entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(entcopy);
             if (stroke){
                 entity::Stroke* si = new entity::Stroke(*stroke, osg::CopyOp::DEEP_COPY_ALL);
                 if (si){
@@ -577,6 +577,39 @@ entity::Canvas *entity::Canvas::clone() const
                 else outErrMsg("canvas clone: coult not clone the stroke");
             }
             else outErrMsg("canvas clone: could not dynamic_cast<Stroke>");
+            break;
+        }
+        case dureu::ENTITY_PHOTO:
+            break;
+        default:
+            break;
+        }
+    }
+    clone->updateFrame();
+
+    return clone.release();
+}
+
+entity::Canvas *entity::Canvas::separate()
+{
+    osg::ref_ptr<entity::Canvas> clone = new Canvas;
+    if (!clone.get()) return NULL;
+    clone->initializeSG();
+    clone->setMatrixRotation(this->getMatrixRotation());
+    clone->setMatrixTranslation(this->getMatrixTranslation());
+    clone->setName(this->getName());
+
+    for (size_t i=0; i<(size_t)m_selectedGroup.getSize(); ++i){
+        entity::Entity2D* entcopy = m_selectedGroup.getEntity(i);;
+        if (!entcopy) continue;
+        switch(entcopy->getEntityType()){
+        case dureu::ENTITY_STROKE:{
+            // copy the stroke
+            entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(entcopy);
+            if (stroke){
+                if (!clone->getGeodeData()->addDrawable(stroke))
+                    outErrMsg("canvas separate: could not copy stroke");
+            }
             break;
         }
         case dureu::ENTITY_PHOTO:

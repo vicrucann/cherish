@@ -615,12 +615,12 @@ void entity::UserScene::editCanvasSeparate(QUndoStack *stack, const osg::Vec3f &
         this->canvasSeparateAppend(translate);
         break;
     case dureu::EVENT_DRAGGED:
-        if (!this->canvasSeparateValid())
+        if (!this->canvasCloneValid())
             this->canvasSeparateStart();
         this->canvasSeparateAppend(translate);
         break;
     case dureu::EVENT_RELEASED:
-        if (!this->canvasSeparateValid())
+        if (!this->canvasCloneValid())
             break;
         this->canvasSeparateAppend(translate);
         this->canvasSeparateFinish(stack);
@@ -1467,22 +1467,66 @@ bool entity::UserScene::canvasCloneValid() const
 
 void entity::UserScene::canvasSeparateStart()
 {
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityData())
+        m_canvasCurrent->setVisibilityAll(true);
 
+    entity::Canvas* cnv = m_canvasCurrent->separate();
+    cnv->setName(this->getCanvasName());
+    if (!cnv){
+        outErrMsg("canvasCloneStart: could not clone the canvas, ptr is NULL");
+        return;
+    }
+    m_canvasClone = cnv;
+
+    // now clone contains all the strokes needed
+    m_canvasCurrent->unselectAll();
+
+    if (!this->addChild(m_canvasClone.get())){
+        outErrMsg("canvasCloneStart: could not add clone as a child");
+        return;
+    }
+
+    /* have to set the clone as current so that to calculate offset correctly */
+    if (!this->setCanvasCurrent(m_canvasClone.get())){
+        outErrMsg("canvasCloneStart: could not set clone as current");
+        this->removeChild(m_canvasClone.get());
+        m_canvasClone = 0;
+        return;
+    }
 }
 
 void entity::UserScene::canvasSeparateAppend(const osg::Vec3f &t)
 {
+    if (!this->canvasCloneValid()){
+        outErrMsg("canvasCloneAppend: clone is not valid");
+        return;
+    }
 
+    /* clone is also current */
+    m_canvasCurrent->translate(osg::Matrix::translate(t.x(), t.y(), t.z()));
+    this->updateWidgets();
 }
 
 void entity::UserScene::canvasSeparateFinish(QUndoStack *stack)
 {
+    if (!this->canvasCloneValid()){
+        outErrMsg("canvasCloneFinish: clone is not valid");
+        return;
+    }
 
-}
+    this->setCanvasCurrent(m_canvasPrevious.get());
 
-bool entity::UserScene::canvasSeparateValid() const
-{
-    return m_canvasClone.get();
+    AddCanvasSeparationCommand* cmd = new AddCanvasSeparationCommand(this, m_canvasCurrent.get(),
+                                                                     m_canvasClone.get());
+
+    this->removeChild(m_canvasClone.get());
+    m_canvasClone = 0;
+    if (!cmd){
+        outErrMsg("canvasCloneFinish: could not allocated AddCanvasCommand");
+        return;
+    }
+    stack->push(cmd);
 }
 
 void entity::UserScene::canvasRotateStart()

@@ -408,8 +408,6 @@ void EventHandler::doCanvasSeparate(const osgGA::GUIEventAdapter &ea, osgGA::GUI
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            ))
         return;
-    if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0)
-        return;
 
     osg::Vec3f XC = osg::Vec3f(0.f,0.f,0.f);
     switch (ea.getEventType()){
@@ -421,6 +419,7 @@ void EventHandler::doCanvasSeparate(const osgGA::GUIEventAdapter &ea, osgGA::GUI
         if (!this->getRaytraceNormalProjection(ea,aa,XC))
             this->finishAll();
         m_scene->editCanvasSeparate(XC, dureu::EVENT_RELEASED);
+        m_glWidget->setMouseMode(dureu::SELECT_ENTITY);
         break;
     case osgGA::GUIEventAdapter::DRAG:
         if (!this->getRaytraceNormalProjection(ea,aa,XC))
@@ -820,6 +819,9 @@ void EventHandler::finishAll()
         m_scene->editCanvasRotate(osg::Quat(0,0,0,1), m_scene->getCanvasCurrent()->getCenter(), dureu::EVENT_OFF);
         break;
     case dureu::CREATE_CANVASCLONE:
+        m_scene->editCanvasClone(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
+        break;
+    case dureu::CREATE_CANVASSEPARATE:
         m_scene->editCanvasClone(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
         break;
     case dureu::ENTITY_MOVE:
