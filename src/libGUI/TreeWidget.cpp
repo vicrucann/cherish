@@ -30,6 +30,7 @@ void CanvasPhotoWidget::onCanvasAdded(const std::string &name)
     QTreeWidgetItem* item = new QTreeWidgetItem();
     if (!item) return;
     item->setText(0, QString(name.c_str()));
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
 //    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled |
 //                   Qt::ItemIsEditable | Qt::ItemIsDropEnabled);
     item->setData(0,dureu::DelegateChildRole,1);
@@ -52,6 +53,7 @@ void CanvasPhotoWidget::onPhotoAdded(const std::string &name, int rowParent)
     QTreeWidgetItem* child = new QTreeWidgetItem();
     if (!child) return;
     child->setText(0, QString(name.c_str()));
+    child->setFlags(child->flags() | Qt::ItemIsEditable);
 //    child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled |
 //                    Qt::ItemIsEditable | Qt::ItemIsDragEnabled );
     child->setData(0,dureu::DelegateChildRole,2);
