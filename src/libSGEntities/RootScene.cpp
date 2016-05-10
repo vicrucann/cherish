@@ -139,13 +139,20 @@ bool RootScene::loadSceneFromFile()
     /* update pointer */
     m_userScene = newscene.get();
 
-    /* load the construction tools */
+    /* load the construction tools and set photo textures */
     for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv){
             continue;
         }
         cnv->initializeTools();
+
+        /* photo textures */
+        for (size_t i=0; i<cnv->getGeodeData()->getNumChildren(); ++i){
+            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGeodeData()->getChild(i));
+            if (!photo) continue;
+            photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTextureAsAttribute());
+        }
     }
 
     /* update current/previous canvases */
