@@ -39,3 +39,7 @@
 #*.pdb
 #moc_*
 .DS_Store
+
+# doxygen-generated files
+docs/html/*
+docs/latex/*
