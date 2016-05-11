@@ -21,6 +21,9 @@
 
 class EventHandler;
 
+/*! \class GLWidget
+ * Class description
+*/
 class GLWidget : public QOpenGLWidget {
     Q_OBJECT
 public:

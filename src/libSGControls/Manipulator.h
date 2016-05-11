@@ -11,6 +11,9 @@
 #include <osgGA/GUIActionAdapter>
 #include <osgGA/TrackballManipulator>
 
+/*! \class Manipulator
+ * Class description
+*/
 class Manipulator : public osgGA::TrackballManipulator {
 public:
     Manipulator(dureu::MOUSE_MODE mode = dureu::CAMERA_ORBIT);

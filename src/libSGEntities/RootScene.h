@@ -47,6 +47,9 @@
 
 class AddStrokeCommand;
 
+/*! \class RootScene
+ * Class description
+*/
 class RootScene : public osg::Group {
 public:
     RootScene(QUndoStack* undoStack);

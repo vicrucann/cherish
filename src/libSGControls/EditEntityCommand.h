@@ -12,6 +12,9 @@
 #include "Photo.h"
 #include "Stroke.h"
 
+/*! \class EditCanvasOffsetCommand
+ * Class description
+*/
 class EditCanvasOffsetCommand : public QUndoCommand
 {
 public:
@@ -27,6 +30,9 @@ protected:
     osg::Vec3f m_translate;
 };
 
+/*! \class EditCanvasRotateCommand
+ * Class description
+*/
 class EditCanvasRotateCommand : public QUndoCommand
 {
 public:
@@ -43,6 +49,9 @@ protected:
     osg::Vec3f m_center;
 };
 
+/*! \class EditCanvasDeleteCommand
+ * Class description
+*/
 class EditCanvasDeleteCommand : public QUndoCommand
 {
 public:
@@ -57,6 +66,9 @@ protected:
     osg::ref_ptr<entity::Canvas> m_canvas;
 };
 
+/*! \class EditPhotoDeleteCommand
+ * Class description
+*/
 class EditPhotoDeleteCommand : public QUndoCommand
 {
 public:
@@ -72,6 +84,9 @@ protected:
     osg::ref_ptr<entity::Photo> m_photo;
 };
 
+/*! \class EditStrokesPushCommand
+ * Class description
+*/
 class EditStrokesPushCommand : public QUndoCommand
 {
 public:
@@ -93,6 +108,9 @@ protected:
     osg::Vec3f m_eye;
 };
 
+/*! \class EditEntitiesMoveCommand
+ * Class description
+*/
 class EditEntitiesMoveCommand : public QUndoCommand
 {
 public:
@@ -111,6 +129,9 @@ protected:
     double m_dv;
 };
 
+/*! \class EditEntitiesScaleCommand
+ * Class description
+*/
 class EditEntitiesScaleCommand : public QUndoCommand
 {
 public:
@@ -132,6 +153,9 @@ protected:
     osg::Vec3f m_center;
 };
 
+/*! \class EditEntitiesRotateCommand
+ * Class description
+*/
 class EditEntitiesRotateCommand : public QUndoCommand
 {
 public:
@@ -150,6 +174,9 @@ protected:
     osg::Vec3f m_center;
 };
 
+/*! \class EditStrokeDeleteCommand
+ * Serves for stroke deletion.
+*/
 class EditStrokeDeleteCommand : public QUndoCommand
 {
 public:
@@ -164,6 +191,9 @@ protected:
     osg::ref_ptr<entity::Stroke> m_stroke;
 };
 
+/*! \class EditPasteCommand
+ * Class description
+*/
 class EditPasteCommand : public QUndoCommand
 {
 public:
@@ -180,6 +210,9 @@ protected:
     std::vector<entity::Entity2D*> m_entities;
 };
 
+/*! \class EditCutCommand
+ * Class description
+*/
 class EditCutCommand : public QUndoCommand
 {
 public:
@@ -198,6 +231,9 @@ protected:
     const std::vector<entity::Entity2D*>& m_selected;
 };
 
+/*! \class EditPhotoPushCommand
+ * Class description
+*/
 class EditPhotoPushCommand : public QUndoCommand
 {
 public:

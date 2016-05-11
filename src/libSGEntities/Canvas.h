@@ -34,6 +34,9 @@
 #include <osg/AutoTransform>
 
 namespace entity {
+/*! \class Canvas
+ * Class description
+*/
 class Canvas : public osg::Group {
 public:
     Canvas();

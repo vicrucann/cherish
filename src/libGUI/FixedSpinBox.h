@@ -4,6 +4,9 @@
 #include <QSpinBox>
 #include <QVector>
 
+/*! \class FixedSpinBox
+ * Class description
+*/
 class FixedSpinBox : public QSpinBox
 {
     Q_OBJECT

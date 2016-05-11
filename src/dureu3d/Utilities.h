@@ -14,9 +14,15 @@
 #include "Canvas.h"
 #include "Stroke.h"
 
+/*! \class Utilities
+ * Class description
+*/
 class Utilities
 {
 public:
+    /*! \fn getQColor
+     * \param color
+     * Description */
     static QColor getQColor(const osg::Vec4f& color);
 
     static bool areStrokesProjectable(const std::vector<entity::Stroke *> &strokes, entity::Canvas *source, entity::Canvas *target, osg::Camera* camera);

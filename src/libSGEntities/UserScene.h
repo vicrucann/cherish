@@ -23,7 +23,14 @@
 // multiple inheritance requires QObject to be first,
 // for more, see:
 // http://www.setnode.com/blog/qt-staticmetaobject-is-not-a-member-of/
+/*! \namespace entity
+ * Description
+*/
 namespace entity {
+
+/*! \class UserScene
+ * Class description
+*/
 class UserScene : public QObject, public osg::Group
 {
     Q_OBJECT

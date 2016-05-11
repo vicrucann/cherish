@@ -7,6 +7,10 @@
 #include "Entity2D.h"
 
 namespace entity {
+
+/*! \class SelectedGroup
+ * Class description
+*/
 class SelectedGroup
 {
 public:

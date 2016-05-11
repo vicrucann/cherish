@@ -24,6 +24,10 @@
 class BookmarkWidget;
 
 namespace entity {
+
+/*! \class Bookmarks
+ * Class description
+*/
 class Bookmarks : public QObject, public osg::Group
 {
     Q_OBJECT

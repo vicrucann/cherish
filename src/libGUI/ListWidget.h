@@ -12,6 +12,9 @@
 #include "Bookmarks.h"
 #include "ListDelegate.h"
 
+/*! \class BookmarkWidget
+ * Class description
+*/
 class BookmarkWidget : public QListWidget
 {
  //   Q_OBJECT
@@ -21,6 +24,9 @@ public:
     BookmarkDelegate* getBookmarkDelegate() const;
 };
 
+/*! \class CanvasWidget
+ * Class description
+*/
 class CanvasWidget : public QListWidget
 {
     Q_OBJECT
@@ -41,6 +47,9 @@ protected:
     virtual void mousePressEvent(QMouseEvent* event);
 };
 
+/*! \class PhotoWidget
+ * Class description
+*/
 class PhotoWidget : public QListWidget
 {
     Q_OBJECT

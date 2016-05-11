@@ -43,11 +43,6 @@ AddCanvasCommand::AddCanvasCommand(entity::UserScene *scene, const osg::Vec3f &n
                   .arg(QString(name.c_str())));
 }
 
-AddCanvasCommand::~AddCanvasCommand()
-{
-
-}
-
 void AddCanvasCommand::undo()
 {
     // make sure current/previous rules hold
@@ -94,11 +89,6 @@ AddPhotoCommand::AddPhotoCommand(entity::UserScene* scene, const std::string& fn
 
     this->setText(QObject::tr("Add photo to %1")
                   .arg(QString(m_canvas->getName().c_str())));
-}
-
-AddPhotoCommand::~AddPhotoCommand()
-{
-
 }
 
 void AddPhotoCommand::undo()

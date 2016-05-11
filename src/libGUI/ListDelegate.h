@@ -16,6 +16,9 @@
  * and delegates.
 */
 
+/*! \class BookmarkDelegate
+ * Class description
+*/
 class BookmarkDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
@@ -35,6 +38,9 @@ private:
     QRect getButtonMoveRect(const QRect& rect) const;
 };
 
+/*! \class CanvasDelegate
+ * Class description
+*/
 class CanvasDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
@@ -59,6 +65,10 @@ private:
 
 };
 
+
+/*! \class PhotoDelegate
+ * Class description
+*/
 class PhotoDelegate : public QStyledItemDelegate
 {
     Q_OBJECT

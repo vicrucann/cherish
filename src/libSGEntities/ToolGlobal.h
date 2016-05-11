@@ -15,6 +15,10 @@
 #include "Settings.h"
 
 namespace entity {
+
+/*! \class ToolGlobal
+ * Class description
+*/
 class ToolGlobal : public osg::Group
 {
 public:
@@ -43,6 +47,9 @@ protected:
     osg::Geometry* m_geomWire;
 };
 
+/*! \class BookmarkTool
+ * Class description
+*/
 class BookmarkTool : public ToolGlobal
 {
 public:
@@ -55,6 +62,9 @@ private:
     osg::AutoTransform* m_AT;
 };
 
+/*! \class AxisGlobalTool
+ * Class description
+*/
 class AxisGlobalTool : public ToolGlobal
 {
 public:
@@ -70,6 +80,9 @@ private:
     osg::Camera* m_camera;
 };
 
+/*! \class FrameTool
+ * Class description
+*/
 class FrameTool : public ToolGlobal
 {
 public:

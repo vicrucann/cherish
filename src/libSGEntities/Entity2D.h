@@ -6,6 +6,10 @@
 #include <osg/Geometry>
 
 namespace entity {
+
+/*! \class Entity2D
+ * Class description
+*/
 class Entity2D : public osg::Geometry
 {
 public:

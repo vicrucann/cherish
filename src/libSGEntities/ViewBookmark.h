@@ -7,6 +7,10 @@
 #include <osgDB/ObjectWrapper>
 
 namespace entity {
+
+/*! \class ViewBookmark
+ * Class description
+*/
 class ViewBookmark : public osg::Node
 {
 public:

@@ -23,6 +23,9 @@
 #include "TreeWidget.h"
 #include "Data.h"
 
+/*! \class MainWindow
+ * Class description
+*/
 class MainWindow : public QMainWindow {
     Q_OBJECT
 

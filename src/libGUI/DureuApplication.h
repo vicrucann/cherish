@@ -4,6 +4,9 @@
 #include <QApplication>
 #include <QTabletEvent>
 
+/*! \class DureuApplication
+ * Class description
+*/
 class DureuApplication : public QApplication {
     Q_OBJECT
 public:

@@ -14,6 +14,10 @@
 #include <osgDB/ObjectWrapper>
 
 namespace entity {
+
+/*! \class Photo
+ * Class description
+*/
 class Photo: public entity::Entity2D{
 public:
     Photo();

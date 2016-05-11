@@ -21,6 +21,10 @@
 #include <osgDB/ObjectWrapper>
 
 namespace entity {
+
+/*! \class Stroke
+ * Class description
+*/
 class Stroke : public entity::Entity2D {
 public:
     Stroke();

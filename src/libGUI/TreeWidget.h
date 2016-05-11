@@ -5,6 +5,9 @@
 
 #include "ListDelegate.h"
 
+/*! \class CanvasPhotoWidget
+ * Class description
+*/
 class CanvasPhotoWidget : public QTreeWidget
 {
     Q_OBJECT

@@ -10,6 +10,9 @@ namespace Ui {
 class CameraProperties;
 }
 
+/*! \class CameraProperties
+ * Class description
+*/
 class CameraProperties : public QDialog
 {
     Q_OBJECT

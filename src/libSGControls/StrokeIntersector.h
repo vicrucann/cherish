@@ -6,6 +6,9 @@
 #include <osg/ref_ptr>
 #include <osgUtil/LineSegmentIntersector>
 
+/*! \class StrokeIntersector
+ * Class description
+*/
 class StrokeIntersector : public osgUtil::LineSegmentIntersector
 {
 public:

@@ -20,6 +20,9 @@
  * text and images.
  */
 
+/*! \class HUDCamera
+ * Class description
+*/
 class HUDCamera: public osg::Group{
 public:
     HUDCamera(double left, double right, double bottom, double top):

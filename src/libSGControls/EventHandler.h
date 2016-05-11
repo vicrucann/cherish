@@ -25,6 +25,9 @@
 
 class GLWidget;
 
+/*! \class EventHandler
+ * Class description
+*/
 class EventHandler : public osgGA::GUIEventHandler {
 public:
     EventHandler(GLWidget* widget, RootScene* scene, dureu::MOUSE_MODE mode = dureu::SELECT_ENTITY);
