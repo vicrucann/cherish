@@ -89,11 +89,9 @@ public:
     void setBookmarkToolVisibility(bool vis);
     void eraseStroke(entity::Stroke* stroke, int first, int last, dureu::EVENT event);
 
-    void setCanvasSelected(entity::Canvas* cnv);
     bool setCanvasCurrent(entity::Canvas* cnv);
     bool setCanvasPrevious(entity::Canvas* cnv);
     void setCanvasesButCurrent(bool enable);
-    entity::Canvas* getCanvasSelected() const;
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
     entity::Bookmarks* getBookmarksModel() const;

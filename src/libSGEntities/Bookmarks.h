@@ -26,7 +26,19 @@ class BookmarkWidget;
 namespace entity {
 
 /*! \class Bookmarks
- * Class description
+ * \brief A proxy class that helps to connect scene graph camera positions
+ * (in format eye, center, up and name) with the corresponding BookmarkWidget.
+ *
+ * The need for the class to inherit osg::Group class is so that to include the
+ * bookmarks into saving to file procedure which is done by OpenSceneGraph.
+ *
+ * Scene graph wise, the Bookmarks is an osg::Group node that contains STL data for camera
+ * positions and names.
+ *
+ * The need to inherit QObject class is so that to use signals and slots functionality.
+ * The signals and slots are connected to the BookmarkWidget and thus it assures
+ * a simultaneous update whether the bookmark changed are made directly from the widget,
+ * or trigerred by scene graph functions (e.g., on reload the scene from file).
 */
 class Bookmarks : public QObject, public osg::Group
 {
@@ -34,10 +46,18 @@ class Bookmarks : public QObject, public osg::Group
 
 public:
     Bookmarks();
+
+    /*! Constructor by copy.
+     * This functions is only used by OSG serializer. It is never called for
+     * within the application.
+     * \param parent is the copy-from object
+     * \param copyop is the copy method, e.g., deep copy vs. shallow copy */
     Bookmarks(const Bookmarks& parent, osg::CopyOp copyop = osg::CopyOp::SHALLOW_COPY);
     META_Node(entity, Bookmarks)
 
-    /* osg serialization setters and getters */
+    /*! OSG serialization setters and getters - required to register the serialization wrapper */
+
+    /*! Set the vector of eyes */
     void setEyes(const std::vector<osg::Vec3d>& eyes);
     const std::vector<osg::Vec3d>& getEyes() const;
 

@@ -6,6 +6,16 @@
 #include <QObject>
 #include <QDesktopWidget>
 
+/*! \mainpage Cultural Heritage data representation by means of image manipualtion and 3D sketching
+ *
+ * \section Description
+ *
+ * This is the API documentation site.
+ *
+ * For user documentation, go this link
+ *
+ */
+
 int main(int argc, char** argv)
 {
     osg::setNotifyLevel(osg::NOTICE);

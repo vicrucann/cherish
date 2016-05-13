@@ -16,7 +16,6 @@ entity::UserScene::UserScene()
     , m_bookmarks(new entity::Bookmarks)
     , m_canvasCurrent(NULL)
     , m_canvasPrevious(NULL)
-    , m_canvasSelected(NULL)
     , m_canvasClone(0)
     , m_deltaT(osg::Vec3f(0.f,0.f,0.f))
     , m_deltaR(osg::Quat(0,0,0,1))
@@ -41,7 +40,6 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_bookmarks(scene.m_bookmarks)
     , m_canvasCurrent(scene.m_canvasCurrent)
     , m_canvasPrevious(scene.m_canvasPrevious)
-    , m_canvasSelected(NULL)
     , m_canvasClone(0)
     , m_deltaT(scene.m_deltaT)
     , m_deltaR(scene.m_deltaR)
@@ -370,42 +368,6 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
     return true;
 }
 
-void entity::UserScene::setCanvasSelected(entity::Canvas *cnv)
-{
-    if (m_canvasSelected.get() == cnv)
-        return;
-    if (m_canvasSelected.get() != NULL)
-        this->setCanvasSelected(false);
-    m_canvasSelected = cnv;
-    this->setCanvasSelected(true);
-}
-
-/* When doing select / deselct, we need to take care of:
- * Canvas color change
- * Setting / unsetting of traversal mask
-*/
-void entity::UserScene::setCanvasSelected(bool selected)
-{
-    if (!m_canvasSelected.get())
-        return;
-    if (!selected){
-        if (m_canvasSelected.get() == m_canvasCurrent.get())
-            m_canvasSelected->setColor(dureu::CANVAS_CLR_CURRENT);
-        else if (m_canvasSelected.get() == m_canvasPrevious.get())
-            m_canvasSelected->setColor(dureu::CANVAS_CLR_PREVIOUS);
-        else
-            m_canvasSelected->setColor(dureu::CANVAS_CLR_REST);
-        m_canvasSelected = NULL;
-    }
-    else {
-        m_canvasSelected->setColor(dureu::CANVAS_CLR_SELECTED);
-    }
-}
-
-/* Sets the traversal mask so that all the canvases (but current)
- * would not be traversable if enabled variable is false.
- * It sets them back to traversable if enabled is true.
- */
 void entity::UserScene::setCanvasesButCurrent(bool enabled)
 {
     if (!m_canvasCurrent.get()){
@@ -430,11 +392,6 @@ bool entity::UserScene::getCanvasesButCurrent() const
     return m_canvasCurrent->getNodeMask() == m_canvasPrevious->getNodeMask();
 }
 
-void entity::UserScene::setCanvasVisibility(bool vis)
-{
-
-}
-
 entity::Canvas*entity::UserScene::getCanvasCurrent() const
 {
     return m_canvasCurrent.get();
@@ -443,11 +400,6 @@ entity::Canvas*entity::UserScene::getCanvasCurrent() const
 entity::Canvas*entity::UserScene::getCanvasPrevious() const
 {
     return m_canvasPrevious.get();
-}
-
-entity::Canvas *entity::UserScene::getCanvasSelected() const
-{
-    return m_canvasSelected.get();
 }
 
 int entity::UserScene::getCanvasIndex(entity::Canvas *canvas) const
@@ -465,7 +417,7 @@ int entity::UserScene::getPhotoIndex(entity::Photo *photo, Canvas *canvas) const
         entity::Photo* pi = dynamic_cast<entity::Photo*>(canvas->getGeodeData()->getChild(i));
         if (!pi) continue;
         idx++;
-        if (pi == photo) idx;
+        if (pi == photo) return idx;
     }
     return idx;
 }
@@ -903,32 +855,6 @@ void entity::UserScene::updateWidgets()
     emit sendRequestUpdate();
 }
 
-void entity::UserScene::resetModel(CanvasWidget *widget)
-{
-    widget->clear();
-//    widPhoto->clear();
-    for (size_t i=0; i<this->getNumChildren(); ++i){
-        entity::Canvas* cnv = this->getCanvas(i);
-        if (!cnv) continue;
-        emit this->canvasAdded(cnv->getName().c_str());
-
-        if (cnv == m_canvasCurrent.get())
-            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),1);
-        else if (cnv == m_canvasPrevious.get())
-            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),2);
-        else
-            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),0);
-
-        /* if canvas has any photoes, reset photowidget */
-//        if (!cnv->getGeodeData()) continue;
-//        for (size_t j=0; j<cnv->getGeodeData()->getNumChildren(); ++j){
-//            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGeodeData()->getChild(j));
-//            if (!photo) continue;
-//            emit this->photoAdded(photo->getName().c_str());
-//        }
-    }
-}
-
 void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
 {
     widget->clear();
@@ -952,30 +878,6 @@ void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
             emit this->photoAdded(photo->getName(), this->getCanvasIndex(cnv));
         }
     }
-}
-
-/* to change name from canvas delegate */
-void entity::UserScene::onCanvasEdited(QListWidgetItem *item)
-{
-    // assumed it is a current canvas
-    //if (!this->getCanvasCurrent()) return;
-    QListWidget* widget = item->listWidget();
-    int row = widget->row(item);
-    if (row == this->getNumCanvases()) return;
-    entity::Canvas* cnv = this->getCanvasFromIndex(row);
-    if (!cnv) return;
-    cnv->setName(item->text().toStdString());
-}
-
-void entity::UserScene::onCanvasEdited(QTreeWidgetItem *item)
-{
-    QTreeWidget* widget = item->treeWidget();
-    if (!widget) return;
-    int row = widget->indexOfTopLevelItem(item);
-    if (row == this->getNumCanvases() || row < 0) return;
-    entity::Canvas* cnv = this->getCanvasFromIndex(row);
-    if (!cnv) return;
-    cnv->setName(item->text(0).toStdString());
 }
 
 void entity::UserScene::onItemChanged(QTreeWidgetItem *item, int column)

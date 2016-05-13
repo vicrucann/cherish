@@ -286,11 +286,6 @@ void RootScene::eraseStroke(entity::Stroke *stroke, int first, int last, dureu::
     m_saved = false;
 }
 
-void RootScene::setCanvasSelected(entity::Canvas *cnv)
-{
-    m_userScene->setCanvasSelected(cnv);
-}
-
 bool RootScene::setCanvasCurrent(entity::Canvas* cnv)
 {
     return m_userScene->setCanvasCurrent(cnv);
@@ -304,11 +299,6 @@ bool RootScene::setCanvasPrevious(entity::Canvas* cnv)
 void RootScene::setCanvasesButCurrent(bool enable)
 {
     m_userScene->setCanvasesButCurrent(enable);
-}
-
-entity::Canvas *RootScene::getCanvasSelected() const
-{
-    return m_userScene->getCanvasSelected();
 }
 
 entity::Canvas* RootScene::getCanvasCurrent() const
