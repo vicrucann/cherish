@@ -92,7 +92,7 @@ set(ICONS_DIR
 
 
 ## Adding subdirectories
-add_subdirectory(dureu3d)
+add_subdirectory(cherish)
 add_subdirectory(libGUI)
 add_subdirectory(libSGEntities)
 add_subdirectory(libSGControls)

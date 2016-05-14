@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8.11)
 
 include_directories(
-    ${dureu3d_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/dureu3d
+    ${cherish_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/cherish
     ${CMAKE_SOURCE_DIR}/libGUI
     ${CMAKE_SOURCE_DIR}/libSGEntities
     ${CMAKE_SOURCE_DIR}/libSGControls
