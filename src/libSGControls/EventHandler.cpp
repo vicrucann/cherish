@@ -11,7 +11,7 @@
 #include "Utilities.h"
 #include "LineIntersector.h"
 
-EventHandler::EventHandler(GLWidget *widget, RootScene* scene, dureu::MOUSE_MODE mode)
+EventHandler::EventHandler(GLWidget *widget, RootScene* scene, cher::MOUSE_MODE mode)
     : osgGA::GUIEventHandler()
     , m_glWidget(widget)
     , m_mode(mode)
@@ -28,7 +28,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 {
     /* if it's mouse navigation mode, don't process event
      * it will be processed by Manipulator */
-    if ((dureu::maskMouse & m_mode) == dureu::MOUSE_CAMERA)
+    if ((cher::maskMouse & m_mode) == cher::MOUSE_CAMERA)
         return false;
 
     if (! m_scene->getCanvasCurrent())
@@ -38,32 +38,32 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     //if (ea.getModKeyMask()&osgGA::GUIEventAdapter::MODKEY_CTRL && ea.getKey() == 'a')
     //    m_scene->getCanvasCurrent()->addStrokesSelectedAll();
 
-    switch (dureu::maskMouse & m_mode){
-    case dureu::MOUSE_PEN:
+    switch (cher::maskMouse & m_mode){
+    case cher::MOUSE_PEN:
         switch (m_mode) {
-        case dureu::PEN_SKETCH:
+        case cher::PEN_SKETCH:
             this->doSketch(ea, aa);
             break;
-        case dureu::PEN_ERASE:
+        case cher::PEN_ERASE:
             break;
-        case dureu::PEN_DELETE:
+        case cher::PEN_DELETE:
             this->doDeleteEntity(ea, aa);
             break;
         default:
             break;
         }
         break;
-    case dureu::MOUSE_SELECT:
-        switch (dureu::maskEntity & m_mode){
-        case dureu::SELECT_ENTITY:
-            switch (dureu::maskAction & m_mode) {
-            case (dureu::maskAction & dureu::ENTITY_MOVE):
+    case cher::MOUSE_SELECT:
+        switch (cher::maskEntity & m_mode){
+        case cher::SELECT_ENTITY:
+            switch (cher::maskAction & m_mode) {
+            case (cher::maskAction & cher::ENTITY_MOVE):
                 this->doEditEntitiesMove(ea, aa);
                 break;
-            case (dureu::maskAction & dureu::ENTITY_ROTATE):
+            case (cher::maskAction & cher::ENTITY_ROTATE):
                 this->doEditEntitiesRotate(ea, aa);
                 break;
-            case (dureu::maskAction & dureu::ENTITY_SCALE):
+            case (cher::maskAction & cher::ENTITY_SCALE):
                 this->doEditEntitiesScale(ea, aa);
                 break;
             default:
@@ -71,36 +71,36 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
                 break;
             }
             break;
-        case dureu::SELECT_CANVAS:
+        case cher::SELECT_CANVAS:
             this->doSelectCanvas<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
             break;
         default:
             break;
         }
         break;
-    case dureu::MOUSE_CREATE:
-        if (m_mode == dureu::CREATE_CANVASCLONE){
+    case cher::MOUSE_CREATE:
+        if (m_mode == cher::CREATE_CANVASCLONE){
             this->doCanvasClone(ea, aa);
         }
-        else if (m_mode == dureu::CREATE_CANVASSEPARATE){
+        else if (m_mode == cher::CREATE_CANVASSEPARATE){
             this->doCanvasSeparate(ea, aa);
         }
         break;
-    case dureu::MOUSE_CANVAS:
+    case cher::MOUSE_CANVAS:
         switch (m_mode){
-        case dureu::CANVAS_OFFSET:
+        case cher::CANVAS_OFFSET:
             this->doEditCanvasOffset(ea, aa);
             break;
-        case dureu::CANVAS_ROTATE_UPLUS:
+        case cher::CANVAS_ROTATE_UPLUS:
             this->doEditCanvasRotate(ea, aa, osg::Vec3f(0,1,0), osg::Vec3f(-1,0,0));
             break;
-        case dureu::CANVAS_ROTATE_UMINUS:
+        case cher::CANVAS_ROTATE_UMINUS:
             this->doEditCanvasRotate(ea, aa, osg::Vec3f(0,1,0), osg::Vec3f(1,0,0));
             break;
-        case dureu::CANVAS_ROTATE_VPLUS:
+        case cher::CANVAS_ROTATE_VPLUS:
             this->doEditCanvasRotate(ea, aa, osg::Vec3f(1,0,0), osg::Vec3f(0,1,0));
             break;
-        case dureu::CANVAS_ROTATE_VMINUS:
+        case cher::CANVAS_ROTATE_VMINUS:
             this->doEditCanvasRotate(ea, aa, osg::Vec3f(1,0,0), osg::Vec3f(0,-1,0));
             break;
         default:
@@ -113,7 +113,7 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     }
 
 //    switch (m_mode){
-//    case dureu::PHOTO_PUSH:
+//    case cher::PHOTO_PUSH:
 //        this->doEditPhotoPush<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa);
 //        break;
 //    default:
@@ -122,21 +122,21 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     return false;
 }
 
-void EventHandler::setMode(dureu::MOUSE_MODE mode)
+void EventHandler::setMode(cher::MOUSE_MODE mode)
 {
     m_mode = mode;
 
     // TODO: move the below content to GLWidget's function
     switch (m_mode){
-    case dureu::ENTITY_ROTATE:
-    case dureu::ENTITY_SCALE:
-    case dureu::ENTITY_FLIPH:
-    case dureu::ENTITY_FLIPV:
-    case dureu::PHOTO_PUSH:
-    case dureu::ENTITY_MOVE:
-    case dureu::PEN_ERASE:
-    case dureu::PEN_DELETE:
-    case dureu::SELECT_ENTITY:
+    case cher::ENTITY_ROTATE:
+    case cher::ENTITY_SCALE:
+    case cher::ENTITY_FLIPH:
+    case cher::ENTITY_FLIPV:
+    case cher::PHOTO_PUSH:
+    case cher::ENTITY_MOVE:
+    case cher::PEN_ERASE:
+    case cher::PEN_DELETE:
+    case cher::SELECT_ENTITY:
         m_scene->setCanvasesButCurrent(false);
         break;
     default:
@@ -144,7 +144,7 @@ void EventHandler::setMode(dureu::MOUSE_MODE mode)
         break;
     }
 
-    if ((dureu::maskMouse & m_mode) == dureu::MOUSE_CANVAS){
+    if ((cher::maskMouse & m_mode) == cher::MOUSE_CANVAS){
         m_scene->getCanvasCurrent()->unselectAll();
         m_scene->getCanvasCurrent()->getToolFrame()->setEditable(true);
     }
@@ -154,7 +154,7 @@ void EventHandler::setMode(dureu::MOUSE_MODE mode)
     m_scene->getCanvasCurrent()->updateFrame(m_scene->getCanvasPrevious());
 }
 
-dureu::MOUSE_MODE EventHandler::getMode() const
+cher::MOUSE_MODE EventHandler::getMode() const
 {
     return m_mode;
 }
@@ -168,7 +168,7 @@ dureu::MOUSE_MODE EventHandler::getMode() const
  * When stroke is split, need to see if both substrokes are long
  * enough to continue to exist.
 */
-void EventHandler::doEraseStroke(entity::Stroke* stroke, int first, int last, dureu::EVENT event)
+void EventHandler::doEraseStroke(entity::Stroke* stroke, int first, int last, cher::EVENT event)
 {
     /* THIS IS A DEBUG VERSION !!!!!!*/
     if (!stroke){
@@ -191,17 +191,17 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
     case osgGA::GUIEventAdapter::PUSH:
         if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
             return;
-        m_scene->addStroke(u, v, dureu::EVENT_PRESSED);
+        m_scene->addStroke(u, v, cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
             return;
-        m_scene->addStroke(u,v, dureu::EVENT_RELEASED);
+        m_scene->addStroke(u,v, cher::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::DRAG:
         if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
             return;
-        m_scene->addStroke(u,v,dureu::EVENT_DRAGGED);
+        m_scene->addStroke(u,v,cher::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -225,7 +225,7 @@ void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         outLogMsg("searching for photo to delete");
         osgUtil::LineSegmentIntersector::Intersection* result_photo = new osgUtil::LineSegmentIntersector::Intersection;
         bool inter_photo = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
-                (ea,aa,dureu::MASK_CANVAS_IN, *result_photo);
+                (ea,aa,cher::MASK_CANVAS_IN, *result_photo);
         if (!inter_photo) return;
         entity::Photo* photo = this->getPhoto(*result_photo);
         if (!photo) return;
@@ -235,7 +235,7 @@ void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         /* see if there is a stroke */
         StrokeIntersector::Intersection* result_stroke = new StrokeIntersector::Intersection;
         bool inter_stroke = this->getLineIntersection<StrokeIntersector::Intersection, StrokeIntersector>
-                (ea,aa,dureu::MASK_CANVAS_IN, *result_stroke);
+                (ea,aa,cher::MASK_CANVAS_IN, *result_stroke);
         if (!inter_stroke) return;
         entity::Stroke* stroke = this->getStroke(*result_stroke);
         if (!stroke) return;
@@ -250,7 +250,7 @@ void EventHandler::doEditCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
 
     /* check if it is offset or rotate or normal mode */
     if (!this->setSubMouseMode<LineIntersector::Intersection, LineIntersector>(
-                ea, aa, dureu::MOUSE_CANVAS, true))
+                ea, aa, cher::MOUSE_CANVAS, true))
         return;
 
     /* when canvas frame is normal, do nothing */
@@ -263,7 +263,7 @@ void EventHandler::doEditCanvasOffset(const osgGA::GUIEventAdapter &ea, osgGA::G
 
     /* check if it is offset or rotate or normal mode */
     if (!this->setSubMouseMode<LineIntersector::Intersection, LineIntersector>(
-                ea, aa, dureu::MOUSE_CANVAS, true))
+                ea, aa, cher::MOUSE_CANVAS, true))
         return;
 
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
@@ -277,17 +277,17 @@ void EventHandler::doEditCanvasOffset(const osgGA::GUIEventAdapter &ea, osgGA::G
     case osgGA::GUIEventAdapter::PUSH:
         if (!this->getRaytraceNormalProjection(ea,aa,XC))
             return;
-        m_scene->editCanvasOffset(XC, dureu::EVENT_PRESSED);
+        m_scene->editCanvasOffset(XC, cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         if (!this->getRaytraceNormalProjection(ea,aa,XC))
             return;
-        m_scene->editCanvasOffset(XC, dureu::EVENT_RELEASED);
+        m_scene->editCanvasOffset(XC, cher::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::DRAG:
         if (!this->getRaytraceNormalProjection(ea,aa,XC))
             return;
-        m_scene->editCanvasOffset(XC, dureu::EVENT_DRAGGED);
+        m_scene->editCanvasOffset(XC, cher::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -303,7 +303,7 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
 
     /* check if it is offset or rotate or normal mode */
     if (!this->setSubMouseMode<LineIntersector::Intersection, LineIntersector>(
-                ea, aa, dureu::MOUSE_CANVAS, true))
+                ea, aa, cher::MOUSE_CANVAS, true))
         return;
 
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
@@ -336,7 +336,7 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
         theta = 0;
 
     /*check for domain errors */
-    if (theta < 0 || theta > dureu::PI){
+    if (theta < 0 || theta > cher::PI){
         outErrMsg("doEditCanvasRotate: rotation angle domain error. Fixing.");
         theta = 0;
     }
@@ -346,7 +346,7 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     osg::Vec3f r = rotAxis ^ new_axis;
     double sign = r * alongAxis;
     theta *= (sign<0? -1 : 1);
-    if (std::fabs(theta) > dureu::PI){
+    if (std::fabs(theta) > cher::PI){
         outErrMsg("doEditCanvasRotate: theta is out of range. Fixing.");
         theta = 0;
     }
@@ -357,15 +357,15 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     case osgGA::GUIEventAdapter::PUSH:
         outLogVec("canvas-rotate pressed, quat", rot.x(), rot.y(), rot.z());
         outLogVal("canvas-rotate pressed, quat.w", rot.w());
-        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), dureu::EVENT_PRESSED);
+        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         outLogVec("canvas-rotate released, quat", rot.x(), rot.y(), rot.z());
         outLogVal("canvas-rotate released, quat.w", rot.w());
-        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), dureu::EVENT_RELEASED);
+        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), cher::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), dureu::EVENT_DRAGGED);
+        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), cher::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -384,17 +384,17 @@ void EventHandler::doCanvasClone(const osgGA::GUIEventAdapter &ea, osgGA::GUIAct
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         if (!this->getRaytraceNormalProjection(ea,aa,XC)) return;
-        m_scene->editCanvasClone(XC, dureu::EVENT_PRESSED);
+        m_scene->editCanvasClone(XC, cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         if (!this->getRaytraceNormalProjection(ea,aa,XC))
             this->finishAll();
-        m_scene->editCanvasClone(XC, dureu::EVENT_RELEASED);
+        m_scene->editCanvasClone(XC, cher::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::DRAG:
         if (!this->getRaytraceNormalProjection(ea,aa,XC))
             this->finishAll();
-        m_scene->editCanvasClone(XC, dureu::EVENT_DRAGGED);
+        m_scene->editCanvasClone(XC, cher::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -413,18 +413,18 @@ void EventHandler::doCanvasSeparate(const osgGA::GUIEventAdapter &ea, osgGA::GUI
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         if (!this->getRaytraceNormalProjection(ea,aa,XC)) return;
-        m_scene->editCanvasSeparate(XC, dureu::EVENT_PRESSED);
+        m_scene->editCanvasSeparate(XC, cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         if (!this->getRaytraceNormalProjection(ea,aa,XC))
             this->finishAll();
-        m_scene->editCanvasSeparate(XC, dureu::EVENT_RELEASED);
-        m_glWidget->setMouseMode(dureu::SELECT_ENTITY);
+        m_scene->editCanvasSeparate(XC, cher::EVENT_RELEASED);
+        m_glWidget->setMouseMode(cher::SELECT_ENTITY);
         break;
     case osgGA::GUIEventAdapter::DRAG:
         if (!this->getRaytraceNormalProjection(ea,aa,XC))
             this->finishAll();
-        m_scene->editCanvasSeparate(XC, dureu::EVENT_DRAGGED);
+        m_scene->editCanvasSeparate(XC, cher::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -437,7 +437,7 @@ void EventHandler::doEditEntitiesMove(const osgGA::GUIEventAdapter &ea, osgGA::G
     entity::Canvas* canvas = m_scene->getCanvasCurrent();
     if (!canvas) return;
     if (!this->setSubMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
-                ea, aa, dureu::SELECT_ENTITY, canvas->isEntitiesSelected()))
+                ea, aa, cher::SELECT_ENTITY, canvas->isEntitiesSelected()))
         return;
 
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
@@ -464,15 +464,15 @@ void EventHandler::doEditEntitiesMove(const osgGA::GUIEventAdapter &ea, osgGA::G
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         std::cout << "edit strokes move: push button" << std::endl;
-        m_scene->editStrokesMove(u, v, dureu::EVENT_PRESSED);
+        m_scene->editStrokesMove(u, v, cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         std::cout << "edit strokes move: release button" << std::endl;
-        m_scene->editStrokesMove(u, v, dureu::EVENT_RELEASED);
+        m_scene->editStrokesMove(u, v, cher::EVENT_RELEASED);
         this->finishAll();
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        m_scene->editStrokesMove(u,v,dureu::EVENT_DRAGGED);
+        m_scene->editStrokesMove(u,v,cher::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -485,7 +485,7 @@ void EventHandler::doEditEntitiesScale(const osgGA::GUIEventAdapter &ea, osgGA::
     entity::Canvas* canvas = m_scene->getCanvasCurrent();
     if (!canvas) return;
     if (!this->setSubMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
-                ea, aa, dureu::SELECT_ENTITY, canvas->isEntitiesSelected()))
+                ea, aa, cher::SELECT_ENTITY, canvas->isEntitiesSelected()))
         return;
 
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
@@ -512,15 +512,15 @@ void EventHandler::doEditEntitiesScale(const osgGA::GUIEventAdapter &ea, osgGA::
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         std::cout << "edit strokes scale: push button" << std::endl;
-        m_scene->editStrokesScale(u, v, dureu::EVENT_PRESSED);
+        m_scene->editStrokesScale(u, v, cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         std::cout << "edit strokes scale: release button" << std::endl;
-        m_scene->editStrokesScale(u, v, dureu::EVENT_RELEASED);
+        m_scene->editStrokesScale(u, v, cher::EVENT_RELEASED);
         this->finishAll();
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        m_scene->editStrokesScale(u,v,dureu::EVENT_DRAGGED);
+        m_scene->editStrokesScale(u,v,cher::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -533,7 +533,7 @@ void EventHandler::doEditEntitiesRotate(const osgGA::GUIEventAdapter &ea, osgGA:
     entity::Canvas* canvas = m_scene->getCanvasCurrent();
     if (!canvas) return;
     if (!this->setSubMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
-                ea, aa, dureu::SELECT_ENTITY, canvas->isEntitiesSelected()))
+                ea, aa, cher::SELECT_ENTITY, canvas->isEntitiesSelected()))
         return;
 
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
@@ -561,15 +561,15 @@ void EventHandler::doEditEntitiesRotate(const osgGA::GUIEventAdapter &ea, osgGA:
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         std::cout << "edit strokes rotate: push button" << std::endl;
-        m_scene->editStrokesRotate(u, v, dureu::EVENT_PRESSED);
+        m_scene->editStrokesRotate(u, v, cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         std::cout << "edit strokes rotate: release button" << std::endl;
-        m_scene->editStrokesRotate(u, v, dureu::EVENT_RELEASED);
+        m_scene->editStrokesRotate(u, v, cher::EVENT_RELEASED);
         this->finishAll();
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        m_scene->editStrokesRotate(u,v,dureu::EVENT_DRAGGED);
+        m_scene->editStrokesRotate(u,v,cher::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -596,29 +596,29 @@ entity::Photo *EventHandler::getPhoto(const osgUtil::LineSegmentIntersector::Int
 }
 
 template <typename T>
-dureu::MOUSE_MODE EventHandler::getMouseMode(const T &result, dureu::MOUSE_MODE mode_default) const
+cher::MOUSE_MODE EventHandler::getMouseMode(const T &result, cher::MOUSE_MODE mode_default) const
 {
     std::string name = result.drawable->getName();
     if (name == "Pickable")
-        return dureu::SELECT_ENTITY;
+        return cher::SELECT_ENTITY;
     else if (name == "Center")
-        return dureu::ENTITY_MOVE;
+        return cher::ENTITY_MOVE;
     else if (name == "AxisU")
-        return dureu::ENTITY_ROTATE;
+        return cher::ENTITY_ROTATE;
     else if (name == "AxisV")
-        return dureu::ENTITY_ROTATE;
+        return cher::ENTITY_ROTATE;
     else if (name == "ScaleUV1" || name == "ScaleUV2" || name == "ScaleUV3" || name == "ScaleUV4")
-        return dureu::ENTITY_SCALE;
+        return cher::ENTITY_SCALE;
     else if (name == "Normal1" || name == "Normal2")
-        return dureu::CANVAS_OFFSET;
+        return cher::CANVAS_OFFSET;
     else if (name == "RotateX1")
-        return dureu::CANVAS_ROTATE_VPLUS;
+        return cher::CANVAS_ROTATE_VPLUS;
     else if (name == "RotateX2")
-        return dureu::CANVAS_ROTATE_VMINUS;
+        return cher::CANVAS_ROTATE_VMINUS;
     else if (name == "RotateY1")
-        return dureu::CANVAS_ROTATE_UPLUS;
+        return cher::CANVAS_ROTATE_UPLUS;
     else if (name == "RotateY2")
-        return dureu::CANVAS_ROTATE_UMINUS;
+        return cher::CANVAS_ROTATE_UMINUS;
     return mode_default;
 }
 
@@ -746,18 +746,18 @@ bool EventHandler::getRaytracePlaneIntersection(const osgGA::GUIEventAdapter &ea
  * Returns true if no need to exit the parent function, false otherwise
 */
 template <typename TResult, typename TIntersector>
-bool EventHandler::setSubMouseMode(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, dureu::MOUSE_MODE modeDefault, bool selected)
+bool EventHandler::setSubMouseMode(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, cher::MOUSE_MODE modeDefault, bool selected)
 {
     bool result = true;
     if (ea.getEventType() == osgGA::GUIEventAdapter::MOVE){
         if (!m_glWidget) return result;
         if (selected){
             TResult* result_drawable = new TResult;
-            bool inter_occured = this->getLineIntersection<TResult, TIntersector>(ea,aa, dureu::MASK_CANVASFRAME_IN, *result_drawable);
+            bool inter_occured = this->getLineIntersection<TResult, TIntersector>(ea,aa, cher::MASK_CANVASFRAME_IN, *result_drawable);
 
             /* if mouse is hovering over certain drawable, set the corresponding mode */
             if (inter_occured){
-                dureu::MOUSE_MODE mode = this->getMouseMode<TResult>(*result_drawable, modeDefault);
+                cher::MOUSE_MODE mode = this->getMouseMode<TResult>(*result_drawable, modeDefault);
                 result = mode == m_mode;
                 m_glWidget->setMouseMode(mode);
             }
@@ -781,8 +781,8 @@ void EventHandler::setDrawableColorFromMode(osg::Drawable *draw)
     if (!draw) {
         /* when mouse is not hovering over anything
          * set the color to normal (gray) for all the canvas selection frame. */
-        m_scene->getCanvasCurrent()->getToolFrame()->setColor(dureu::CANVAS_CLR_CURRENT,
-                                                              dureu::CANVAS_CLR_INTERSECTION);
+        m_scene->getCanvasCurrent()->getToolFrame()->setColor(cher::CANVAS_CLR_CURRENT,
+                                                              cher::CANVAS_CLR_INTERSECTION);
         return;
     }
     osg::Geometry* geom = dynamic_cast<osg::Geometry*>(draw);
@@ -806,32 +806,32 @@ void EventHandler::finishAll()
 {
     switch (m_mode)
     {
-    case dureu::PEN_SKETCH:
-        m_scene->addStroke(0,0, dureu::EVENT_OFF);
+    case cher::PEN_SKETCH:
+        m_scene->addStroke(0,0, cher::EVENT_OFF);
         break;
-    case dureu::CANVAS_OFFSET:
-        m_scene->editCanvasOffset(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
+    case cher::CANVAS_OFFSET:
+        m_scene->editCanvasOffset(osg::Vec3f(0,0,0), cher::EVENT_OFF);
         break;
-    case dureu::CANVAS_ROTATE_UPLUS:
-    case dureu::CANVAS_ROTATE_UMINUS:
-    case dureu::CANVAS_ROTATE_VPLUS:
-    case dureu::CANVAS_ROTATE_VMINUS:
-        m_scene->editCanvasRotate(osg::Quat(0,0,0,1), m_scene->getCanvasCurrent()->getCenter(), dureu::EVENT_OFF);
+    case cher::CANVAS_ROTATE_UPLUS:
+    case cher::CANVAS_ROTATE_UMINUS:
+    case cher::CANVAS_ROTATE_VPLUS:
+    case cher::CANVAS_ROTATE_VMINUS:
+        m_scene->editCanvasRotate(osg::Quat(0,0,0,1), m_scene->getCanvasCurrent()->getCenter(), cher::EVENT_OFF);
         break;
-    case dureu::CREATE_CANVASCLONE:
-        m_scene->editCanvasClone(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
+    case cher::CREATE_CANVASCLONE:
+        m_scene->editCanvasClone(osg::Vec3f(0,0,0), cher::EVENT_OFF);
         break;
-    case dureu::CREATE_CANVASSEPARATE:
-        m_scene->editCanvasClone(osg::Vec3f(0,0,0), dureu::EVENT_OFF);
+    case cher::CREATE_CANVASSEPARATE:
+        m_scene->editCanvasClone(osg::Vec3f(0,0,0), cher::EVENT_OFF);
         break;
-    case dureu::ENTITY_MOVE:
-        m_scene->editStrokesMove(0,0, dureu::EVENT_OFF);
+    case cher::ENTITY_MOVE:
+        m_scene->editStrokesMove(0,0, cher::EVENT_OFF);
         break;
-    case dureu::ENTITY_SCALE:
-        m_scene->editStrokesScale(0,0, dureu::EVENT_OFF);
+    case cher::ENTITY_SCALE:
+        m_scene->editStrokesScale(0,0, cher::EVENT_OFF);
         break;
-    case dureu::ENTITY_ROTATE:
-        m_scene->editStrokesRotate(0,0, dureu::EVENT_OFF);
+    case cher::ENTITY_ROTATE:
+        m_scene->editStrokesRotate(0,0, cher::EVENT_OFF);
         break;
     default:
         break;
@@ -844,7 +844,7 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
     entity::Canvas* canvas = m_scene->getCanvasCurrent();
     if (!canvas) return;
     if (!this->setSubMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
-                ea, aa, dureu::SELECT_ENTITY, canvas->isEntitiesSelected()))
+                ea, aa, cher::SELECT_ENTITY, canvas->isEntitiesSelected()))
         return;
 //    if (!this->setSubSelectionType(ea, aa)) return;
 
@@ -855,7 +855,7 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         return;
 
     /* when frame is normal, perform selection of entities */
-    if (!(dureu::maskAction & m_mode))
+    if (!(cher::maskAction & m_mode))
     {
         /* if clicked outside of selected area, unselect all */
         if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH)
@@ -863,7 +863,7 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
 
         osgUtil::LineSegmentIntersector::Intersection* result_photo = new osgUtil::LineSegmentIntersector::Intersection;
         bool inter_photo = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
-                (ea,aa, dureu::MASK_CANVAS_IN, *result_photo);
+                (ea,aa, cher::MASK_CANVAS_IN, *result_photo);
         if (inter_photo){
             entity::Photo* photo = this->getPhoto(*result_photo);
             if (photo) canvas->addEntitySelected(photo);
@@ -871,7 +871,7 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
 
         StrokeIntersector::Intersection* result_stroke = new StrokeIntersector::Intersection;
         bool inter_stroke = this->getLineIntersection<StrokeIntersector::Intersection, StrokeIntersector>
-                (ea,aa, dureu::MASK_CANVAS_IN, *result_stroke);
+                (ea,aa, cher::MASK_CANVAS_IN, *result_stroke);
         if (inter_stroke) {
             entity::Stroke* stroke = this->getStroke(*result_stroke);
             if (stroke) canvas->addEntitySelected(stroke);
@@ -900,7 +900,7 @@ void EventHandler::doEditPhotoPush(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
         return;
 
     T1* result = new T1;
-    bool intersects = this->getLineIntersection<T1, T2>(ea,aa, dureu::MASK_CANVAS_IN, *result);
+    bool intersects = this->getLineIntersection<T1, T2>(ea,aa, cher::MASK_CANVAS_IN, *result);
     if (!intersects) return;
     entity::Photo* photo = this->getPhoto(*result);
     if (!photo) return;
@@ -914,7 +914,7 @@ void EventHandler::doSelectCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         return;
 
     T1* result = new T1;
-    bool intersected = this->getLineIntersection<T1, T2>(ea,aa, dureu::MASK_CANVAS_IN, *result);
+    bool intersected = this->getLineIntersection<T1, T2>(ea,aa, cher::MASK_CANVAS_IN, *result);
     if (intersected){
         entity::Canvas* cnv = this->getCanvas(*result);
         if (cnv){

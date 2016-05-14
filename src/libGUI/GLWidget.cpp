@@ -28,7 +28,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     , m_ModeView(1)
     , m_DeviceDown(false)
     , m_DeviceActive(false)
-    , m_mouseMode(dureu::PEN_SKETCH)
+    , m_mouseMode(cher::PEN_SKETCH)
 
     , m_manipulator(new Manipulator(m_mouseMode))
     , m_EH(new EventHandler(this, m_RootScene.get(), m_mouseMode))
@@ -46,7 +46,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     camera->setProjectionMatrixAsPerspective(30.f, ratio, 1.f, 1000.f);
     camera->setViewMatrixAsLookAt(center-look*(radius*3.f), center, up);
     camera->setGraphicsContext(m_GraphicsWindow.get());
-    camera->setClearColor(dureu::BACKGROUND_CLR);
+    camera->setClearColor(cher::BACKGROUND_CLR);
     camera->setName("Camera");
 
     /* view settings */
@@ -124,7 +124,7 @@ void GLWidget::getCameraView(osg::Vec3d &eye, osg::Vec3d &center, osg::Vec3d &up
     m_manipulator->getTransformation(eye, center, up);
 }
 
-void GLWidget::setMouseMode(const dureu::MOUSE_MODE &mode)
+void GLWidget::setMouseMode(const cher::MOUSE_MODE &mode)
 {
     m_mouseMode = mode;
     m_manipulator->setMode(m_mouseMode);
@@ -239,8 +239,8 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         break;
     }
     if (event->modifiers() & Qt::ControlModifier){
-        if (dureu::maskMouse & dureu::MOUSE_SELECT)
-            this->setMouseMode(dureu::SELECT_CANVAS);
+        if (cher::maskMouse & cher::MOUSE_SELECT)
+            this->setMouseMode(cher::SELECT_CANVAS);
         std::cout << "Qt ctrl ON" << std::endl;
         this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KEY_Control_L);
     }
@@ -252,8 +252,8 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
 {
     /* http://stackoverflow.com/questions/20746488/how-to-catch-ctrl-key-release */
     if (event->key() == Qt::Key_Control){
-        if (dureu::maskMouse & dureu::MOUSE_SELECT)
-            this->setMouseMode(dureu::SELECT_ENTITY);
+        if (cher::maskMouse & cher::MOUSE_SELECT)
+            this->setMouseMode(cher::SELECT_ENTITY);
         std::cout << "Qt ctrl OFF" << std::endl;
         this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KEY_Control_L);
     }

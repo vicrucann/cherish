@@ -14,7 +14,7 @@ namespace entity {
 class SelectedGroup
 {
 public:
-    SelectedGroup(const osg::Vec3f& canvasCenter = dureu::CENTER);
+    SelectedGroup(const osg::Vec3f& canvasCenter = cher::CENTER);
 
     void addEntity(entity::Entity2D* entity, osg::Geode* geodeData);
     bool removeEntity(entity::Entity2D* entity);

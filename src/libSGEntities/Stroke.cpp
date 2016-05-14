@@ -18,7 +18,7 @@ entity::Stroke::Stroke()
     , m_color(osg::Vec4f(0.f, 0.f, 0.f, 1.f))
 {
     osg::Vec4Array* colors = new osg::Vec4Array;
-    colors->push_back(dureu::STROKE_CLR_NORMAL);
+    colors->push_back(cher::STROKE_CLR_NORMAL);
     osg::Vec3Array* verts = new osg::Vec3Array;
 
     this->addPrimitiveSet(m_lines.get());
@@ -39,11 +39,11 @@ entity::Stroke::Stroke()
 
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
-    linewidth->setWidth(dureu::STROKE_LINE_WIDTH);
+    linewidth->setWidth(cher::STROKE_LINE_WIDTH);
     osg::BlendFunc* blendfunc = new osg::BlendFunc();
     stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
     stateset->setAttributeAndModes(blendfunc, osg::StateAttribute::ON);
-    stateset->setAttributeAndModes(new osg::Point(dureu::STROKE_LINE_WIDTH));
+    stateset->setAttributeAndModes(new osg::Point(cher::STROKE_LINE_WIDTH));
     stateset->setTextureAttributeAndModes(0, new osg::Texture2D, osg::StateAttribute::OFF);
     stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
@@ -103,7 +103,7 @@ void entity::Stroke::appendPoint(const float u, const float v)
     //osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
 
-    //colors->push_back(dureu::STROKE_CLR_NORMAL);
+    //colors->push_back(cher::STROKE_CLR_NORMAL);
     //colors->dirty();
 
     verts->push_back(osg::Vec3f(u,v,0.f));
@@ -154,7 +154,7 @@ void entity::Stroke::removePoints(unsigned int index_start, unsigned int index_e
 float entity::Stroke::getLength() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
-    if (std::fabs(bb.zMax()-bb.zMin()) > dureu::EPSILON ){
+    if (std::fabs(bb.zMax()-bb.zMin()) > cher::EPSILON ){
         warningMsg("Stroke->getLength(): z coordinates of a stroke are unexpected values");
         warningVal("zMax", bb.zMax());
         warningVal("zMin", bb.zMin());
@@ -165,7 +165,7 @@ float entity::Stroke::getLength() const
 
 bool entity::Stroke::isLengthy() const
 {
-    return this->getLength()>dureu::STROKE_MINL;
+    return this->getLength()>cher::STROKE_MINL;
 }
 
 void entity::Stroke::moveDelta(double du, double dv)
@@ -213,9 +213,9 @@ void entity::Stroke::rotate(double theta, osg::Vec3f center)
     this->dirtyBound();
 }
 
-dureu::ENTITY_TYPE entity::Stroke::getEntityType() const
+cher::ENTITY_TYPE entity::Stroke::getEntityType() const
 {
-    return dureu::ENTITY_STROKE;
+    return cher::ENTITY_STROKE;
 }
 
 /* for serialization of stroke type

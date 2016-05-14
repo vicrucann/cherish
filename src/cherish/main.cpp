@@ -26,7 +26,7 @@ int main(int argc, char** argv)
     dura_app.setWindowIcon(Data::appIcon());
     QDesktopWidget* desktop = dura_app.desktop();
     MainWindow mwin;
-    mwin.SetDesktopWidget(desktop, dureu::SCREEN_MIN); // pass the desktop geometry and configuration
+    mwin.SetDesktopWidget(desktop, cher::SCREEN_MIN); // pass the desktop geometry and configuration
     QObject::connect(&dura_app, SIGNAL(sendTabletActivity(bool)),
                      &mwin, SLOT(getTabletActivity(bool)));
     mwin.show();

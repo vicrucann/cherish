@@ -55,7 +55,7 @@ public:
     void setTransparency(float alpha);
     float getTransparency() const;
 
-    dureu::ENTITY_TYPE getEntityType() const;
+    cher::ENTITY_TYPE getEntityType() const;
 
 protected:
     void updateVertices();

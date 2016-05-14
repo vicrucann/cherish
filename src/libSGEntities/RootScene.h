@@ -77,7 +77,7 @@ public:
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T);
     void addCanvas(const osg::Vec3f& normal, const osg::Vec3f& center);
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
-    void addStroke(float u, float v, dureu::EVENT event);
+    void addStroke(float u, float v, cher::EVENT event);
     void selectAllStrokes();
     void addPhoto(const std::string& fname);
     void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
@@ -87,7 +87,7 @@ public:
     void deleteBookmarkTool(int first, int last);
     void resetBookmarks(BookmarkWidget* widget);
     void setBookmarkToolVisibility(bool vis);
-    void eraseStroke(entity::Stroke* stroke, int first, int last, dureu::EVENT event);
+    void eraseStroke(entity::Stroke* stroke, int first, int last, cher::EVENT event);
 
     bool setCanvasCurrent(entity::Canvas* cnv);
     bool setCanvasPrevious(entity::Canvas* cnv);
@@ -96,19 +96,19 @@ public:
     entity::Canvas* getCanvasPrevious() const;
     entity::Bookmarks* getBookmarksModel() const;
 
-    void editCanvasOffset(const osg::Vec3f& translate, dureu::EVENT event);
-    void editCanvasRotate(const osg::Quat& rotation, const osg::Vec3f& center3d, dureu::EVENT event);
-    void editCanvasClone(const osg::Vec3f& translate, dureu::EVENT event);
-    void editCanvasSeparate(const osg::Vec3f& translate, dureu::EVENT event);
+    void editCanvasOffset(const osg::Vec3f& translate, cher::EVENT event);
+    void editCanvasRotate(const osg::Quat& rotation, const osg::Vec3f& center3d, cher::EVENT event);
+    void editCanvasClone(const osg::Vec3f& translate, cher::EVENT event);
+    void editCanvasSeparate(const osg::Vec3f& translate, cher::EVENT event);
     void editCanvasDelete(entity::Canvas* canvas);
 
     void editPhotoDelete(entity::Photo* photo, entity::Canvas* canvas);
     void editPhotoPush(entity::Photo* photo, entity::Canvas* source, entity::Canvas* destination);
 
     void editStrokesPush(osg::Camera *camera);
-    void editStrokesMove(double u, double v, dureu::EVENT event);
-    void editStrokesScale(double u, double v, dureu::EVENT event);
-    void editStrokesRotate(double u, double v, dureu::EVENT event);
+    void editStrokesMove(double u, double v, cher::EVENT event);
+    void editStrokesScale(double u, double v, cher::EVENT event);
+    void editStrokesRotate(double u, double v, cher::EVENT event);
     void editStrokeDelete(entity::Stroke* stroke);
 
     void copyToBuffer();

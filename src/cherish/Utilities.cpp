@@ -68,7 +68,7 @@ bool Utilities::areStrokesProjectable(const std::vector<entity::Stroke *> &strok
             double len = plane.dotProductNormal(center-P) / plane.dotProductNormal(dir);
             osg::Vec3 P_ = dir * len + P;
             osg::Vec3 p_ = P_ * invM;
-            if (std::fabs(p_.z())>dureu::EPSILON){
+            if (std::fabs(p_.z())>cher::EPSILON){
                 std::cerr << "push strokes: error while projecting point from global 3D to local 3D, z-coordinate is not zero." << std::endl;
                 outLogVec("P_", P_.x(), P_.y(), P_.z());
                 outLogVec("p_", p_.x(), p_.y(), p_.z());
@@ -171,7 +171,7 @@ bool Utilities::getModel(entity::Canvas *canvas, osg::Matrix &M, osg::Matrix &in
 bool Utilities::getLocalFromGlobal(const osg::Vec3f &P, const osg::Matrix &invM, osg::Vec3f &p)
 {
     p = P * invM;
-    if (std::fabs(p.z())>dureu::EPSILON){
+    if (std::fabs(p.z())>cher::EPSILON){
         outErrMsg("getLocalFromGlobal: local point's z-coordinate is not zero");
         return false;
     }
@@ -181,7 +181,7 @@ bool Utilities::getLocalFromGlobal(const osg::Vec3f &P, const osg::Matrix &invM,
 
 bool Utilities::getGlobalFromLocal(const osg::Vec3f &p, const osg::Matrix &M, osg::Vec3f &P)
 {
-    if (std::fabs(p.z())>dureu::EPSILON){
+    if (std::fabs(p.z())>cher::EPSILON){
         outErrMsg("getGlobalFromLocal: local point's z-coord is not close to zero");
         return false;
     }
@@ -200,7 +200,7 @@ bool Utilities::getSkewLinesProjection(const osg::Vec3f &center, const osg::Vec3
     u2.normalize();
     osg::Vec3f u3 = u1^u2;
 
-    if (std::fabs(u3.x())<=dureu::EPSILON && std::fabs(u3.y())<=dureu::EPSILON && std::fabs(u3.z())<=dureu::EPSILON){
+    if (std::fabs(u3.x())<=cher::EPSILON && std::fabs(u3.y())<=cher::EPSILON && std::fabs(u3.z())<=cher::EPSILON){
         outErrMsg("getSkewLinesProjection: cast ray and normal are almost parallel."
                   "Switch view point.");
         return false;
@@ -212,7 +212,7 @@ bool Utilities::getSkewLinesProjection(const osg::Vec3f &center, const osg::Vec3
     // we are only interested in X1 so we only solve for r1.
     float a1 = u1*u1, b1 = u1*u2, c1 = u1*d;
     float a2 = u1*u2, b2 = u2*u2, c2 = u2*d;
-    if (!(std::fabs(b1) > dureu::EPSILON)){
+    if (!(std::fabs(b1) > cher::EPSILON)){
         outErrMsg("getSkewLinesProjection: denominator is zero");
         return false;
     }
@@ -256,14 +256,14 @@ int Utilities::getCanvasesIntersection(entity::Canvas *current, entity::Canvas *
         /* translate local to global coordiantes */
         osg::Matrix M, invM;
         getModel(current, M, invM);
-        osg::Vec3f V1=dureu::CENTER, V2=dureu::CENTER, V3=dureu::CENTER, V4=dureu::CENTER;
+        osg::Vec3f V1=cher::CENTER, V2=cher::CENTER, V3=cher::CENTER, V4=cher::CENTER;
         getGlobalFromLocal(v1, M, V1);
         getGlobalFromLocal(v2, M, V2);
         getGlobalFromLocal(v3, M, V3);
         getGlobalFromLocal(v4, M, V4);
 
         /* project each global vertex onto global intersection line*/
-        osg::Vec3f P1=dureu::CENTER, P2=dureu::CENTER, P3=dureu::CENTER, P4=dureu::CENTER;
+        osg::Vec3f P1=cher::CENTER, P2=cher::CENTER, P3=cher::CENTER, P4=cher::CENTER;
         P1 = projectPointOnLine(iP, u, V1);
         P2 = projectPointOnLine(iP, u, V2);
         P3 = projectPointOnLine(iP, u, V3);
@@ -293,7 +293,7 @@ int Utilities::getPlanesIntersection(entity::Canvas *canvas1, entity::Canvas *ca
     osg::Vec3f C2 = canvas2->getCenter();
 
     /* are two planes parallel? */
-    if (std::fabs(ax+ay+az) < dureu::EPSILON) {
+    if (std::fabs(ax+ay+az) < cher::EPSILON) {
         /* normals are near parallel */
         /* are they disjoint or coincide? */
         osg::Vec3f v = C2- C1;
@@ -347,70 +347,70 @@ osg::Vec3f Utilities::projectPointOnLine(const osg::Vec3f &iP, const osg::Vec3f 
     return iP + u * ((P-iP)*u)/(u*u);
 }
 
-QCursor *Utilities::getCursorFromMode(dureu::MOUSE_MODE mode)
+QCursor *Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
 {
     QCursor* cur;
     switch (mode) {
-    case dureu::SELECT_ENTITY:
+    case cher::SELECT_ENTITY:
         cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
         break;
-    case dureu::ENTITY_MOVE:
+    case cher::ENTITY_MOVE:
         cur = new QCursor(Data::sceneImageMovePixmap(), -1, -1);
         break;
-    case dureu::ENTITY_SCALE:
+    case cher::ENTITY_SCALE:
         cur = new QCursor(Data::sceneImageScalePixmap(), 0, 0);
         break;
-    case dureu::ENTITY_ROTATE:
+    case cher::ENTITY_ROTATE:
         cur = new QCursor(Data::sceneImageRotatePixmap(), -1, -1);
         break;
-    case dureu::ENTITY_FLIPH:
+    case cher::ENTITY_FLIPH:
         cur = new QCursor(Data::sceneImageFlipHPixmap(), -1, -1);
         break;
-    case dureu::ENTITY_FLIPV:
+    case cher::ENTITY_FLIPV:
         cur = new QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
         break;
 
-    case dureu::SELECT_CANVAS:
+    case cher::SELECT_CANVAS:
         cur = new QCursor(Data::sceneSelect3DPixmap(), 0,0);
         break;
-    case dureu::MOUSE_CANVAS:
+    case cher::MOUSE_CANVAS:
         cur = new QCursor(Qt::CrossCursor);
         break;
-    case dureu::CANVAS_OFFSET:
+    case cher::CANVAS_OFFSET:
         cur = new QCursor(Data::sceneCanvasOffsetCursor(), -1, -1);
         break;
-    case dureu::CANVAS_ROTATE_UPLUS:
-    case dureu::CANVAS_ROTATE_UMINUS:
-    case dureu::CANVAS_ROTATE_VPLUS:
-    case dureu::CANVAS_ROTATE_VMINUS:
+    case cher::CANVAS_ROTATE_UPLUS:
+    case cher::CANVAS_ROTATE_UMINUS:
+    case cher::CANVAS_ROTATE_VPLUS:
+    case cher::CANVAS_ROTATE_VMINUS:
         cur = new QCursor(Data::sceneCanvasRotateCursor(), -1, -1);
         break;
 
-    case dureu::PEN_SKETCH:
+    case cher::PEN_SKETCH:
         cur = new QCursor(Data::sceneSketchPixmap(), 0, Data::sceneSketchPixmap().height());
         break;
-    case dureu::PEN_DELETE:
+    case cher::PEN_DELETE:
         cur = new QCursor(Data::editDeleteCursor(), 0, 0);
         break;
-    case dureu::PEN_ERASE:
+    case cher::PEN_ERASE:
         cur = new QCursor(Data::sceneEraserPixmap(), -1, -1);
         break;
 
-    case dureu::CAMERA_ORBIT:
+    case cher::CAMERA_ORBIT:
         cur = new QCursor(Data::sceneOrbitPixmap(), 0, 0);
         break;
-    case dureu::CAMERA_ZOOM:
+    case cher::CAMERA_ZOOM:
         cur = new QCursor(Data::sceneZoomPixmap(), 0, 0);
         break;
-    case dureu::CAMERA_PAN:
+    case cher::CAMERA_PAN:
         cur = new QCursor(Data::scenePanPixmap(), 0, 0);
         break;
-    case dureu::CAMERA_FIXEDVIEW:
+    case cher::CAMERA_FIXEDVIEW:
         cur = 0;
         break;
 
-    case dureu::CREATE_CANVASCLONE:
-    case dureu::CREATE_CANVASSEPARATE:
+    case cher::CREATE_CANVASCLONE:
+    case cher::CREATE_CANVASSEPARATE:
         cur = new QCursor(Data::sceneCanvasCloneCursor());
         break;
     default:

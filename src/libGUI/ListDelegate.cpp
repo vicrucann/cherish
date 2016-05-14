@@ -26,13 +26,13 @@ void BookmarkDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     QStyleOptionButton buttonDelete, buttonMove;
 
     buttonDelete.rect = getButtonDeleteRect(r);
-    buttonDelete.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+    buttonDelete.iconSize = QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON);
     buttonDelete.icon = Data::editDeleteIcon();
     buttonDelete.state = QStyle::State_Enabled;
     buttonDelete.features = QStyleOptionButton::None;
 
     buttonMove.rect = getButtonMoveRect(r);
-    buttonMove.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+    buttonMove.iconSize = QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON);
     buttonMove.icon = Data::controlMoveIcon();
     buttonMove.state = QStyle::State_Enabled;
     buttonMove.features = QStyleOptionButton::None;
@@ -78,7 +78,7 @@ bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, con
 
 QRect BookmarkDelegate::getButtonDeleteRect(const QRect &rect) const
 {
-    int sz = dureu::APP_WIDGET_BUTTON;
+    int sz = cher::APP_WIDGET_BUTTON;
     int x,y,w,h;
     x = rect.left() + rect.width() - sz;
     y = rect.top() + (rect.height() - sz)/2;
@@ -88,7 +88,7 @@ QRect BookmarkDelegate::getButtonDeleteRect(const QRect &rect) const
 
 QRect BookmarkDelegate::getButtonMoveRect(const QRect &rect) const
 {
-    int sz = dureu::APP_WIDGET_BUTTON;
+    int sz = cher::APP_WIDGET_BUTTON;
     int x,y,w,h;
     x = rect.left() + rect.width() - 2.5*sz;
     y = rect.top() + (rect.height() - sz)/2;
@@ -106,10 +106,10 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     QRect r = option.rect;
 
     /* delegate for parent (canvas) */
-    if (index.data(dureu::DelegateChildRole).toInt() == 1){
+    if (index.data(cher::DelegateChildRole).toInt() == 1){
         QStyledItemDelegate::paint(painter, option, index);
 
-        QVariant var = index.model()->data(index, dureu::DelegateBGColor);
+        QVariant var = index.model()->data(index, cher::DelegateBGColor);
         QColor color = var.value<QColor>();
         if (color != Qt::white){
             QString text = index.model()->data(index, Qt::DisplayRole).toString();
@@ -133,16 +133,16 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
         QStyleOptionButton buttonDelete, buttonVis;
 
         buttonDelete.rect = getButtonDeleteRect(r);
-        buttonDelete.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+        buttonDelete.iconSize = QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON);
         buttonDelete.icon = Data::editDeleteIcon();
         buttonDelete.state = QStyle::State_Enabled;
         buttonDelete.features = QStyleOptionButton::None;
 
         buttonVis.rect = getButtonVisibilityRect(r);
-        buttonVis.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+        buttonVis.iconSize = QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON);
         buttonVis.icon = Data::controlCanvasVisibilityIcon();
 
-        bool isNotChecked = index.data(dureu::DelegateVisibilityRole).toBool();
+        bool isNotChecked = index.data(cher::DelegateVisibilityRole).toBool();
         buttonVis.state |= QStyle::State_Enabled;
         buttonVis.state |= isNotChecked? QStyle::State_Off : QStyle::State_On;
 
@@ -155,7 +155,7 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 
         QStyleOptionButton buttonDelete;
         buttonDelete.rect = getButtonDeleteRect(r);
-        buttonDelete.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+        buttonDelete.iconSize = QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON);
         buttonDelete.icon = Data::editDeleteIcon();
         buttonDelete.state = QStyle::State_Enabled;
         buttonDelete.features = QStyleOptionButton::None;
@@ -163,7 +163,7 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 
         QStyleOptionButton buttonPlus;
         buttonPlus.rect = getButtonPlusRect(r);
-        buttonPlus.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+        buttonPlus.iconSize = QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON);
         buttonPlus.icon = Data::sceneImageTransparencyOnIcon();
         buttonPlus.state = QStyle::State_Enabled;
         buttonPlus.features = QStyleOptionButton::None;
@@ -171,7 +171,7 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 
         QStyleOptionButton buttonMinus;
         buttonMinus.rect = getButtonMinusRect(r);
-        buttonMinus.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+        buttonMinus.iconSize = QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON);
         buttonMinus.icon = Data::sceneImageTransparencyOffIcon();
         buttonMinus.state = QStyle::State_Enabled;
         buttonMinus.features = QStyleOptionButton::None;
@@ -182,7 +182,7 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
     /* delegate for parent */
-    if (index.data(dureu::DelegateChildRole).toInt() == 1){
+    if (index.data(cher::DelegateChildRole).toInt() == 1){
         if (event->type() == QEvent::MouseButtonPress ||
                 event->type() == QEvent::MouseButtonRelease) {
             QMouseEvent * e = (QMouseEvent *)event;
@@ -212,8 +212,8 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
                         outLogMsg("canvas delegate: clicked visibility");
                         emit this->clickedVisibility(index);
 
-                        bool value = index.data(dureu::DelegateVisibilityRole).toBool();
-                        model->setData(index, !value, dureu::DelegateVisibilityRole);
+                        bool value = index.data(cher::DelegateVisibilityRole).toBool();
+                        model->setData(index, !value, cher::DelegateVisibilityRole);
                     }
                     return true;
                 }
@@ -269,7 +269,7 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
 
 QRect CanvasDelegate::getButtonDeleteRect(const QRect &rect) const
 {
-    int sz = dureu::APP_WIDGET_BUTTON;
+    int sz = cher::APP_WIDGET_BUTTON;
     int x,y,w,h;
     x = rect.left() + rect.width() - sz;
     y = rect.top() + (rect.height() - sz)/2;
@@ -279,7 +279,7 @@ QRect CanvasDelegate::getButtonDeleteRect(const QRect &rect) const
 
 QRect CanvasDelegate::getButtonVisibilityRect(const QRect &rect) const
 {
-    int sz = dureu::APP_WIDGET_BUTTON;
+    int sz = cher::APP_WIDGET_BUTTON;
     int x,y,w,h;
     x = rect.left() + rect.width() - 2.5*sz;
     y = rect.top() + (rect.height() - sz)/2;
@@ -289,7 +289,7 @@ QRect CanvasDelegate::getButtonVisibilityRect(const QRect &rect) const
 
 QRect CanvasDelegate::getButtonPlusRect(const QRect &rect) const
 {
-    int sz = dureu::APP_WIDGET_BUTTON;
+    int sz = cher::APP_WIDGET_BUTTON;
     int x,y,w,h;
     x = rect.left() + rect.width() - 2.5*sz;
     y = rect.top() + (rect.height() - sz)/2;
@@ -299,7 +299,7 @@ QRect CanvasDelegate::getButtonPlusRect(const QRect &rect) const
 
 QRect CanvasDelegate::getButtonMinusRect(const QRect &rect) const
 {
-    int sz = dureu::APP_WIDGET_BUTTON;
+    int sz = cher::APP_WIDGET_BUTTON;
     int x,y,w,h;
     x = rect.left() + rect.width() - 4*sz;
     y = rect.top() + (rect.height() - sz)/2;
@@ -321,19 +321,19 @@ void PhotoDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
     QStyleOptionButton buttonPlus, buttonMinus; // photo transparency
 
     buttonDelete.rect = getButtonDeleteRect(r);
-    buttonDelete.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+    buttonDelete.iconSize = QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON);
     buttonDelete.icon = Data::editDeleteIcon();
     buttonDelete.state = QStyle::State_Enabled;
     buttonDelete.features = QStyleOptionButton::None;
 
     buttonPlus.rect = getButtonPlus(r);
-    buttonPlus.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+    buttonPlus.iconSize = QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON);
     buttonPlus.icon = Data::sceneImageTransparencyOnIcon();
     buttonPlus.state = QStyle::State_Enabled;
     buttonPlus.features = QStyleOptionButton::None;
 
     buttonMinus.rect = getButtonMinus(r);
-    buttonMinus.iconSize = QSize(dureu::APP_WIDGET_BUTTON, dureu::APP_WIDGET_BUTTON);
+    buttonMinus.iconSize = QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON);
     buttonMinus.icon = Data::sceneImageTransparencyOffIcon();
     buttonMinus.state = QStyle::State_Enabled;
     buttonMinus.features = QStyleOptionButton::None;
@@ -392,7 +392,7 @@ bool PhotoDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const 
 
 QRect PhotoDelegate::getButtonDeleteRect(const QRect &rect) const
 {
-    int sz = dureu::APP_WIDGET_BUTTON;
+    int sz = cher::APP_WIDGET_BUTTON;
     int x,y,w,h;
     x = rect.left() + rect.width() - sz;
     y = rect.top() + (rect.height() - sz)/2;
@@ -402,7 +402,7 @@ QRect PhotoDelegate::getButtonDeleteRect(const QRect &rect) const
 
 QRect PhotoDelegate::getButtonPlus(const QRect &rect) const
 {
-    int sz = dureu::APP_WIDGET_BUTTON;
+    int sz = cher::APP_WIDGET_BUTTON;
     int x,y,w,h;
     x = rect.left() + rect.width() - sz*2 - sz/2;
     y = rect.top() + (rect.height() - sz)/2;
@@ -412,7 +412,7 @@ QRect PhotoDelegate::getButtonPlus(const QRect &rect) const
 
 QRect PhotoDelegate::getButtonMinus(const QRect &rect) const
 {
-    int sz = dureu::APP_WIDGET_BUTTON;
+    int sz = cher::APP_WIDGET_BUTTON;
     int x,y,w,h;
     x = rect.left() + rect.width() - sz*3 - sz;
     y = rect.top() + (rect.height() - sz)/2;

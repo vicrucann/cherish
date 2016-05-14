@@ -32,12 +32,12 @@ class MainWindow : public QMainWindow {
 public:
     explicit MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
     ~MainWindow();
-    void SetDesktopWidget(QDesktopWidget* desktop, dureu::APPMODE mode = dureu::SCREEN_MIN);
+    void SetDesktopWidget(QDesktopWidget* desktop, cher::APPMODE mode = cher::SCREEN_MIN);
 
 public slots:
     void getTabletActivity(bool active);
     void recievedRequestUpdate();
-    void recieveAutoSwitchMode(dureu::MOUSE_MODE mode);
+    void recieveAutoSwitchMode(cher::MOUSE_MODE mode);
     void recieveBookmark(int row);
     void onDeleteBookmark(const QModelIndex &index);
     void onDeleteCanvas(const QModelIndex& index);
@@ -46,14 +46,14 @@ public slots:
     void onMoveBookmark(const QModelIndex &index);
     void onBookmarkAddedToWidget(const QModelIndex &, int first, int last);
     void onBookmarkRemovedFromWidget(const QModelIndex &, int first, int last);
-    void slotMouseModeSet(dureu::MOUSE_MODE mode);
+    void slotMouseModeSet(cher::MOUSE_MODE mode);
     void slotPhotoTransparencyPlus(const QModelIndex& index);
     void slotPhotoTransparencyMinus(const QModelIndex& index);
     void slotPhotoPushed(int parent, int start, int, int destination, int);
 
 signals:
     void signalTabletActivity(bool active);
-    void signalMouseMode(dureu::MOUSE_MODE mode);
+    void signalMouseMode(cher::MOUSE_MODE mode);
 
 private slots:
     //void onCreateViewer();

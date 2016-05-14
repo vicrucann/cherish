@@ -63,7 +63,7 @@ const osg::Vec4 green = osg::Vec4(float(133)/255.0f, float(153)/255.0f, float(0)
 
 // TODO: settings must be initialized based on screen resolution
 
-namespace dureu{
+namespace cher{
 
 const double PI = 3.14159265359;
 const double EPSILON = 0.00001;

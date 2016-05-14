@@ -120,7 +120,7 @@ bool entity::UserScene::isSetFilePath() const
 
 void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T)
 {
-    this->addCanvas(stack, R,T, getEntityName(dureu::NAME_CANVAS, m_idCanvas++));
+    this->addCanvas(stack, R,T, getEntityName(cher::NAME_CANVAS, m_idCanvas++));
 }
 
 void entity::UserScene::addCanvas(QUndoStack *stack, const osg::Vec3f &normal, const osg::Vec3f &center)
@@ -131,7 +131,7 @@ void entity::UserScene::addCanvas(QUndoStack *stack, const osg::Vec3f &normal, c
         return;
     }
     AddCanvasCommand* cmd = new AddCanvasCommand(this, normal, center,
-                                                 getEntityName(dureu::NAME_CANVAS, m_idCanvas++));
+                                                 getEntityName(cher::NAME_CANVAS, m_idCanvas++));
     if (!cmd){
         outErrMsg("addCanvas: cmd is NULL");
         return;
@@ -155,7 +155,7 @@ void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const
 
 }
 
-void entity::UserScene::addStroke(QUndoStack* stack, float u, float v, dureu::EVENT event)
+void entity::UserScene::addStroke(QUndoStack* stack, float u, float v, cher::EVENT event)
 {
     if (!stack){
         fatalMsg("addStroke(): undo stack is NULL, it is not initialized. "
@@ -164,21 +164,21 @@ void entity::UserScene::addStroke(QUndoStack* stack, float u, float v, dureu::EV
         return;
     }
     switch (event){
-    case dureu::EVENT_OFF:
+    case cher::EVENT_OFF:
         outLogMsg("EVENT_OFF");
         this->strokeFinish(stack);
         break;
-    case dureu::EVENT_PRESSED:
+    case cher::EVENT_PRESSED:
         outLogMsg("EVENT_PRESSED");
         this->strokeStart();
         this->strokeAppend(u, v);
         break;
-    case dureu::EVENT_DRAGGED:
+    case cher::EVENT_DRAGGED:
         if (!this->strokeValid())
             this->strokeStart();
         this->strokeAppend(u, v);
         break;
-    case dureu::EVENT_RELEASED:
+    case cher::EVENT_RELEASED:
         outLogMsg("EVENT_RELEASED");
         if (!this->strokeValid())
             break;
@@ -241,7 +241,7 @@ void entity::UserScene::deleteBookmark(BookmarkWidget *widget, const QModelIndex
     m_bookmarks->deleteBookmark(widget, index);
 }
 
-void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, int first, int last, dureu::EVENT event)
+void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, int first, int last, cher::EVENT event)
 {
     if (!stack){
         fatalMsg("eraseStroke(): undo stack is NULL, it is not initialized. "
@@ -253,15 +253,15 @@ void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, i
     stroke->removePoints(first, last);
 
     switch (event){
-    case dureu::EVENT_OFF:
+    case cher::EVENT_OFF:
         outLogMsg("EVENT_OFF");
         break;
-    case dureu::EVENT_PRESSED:
+    case cher::EVENT_PRESSED:
         outLogMsg("EVENT_PRESSED");
         break;
-    case dureu::EVENT_DRAGGED:
+    case cher::EVENT_DRAGGED:
         break;
-    case dureu::EVENT_RELEASED:
+    case cher::EVENT_RELEASED:
         outLogMsg("EVENT_RELEASED");
         break;
     default:
@@ -313,11 +313,11 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
         return true;
     if (m_canvasCurrent.valid()){
         if (m_canvasPrevious.valid()){
-            m_canvasPrevious->setColor(dureu::CANVAS_CLR_REST);
+            m_canvasPrevious->setColor(cher::CANVAS_CLR_REST);
             emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasPrevious.get()), 0);
             m_canvasPrevious = NULL;
         }
-        m_canvasCurrent->setColor(dureu::CANVAS_CLR_PREVIOUS);
+        m_canvasCurrent->setColor(cher::CANVAS_CLR_PREVIOUS);
         emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasCurrent.get()), 2);
         m_canvasCurrent->unselectAll();
 
@@ -329,7 +329,7 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
         return false;
     }
     m_canvasCurrent = cnv;
-    m_canvasCurrent->setColor(dureu::CANVAS_CLR_CURRENT);
+    m_canvasCurrent->setColor(cher::CANVAS_CLR_CURRENT);
     emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasCurrent.get()), 1);
 
     /* make sure node masks are holding as before for the current canvas */
@@ -352,7 +352,7 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
     if (cnv == m_canvasPrevious.get())
         return true;
     if (m_canvasPrevious.valid()){
-        m_canvasPrevious->setColor(dureu::CANVAS_CLR_REST);
+        m_canvasPrevious->setColor(cher::CANVAS_CLR_REST);
         emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasPrevious.get()), 0);
         m_canvasPrevious = NULL;
     }
@@ -361,7 +361,7 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
         return false;
     }
     m_canvasPrevious = cnv;
-    m_canvasPrevious->setColor(dureu::CANVAS_CLR_PREVIOUS);
+    m_canvasPrevious->setColor(cher::CANVAS_CLR_PREVIOUS);
     emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasPrevious.get()), 2);
     m_canvasPrevious->updateFrame();
     m_canvasCurrent->updateFrame(m_canvasPrevious.get());
@@ -380,9 +380,9 @@ void entity::UserScene::setCanvasesButCurrent(bool enabled)
         if (!cnv) return;
         if (cnv != m_canvasCurrent.get()){
             if (enabled)
-                cnv->setNodeMask(dureu::MASK_CANVAS_IN);
+                cnv->setNodeMask(cher::MASK_CANVAS_IN);
             else
-                cnv->setNodeMask(dureu::MASK_CANVAS_OUT); // see EventHandler when we set iv.setTraversalMask(~0x1);
+                cnv->setNodeMask(cher::MASK_CANVAS_OUT); // see EventHandler when we set iv.setTraversalMask(~0x1);
         }
     }
 }
@@ -446,7 +446,7 @@ int entity::UserScene::getNumPhotos(entity::Canvas *canvas) const
     return canvas->getNumPhotos();
 }
 
-void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event)
+void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, cher::EVENT event)
 {
     if (!stack){
         fatalMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
@@ -456,19 +456,19 @@ void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& tr
     }
 
     switch (event){
-    case dureu::EVENT_OFF:
+    case cher::EVENT_OFF:
         this->canvasOffsetFinish(stack);
         break;
-    case dureu::EVENT_PRESSED:
+    case cher::EVENT_PRESSED:
         this->canvasOffsetStart();
         this->canvasOffsetAppend(translate);
         break;
-    case dureu::EVENT_DRAGGED:
+    case cher::EVENT_DRAGGED:
         if (!this->canvasEditValid())
             this->canvasOffsetStart();
         this->canvasOffsetAppend(translate);
         break;
-    case dureu::EVENT_RELEASED:
+    case cher::EVENT_RELEASED:
         if (!this->canvasEditValid())
             break;
         this->canvasOffsetAppend(translate);
@@ -479,7 +479,7 @@ void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& tr
     }
 }
 
-void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const osg::Vec3f &center3d, dureu::EVENT event)
+void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const osg::Vec3f &center3d, cher::EVENT event)
 {
     if (!stack){
         fatalMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
@@ -489,21 +489,21 @@ void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rot
     }
 
     switch (event){
-    case dureu::EVENT_OFF:
+    case cher::EVENT_OFF:
         outLogMsg("editCanvasRotate: OFF");
         this->canvasRotateFinish(stack);
         break;
-    case dureu::EVENT_PRESSED:
+    case cher::EVENT_PRESSED:
         outLogMsg("editCanvasRotate: pressed");
         this->canvasRotateStart();
         this->canvasRotateAppend(rotation, center3d);
         break;
-    case dureu::EVENT_DRAGGED:
+    case cher::EVENT_DRAGGED:
         if (!this->canvasEditValid())
             this->canvasRotateStart();
         this->canvasRotateAppend(rotation, center3d);
         break;
-    case dureu::EVENT_RELEASED:
+    case cher::EVENT_RELEASED:
         outLogMsg("editCanvasRotate: release");
         if (!this->canvasEditValid())
             break;
@@ -516,7 +516,7 @@ void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rot
     }
 }
 
-void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &translate, dureu::EVENT event)
+void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &translate, cher::EVENT event)
 {
     if (!stack){
         fatalMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
@@ -526,19 +526,19 @@ void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &tra
     }
 
     switch (event){
-    case dureu::EVENT_OFF:
+    case cher::EVENT_OFF:
         this->canvasCloneFinish(stack);
         break;
-    case dureu::EVENT_PRESSED:
+    case cher::EVENT_PRESSED:
         this->canvasCloneStart();
         this->canvasCloneAppend(translate);
         break;
-    case dureu::EVENT_DRAGGED:
+    case cher::EVENT_DRAGGED:
         if (!this->canvasCloneValid())
             this->canvasCloneStart();
         this->canvasCloneAppend(translate);
         break;
-    case dureu::EVENT_RELEASED:
+    case cher::EVENT_RELEASED:
         if (!this->canvasCloneValid())
             break;
         this->canvasCloneAppend(translate);
@@ -549,7 +549,7 @@ void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &tra
     }
 }
 
-void entity::UserScene::editCanvasSeparate(QUndoStack *stack, const osg::Vec3f &translate, dureu::EVENT event)
+void entity::UserScene::editCanvasSeparate(QUndoStack *stack, const osg::Vec3f &translate, cher::EVENT event)
 {
     if (!stack){
         fatalMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
@@ -559,19 +559,19 @@ void entity::UserScene::editCanvasSeparate(QUndoStack *stack, const osg::Vec3f &
     }
 
     switch (event){
-    case dureu::EVENT_OFF:
+    case cher::EVENT_OFF:
         this->canvasSeparateFinish(stack);
         break;
-    case dureu::EVENT_PRESSED:
+    case cher::EVENT_PRESSED:
         this->canvasSeparateStart();
         this->canvasSeparateAppend(translate);
         break;
-    case dureu::EVENT_DRAGGED:
+    case cher::EVENT_DRAGGED:
         if (!this->canvasCloneValid())
             this->canvasSeparateStart();
         this->canvasSeparateAppend(translate);
         break;
-    case dureu::EVENT_RELEASED:
+    case cher::EVENT_RELEASED:
         if (!this->canvasCloneValid())
             break;
         this->canvasSeparateAppend(translate);
@@ -678,29 +678,29 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
     stack->push(cmd);
 }
 
-void entity::UserScene::editStrokesMove(QUndoStack *stack, double u, double v, dureu::EVENT event)
+void entity::UserScene::editStrokesMove(QUndoStack *stack, double u, double v, cher::EVENT event)
 {
     if (!stack){
         fatalMsg("editStrokesMove(): undo stack is NULL.");
         return;
     }
     switch (event){
-    case dureu::EVENT_OFF:
+    case cher::EVENT_OFF:
         outLogMsg("EditStrokesMove: event off called");
         if (this->entitiesSelectedValid())
             this->entitiesMoveFinish(stack);
         break;
-    case dureu::EVENT_PRESSED:
+    case cher::EVENT_PRESSED:
         outLogMsg("EditStrokesMove: event pressed called");
         this->entitiesMoveStart(u,v);
         this->entitiesMoveAppend(u,v);
         break;
-    case dureu::EVENT_DRAGGED:
+    case cher::EVENT_DRAGGED:
         if (!this->entitiesSelectedValid())
             this->entitiesMoveStart(u,v);
         this->entitiesMoveAppend(u,v);
         break;
-    case dureu::EVENT_RELEASED:
+    case cher::EVENT_RELEASED:
         if (!this->entitiesSelectedValid())
             break;
         outLogMsg("EditStrokesMove: event release called");
@@ -712,31 +712,31 @@ void entity::UserScene::editStrokesMove(QUndoStack *stack, double u, double v, d
     }
 }
 
-void entity::UserScene::editStrokesScale(QUndoStack *stack, double u, double v, dureu::EVENT event)
+void entity::UserScene::editStrokesScale(QUndoStack *stack, double u, double v, cher::EVENT event)
 {
     if (!stack){
         fatalMsg("editStrokesScale(): undo stack is NULL.");
         return;
     }
     switch (event){
-    case dureu::EVENT_OFF:
+    case cher::EVENT_OFF:
         outLogMsg("EditStrokesScale: event off called");
         if (this->entitiesSelectedValid()){
             outLogMsg("EditStrokesScale: event off performed");
             this->entitiesScaleFinish(stack);
         }
         break;
-    case dureu::EVENT_PRESSED:
+    case cher::EVENT_PRESSED:
         outLogMsg("EditStrokesScale: event pressed called");
         this->entitiesScaleStart(u,v);
         this->entitiesScaleAppend(u,v);
         break;
-    case dureu::EVENT_DRAGGED:
+    case cher::EVENT_DRAGGED:
         if (!this->entitiesSelectedValid())
             this->entitiesScaleStart(u,v);
         this->entitiesScaleAppend(u,v);
         break;
-    case dureu::EVENT_RELEASED:
+    case cher::EVENT_RELEASED:
         if (!this->entitiesSelectedValid())
             break;
         outLogMsg("EditStrokesScale: event release called");
@@ -748,31 +748,31 @@ void entity::UserScene::editStrokesScale(QUndoStack *stack, double u, double v, 
     }
 }
 
-void entity::UserScene::editStrokesRotate(QUndoStack *stack, double u, double v, dureu::EVENT event)
+void entity::UserScene::editStrokesRotate(QUndoStack *stack, double u, double v, cher::EVENT event)
 {
     if (!stack){
         fatalMsg("editStrokesScale(): undo stack is NULL.");
         return;
     }
     switch (event){
-    case dureu::EVENT_OFF:
+    case cher::EVENT_OFF:
         outLogMsg("EditStrokesScale: event off called");
         if (this->entitiesSelectedValid()){
             outLogMsg("EditStrokesScale: event off performed");
             this->entitiesRotateFinish(stack);
         }
         break;
-    case dureu::EVENT_PRESSED:
+    case cher::EVENT_PRESSED:
         outLogMsg("EditStrokesScale: event pressed called");
         this->entitiesRotateStart(u,v);
         this->entitiesRotateAppend(u,v);
         break;
-    case dureu::EVENT_DRAGGED:
+    case cher::EVENT_DRAGGED:
         if (!this->entitiesSelectedValid())
             this->entitiesRotateStart(u,v);
         this->entitiesRotateAppend(u,v);
         break;
-    case dureu::EVENT_RELEASED:
+    case cher::EVENT_RELEASED:
         if (!this->entitiesSelectedValid())
             break;
         outLogMsg("EditStrokesScale: event release called");
@@ -919,7 +919,7 @@ void entity::UserScene::onClicked(const QModelIndex &index)
      * get corresponding canvas ptr
      * make sure you consider bookmark ptr index
      * set that canvas as current */
-    if (index.data(dureu::DelegateChildRole).toInt() == 1){
+    if (index.data(cher::DelegateChildRole).toInt() == 1){
         if (index.row()<0)
             return;
         entity::Canvas* cnv = this->getCanvasFromIndex(index.row());
@@ -937,7 +937,7 @@ void entity::UserScene::onClicked(const QModelIndex &index)
  * to select as previous from canvas delegate */
 void entity::UserScene::onRightClicked(const QModelIndex &index)
 {
-    if (index.data(dureu::DelegateChildRole).toInt() == 1){
+    if (index.data(cher::DelegateChildRole).toInt() == 1){
         entity::Canvas* cnv = this->getCanvasFromIndex(index.row());
         if (!cnv){
             outErrMsg("UserScene onRightClicked: canvas ptr is NULL");
@@ -953,17 +953,17 @@ void entity::UserScene::onRightClicked(const QModelIndex &index)
 
 std::string entity::UserScene::getCanvasName()
 {
-    return this->getEntityName(dureu::NAME_CANVAS, m_idCanvas++);
+    return this->getEntityName(cher::NAME_CANVAS, m_idCanvas++);
 }
 
 std::string entity::UserScene::getPhotoName()
 {
-    return this->getEntityName(dureu::NAME_PHOTO, m_idPhoto++);
+    return this->getEntityName(cher::NAME_PHOTO, m_idPhoto++);
 }
 
 std::string entity::UserScene::getBookmarkName()
 {
-    return this->getEntityName(dureu::NAME_BOOKMARK, m_idBookmark++);
+    return this->getEntityName(cher::NAME_BOOKMARK, m_idBookmark++);
 }
 
 std::string entity::UserScene::getEntityName(const std::string &name, unsigned int id) const
@@ -1149,7 +1149,7 @@ void entity::UserScene::entitiesRotateStart(double u, double v)
         m_canvasCurrent->setVisibilityAll(true);
 
     osg::Vec3f center = m_canvasCurrent->getGeodeData()->getBoundingBox().center();
-    if (center.z() > dureu::EPSILON){
+    if (center.z() > cher::EPSILON){
         outLogVec("center", center.x(), center.y(), center.z());
         outErrMsg("entitiesRotateStart: z coordiante is not close to zero");
     }
@@ -1195,7 +1195,7 @@ void entity::UserScene::entitiesRotateAppend(double u, double v)
     }
 
     /* theta must be within [-PI, PI] */
-    if (theta < -dureu::PI || theta > dureu::PI)
+    if (theta < -cher::PI || theta > cher::PI)
         theta = 0;
 
     outLogVal("theta", theta);

@@ -19,7 +19,7 @@
 
 entity::Canvas::Canvas()
     : osg::Group()
-    , m_mR(osg::Matrix::rotate(0, dureu::NORMAL))
+    , m_mR(osg::Matrix::rotate(0, cher::NORMAL))
     , m_mT(osg::Matrix::translate(0,0,0))
     , m_transform(new osg::MatrixTransform(m_mR * m_mT))
     , m_switch(new osg::Switch)
@@ -31,13 +31,13 @@ entity::Canvas::Canvas()
 //    , m_selectedGroup(0)
 
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
-    , m_normal(dureu::NORMAL)
+    , m_normal(cher::NORMAL)
     , m_edit(false)
 {
     /* OpenGL state machine for the canvas */
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
-    linewidth->setWidth(dureu::CANVAS_LINE_WIDTH);
+    linewidth->setWidth(cher::CANVAS_LINE_WIDTH);
     osg::BlendFunc* blendfunc = new osg::BlendFunc();
     //blendfunc->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ANTIALIAS);
     stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
@@ -52,9 +52,9 @@ entity::Canvas::Canvas()
     m_switch->setName("Switch");
 
     /*  set traversal masks */
-    this->setNodeMask(dureu::MASK_CANVAS_IN);
-    m_geodeData->setNodeMask(dureu::MASK_CANVASDATA_IN);
-    m_toolFrame->setNodeMask(dureu::MASK_CANVASFRAME_IN);
+    this->setNodeMask(cher::MASK_CANVAS_IN);
+    m_geodeData->setNodeMask(cher::MASK_CANVASDATA_IN);
+    m_toolFrame->setNodeMask(cher::MASK_CANVASFRAME_IN);
 
     outLogMsg("New Canvas ctor complete");
 }
@@ -76,9 +76,9 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_normal(cnv.m_normal)
     , m_edit(cnv.m_edit)
 {
-    this->setNodeMask(dureu::MASK_CANVAS_IN);
-    m_geodeData->setNodeMask(dureu::MASK_CANVASDATA_IN);
-    m_toolFrame->setNodeMask(dureu::MASK_CANVASFRAME_IN);
+    this->setNodeMask(cher::MASK_CANVAS_IN);
+    m_geodeData->setNodeMask(cher::MASK_CANVASDATA_IN);
+    m_toolFrame->setNodeMask(cher::MASK_CANVASFRAME_IN);
 
     outLogMsg("new Canvas by copy ctor complete");
 }
@@ -119,8 +119,8 @@ void entity::Canvas::initializeSG()
     m_switch->addChild(m_geodeData.get(), true);
 
     this->updateTransforms();
-    this->setColor(dureu::CANVAS_CLR_REST);
-    this->setVertices(m_center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+    this->setColor(cher::CANVAS_CLR_REST);
+    this->setVertices(m_center, cher::CANVAS_MINW, cher::CANVAS_MINH, cher::CANVAS_CORNER, cher::CANVAS_AXIS);
 }
 
 void entity::Canvas::setMatrixRotation(const osg::Matrix& R)
@@ -298,11 +298,11 @@ void entity::Canvas::rotate(const osg::Matrix& mr, const osg::Vec3f &c3d_new)
     osg::Vec3f c2d_new = c3d_new * invM;
     osg::Vec3f c2d_old = m_center * invM;
     if (m_center != c3d_new){
-        if (std::fabs(c2d_old.z()) > dureu::EPSILON){
+        if (std::fabs(c2d_old.z()) > cher::EPSILON){
             outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
             return;
         }
-        if (std::fabs(c2d_new.z()) > dureu::EPSILON){
+        if (std::fabs(c2d_new.z()) > cher::EPSILON){
             outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
             return;
         }
@@ -489,8 +489,8 @@ void entity::Canvas::updateFrame(entity::Canvas* against)
                 float szX = bb.xMax() - bb.xMin();
                 float szY = bb.yMax() - bb.yMin();
                 this->setVertices(m_selectedGroup.getCenter2DCustom(),
-                                  szX*0.5+dureu::CANVAS_EDITSLACK, szY*0.5+dureu::CANVAS_EDITSLACK,
-                                  dureu::CANVAS_EDITQUAD, dureu::CANVAS_EDITAXIS);
+                                  szX*0.5+cher::CANVAS_EDITSLACK, szY*0.5+cher::CANVAS_EDITSLACK,
+                                  cher::CANVAS_EDITQUAD, cher::CANVAS_EDITAXIS);
             }
         }
         /* if there is no selection, draw a normal canvas frame */
@@ -500,17 +500,17 @@ void entity::Canvas::updateFrame(entity::Canvas* against)
             if (bb.valid()){
                 /* new 2d local center */
                 osg::Vec3f c2d_new = bb.center();
-                if (std::fabs(c2d_new.z()) > dureu::EPSILON){
+                if (std::fabs(c2d_new.z()) > cher::EPSILON){
                     outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
                     return;
                 }
 
                 /* adjust the size of the canvas drawables in old location */
-                float dx = 0.5*(bb.xMax()-bb.xMin())+dureu::CANVAS_CORNER;
-                float dy = 0.5*(bb.yMax()-bb.yMin())+dureu::CANVAS_CORNER;
-                float szX = std::max(dx, dureu::CANVAS_MINW);
-                float szY = std::max(dy, dureu::CANVAS_MINW);
-                this->setVertices(c2d_new, szX, szY, dureu::CANVAS_CORNER, dureu::CANVAS_AXIS);
+                float dx = 0.5*(bb.xMax()-bb.xMin())+cher::CANVAS_CORNER;
+                float dy = 0.5*(bb.yMax()-bb.yMin())+cher::CANVAS_CORNER;
+                float szX = std::max(dx, cher::CANVAS_MINW);
+                float szY = std::max(dy, cher::CANVAS_MINW);
+                this->setVertices(c2d_new, szX, szY, cher::CANVAS_CORNER, cher::CANVAS_AXIS);
             } /* bb is valid */
         } /* else no selection */
     }
@@ -528,12 +528,12 @@ void entity::Canvas::setModeEdit(bool on)
 {
 //    if (on){
 //        std::cout << "setModeEdit(): ON - " << on << std::endl;
-//        this->setColor(dureu::CANVAS_CLR_EDIT);
+//        this->setColor(cher::CANVAS_CLR_EDIT);
 //        this->setVisibilityAll(true);
 //    }
 //    else{
 //        std::cout << "setModeEdit(): OFF - " << on << std::endl;
-//        this->setColor(dureu::CANVAS_CLR_CURRENT);
+//        this->setColor(cher::CANVAS_CLR_CURRENT);
 //    }
     m_edit = on;
 }
@@ -566,7 +566,7 @@ entity::Canvas *entity::Canvas::clone() const
     for (unsigned int i=0; i<m_geodeData->getNumChildren(); ++i){
         entity::Entity2D* entcopy = dynamic_cast<entity::Entity2D*>(m_geodeData->getChild(i));
         switch(entcopy->getEntityType()){
-        case dureu::ENTITY_STROKE:
+        case cher::ENTITY_STROKE:
         {
             entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(entcopy);
             if (stroke){
@@ -579,7 +579,7 @@ entity::Canvas *entity::Canvas::clone() const
             else outErrMsg("canvas clone: could not dynamic_cast<Stroke>");
             break;
         }
-        case dureu::ENTITY_PHOTO:
+        case cher::ENTITY_PHOTO:
             break;
         default:
             break;
@@ -603,7 +603,7 @@ entity::Canvas *entity::Canvas::separate()
         entity::Entity2D* entcopy = m_selectedGroup.getEntity(i);;
         if (!entcopy) continue;
         switch(entcopy->getEntityType()){
-        case dureu::ENTITY_STROKE:{
+        case cher::ENTITY_STROKE:{
             // copy the stroke
             entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(entcopy);
             if (stroke){
@@ -612,7 +612,7 @@ entity::Canvas *entity::Canvas::separate()
             }
             break;
         }
-        case dureu::ENTITY_PHOTO:
+        case cher::ENTITY_PHOTO:
             break;
         default:
             break;
@@ -635,7 +635,7 @@ void entity::Canvas::updateTransforms()
     m_transform->setMatrix(M);
 
     /* update plane parameters */
-    m_normal = dureu::NORMAL;
+    m_normal = cher::NORMAL;
     m_center = osg::Vec3(0,0,0);
     osg::Plane plane(m_normal, m_center);
     m_center = m_center * M;
@@ -652,12 +652,12 @@ void entity::Canvas::updateTransforms()
 void entity::Canvas::resetTransforms()
 {
     /* reset transform params */
-    m_mR = osg::Matrix::rotate(0, dureu::NORMAL);
+    m_mR = osg::Matrix::rotate(0, cher::NORMAL);
     m_mT = osg::Matrix::translate(0,0,0);
     m_transform->setMatrix(m_mR * m_mT);
 
     /* reset plane params */
-    m_normal = dureu::NORMAL;
+    m_normal = cher::NORMAL;
     m_center = osg::Vec3(0,0,0);
     osg::Plane plane(m_normal, m_center);
     m_center = m_center * m_mR * m_mT;
@@ -680,13 +680,13 @@ void entity::Canvas::setVertices(const osg::Vec3f &center, float szX, float szY,
 
 void entity::Canvas::setVerticesDefault(const osg::Vec3f &center)
 {
-    m_toolFrame->setVertices(center, dureu::CANVAS_MINW, dureu::CANVAS_MINH, dureu::CANVAS_CORNER,
-                             dureu::CANVAS_AXIS);
+    m_toolFrame->setVertices(center, cher::CANVAS_MINW, cher::CANVAS_MINH, cher::CANVAS_CORNER,
+                             cher::CANVAS_AXIS);
 }
 
 void entity::Canvas::setIntersection(entity::Canvas *against)
 {
-    osg::Vec3f P1=dureu::CENTER, P2=dureu::CENTER, P3=dureu::CENTER, P4=dureu::CENTER;
+    osg::Vec3f P1=cher::CENTER, P2=cher::CENTER, P3=cher::CENTER, P4=cher::CENTER;
     if (against){
         if (Utilities::getCanvasesIntersection(this, against, P1,P2,P3,P4) != 2) return;
     }

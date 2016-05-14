@@ -11,7 +11,7 @@
 CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
     : QTreeWidget(parent)
 {
-    this->setMinimumWidth(dureu::APP_WIDGET_WIDTH);
+    this->setMinimumWidth(cher::APP_WIDGET_WIDTH);
 //    this->setDragEnabled(false);
 //    this->setAcceptDrops(false);
     this->setDropIndicatorShown(true);
@@ -33,7 +33,7 @@ void CanvasPhotoWidget::onCanvasAdded(const std::string &name)
     item->setFlags(item->flags() | Qt::ItemIsEditable);
 //    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled |
 //                   Qt::ItemIsEditable | Qt::ItemIsDropEnabled);
-    item->setData(0,dureu::DelegateChildRole,1);
+    item->setData(0,cher::DelegateChildRole,1);
     item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
     this->addTopLevelItem(item);
 }
@@ -56,7 +56,7 @@ void CanvasPhotoWidget::onPhotoAdded(const std::string &name, int rowParent)
     child->setFlags(child->flags() | Qt::ItemIsEditable);
 //    child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled |
 //                    Qt::ItemIsEditable | Qt::ItemIsDragEnabled );
-    child->setData(0,dureu::DelegateChildRole,2);
+    child->setData(0,cher::DelegateChildRole,2);
     parent->addChild(child);
 }
 
@@ -111,17 +111,17 @@ void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
         qcolor = Qt::white;
         break;
     case 1:
-        qcolor = Utilities::getQColor(dureu::CANVAS_CLR_CURRENT);
+        qcolor = Utilities::getQColor(cher::CANVAS_CLR_CURRENT);
         break;
     case 2:
-        qcolor = Utilities::getQColor(dureu::CANVAS_CLR_PREVIOUS);
+        qcolor = Utilities::getQColor(cher::CANVAS_CLR_PREVIOUS);
         break;
     default:
         qcolor = Qt::white;
         break;
     }
 //    item->setBackgroundColor(0, qcolor);
-    item->setData(0, dureu::DelegateBGColor, qcolor);
+    item->setData(0, cher::DelegateBGColor, qcolor);
 }
 
 void CanvasPhotoWidget::mousePressEvent(QMouseEvent *event)

@@ -99,7 +99,7 @@ entity::BookmarkTool::BookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &cent
            new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,0,12))
     , m_AT(new osg::AutoTransform)
 {
-    this->setColor(dureu::BOOKMARK_CLR);
+    this->setColor(cher::BOOKMARK_CLR);
 
     std::vector<osg::Vec3f> verts;
     osg::Vec3d dir = center-eye;
@@ -112,11 +112,11 @@ entity::BookmarkTool::BookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &cent
 
     osg::Vec3d side = dir^up;
     side.normalize();
-    osg::Vec3d C = eye_mod + dir * dureu::BOOKMARK_Z;
-    osg::Vec3d v1 = C + side * dureu::BOOKMARK_X + up * dureu::BOOKMARK_Y;
-    osg::Vec3d v2 = C - side * dureu::BOOKMARK_X + up * dureu::BOOKMARK_Y;
-    osg::Vec3d v3 = C - side * dureu::BOOKMARK_X - up * dureu::BOOKMARK_Y;
-    osg::Vec3d v4 = C + side * dureu::BOOKMARK_X - up * dureu::BOOKMARK_Y;
+    osg::Vec3d C = eye_mod + dir * cher::BOOKMARK_Z;
+    osg::Vec3d v1 = C + side * cher::BOOKMARK_X + up * cher::BOOKMARK_Y;
+    osg::Vec3d v2 = C - side * cher::BOOKMARK_X + up * cher::BOOKMARK_Y;
+    osg::Vec3d v3 = C - side * cher::BOOKMARK_X - up * cher::BOOKMARK_Y;
+    osg::Vec3d v4 = C + side * cher::BOOKMARK_X - up * cher::BOOKMARK_Y;
     verts.push_back(eye_mod);
     verts.push_back(v1);
     verts.push_back(v2);
@@ -160,12 +160,12 @@ entity::AxisGlobalTool::AxisGlobalTool()
     , m_AT(new osg::AutoTransform)
     , m_camera(new osg::Camera)
 {
-    this->setColor( dureu::AXES_CLR_X,  dureu::AXES_CLR_Y,  dureu::AXES_CLR_Z);
+    this->setColor( cher::AXES_CLR_X,  cher::AXES_CLR_Y,  cher::AXES_CLR_Z);
 
     osg::Vec3 corner = osg::Vec3(0.0f,0.0f,0.0f);
-    osg::Vec3 xdir = osg::Vec3(dureu::AXES_SIZE,0.0f,0.0f);
-    osg::Vec3 ydir = osg::Vec3(0.0f,dureu::AXES_SIZE,0.0f);
-    osg::Vec3 zdir = osg::Vec3(0.0f,0.0f,dureu::AXES_SIZE);
+    osg::Vec3 xdir = osg::Vec3(cher::AXES_SIZE,0.0f,0.0f);
+    osg::Vec3 ydir = osg::Vec3(0.0f,cher::AXES_SIZE,0.0f);
+    osg::Vec3 zdir = osg::Vec3(0.0f,0.0f,cher::AXES_SIZE);
     std::vector<osg::Vec3f> verts;
     verts.push_back(corner);
     verts.push_back(corner+xdir);
@@ -250,7 +250,7 @@ entity::FrameTool::FrameTool()
     , m_visibilityState(0)
 {
     this->initializeSG();
-    this->setColor(dureu::CANVAS_CLR_REST);
+    this->setColor(cher::CANVAS_CLR_REST);
     this->setVisibility(true);
 
     this->setName("groupFrame");

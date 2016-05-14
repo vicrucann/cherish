@@ -161,7 +161,7 @@ bool RootScene::loadSceneFromFile()
         if (!cnv){
             continue;
         }
-        cnv->setColor(dureu::CANVAS_CLR_REST);
+        cnv->setColor(cher::CANVAS_CLR_REST);
         m_userScene->setCanvasCurrent(cnv);
     }
     newscene = 0;
@@ -203,7 +203,7 @@ void RootScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std:
     m_saved = false;
 }
 
-void RootScene::addStroke(float u, float v, dureu::EVENT event)
+void RootScene::addStroke(float u, float v, cher::EVENT event)
 {
     m_userScene->addStroke(m_undoStack, u, v, event);
     m_saved = false;
@@ -280,7 +280,7 @@ void RootScene::setBookmarkToolVisibility(bool vis)
     }
 }
 
-void RootScene::eraseStroke(entity::Stroke *stroke, int first, int last, dureu::EVENT event)
+void RootScene::eraseStroke(entity::Stroke *stroke, int first, int last, cher::EVENT event)
 {
     m_userScene->eraseStroke(m_undoStack, stroke, first, last, event);
     m_saved = false;
@@ -316,25 +316,25 @@ entity::Bookmarks *RootScene::getBookmarksModel() const
     return m_userScene->getBookmarksModel();
 }
 
-void RootScene::editCanvasOffset(const osg::Vec3f& translate, dureu::EVENT event)
+void RootScene::editCanvasOffset(const osg::Vec3f& translate, cher::EVENT event)
 {
     m_userScene->editCanvasOffset(m_undoStack, translate, event);
     m_saved = false;
 }
 
-void RootScene::editCanvasRotate(const osg::Quat &rotation, const osg::Vec3f &center3d, dureu::EVENT event)
+void RootScene::editCanvasRotate(const osg::Quat &rotation, const osg::Vec3f &center3d, cher::EVENT event)
 {
     m_userScene->editCanvasRotate(m_undoStack, rotation, center3d, event);
     m_saved = false;
 }
 
-void RootScene::editCanvasClone(const osg::Vec3f &translate, dureu::EVENT event)
+void RootScene::editCanvasClone(const osg::Vec3f &translate, cher::EVENT event)
 {
     m_userScene->editCanvasClone(m_undoStack, translate, event);
     m_saved = false;
 }
 
-void RootScene::editCanvasSeparate(const osg::Vec3f &translate, dureu::EVENT event)
+void RootScene::editCanvasSeparate(const osg::Vec3f &translate, cher::EVENT event)
 {
     m_userScene->editCanvasSeparate(m_undoStack, translate, event);
     m_saved = false;
@@ -363,19 +363,19 @@ void RootScene::editStrokesPush(osg::Camera* camera)
     m_saved = false;
 }
 
-void RootScene::editStrokesMove(double u, double v, dureu::EVENT event)
+void RootScene::editStrokesMove(double u, double v, cher::EVENT event)
 {
     m_userScene->editStrokesMove(m_undoStack, u, v, event);
     m_saved = false;
 }
 
-void RootScene::editStrokesScale(double u, double v, dureu::EVENT event)
+void RootScene::editStrokesScale(double u, double v, cher::EVENT event)
 {
     m_userScene->editStrokesScale(m_undoStack, u, v, event);
     m_saved = false;
 }
 
-void RootScene::editStrokesRotate(double u, double v, dureu::EVENT event)
+void RootScene::editStrokesRotate(double u, double v, cher::EVENT event)
 {
     m_userScene->editStrokesRotate(m_undoStack, u, v, event);
     m_saved = false;

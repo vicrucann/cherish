@@ -84,7 +84,7 @@ MainWindow::~MainWindow(){
         delete m_menuBar;
 }
 
-void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) {
+void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, cher::APPMODE mode) {
     m_desktop = desktop;
     QRect availS = m_desktop->availableGeometry();
     QRect fullS = m_desktop->geometry();
@@ -92,20 +92,20 @@ void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, dureu::APPMODE mode) 
     double scale = 0.9;
     double scale_inv = 1-scale;
     switch (mode) {
-    case dureu::SCREEN_MIN:
+    case cher::SCREEN_MIN:
         this->showNormal();
         this->move(availS.width()*scale_inv, fullS.height()-availS.height());
         break;
-    case dureu::SCREEN_MAX:
+    case cher::SCREEN_MAX:
         this->showMaximized();
         break;
-    case dureu::SCREEN_FULL:
+    case cher::SCREEN_FULL:
         this->showFullScreen();
         break;
-    case dureu::SCREEN_VIRTUAL: // needs testing and fixing
+    case cher::SCREEN_VIRTUAL: // needs testing and fixing
         this->resize(QSize(fullS.width(), fullS.height()));
         break;
-    case dureu::SCREEN_DETACHED:
+    case cher::SCREEN_DETACHED:
         this->resize(QSize(availS.width()*scale, fullS.height()*scale_inv));
         this->move(availS.width()*scale_inv, fullS.height()-availS.height());
         break;
@@ -125,16 +125,16 @@ void MainWindow::recievedRequestUpdate()
     m_glWidget->update();
 }
 
-void MainWindow::recieveAutoSwitchMode(dureu::MOUSE_MODE mode)
+void MainWindow::recieveAutoSwitchMode(cher::MOUSE_MODE mode)
 {
     switch (mode){
-    case dureu::SELECT_ENTITY:
+    case cher::SELECT_ENTITY:
         emit this->onSketch();
         break;
-    case dureu::PEN_SKETCH:
+    case cher::PEN_SKETCH:
         emit this->onCameraOrbit();
         break;
-    case dureu::CAMERA_ORBIT:
+    case cher::CAMERA_ORBIT:
         emit this->onSelect();
         break;
     default:
@@ -244,7 +244,7 @@ void MainWindow::onBookmarkRemovedFromWidget(const QModelIndex &, int first, int
     m_rootScene->deleteBookmarkTool(first, last);
 }
 
-void MainWindow::slotMouseModeSet(dureu::MOUSE_MODE mode)
+void MainWindow::slotMouseModeSet(cher::MOUSE_MODE mode)
 {
     QCursor* cur = Utilities::getCursorFromMode(mode);
     if (cur) m_mdiArea->setCursor(*cur);
@@ -485,15 +485,15 @@ void MainWindow::onTools()
 }
 
 void MainWindow::onCameraOrbit(){
-    m_glWidget->setMouseMode(dureu::CAMERA_ORBIT);
+    m_glWidget->setMouseMode(cher::CAMERA_ORBIT);
 }
 
 void MainWindow::onCameraZoom(){
-    m_glWidget->setMouseMode(dureu::CAMERA_ZOOM);
+    m_glWidget->setMouseMode(cher::CAMERA_ZOOM);
 }
 
 void MainWindow::onCameraPan(){
-    m_glWidget->setMouseMode(dureu::CAMERA_PAN);
+    m_glWidget->setMouseMode(cher::CAMERA_PAN);
 }
 
 void MainWindow::onCameraAperture()
@@ -504,31 +504,31 @@ void MainWindow::onCameraAperture()
 }
 
 void MainWindow::onSelect(){
-    m_glWidget->setMouseMode(dureu::SELECT_ENTITY);
+    m_glWidget->setMouseMode(cher::SELECT_ENTITY);
     this->recievedRequestUpdate();
 }
 
 void MainWindow::onErase()
 {
-    m_glWidget->setMouseMode(dureu::PEN_ERASE);
+    m_glWidget->setMouseMode(cher::PEN_ERASE);
     this->recievedRequestUpdate();
 }
 
 void MainWindow::onDelete()
 {
-    m_glWidget->setMouseMode(dureu::PEN_DELETE);
+    m_glWidget->setMouseMode(cher::PEN_DELETE);
     this->recievedRequestUpdate();
 }
 
 void MainWindow::onSketch()
 {
-    m_glWidget->setMouseMode(dureu::PEN_SKETCH);
+    m_glWidget->setMouseMode(cher::PEN_SKETCH);
     this->recievedRequestUpdate();
 }
 
 void MainWindow::onNewCanvasClone()
 {
-    m_glWidget->setMouseMode(dureu::CREATE_CANVASCLONE);
+    m_glWidget->setMouseMode(cher::CREATE_CANVASCLONE);
     this->recievedRequestUpdate();
 }
 
@@ -542,7 +542,7 @@ void MainWindow::onNewCanvasXY()
 
 void MainWindow::onNewCanvasYZ()
 {
-    m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
+    m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
     this->recievedRequestUpdate();
@@ -550,7 +550,7 @@ void MainWindow::onNewCanvasYZ()
 
 void MainWindow::onNewCanvasXZ()
 {
-    m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0), osg::Matrix::translate(0,0,0));
+    m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 1, 0, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
     this->recievedRequestUpdate();
@@ -571,17 +571,17 @@ void MainWindow::onNewCanvasOrtho()
 
 void MainWindow::onNewCanvasSeparate()
 {
-    m_glWidget->setMouseMode(dureu::CREATE_CANVASSEPARATE);
+    m_glWidget->setMouseMode(cher::CREATE_CANVASSEPARATE);
     this->recievedRequestUpdate();
 }
 
 void MainWindow::onNewCanvasStandard()
 {
     m_rootScene->addCanvas(osg::Matrix::identity(),
-                           osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
-    m_rootScene->addCanvas(osg::Matrix::rotate(-dureu::PI*0.5, 0, 1, 0),
-                           osg::Matrix::translate(0.f, dureu::CANVAS_MINW*0.5f, 0.f));
-    m_rootScene->addCanvas(osg::Matrix::rotate(dureu::PI*0.5, 1, 0, 0),
+                           osg::Matrix::translate(0.f, cher::CANVAS_MINW*0.5f, 0.f));
+    m_rootScene->addCanvas(osg::Matrix::rotate(-cher::PI*0.5, 0, 1, 0),
+                           osg::Matrix::translate(0.f, cher::CANVAS_MINW*0.5f, 0.f));
+    m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 1, 0, 0),
                            osg::Matrix::translate(0.f, 0.f, 0.f));
     this->onSketch();
     this->statusBar()->showMessage(tr("Set of canvases created."));
@@ -605,43 +605,43 @@ void MainWindow::onNewCanvasRing()
 
 //void MainWindow::onCanvasOffset()
 //{
-//    m_glWidget->setMouseMode(dureu::CANVAS_OFFSET);
+//    m_glWidget->setMouseMode(cher::CANVAS_OFFSET);
 //}
 
 //void MainWindow::onCanvasRotate()
 //{
-//    m_glWidget->setMouseMode(dureu::CANVAS_ROTATE_U);
+//    m_glWidget->setMouseMode(cher::CANVAS_ROTATE_U);
 //}
 
 void MainWindow::onCanvasEdit()
 {
-    m_glWidget->setMouseMode(dureu::MOUSE_CANVAS);
+    m_glWidget->setMouseMode(cher::MOUSE_CANVAS);
     this->recievedRequestUpdate();
 }
 
 void MainWindow::onImageMove()
 {
-    m_glWidget->setMouseMode(dureu::ENTITY_MOVE);
+    m_glWidget->setMouseMode(cher::ENTITY_MOVE);
 }
 
 void MainWindow::onImageRotate()
 {
-    m_glWidget->setMouseMode(dureu::ENTITY_ROTATE);
+    m_glWidget->setMouseMode(cher::ENTITY_ROTATE);
 }
 
 void MainWindow::onImageScale()
 {
-    m_glWidget->setMouseMode(dureu::ENTITY_SCALE);
+    m_glWidget->setMouseMode(cher::ENTITY_SCALE);
 }
 
 void MainWindow::onImageFlipH()
 {
-    m_glWidget->setMouseMode(dureu::ENTITY_FLIPH);
+    m_glWidget->setMouseMode(cher::ENTITY_FLIPH);
 }
 
 void MainWindow::onImageFlipV()
 {
-    m_glWidget->setMouseMode(dureu::ENTITY_FLIPV);
+    m_glWidget->setMouseMode(cher::ENTITY_FLIPV);
 }
 
 void MainWindow::onStrokesPush()
@@ -670,8 +670,8 @@ void MainWindow::onBookmark()
     GLWidget* vwid = new GLWidget(m_rootScene.get(), this, f);
     QObject::connect(this, SIGNAL(signalTabletActivity(bool)),
                      vwid, SLOT(getTabletActivity(bool)));
-    QObject::connect(this, SIGNAL(signalMouseMode(dureu::MOUSE_MODE)),
-                     vwid, SLOT(recieveMouseMode(dureu::MOUSE_MODE)));
+    QObject::connect(this, SIGNAL(signalMouseMode(cher::MOUSE_MODE)),
+                     vwid, SLOT(recieveMouseMode(cher::MOUSE_MODE)));
     return vwid;
 }*/
 
@@ -1008,12 +1008,12 @@ void MainWindow::initializeCallbacks()
                      m_glWidget, SLOT(getTabletActivity(bool)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_glWidget, SIGNAL(signalMouseModeSet(dureu::MOUSE_MODE)),
-                     this, SLOT(slotMouseModeSet(dureu::MOUSE_MODE)),
+    QObject::connect(m_glWidget, SIGNAL(signalMouseModeSet(cher::MOUSE_MODE)),
+                     this, SLOT(slotMouseModeSet(cher::MOUSE_MODE)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(dureu::MOUSE_MODE)),
-                     this, SLOT(recieveAutoSwitchMode(dureu::MOUSE_MODE)),
+    QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(cher::MOUSE_MODE)),
+                     this, SLOT(recieveAutoSwitchMode(cher::MOUSE_MODE)),
                      Qt::UniqueConnection);
 
     /* connect MainWindow with UserScene */

@@ -32,7 +32,7 @@ AddCanvasCommand::AddCanvasCommand(entity::UserScene *scene, const osg::Vec3f &n
     m_canvas->initializeSG();
     m_canvas->setName(name);
 
-    osg::Matrix mR = osg::Matrix::identity(); //::rotate(dureu::PI*0.5, rotaxis.x(), rotaxis.y(), rotaxis.z());
+    osg::Matrix mR = osg::Matrix::identity(); //::rotate(cher::PI*0.5, rotaxis.x(), rotaxis.y(), rotaxis.z());
     mR.makeRotate(osg::Vec3f(0,0,1), normal); // from default global normal to new normal
     m_canvas->setMatrixRotation(mR);
 

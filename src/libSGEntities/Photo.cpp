@@ -97,7 +97,7 @@ void entity::Photo::loadImage(const std::string& fname)
     m_texture->setImage(image);
 
     float aspectRatio = static_cast<float>(image->s()) / static_cast<float>(image->t());
-    m_width = dureu::PHOTO_MINW;
+    m_width = cher::PHOTO_MINW;
     m_height = m_width / aspectRatio;
 
     osg::Vec3Array* verts = new osg::Vec3Array(4);
@@ -106,7 +106,7 @@ void entity::Photo::loadImage(const std::string& fname)
     this->addPrimitiveSet(new osg::DrawArrays(GL_QUADS, 0, 4));
 
     osg::Vec3Array* normals = new osg::Vec3Array;
-    normals->push_back(dureu::NORMAL);
+    normals->push_back(cher::NORMAL);
     this->setNormalArray(normals);
     this->setNormalBinding(osg::Geometry::BIND_OVERALL);
 
@@ -119,7 +119,7 @@ void entity::Photo::loadImage(const std::string& fname)
     (*texcoords)[3] = osg::Vec2(0, x);
 
     osg::Vec4Array* colors = new osg::Vec4Array;
-    colors->push_back(dureu::PHOTO_CLR_REST);
+    colors->push_back(cher::PHOTO_CLR_REST);
     this->setColorArray(colors, osg::Array::BIND_OVERALL);
 }
 
@@ -215,10 +215,10 @@ void entity::Photo::setColor(const osg::Vec4f &color)
 {
     outLogMsg("photo color resetting");
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
-    if (color != dureu::STROKE_CLR_NORMAL)
+    if (color != cher::STROKE_CLR_NORMAL)
         (*colors)[0] = color;
     else
-        (*colors)[0] = dureu::PHOTO_CLR_REST;
+        (*colors)[0] = cher::PHOTO_CLR_REST;
     colors->dirty();
     this->dirtyDisplayList();
     this->dirtyBound();
@@ -252,9 +252,9 @@ float entity::Photo::getTransparency() const
 //    if (!mat) return 1.f;
 }
 
-dureu::ENTITY_TYPE entity::Photo::getEntityType() const
+cher::ENTITY_TYPE entity::Photo::getEntityType() const
 {
-    return dureu::ENTITY_PHOTO;
+    return cher::ENTITY_PHOTO;
 }
 
 /* Since the Photo is represented by Quad, we can use parameters

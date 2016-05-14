@@ -47,7 +47,7 @@ public:
     void scale(double scale, osg::Vec3f center);
     void rotate(double theta, osg::Vec3f center);
 
-    dureu::ENTITY_TYPE getEntityType() const;
+    cher::ENTITY_TYPE getEntityType() const;
 
 private:
     osg::ref_ptr<osg::DrawArrays> m_lines;

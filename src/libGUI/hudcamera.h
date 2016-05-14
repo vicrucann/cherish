@@ -65,7 +65,7 @@ public:
 
     void addTestDrawables(){
         osg::Vec3 corner = osg::Vec3(0.0f,0.0f,0.0f);
-        osg::Vec3 dir = osg::Vec3(dureu::AXES_SIZE,dureu::AXES_SIZE,0.0f);
+        osg::Vec3 dir = osg::Vec3(cher::AXES_SIZE,cher::AXES_SIZE,0.0f);
         osg::Vec3Array* coords = new osg::Vec3Array(2);
         (*coords)[0] = corner;
         (*coords)[1] = corner+dir;

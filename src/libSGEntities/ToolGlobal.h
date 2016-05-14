@@ -93,11 +93,11 @@ public:
 
     /* the bounding box frame, also updates all other geometries */
     void setVertices(const osg::Vec3f &center, float szX, float szY, float szCr, float szAx,
-                     const osg::Vec3f& centerCustom = dureu::CENTER ,
+                     const osg::Vec3f& centerCustom = cher::CENTER ,
                      double theta = 0,
                      bool selectionIsEmpty = true);
 
-    void setColor(const osg::Vec4f& color, const osg::Vec4f& colorIntersect = dureu::CANVAS_CLR_PREVIOUS);
+    void setColor(const osg::Vec4f& color, const osg::Vec4f& colorIntersect = cher::CANVAS_CLR_PREVIOUS);
 
     void setIntersection(const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3, const osg::Vec3f &P4);
     void setColorIntersection(const osg::Vec4f& colorIntersect);
@@ -116,7 +116,7 @@ protected:
     void initQuadGeometry(osg::Geometry* geom, const std::string& name = "");
     void initLineGeometry(osg::Geometry* geom, float lineWidth, const std::string& name = "");
 
-    void setQuadGeometry(osg::Geometry* geom, const osg::Vec3f& P, float szX, float szY, float theta = 0, const osg::Vec3f& center = dureu::CENTER);
+    void setQuadGeometry(osg::Geometry* geom, const osg::Vec3f& P, float szX, float szY, float theta = 0, const osg::Vec3f& center = cher::CENTER);
     void setLineGeometry(osg::Geometry* geom, const osg::Vec3f& P1, const osg::Vec3f& P2);
 
     void setColorGeometry(osg::Geometry* geom, const osg::Vec4f& color);

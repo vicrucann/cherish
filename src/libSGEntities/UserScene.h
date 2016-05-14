@@ -142,7 +142,7 @@ public:
      * \param u is the local canvas U-coordinate of the stroke point [u, v] to append to Canvas::m_strokeCurrent
      * \param v is the local canvas V-coordinate of the stroke point [u, v] to append to Canvas::m_strokeCurrent
      * \param event is the current mouse state: click, drag or release */
-    void addStroke(QUndoStack* stack, float u, float v, dureu::EVENT event);
+    void addStroke(QUndoStack* stack, float u, float v, cher::EVENT event);
 
     /*! Creates and adds a photo to  a current canvas through undo/redo framework by
      * asigning to it an automatic name.
@@ -177,7 +177,7 @@ public:
      * \param first is the first index of interval of points to remove
      * \param last is the last index of interval of points to remove
      * \param event is event for pressed, dragged or released */
-    void eraseStroke(QUndoStack* stack, entity::Stroke* stroke, int first, int last, dureu::EVENT event);
+    void eraseStroke(QUndoStack* stack, entity::Stroke* stroke, int first, int last, cher::EVENT event);
 
 
     /*! Gets a pointer to a Canvas based on UserScene child index. This method is useful
@@ -342,7 +342,7 @@ public:
      * from previous canvas position
      * \param event is to indicate a mouse state: clicked, dragged or released
      * \sa canvasOffsetStart(), canvasOffsetAppend(), canvasOffsetFinish() */
-    void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
+    void editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, cher::EVENT event);
 
     /*! The method is to edit the canvas 3D position, by means of rotation. The rotation is defined as a
      * quat which was performed along either local U or local V Canvas axis.
@@ -352,7 +352,7 @@ public:
      * is represented by a Canvas::m_center and is fixed)
      * \param event is to indicate a mouse state: clicked, dragged or released
      * \sa canvasRotateStart(), canvasRotateAppend(), canvasRotateFinish() */
-    void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const osg::Vec3f& center3d, dureu::EVENT event);
+    void editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const osg::Vec3f& center3d, cher::EVENT event);
 
     /*! The method is to create a new canvas by clonning a current canvas and then translating the newly
      * created canvas along its normal. While in the clonning mode,
@@ -367,7 +367,7 @@ public:
      * \param event is to indicate a mouse state: clicked, dragged or released
      * \sa canvasCloneStart(), canvasCloneAppend(), canvasCloneFinish()
      * \sa editCanvasSeparate() */
-    void editCanvasClone(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
+    void editCanvasClone(QUndoStack* stack, const osg::Vec3f& translate, cher::EVENT event);
 
     /*! Similar to editCanvasClone(), the method creates a new canvas by performing separation (not clonning). By separation
      * it is meant a cut and paste of selected strokes into the new Canvas. While in the separation mode, three mouse modes
@@ -381,7 +381,7 @@ public:
      * \param event is to indicate a mouse state: clicked, dragged or released
      * \sa canvasSeparateStart(), canvasSeparateAppend(), canvasSeparateFinish()
      * \sa editCanvasClone() */
-    void editCanvasSeparate(QUndoStack* stack, const osg::Vec3f& translate, dureu::EVENT event);
+    void editCanvasSeparate(QUndoStack* stack, const osg::Vec3f& translate, cher::EVENT event);
 
     /*! \param stack  is the command stack for undo/redo framework
      * \param canvas is the canvas to delete from UserScene */
@@ -415,7 +415,7 @@ public:
      * \param v is the local V coordinate where the center of strokes [u, v] will be moved to
      * \param event is to indicate a mouse state: clicked, dragged or released
      * \sa editStrokesRotate(), editStrokesScale() */
-    void editStrokesMove(QUndoStack* stack, double u, double v, dureu::EVENT event);
+    void editStrokesMove(QUndoStack* stack, double u, double v, cher::EVENT event);
 
     /*! The method is to perform a uniform scaling of a set of strokes within a canvas.
      * \param stack  is the command stack for undo/redo framework
@@ -423,7 +423,7 @@ public:
      * \param v is the local V coordinate where the bounding box point [u, v] will be moved to
      * \param event is to indicate a mouse state: clicked, dragged or released
      * \sa editStrokesMove(), \sa editStrokesRotate() */
-    void editStrokesScale(QUndoStack* stack, double u, double v, dureu::EVENT event);
+    void editStrokesScale(QUndoStack* stack, double u, double v, cher::EVENT event);
 
     /*! The method is to perform a rotation of a set of strokes within a canvas. That is, it can be
      * considered as a 2D local rotation.
@@ -432,7 +432,7 @@ public:
      * \param v is the local V coordinate where local axis [u, v] will be rotated to
      * \param event is to indicate a mouse state: clicked, dragged or released
      * \sa editStrokesMove(), editStrokesScale()  */
-    void editStrokesRotate(QUndoStack* stack, double u, double v, dureu::EVENT event);
+    void editStrokesRotate(QUndoStack* stack, double u, double v, cher::EVENT event);
 
     /*! The method is to delete a specified stroke.
      * \param stack  is the command stack for undo/redo framework

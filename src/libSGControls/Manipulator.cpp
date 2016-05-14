@@ -1,12 +1,12 @@
 #include "Manipulator.h"
 
-Manipulator::Manipulator(dureu::MOUSE_MODE mode)
+Manipulator::Manipulator(cher::MOUSE_MODE mode)
     : osgGA::TrackballManipulator()
     , m_mode(mode)
 {
 }
 
-void Manipulator::setMode(dureu::MOUSE_MODE mode)
+void Manipulator::setMode(cher::MOUSE_MODE mode)
 {
     m_mode = mode;
 }
@@ -14,13 +14,13 @@ void Manipulator::setMode(dureu::MOUSE_MODE mode)
 bool Manipulator::performMovementLeftMouseButton(const double eventTimeDelta, const double dx, const double dy)
 {
     switch (m_mode){
-    case dureu::CAMERA_ZOOM:
+    case cher::CAMERA_ZOOM:
         return this->wrapZoom(eventTimeDelta, dx, dy);
-    case dureu::CAMERA_PAN:
+    case cher::CAMERA_PAN:
         return this->wrapPan(eventTimeDelta, dx, dy);
-    case dureu::CAMERA_ORBIT:
+    case cher::CAMERA_ORBIT:
         return this->wrapRotation(eventTimeDelta, dx, dy);
-    case dureu::CAMERA_FIXEDVIEW:
+    case cher::CAMERA_FIXEDVIEW:
         return this->wrapPan(eventTimeDelta, dx, dy);
     default:
         return false;
@@ -29,7 +29,7 @@ bool Manipulator::performMovementLeftMouseButton(const double eventTimeDelta, co
 
 bool Manipulator::performMovementMiddleMouseButton(const double eventTimeDelta, const double dx, const double dy)
 {
-    if (m_mode == dureu::CAMERA_FIXEDVIEW)
+    if (m_mode == cher::CAMERA_FIXEDVIEW)
         return false;
     else
         return this->wrapRotation(eventTimeDelta, dx, dy);

@@ -9,14 +9,14 @@ BookmarkWidget::BookmarkWidget(QWidget *parent)
     : QListWidget(parent)
 {
     //this->setMovement(QListWidget::Snap);
-    this->setIconSize(QSize(dureu::APP_SCREENSHOT_HEIGHT, dureu::APP_SCREENSHOT_HEIGHT));
+    this->setIconSize(QSize(cher::APP_SCREENSHOT_HEIGHT, cher::APP_SCREENSHOT_HEIGHT));
     //this->setResizeMode(QListWidget::Adjust);
     this->setSelectionBehavior(QAbstractItemView::SelectItems);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->setDragDropMode(QAbstractItemView::InternalMove);
     this->setSpacing(2);
     this->setEditTriggers(QListWidget::DoubleClicked);
-    this->setMinimumWidth(dureu::APP_WIDGET_WIDTH);
+    this->setMinimumWidth(cher::APP_WIDGET_WIDTH);
     this->setTabKeyNavigation(false);
 }
 
@@ -33,7 +33,7 @@ CanvasWidget::CanvasWidget(QWidget *parent)
     this->setDragDropMode(QAbstractItemView::NoDragDrop);
     this->setSpacing(2);
     this->setEditTriggers(QListWidget::DoubleClicked);
-    this->setMinimumWidth(dureu::APP_WIDGET_WIDTH);
+    this->setMinimumWidth(cher::APP_WIDGET_WIDTH);
     this->setTabKeyNavigation(false);
 }
 
@@ -87,16 +87,16 @@ void CanvasWidget::onCanvasSelectedColor(int row, int color)
     QColor qcolor;
     switch (color){
     case 0:
-        qcolor = Utilities::getQColor(dureu::CANVAS_CLR_REST);
+        qcolor = Utilities::getQColor(cher::CANVAS_CLR_REST);
         break;
     case 1:
-        qcolor = Utilities::getQColor(dureu::CANVAS_CLR_CURRENT);
+        qcolor = Utilities::getQColor(cher::CANVAS_CLR_CURRENT);
         break;
     case 2:
-        qcolor = Utilities::getQColor(dureu::CANVAS_CLR_PREVIOUS);
+        qcolor = Utilities::getQColor(cher::CANVAS_CLR_PREVIOUS);
         break;
     default:
-        qcolor = Utilities::getQColor(dureu::CANVAS_CLR_REST);
+        qcolor = Utilities::getQColor(cher::CANVAS_CLR_REST);
         break;
     }
     item->setBackgroundColor(qcolor);
@@ -124,7 +124,7 @@ PhotoWidget::PhotoWidget(QWidget *parent)
     this->setDragDropMode(QAbstractItemView::NoDragDrop);
     this->setSpacing(2);
     this->setEditTriggers(QListWidget::DoubleClicked);
-    this->setMinimumWidth(dureu::APP_WIDGET_WIDTH);
+    this->setMinimumWidth(cher::APP_WIDGET_WIDTH);
     this->setTabKeyNavigation(false);
 }
 

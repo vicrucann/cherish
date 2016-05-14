@@ -30,14 +30,14 @@ class GLWidget;
 */
 class EventHandler : public osgGA::GUIEventHandler {
 public:
-    EventHandler(GLWidget* widget, RootScene* scene, dureu::MOUSE_MODE mode = dureu::SELECT_ENTITY);
+    EventHandler(GLWidget* widget, RootScene* scene, cher::MOUSE_MODE mode = cher::SELECT_ENTITY);
 
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
-    void setMode(dureu::MOUSE_MODE mode);
-    dureu::MOUSE_MODE getMode() const;
+    void setMode(cher::MOUSE_MODE mode);
+    cher::MOUSE_MODE getMode() const;
 
-    void doEraseStroke(entity::Stroke *stroke, int first, int last, dureu::EVENT event = dureu::EVENT_DRAGGED);
+    void doEraseStroke(entity::Stroke *stroke, int first, int last, cher::EVENT event = cher::EVENT_DRAGGED);
 
     void doSelectEntity(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
@@ -68,7 +68,7 @@ protected:
     entity::Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
 
     template <typename T>
-    dureu::MOUSE_MODE getMouseMode(const T& result, dureu::MOUSE_MODE mode_default) const;
+    cher::MOUSE_MODE getMouseMode(const T& result, cher::MOUSE_MODE mode_default) const;
 
     template <typename T1, typename T2>
     bool getLineIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, unsigned int mask, T1& result);
@@ -82,14 +82,14 @@ protected:
                                       osg::Vec3f& P);
 
     template <typename TResult, typename TIntersector>
-    bool setSubMouseMode(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, dureu::MOUSE_MODE modeDefault, bool selected = true);
+    bool setSubMouseMode(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, cher::MOUSE_MODE modeDefault, bool selected = true);
 
     void setDrawableColorFromMode(osg::Drawable* draw);
 
     void finishAll();
 
     GLWidget* m_glWidget;
-    dureu::MOUSE_MODE m_mode;
+    cher::MOUSE_MODE m_mode;
     osg::observer_ptr<RootScene> m_scene;
     osg::observer_ptr<entity::Photo> m_photo;
 };
