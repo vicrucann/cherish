@@ -37,12 +37,12 @@ add_definitions( -DQT_COMPILING_QSTRING_COMPAT_CPP)
 
 
 ## Required Qt packages
-find_package(Qt5Core 5.6 REQUIRED)
-find_package(Qt5Gui 5.6 REQUIRED)
-find_package(Qt5OpenGL 5.6 REQUIRED)
-find_package(Qt5Widgets 5.6 REQUIRED)
-find_package(Qt5Svg 5.6 REQUIRED)
-find_package(Qt5Xml 5.6 REQUIRED)
+find_package(Qt5Core 5.4 REQUIRED)
+find_package(Qt5Gui 5.4 REQUIRED)
+find_package(Qt5OpenGL 5.4 REQUIRED)
+find_package(Qt5Widgets 5.4 REQUIRED)
+find_package(Qt5Svg 5.4 REQUIRED)
+find_package(Qt5Xml 5.4 REQUIRED)
 set(QT_LIBRARIES
     ${Qt5Core_LIBRARIES}
     ${Qt5Gui_LIBRARIES}
