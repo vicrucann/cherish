@@ -117,7 +117,7 @@ void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, cher::APPMODE mode) {
 }
 
 void MainWindow::getTabletActivity(bool active){
-    emit signalTabletActivity(active);
+    m_glWidget->getTabletActivity(active);
 }
 
 void MainWindow::recievedRequestUpdate()
@@ -665,16 +665,6 @@ void MainWindow::onBookmark()
     this->statusBar()->showMessage(tr("Current camera view is saved as a bookmark"));
 }
 
-/*GLWidget* MainWindow::createViewer(Qt::WindowFlags f, int viewmode)
-{
-    GLWidget* vwid = new GLWidget(m_rootScene.get(), this, f);
-    QObject::connect(this, SIGNAL(signalTabletActivity(bool)),
-                     vwid, SLOT(getTabletActivity(bool)));
-    QObject::connect(this, SIGNAL(signalMouseMode(cher::MOUSE_MODE)),
-                     vwid, SLOT(recieveMouseMode(cher::MOUSE_MODE)));
-    return vwid;
-}*/
-
 void MainWindow::initializeActions()
 {
     // FILE
@@ -1004,10 +994,6 @@ void MainWindow::initializeToolbars()
 void MainWindow::initializeCallbacks()
 {
     /* connect MainWindow with GLWidget */
-    QObject::connect(this, SIGNAL(signalTabletActivity(bool)),
-                     m_glWidget, SLOT(getTabletActivity(bool)),
-                     Qt::UniqueConnection);
-
     QObject::connect(m_glWidget, SIGNAL(signalMouseModeSet(cher::MOUSE_MODE)),
                      this, SLOT(slotMouseModeSet(cher::MOUSE_MODE)),
                      Qt::UniqueConnection);
