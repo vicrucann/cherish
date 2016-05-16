@@ -76,5 +76,4 @@
         <file>edit-photo-transparency-off-24px.svg</file>
         <file>scene-newcanvas-separate-24px.svg</file>
     </qresource>
-    <qresource prefix="/file"/>
 </RCC>
