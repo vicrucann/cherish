@@ -10,8 +10,8 @@ include_directories(
 )
 
 set(libGUI_SRCS
-    DureuApplication.cpp
-    DureuApplication.h
+    CherishApplication.cpp
+    CherishApplication.h
     MainWindow.cpp
     MainWindow.h
     GLWidget.h

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "DureuApplication.h"
+#include "CherishApplication.h"
 #include "MainWindow.h"
 #include "Settings.h"
 #include "Data.h"
@@ -22,7 +22,7 @@ int main(int argc, char** argv)
     noticeMsg("Dura-Europus In Situ: 3D reconstruction of historical sites.");
     noticeMsg("Starting application...");
 
-    DureuApplication dura_app(argc, argv);
+    CherishApplication dura_app(argc, argv);
     dura_app.setWindowIcon(Data::appIcon());
     QDesktopWidget* desktop = dura_app.desktop();
     MainWindow mwin;

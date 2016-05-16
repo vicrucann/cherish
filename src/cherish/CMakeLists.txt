@@ -7,7 +7,7 @@ if(POLICY CMP0020)
     CMAKE_POLICY(SET CMP0020 NEW)
 endif()
 
-set(DureuApplication_SRCS
+set(CherishApplication_SRCS
     main.cpp
     Settings.h
     Data.h
@@ -29,7 +29,7 @@ file(GLOB_RECURSE SHADER_RSC_ADDED
 )
 
 add_executable(${PROJECT_NAME}
-    ${DureuApplication_SRCS}
+    ${CherishApplication_SRCS}
     ${IMG_RSC_ADDED}
     ${SHADER_RSC_ADDED}
 )
