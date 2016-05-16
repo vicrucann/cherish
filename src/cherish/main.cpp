@@ -10,9 +10,11 @@
  *
  * \section Description
  *
- * This is the API documentation site.
+ * This documentation site convers both API and user documentation.
  *
- * For user documentation, go this link
+ * For the API, go to "Classes".
+ *
+ * For user documentation files, go to "Related Pages".
  *
  */
 
@@ -22,15 +24,15 @@ int main(int argc, char** argv)
     noticeMsg("Dura-Europus In Situ: 3D reconstruction of historical sites.");
     noticeMsg("Starting application...");
 
-    CherishApplication dura_app(argc, argv);
-    dura_app.setWindowIcon(Data::appIcon());
-    QDesktopWidget* desktop = dura_app.desktop();
+    CherishApplication cherish_app(argc, argv);
+    cherish_app.setWindowIcon(Data::appIcon());
+    QDesktopWidget* desktop = cherish_app.desktop();
     MainWindow mwin;
     mwin.SetDesktopWidget(desktop, cher::SCREEN_MIN); // pass the desktop geometry and configuration
-    QObject::connect(&dura_app, SIGNAL(sendTabletActivity(bool)),
+    QObject::connect(&cherish_app, SIGNAL(sendTabletActivity(bool)),
                      &mwin, SLOT(getTabletActivity(bool)));
     mwin.show();
 
-    return dura_app.exec();
+    return cherish_app.exec();
 }
 
