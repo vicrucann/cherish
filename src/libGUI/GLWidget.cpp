@@ -265,7 +265,9 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if (!m_DeviceDown && !m_DeviceActive) {
+    /* to detect pen's hovering events we only check pen is not touching the ground,
+     * but we have to pass the mouse move when pen is hovering, i.e. device is active */
+    if (!m_DeviceDown) {
         this->getEventQueue()->mouseMotion(static_cast<float>(event->x()), static_cast<float>(event->y()));
     }
 }
