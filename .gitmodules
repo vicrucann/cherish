@@ -1,3 +1,3 @@
-[submodule "src/cherish/Icons/FA"]
-	path = src/cherish/Icons/FA
+[submodule "src/cherish/Images/FA"]
+	path = src/cherish/Images/FA
 	url = git@github.com:vicrucann/Font-Awesome-SVG-PNG.git

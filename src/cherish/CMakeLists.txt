@@ -17,8 +17,8 @@ set(CherishApplication_SRCS
 )
 
 qt5_add_resources(IMG_RSC_ADDED
-    Icons/Actions.qrc
-    Icons/Logo.qrc
+    Images/Actions.qrc
+    Images/Logo.qrc
     Styles/Stylesheets.qrc
 )
 
