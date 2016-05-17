@@ -60,7 +60,7 @@ entity::Stroke::Stroke()
     this->setUseVertexBufferObjects(true);
     this->setName("Stroke");
 
-    noticeMsg("New stroke ctor complete");
+    outLogMsg("New stroke ctor complete");
 }
 
 entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
@@ -155,9 +155,9 @@ float entity::Stroke::getLength() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
     if (std::fabs(bb.zMax()-bb.zMin()) > cher::EPSILON ){
-        warningMsg("Stroke->getLength(): z coordinates of a stroke are unexpected values");
-        warningVal("zMax", bb.zMax());
-        warningVal("zMin", bb.zMin());
+        outErrMsg("Stroke->getLength(): z coordinates of a stroke are unexpected values");
+        outLogVal("zMax", bb.zMax());
+        outLogVal("zMin", bb.zMin());
         return 0;
     }
     return std::max(bb.xMax() - bb.xMin(), bb.yMax() - bb.yMin());

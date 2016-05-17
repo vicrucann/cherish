@@ -22,13 +22,13 @@ RootScene::RootScene(QUndoStack *undoStack)
     // child #0
     if (!this->addChild(m_userScene.get())){
         outErrMsg("RootScene(): could not add user scene as a child");
-        fatalMsg("RootScene(): could not add user scene as a child");
+        outErrMsg("RootScene(): could not add user scene as a child");
     }
 
     // child #1
     if (!this->addChild(m_axisTool)){
         outErrMsg("RootScene(): could not add axes as a child");
-        fatalMsg("RootScene(): could not add axes as a child");
+        outErrMsg("RootScene(): could not add axes as a child");
     }
 
     /* child #2 */
@@ -113,7 +113,7 @@ bool RootScene::exportSceneToFile(const std::string &name)
 bool RootScene::loadSceneFromFile()
 {
     if (!m_undoStack){
-        fatalMsg("loadSceneFromFile(): undo stack is NULL. "
+        outErrMsg("loadSceneFromFile(): undo stack is NULL. "
                  "Restart the program to ensure undo stack initialization.");
         return false;
     }

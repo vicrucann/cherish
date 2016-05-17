@@ -20,9 +20,7 @@
 
 int main(int argc, char** argv)
 {
-    osg::setNotifyLevel(osg::NOTICE);
-    noticeMsg("Dura-Europus In Situ: 3D reconstruction of historical sites.");
-    noticeMsg("Starting application...");
+    outLogMsg("Starting cherish: 3d representation of historical sites...");
 
     CherishApplication cherish_app(argc, argv);
     cherish_app.setWindowIcon(Data::appIcon());

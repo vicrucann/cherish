@@ -126,7 +126,7 @@ void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const
 void entity::UserScene::addCanvas(QUndoStack *stack, const osg::Vec3f &normal, const osg::Vec3f &center)
 {
     if (!stack){
-        fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
+        outErrMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
@@ -142,7 +142,7 @@ void entity::UserScene::addCanvas(QUndoStack *stack, const osg::Vec3f &normal, c
 void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T, const std::string& name)
 {
     if (!stack){
-        fatalMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
+        outErrMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
@@ -158,7 +158,7 @@ void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const
 void entity::UserScene::addStroke(QUndoStack* stack, float u, float v, cher::EVENT event)
 {
     if (!stack){
-        fatalMsg("addStroke(): undo stack is NULL, it is not initialized. "
+        outErrMsg("addStroke(): undo stack is NULL, it is not initialized. "
                  "Sketching is not possible. "
                  "Restart the program to ensure undo stack initialization.");
         return;
@@ -194,13 +194,13 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
 {
     outLogMsg("loadPhotoFromFile()");
     if (!stack){
-        fatalMsg("addPhoto(): undo stack is NULL, Canvas will not be added. "
+        outErrMsg("addPhoto(): undo stack is NULL, Canvas will not be added. "
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
     AddPhotoCommand* cmd = new AddPhotoCommand(this, fname, this->getPhotoName());
     if (!cmd){
-        fatalMsg("addPhoto(): could not allocate AddPhotoCommand.");
+        outErrMsg("addPhoto(): could not allocate AddPhotoCommand.");
         return;
     }
     stack->push(cmd);
@@ -244,7 +244,7 @@ void entity::UserScene::deleteBookmark(BookmarkWidget *widget, const QModelIndex
 void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, int first, int last, cher::EVENT event)
 {
     if (!stack){
-        fatalMsg("eraseStroke(): undo stack is NULL, it is not initialized. "
+        outErrMsg("eraseStroke(): undo stack is NULL, it is not initialized. "
                  "Erase is not possible. "
                  "Restart the program to ensure undo stack initialization.");
         return;
@@ -449,7 +449,7 @@ int entity::UserScene::getNumPhotos(entity::Canvas *canvas) const
 void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, cher::EVENT event)
 {
     if (!stack){
-        fatalMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
+        outErrMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
                  "Editing is not possible. "
                  "Restart the program to ensure undo stack initialization.");
         return;
@@ -482,7 +482,7 @@ void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& tr
 void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const osg::Vec3f &center3d, cher::EVENT event)
 {
     if (!stack){
-        fatalMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
+        outErrMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
                  "Editing is not possible. "
                  "Restart the program to ensure undo stack initialization.");
         return;
@@ -519,7 +519,7 @@ void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rot
 void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &translate, cher::EVENT event)
 {
     if (!stack){
-        fatalMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
+        outErrMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
                  "Editing is not possible. "
                  "Restart the program to ensure undo stack initialization.");
         return;
@@ -552,7 +552,7 @@ void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &tra
 void entity::UserScene::editCanvasSeparate(QUndoStack *stack, const osg::Vec3f &translate, cher::EVENT event)
 {
     if (!stack){
-        fatalMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
+        outErrMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
                  "Editing is not possible. "
                  "Restart the program to ensure undo stack initialization.");
         return;
@@ -586,7 +586,7 @@ void entity::UserScene::editCanvasDelete(QUndoStack *stack, entity::Canvas *canv
 {
     outLogVal("Attempting to delete", canvas->getName());
     if (!stack){
-        fatalMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
+        outErrMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
                  "Editing is not possible. "
                  "Restart the program to ensure undo stack initialization.");
         return;
@@ -681,7 +681,7 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
 void entity::UserScene::editStrokesMove(QUndoStack *stack, double u, double v, cher::EVENT event)
 {
     if (!stack){
-        fatalMsg("editStrokesMove(): undo stack is NULL.");
+        outErrMsg("editStrokesMove(): undo stack is NULL.");
         return;
     }
     switch (event){
@@ -715,7 +715,7 @@ void entity::UserScene::editStrokesMove(QUndoStack *stack, double u, double v, c
 void entity::UserScene::editStrokesScale(QUndoStack *stack, double u, double v, cher::EVENT event)
 {
     if (!stack){
-        fatalMsg("editStrokesScale(): undo stack is NULL.");
+        outErrMsg("editStrokesScale(): undo stack is NULL.");
         return;
     }
     switch (event){
@@ -751,7 +751,7 @@ void entity::UserScene::editStrokesScale(QUndoStack *stack, double u, double v, 
 void entity::UserScene::editStrokesRotate(QUndoStack *stack, double u, double v, cher::EVENT event)
 {
     if (!stack){
-        fatalMsg("editStrokesScale(): undo stack is NULL.");
+        outErrMsg("editStrokesScale(): undo stack is NULL.");
         return;
     }
     switch (event){
