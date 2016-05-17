@@ -29,7 +29,7 @@ set(libGUI_SRCS
 )
 
 qt5_wrap_ui(UI_GENERATED_SRCS
-    Widgets/MainWindow.ui
+    Widgets/MainWindowUI.ui
     Widgets/QtOSGWindow.ui
     Widgets/CameraProperties.ui
 )
