@@ -3,6 +3,9 @@
 #include <QOpenGLWidget>
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QDesktopWidget>
+#include <QScreen>
+#include <QtGlobal>
 
 #include <osg/ref_ptr>
 #include <osgViewer/GraphicsWindow>
@@ -20,11 +23,13 @@
 class QtOSGWidget : public QOpenGLWidget
 {
 public:
-  QtOSGWidget(QWidget* parent = 0)
+  QtOSGWidget(qreal scaleX, qreal scaleY, QWidget* parent = 0)
       : QOpenGLWidget(parent)
         , _mGraphicsWindow(new osgViewer::GraphicsWindowEmbedded( this->x(), this->y(),
                                                                  this->width(), this->height() ) )
         , _mViewer(new osgViewer::Viewer)
+      , m_scaleX(scaleX)
+      , m_scaleY(scaleY)
       {
         osg::Cylinder* cylinder    = new osg::Cylinder( osg::Vec3( 0.f, 0.f, 0.f ), 0.25f, 0.5f );
         osg::ShapeDrawable* sd = new osg::ShapeDrawable( cylinder );
@@ -52,6 +57,13 @@ public:
 
   virtual ~QtOSGWidget(){}
 
+  void setScale(qreal X, qreal Y)
+  {
+      m_scaleX = X;
+      m_scaleY = Y;
+      this->resizeGL(this->width(), this->height());
+  }
+
 protected:
 
   virtual void paintGL() {
@@ -60,10 +72,10 @@ protected:
 
   virtual void resizeGL( int width, int height ) 
   {
-      this->getEventQueue()->windowResize(this->x(), this->y(), width, height);
-      _mGraphicsWindow->resized(this->x(), this->y(), width, height);
+      this->getEventQueue()->windowResize(this->x()*m_scaleX, this->y() * m_scaleY, width*m_scaleX, height*m_scaleY);
+      _mGraphicsWindow->resized(this->x()*m_scaleX, this->y() * m_scaleY, width*m_scaleX, height*m_scaleY);
       osg::Camera* camera = _mViewer->getCamera();
-      camera->setViewport(0, 0, this->width(), this->height());
+      camera->setViewport(0, 0, this->width()*m_scaleX, this->height()* m_scaleY);
   }
 
   virtual void initializeGL(){
@@ -77,7 +89,7 @@ protected:
 
   virtual void mouseMoveEvent(QMouseEvent* event)
   {
-      this->getEventQueue()->mouseMotion(event->x(), event->y());
+      this->getEventQueue()->mouseMotion(event->x()*m_scaleX, event->y()*m_scaleY);
   }
 
   virtual void mousePressEvent(QMouseEvent* event)
@@ -96,7 +108,7 @@ protected:
       default:
           break;
       }
-      this->getEventQueue()->mouseButtonPress(event->x(), event->y(), button);
+      this->getEventQueue()->mouseButtonPress(event->x()*m_scaleX, event->y()*m_scaleY, button);
   }
 
   virtual void mouseReleaseEvent(QMouseEvent* event)
@@ -115,7 +127,7 @@ protected:
       default:
           break;
       }
-      this->getEventQueue()->mouseButtonRelease(event->x(), event->y(), button);
+      this->getEventQueue()->mouseButtonRelease(event->x()*m_scaleX, event->y()*m_scaleY, button);
   }
 
   virtual void wheelEvent(QWheelEvent* event)
@@ -142,15 +154,27 @@ private:
 
   osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> _mGraphicsWindow;
   osg::ref_ptr<osgViewer::Viewer> _mViewer;
+  qreal m_scaleX, m_scaleY;
 };
 
-int main(int argc, char** argv){
+int main(int argc, char** argv)
+{
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
     QApplication qapp(argc, argv);
+
+    int x = QApplication::desktop()->physicalDpiX();
+    int y = QApplication::desktop()->physicalDpiY();
+    double scaleX = 284.0/double(x);
+    double scaleY = 285.0/double(y);
+
     QMainWindow window;
-    QtOSGWidget* widget = new QtOSGWidget(&window);
+    QtOSGWidget* widget = new QtOSGWidget(scaleX, scaleY, &window);
     window.setCentralWidget(widget);
     window.show();
+
+    std::cout << scaleX << " " << scaleY << std::endl;
+//    std::cout << pr << " " << ps << std::endl;
 
     return qapp.exec();
 }
