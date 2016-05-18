@@ -6,6 +6,7 @@
 #include <QDesktopWidget>
 #include <QScreen>
 #include <QtGlobal>
+#include <QWindow>
 
 #include <osg/ref_ptr>
 #include <osgViewer/GraphicsWindow>
@@ -159,7 +160,8 @@ private:
 
 int main(int argc, char** argv)
 {
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+//    QApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+    SetProcessDPIAware();
 
     QApplication qapp(argc, argv);
 
@@ -168,8 +170,13 @@ int main(int argc, char** argv)
     double scaleX = 284.0/double(x);
     double scaleY = 285.0/double(y);
 
+    std::cout << x << " " << y << std::endl;
+    std::cout << QApplication::desktop()->logicalDpiX() << " " << QApplication::desktop()->logicalDpiY() << std::endl;
+
+
+
     QMainWindow window;
-    QtOSGWidget* widget = new QtOSGWidget(scaleX, scaleY, &window);
+    QtOSGWidget* widget = new QtOSGWidget(1, 1, &window);
     window.setCentralWidget(widget);
     window.show();
 

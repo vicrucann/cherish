@@ -22,6 +22,13 @@ int main(int argc, char** argv)
 {
     outLogMsg("Starting cherish: 3d representation of historical sites...");
 
+#ifdef Q_OS_WIN
+    /* use automatic scaling */
+    SetProcessDPIAware();
+#else
+    /* try to use the hand */
+#endif // Q_OS_WIN
+
 #if QT_VERSION >= QT_VERSION_CHECK(5,6,0)
     /* For more info see: http://doc.qt.io/qt-5/highdpi.html */
     QApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
