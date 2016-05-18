@@ -14,6 +14,9 @@
 #include <osgGA/EventQueue>
 #include <osgGA/TrackballManipulator>
 
+#include <iostream>
+#include <stdio.h>
+
 class QtOSGWidget : public QOpenGLWidget
 {
 public:
@@ -55,11 +58,12 @@ protected:
     _mViewer->frame();
   }
 
-  virtual void resizeGL( int width, int height ) {
-    this->getEventQueue()->windowResize(this->x(), this->y(), width, height);
-    _mGraphicsWindow->resized(this->x(), this->y(), width, height);
-    osg::Camera* camera = _mViewer->getCamera();
-    camera->setViewport(0, 0, this->width(), this->height());
+  virtual void resizeGL( int width, int height ) 
+  {
+      this->getEventQueue()->windowResize(this->x(), this->y(), width, height);
+      _mGraphicsWindow->resized(this->x(), this->y(), width, height);
+      osg::Camera* camera = _mViewer->getCamera();
+      camera->setViewport(0, 0, this->width(), this->height());
   }
 
   virtual void initializeGL(){
@@ -141,6 +145,7 @@ private:
 };
 
 int main(int argc, char** argv){
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication qapp(argc, argv);
     QMainWindow window;
     QtOSGWidget* widget = new QtOSGWidget(&window);

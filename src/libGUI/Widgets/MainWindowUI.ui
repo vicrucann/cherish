@@ -68,9 +68,18 @@
     <addaction name="actionZoom"/>
     <addaction name="separator"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionSelect"/>
+    <addaction name="actionSketch"/>
+    <addaction name="actionEraser"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuCamera"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBarFile">
@@ -300,6 +309,21 @@
    </property>
    <property name="text">
     <string>Zoom</string>
+   </property>
+  </action>
+  <action name="actionSelect">
+   <property name="text">
+    <string>Select</string>
+   </property>
+  </action>
+  <action name="actionSketch">
+   <property name="text">
+    <string>Sketch</string>
+   </property>
+  </action>
+  <action name="actionEraser">
+   <property name="text">
+    <string>Eraser</string>
    </property>
   </action>
  </widget>

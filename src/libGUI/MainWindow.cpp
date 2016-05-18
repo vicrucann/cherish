@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     , m_rootScene(new RootScene(m_undoStack))
     , m_viewStack(new QUndoStack(this))
-    , m_glWidget(new GLWidget(m_rootScene.get(), m_viewStack, this))
+    , m_glWidget(new GLWidget(m_rootScene.get(), m_viewStack))
     , m_cameraProperties( new CameraProperties(60.f, this) )
 {
     this->setMenuBar(m_menuBar);
