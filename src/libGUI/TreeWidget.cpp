@@ -12,11 +12,7 @@ CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
     : QTreeWidget(parent)
 {
     this->setMinimumWidth(cher::APP_WIDGET_WIDTH);
-//    this->setDragEnabled(false);
-//    this->setAcceptDrops(false);
     this->setDropIndicatorShown(true);
-//    this->setDragDropMode(QAbstractItemView::InternalMove);
-//    this->invisibleRootItem()->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
     this->header()->close();
 }
 
@@ -31,10 +27,9 @@ void CanvasPhotoWidget::onCanvasAdded(const std::string &name)
     if (!item) return;
     item->setText(0, QString(name.c_str()));
     item->setFlags(item->flags() | Qt::ItemIsEditable);
-//    item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled |
-//                   Qt::ItemIsEditable | Qt::ItemIsDropEnabled);
     item->setData(0,cher::DelegateChildRole,1);
     item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
+//    item->setSizeHint(0, QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON));
     this->addTopLevelItem(item);
 }
 
@@ -54,8 +49,6 @@ void CanvasPhotoWidget::onPhotoAdded(const std::string &name, int rowParent)
     if (!child) return;
     child->setText(0, QString(name.c_str()));
     child->setFlags(child->flags() | Qt::ItemIsEditable);
-//    child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled |
-//                    Qt::ItemIsEditable | Qt::ItemIsDragEnabled );
     child->setData(0,cher::DelegateChildRole,2);
     parent->addChild(child);
 }

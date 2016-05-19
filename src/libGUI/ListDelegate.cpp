@@ -115,7 +115,7 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
             QString text = index.model()->data(index, Qt::DisplayRole).toString();
             QFontMetrics fm = painter->fontMetrics();
             int width = fm.width(text);
-            int lineWidth = 4;
+            int lineWidth = cher::APP_WIDGET_LINEWIDTH;
 
             /* make sure line is drawn strictly within a row, for this
              * we substract in y coordinate according to linewidth, and
@@ -265,6 +265,11 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
         }
     }
     return QStyledItemDelegate::editorEvent(event, model, option, index);
+}
+
+QSize CanvasDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    return QStyledItemDelegate::sizeHint(option, index) + QSize(0,cher::APP_WIDGET_GAP);
 }
 
 QRect CanvasDelegate::getButtonDeleteRect(const QRect &rect) const
