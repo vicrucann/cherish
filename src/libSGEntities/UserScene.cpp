@@ -870,12 +870,20 @@ void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
         else
             emit this->canvasSelectedColor(this->getCanvasIndex(cnv),0);
 
-        /* if canvas has any photoes, reset photowidget */
+        /* if canvas has any photos, reset photowidget */
         if (!cnv->getGeodeData()) continue;
         for (size_t j=0; j<cnv->getGeodeData()->getNumChildren(); ++j){
             entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGeodeData()->getChild(j));
             if (!photo) continue;
             emit this->photoAdded(photo->getName(), this->getCanvasIndex(cnv));
+        }
+
+        /* set canvas visibility on scene and on GUI */
+        if (!cnv->getVisibilityData()){
+            cnv->setVisibilityAll(false);
+            int row = this->getCanvasIndex(cnv);
+            outLogVal("Trying to set up canvas visibility scene and GUI", row);
+            emit canvasVisibilitySet(row, false);
         }
     }
 }

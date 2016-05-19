@@ -124,6 +124,26 @@ void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
     item->setData(0, cher::DelegateBGColor, qcolor);
 }
 
+void CanvasPhotoWidget::onCanvasVisibilitySet(int row, bool visibility)
+{
+    if (row >= this->topLevelItemCount() || row < 0){
+        outLogMsg("onCanvasSelectedColor: canvas index is out of range, "
+                  "selection on widget will not be performed");
+        outLogVal("row", row);
+        outLogVal("count", this->topLevelItemCount());
+        return;
+    }
+    QTreeWidgetItem* item = this->topLevelItem(row);
+    if (!item) {
+        outErrMsg("Could not exatrac item pointer");
+        return;
+    }
+
+    bool value = item->data(0, cher::DelegateVisibilityRole).toBool();
+    outLogVal("Forcing canvas visibility icon to change from", value);
+    item->setData(0, cher::DelegateVisibilityRole, !value );
+}
+
 void CanvasPhotoWidget::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::RightButton){
