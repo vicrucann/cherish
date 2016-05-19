@@ -29,6 +29,7 @@ int main(int argc, char** argv)
     /* try to use the hand */
 #endif // Q_OS_WIN
 
+
 #if QT_VERSION >= QT_VERSION_CHECK(5,6,0)
     /* For more info see: http://doc.qt.io/qt-5/highdpi.html */
     QApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
