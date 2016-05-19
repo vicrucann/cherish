@@ -50,6 +50,8 @@ public:
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
+    virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
 signals:
     void clickedDelete(const QModelIndex& index);
     void clickedDeletePhoto(const QModelIndex& index);

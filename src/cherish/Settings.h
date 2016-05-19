@@ -189,9 +189,12 @@ const float HUD_TEXT_POSX = HUD_LEFT + 2.f;
 const float HUD_TEXT_POSY = HUD_BOTTOM + 15.f;
 const float HUD_TEXT_POSZ = 0.f;
 
-const size_t APP_SCREENSHOT_HEIGHT = 100;
+const size_t APP_SCREENSHOT_HEIGHT = 150;
 const size_t APP_WIDGET_BUTTON = 16;
-const size_t APP_WIDGET_WIDTH = APP_SCREENSHOT_HEIGHT*2+150;
+const size_t APP_WIDGET_LINEWIDTH = 4;
+const size_t APP_WIDGET_GAP = 6;
+const size_t APP_WIDGET_WIDTH = APP_SCREENSHOT_HEIGHT*1.5+APP_WIDGET_BUTTON*4;
+const size_t APP_MAINWINDOW_ICONSIZE = 24;
 
 const int DelegateVisibilityRole = Qt::UserRole + 1;
 const int DelegateChildRole = Qt::UserRole + 2;
