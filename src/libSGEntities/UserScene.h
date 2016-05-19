@@ -481,6 +481,14 @@ signals:
      * certain canvas, e.g., when switching the canvas status from normal to current, or from current to previous. */
     void canvasSelectedColor(int row, int color);
 
+    /*! A signal which is connected with CanvasPhotoWidget and is called from RootScene when the scene is loaded from file.
+     * It is to provide a back feedback from scene to the widget and it triggers the setting of the visibility icon
+     * ("open" or "closed" eye) which is related to the corresponding canvas.
+     * \param row is the sequential canvas index as it is in the canvas-photo widget
+     * \param visibility is the boolean variable indicating whether the canvas is visible on the scene (true) or not (false).
+     * This value also corresponds to Canvas::getVisibilityData(). */
+    void canvasVisibilitySet(int row, bool visibility);
+
 public slots:
     /*! A slot which is called when the canvas name was edited from CanvasPhotoWidget. Based on the edited item, the slot
      * edits the name of the corresponding canvas. This slot is connected to CanvasPhotoWidget::itemChanged() */

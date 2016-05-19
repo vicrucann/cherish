@@ -26,6 +26,7 @@ public slots:
     void onCanvasRemoved(int row);
     void onPhotoRemoved(int rowP, int row);
     void onCanvasSelectedColor(int row, int color);
+    void onCanvasVisibilitySet(int row, bool visibility);
 
 protected:
     virtual void mousePressEvent(QMouseEvent* event);

@@ -1098,6 +1098,10 @@ void MainWindow::initializeCallbacks()
                      this, SLOT(onVisibilityCanvas(QModelIndex)),
                      Qt::UniqueConnection);
 
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasVisibilitySet(int,bool)),
+                     m_canvasWidget, SLOT(onCanvasVisibilitySet(int,bool)),
+                     Qt::UniqueConnection);
+
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedTransparencyPlus(QModelIndex)),
                      this, SLOT(slotPhotoTransparencyPlus(QModelIndex)),
                      Qt::UniqueConnection);
