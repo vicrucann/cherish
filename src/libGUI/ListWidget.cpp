@@ -9,14 +9,15 @@ BookmarkWidget::BookmarkWidget(QWidget *parent)
     : QListWidget(parent)
 {
     //this->setMovement(QListWidget::Snap);
-    this->setIconSize(QSize(cher::APP_SCREENSHOT_HEIGHT, cher::APP_SCREENSHOT_HEIGHT));
+    this->setIconSize(QSize(cher::APP_SCREENSHOT_HEIGHT * cher::DPI_SCALING,
+                            cher::APP_SCREENSHOT_HEIGHT * cher::DPI_SCALING ));
     //this->setResizeMode(QListWidget::Adjust);
     this->setSelectionBehavior(QAbstractItemView::SelectItems);
     this->setSelectionMode(QAbstractItemView::SingleSelection);
     this->setDragDropMode(QAbstractItemView::InternalMove);
     this->setSpacing(2);
     this->setEditTriggers(QListWidget::DoubleClicked);
-    this->setMinimumWidth(cher::APP_WIDGET_WIDTH);
+    this->setMinimumWidth(cher::APP_WIDGET_WIDTH*cher::DPI_SCALING);
     this->setTabKeyNavigation(false);
 }
 
@@ -33,7 +34,7 @@ CanvasWidget::CanvasWidget(QWidget *parent)
     this->setDragDropMode(QAbstractItemView::NoDragDrop);
     this->setSpacing(2);
     this->setEditTriggers(QListWidget::DoubleClicked);
-    this->setMinimumWidth(cher::APP_WIDGET_WIDTH);
+    this->setMinimumWidth(cher::APP_WIDGET_WIDTH*cher::DPI_SCALING);
     this->setTabKeyNavigation(false);
 }
 
@@ -124,7 +125,7 @@ PhotoWidget::PhotoWidget(QWidget *parent)
     this->setDragDropMode(QAbstractItemView::NoDragDrop);
     this->setSpacing(2);
     this->setEditTriggers(QListWidget::DoubleClicked);
-    this->setMinimumWidth(cher::APP_WIDGET_WIDTH);
+    this->setMinimumWidth(cher::APP_WIDGET_WIDTH*cher::DPI_SCALING);
     this->setTabKeyNavigation(false);
 }
 

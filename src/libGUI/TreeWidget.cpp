@@ -11,7 +11,7 @@
 CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
     : QTreeWidget(parent)
 {
-    this->setMinimumWidth(cher::APP_WIDGET_WIDTH);
+    this->setMinimumWidth(cher::APP_WIDGET_WIDTH*cher::DPI_SCALING);
     this->setDropIndicatorShown(true);
     this->header()->close();
 }
@@ -29,7 +29,6 @@ void CanvasPhotoWidget::onCanvasAdded(const std::string &name)
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     item->setData(0,cher::DelegateChildRole,1);
     item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-//    item->setSizeHint(0, QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON));
     this->addTopLevelItem(item);
 }
 

@@ -40,7 +40,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_cameraProperties( new CameraProperties(60.f, this) )
 {
     this->setMenuBar(m_menuBar);
-    this->setIconSize(QSize(cher::APP_MAINWINDOW_ICONSIZE, cher::APP_MAINWINDOW_ICONSIZE));
 
     /* Create GLWidgets */
     //this->onCreateViewer();
