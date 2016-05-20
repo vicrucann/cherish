@@ -357,8 +357,9 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
         m_canvasPrevious = NULL;
     }
     if (!cnv){
-        std::cerr << "setCanvasPrevious(): The input canvas pointed is not valid" << std::endl;
-        return false;
+        m_canvasPrevious = 0;
+        if (m_canvasCurrent.get()) m_canvasCurrent->updateFrame(0);
+        return true;
     }
     m_canvasPrevious = cnv;
     m_canvasPrevious->setColor(cher::CANVAS_CLR_PREVIOUS);
