@@ -14,8 +14,6 @@ set(CherishApplication_SRCS
     Data.cpp
     Utilities.h
     Utilities.cpp
-    ScalingGui.h
-    ScalingGui.cpp
 )
 
 qt5_add_resources(IMG_RSC_ADDED
