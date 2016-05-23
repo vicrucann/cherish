@@ -309,8 +309,11 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
     // if canvasCurr and canvasPrev are equal, search for the nearest
     // valiable candidate to assign the previous to
     // if no canvases available at all, the observer ptrs are set to NULL
-    if (cnv == m_canvasCurrent.get())
+    if (cnv == m_canvasCurrent.get()){
+        m_canvasCurrent->setColor(cher::CANVAS_CLR_CURRENT);
+        emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasCurrent.get()), 1);
         return true;
+    }
     if (m_canvasCurrent.valid()){
         if (m_canvasPrevious.valid()){
             m_canvasPrevious->setColor(cher::CANVAS_CLR_REST);
@@ -335,8 +338,8 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
     /* make sure node masks are holding as before for the current canvas */
     if (m_canvasPrevious.get()){
         if (!this->getCanvasesButCurrent()){
-            m_canvasCurrent->setNodeMask(~0x0);
-            m_canvasPrevious->setNodeMask(0x1);
+            m_canvasCurrent->setNodeMask(cher::MASK_ALL_IN);
+            m_canvasPrevious->setNodeMask(cher::MASK_CANVAS_OUT);
         }
     }
 

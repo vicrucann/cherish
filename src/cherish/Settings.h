@@ -123,6 +123,7 @@ enum TraversalMask{
     MASK_CANVAS_OUT = 0x001, /* does not see any of canvas data */
     MASK_CANVASDATA_IN = 0x010, /* sees only geodeData geometries */
     MASK_CANVASFRAME_IN = 0x100, /* sees only canvas frame drawables */
+    MASK_ALL_IN = ~0x0
 };
 
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;
