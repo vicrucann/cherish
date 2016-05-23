@@ -202,6 +202,10 @@ const int DelegateVisibilityRole = Qt::UserRole + 1;
 const int DelegateChildRole = Qt::UserRole + 2;
 const int DelegateBGColor = Qt::UserRole + 3;
 
+// UI icons base path
+const QString FA_ICON_PATH = ":/FA-black-svg/FA/black/svg/";
+const QString OI_ICON_PATH = ":/OI-svg/OI/svg/";
+
 } // namespace cher
 
 #endif // SETTINGS
