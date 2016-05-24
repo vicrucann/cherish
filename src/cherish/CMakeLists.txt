@@ -44,7 +44,6 @@ target_link_libraries( ${PROJECT_NAME}
     libGUI
     libSGEntities
     libSGControls
-    libSGUtils
 )
 
 if( CMAKE_BUILD_TYPE MATCHES "^([Dd][Ee][Bb][Uu][Gg])" )

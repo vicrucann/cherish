@@ -6,13 +6,11 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/libGUI
     ${CMAKE_SOURCE_DIR}/libSGEntities
     ${CMAKE_SOURCE_DIR}/libSGControls
-    ${CMAKE_SOURCE_DIR}/libSGUtils
 )
 
 SET( TEST_LIBRARIES
     libSGEntities
     libSGControls
-    libSGUtils
     libGUI
     ${QT_QTTEST_LIBRARY}
     ${QT_LIBRARIES}

@@ -96,7 +96,6 @@ add_subdirectory(cherish)
 add_subdirectory(libGUI)
 add_subdirectory(libSGEntities)
 add_subdirectory(libSGControls)
-add_subdirectory(libSGUtils)
 add_subdirectory(tests)
 
 

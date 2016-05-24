@@ -32,7 +32,6 @@
 #include <osg/AutoTransform>
 
 #include "Settings.h"
-#include "../libSGUtils/ObserveSceneCallback.h"
 #include "../libGUI/hudcamera.h"
 #include "UserScene.h"
 #include "Entity2D.h"

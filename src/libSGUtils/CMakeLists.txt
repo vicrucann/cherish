@@ -8,11 +8,7 @@ include_directories(
 )
 
 set (libSGUtils_SRCS
-    LogFileHandler.h
-    FindNodeVisitor.h
-    FindNodeVisitor.cpp
-    CameraChangeCallback.h
-    CameraChangeCallback.cpp
+
 )
 
 add_library(libSGUtils

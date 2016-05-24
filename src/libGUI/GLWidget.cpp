@@ -15,8 +15,6 @@
 #include <osgGA/EventQueue>
 #include <osgGA/TrackballManipulator>
 
-//#include "CameraChangeCallback.h"
-
 GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::WindowFlags f)
     : QOpenGLWidget(parent, f)
 

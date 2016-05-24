@@ -5,7 +5,6 @@ endif()
 include_directories(
     ${CMAKE_SOURCE_DIR}/cherish
     ${CMAKE_SOURCE_DIR}/libGUI
-    ${CMAKE_SOURCE_DIR}/libSGUtils
     ${CMAKE_SOURCE_DIR}/libSGControls
 )
 

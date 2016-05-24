@@ -1,9 +1,8 @@
 #ifndef LOGFILEHANDLER
 #define LOGFILEHANDLER
 
-/* LogFileHandler
- * A class to redirect the OSG internal notify messages
- * to an external log file
+/*! \class LogFileHandler
+ * A class to redirect the OSG internal notify messages to an external log file
  *
  * The usage:
  *
