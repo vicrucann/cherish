@@ -221,9 +221,9 @@ void RootScene::addPhoto(const std::string& fname)
     m_saved = false;
 }
 
-void RootScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+void RootScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const double &fov)
 {
-    m_userScene->addBookmark(widget, eye, center, up);
+    m_userScene->addBookmark(widget, eye, center, up, fov);
 }
 
 void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)

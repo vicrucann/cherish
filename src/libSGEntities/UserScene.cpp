@@ -207,7 +207,7 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
 }
 
 // FIXME: when bookmark is added while all the tools are turned off?
-void entity::UserScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+void entity::UserScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const double &fov)
 {
     if (!m_bookmarks.get()){
         outErrMsg("addBookmark: bookmarks pointer is NULL");
@@ -220,7 +220,7 @@ void entity::UserScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
             return;
         }
     }
-    m_bookmarks->addBookmark(widget, eye, center, up, this->getBookmarkName());
+    m_bookmarks->addBookmark(widget, eye, center, up, this->getBookmarkName(), fov);
 }
 
 void entity::UserScene::updateBookmark(BookmarkWidget *widget, int row)

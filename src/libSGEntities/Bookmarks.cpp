@@ -17,6 +17,10 @@ entity::Bookmarks::Bookmarks(const Bookmarks &parent, osg::CopyOp copyop)
     : QObject()
     , osg::Group(parent, copyop)
     , m_eyes(parent.m_eyes)
+    , m_centers(parent.m_centers)
+    , m_ups(parent.m_ups)
+    , m_names(parent.m_names)
+    , m_fovs(parent.m_fovs)
     , m_row(parent.m_row)
 {
 }
@@ -61,12 +65,23 @@ const std::vector<std::string> &entity::Bookmarks::getNames() const
     return m_names;
 }
 
-void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const std::string &name)
+void entity::Bookmarks::setFovs(const std::vector<double> &fovs)
+{
+    m_fovs = fovs;
+}
+
+const std::vector<double> &entity::Bookmarks::getFovs() const
+{
+    return m_fovs;
+}
+
+void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const std::string &name, const double &fov)
 {
     m_eyes.push_back(eye);
     m_centers.push_back(center);
     m_ups.push_back(up);
     m_names.push_back(name);
+    m_fovs.push_back(fov);
     widget->addItem(QString(name.c_str()));
     outLogVal("number of items", widget->count());
     QListWidgetItem* item = widget->item(widget->count()-1);
@@ -122,6 +137,7 @@ void entity::Bookmarks::clearModel()
     m_centers.clear();
     m_ups.clear();
     m_names.clear();
+    m_fovs.clear();
     m_row = -1;
 }
 
@@ -136,7 +152,7 @@ std::string entity::Bookmarks::getBookmarkName(int row) const
 int entity::Bookmarks::getNumBookmarks() const
 {
     assert(m_eyes.size() == m_ups.size() && m_ups.size() == m_centers.size()
-           && m_centers.size() == m_names.size());
+           && m_centers.size() == m_names.size() && m_names.size() == m_fovs.size());
     return m_eyes.size();
 }
 
@@ -174,6 +190,7 @@ void entity::Bookmarks::onRowsMoved(const QModelIndex &, int start, int end, con
     this->moveItem<osg::Vec3d>(start, row, m_centers);
     this->moveItem<osg::Vec3d>(start, row, m_ups);
     this->moveItem<std::string>(start, row, m_names);
+    this->moveItem<double>(start, row, m_fovs);
 }
 
 void entity::Bookmarks::onRowsRemoved(const QModelIndex &, int first, int last)
@@ -202,7 +219,8 @@ void entity::Bookmarks::deleteBookmarkData(int first, int last)
     m_centers.erase(m_centers.begin()+first, m_centers.begin()+last+1);
     m_ups.erase(m_ups.begin()+first, m_ups.begin()+last+1);
     m_names.erase(m_names.begin()+first, m_names.begin()+last+1);
-    outLogVal("after removal of row[s], the size is", m_eyes.size());
+    m_fovs.erase(m_fovs.begin()+first, m_fovs.begin()+last+1);
+    outLogVal("after removal of row[s], the size is", this->getNumBookmarks());
 }
 
 template <typename T>
@@ -226,4 +244,5 @@ REGISTER_OBJECT_WRAPPER(Bookmarks_Wrapper
     ADD_LIST_SERIALIZER(Centers, std::vector<osg::Vec3d>);
     ADD_LIST_SERIALIZER(Ups, std::vector<osg::Vec3d>);
     ADD_LIST_SERIALIZER(Names, std::vector<std::string>);
+    ADD_LIST_SERIALIZER(Fovs, std::vector<double>);
 }

@@ -148,10 +148,12 @@ void MainWindow::recieveBookmark(int row)
     outLogMsg("bookmark recieved at MainWindow");
     entity::Bookmarks* bms = m_rootScene->getBookmarksModel();
     osg::Vec3d eye, center, up;
+    double fov;
     eye = bms->getEyes()[row];
     center = bms->getCenters()[row];
     up = bms->getUps()[row];
-    m_glWidget->setCameraView(eye, center, up);
+    fov = bms->getFovs()[row];
+    m_glWidget->setCameraView(eye, center, up, fov);
 
     m_rootScene->updateBookmark(m_bookmarkWidget, row);
 }
@@ -225,16 +227,15 @@ void MainWindow::onMoveBookmark(const QModelIndex &index)
 void MainWindow::onBookmarkAddedToWidget(const QModelIndex &, int first, int last)
 {
     outLogMsg("onBookmarkAddedToWidget");
-    const std::vector<osg::Vec3d>& centers =
-            m_rootScene->getUserScene()->getBookmarks()->getCenters();
-    const std::vector<osg::Vec3d>& eyes =
-            m_rootScene->getUserScene()->getBookmarks()->getEyes();
-    const std::vector<osg::Vec3d>& ups =
-            m_rootScene->getUserScene()->getBookmarks()->getUps();
-    if (first<0 || first>=int(centers.size())) return;
-    if (last<0 || last>=int(centers.size())) return;
+    const std::vector<osg::Vec3d>& centers =    m_rootScene->getUserScene()->getBookmarks()->getCenters();
+    const std::vector<osg::Vec3d>& eyes =       m_rootScene->getUserScene()->getBookmarks()->getEyes();
+    const std::vector<osg::Vec3d>& ups =        m_rootScene->getUserScene()->getBookmarks()->getUps();
+    const std::vector<double>& fovs =           m_rootScene->getUserScene()->getBookmarks()->getFovs();
+    int sz = m_rootScene->getUserScene()->getBookmarks()->getNumBookmarks();
+    if (first<0 || first>=sz) return;
+    if (last<0 || last>=sz) return;
     for (int i=first; i<=last; ++i){
-        m_glWidget->setCameraView(eyes[i],centers[i],ups[i]);
+        m_glWidget->setCameraView(eyes[i],centers[i],ups[i],fovs[i]);
         m_rootScene->addBookmarkTool(eyes[i],centers[i],ups[i]);
     }
 }
@@ -660,8 +661,9 @@ void MainWindow::onStrokesPush()
 void MainWindow::onBookmark()
 {
     osg::Vec3d eye,center,up;
-    m_glWidget->getCameraView(eye, center, up);
-    m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up);
+    double fov;
+    m_glWidget->getCameraView(eye, center, up, fov);
+    m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
     this->statusBar()->showMessage(tr("Current camera view is saved as a bookmark"));
 }
 
@@ -1115,17 +1117,18 @@ void MainWindow::initializeCallbacks()
 //                     Qt::UniqueConnection);
 
 
-    /* UI forms */
-    QObject::connect(m_cameraProperties, SIGNAL(fovChanged(double)),
-                     m_glWidget, SLOT(onFOVChanged(double)),
-                     Qt::UniqueConnection);
-
-    QObject::connect(m_cameraProperties, SIGNAL(focalChanged(double)),
-                     m_glWidget, SLOT(onFocalChanged(double)),
+    /* Camera properties UI form */
+    // connect camera widget slider with GLWidget osg::Camera variable
+    QObject::connect(m_cameraProperties, SIGNAL(fovChangedBySlider(double)),
+                     m_glWidget, SLOT(onFOVChangedSlider(double)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_cameraProperties, SIGNAL(orthoChecked(bool)),
                      m_glWidget, SLOT(onOrthoSet(bool)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_glWidget, SIGNAL(signalFOVSet(double)),
+                     m_cameraProperties, SLOT(onFOVSet(double)),
                      Qt::UniqueConnection);
 
 }
