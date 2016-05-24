@@ -121,7 +121,7 @@ protected:
 private:
     osg::ref_ptr<entity::UserScene> m_userScene;
     entity::AxisGlobalTool* m_axisTool;
-    osg::Group* m_bookmarkGroup;
+    osg::Group* m_bookmarkTools;
     std::vector< osg::ref_ptr<entity::Entity2D> > m_buffer; /* copy-paste buffer */
     QUndoStack* m_undoStack;
     bool m_saved;

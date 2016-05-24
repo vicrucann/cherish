@@ -15,7 +15,7 @@ RootScene::RootScene(QUndoStack *undoStack)
     : osg::Group()
     , m_userScene(new entity::UserScene)
     , m_axisTool(new entity::AxisGlobalTool)
-    , m_bookmarkGroup(new osg::Group)
+    , m_bookmarkTools(new osg::Group)
     , m_undoStack(undoStack)
     , m_saved(false)
 {
@@ -32,7 +32,7 @@ RootScene::RootScene(QUndoStack *undoStack)
     }
 
     /* child #2 */
-    this->addChild(m_bookmarkGroup);
+    this->addChild(m_bookmarkTools);
 
     this->setName("RootScene");
 }
@@ -228,11 +228,11 @@ void RootScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const
 
 void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
-    if (!m_bookmarkGroup) {
+    if (!m_bookmarkTools) {
         outLogMsg("addBookmarkTool: none will be added, ptr is null");
         return;
     }
-    if (!m_bookmarkGroup->addChild(new entity::BookmarkTool(eye, center, up)))
+    if (!m_bookmarkTools->addChild(new entity::BookmarkTool(eye, center, up)))
         outLogMsg("addBookmarkTool: could not add as child");
 }
 
@@ -248,8 +248,8 @@ void RootScene::deleteBookmark(BookmarkWidget *widget, const QModelIndex &index)
 
 void RootScene::deleteBookmarkTool(int first, int last)
 {
-    if (first>=int(m_bookmarkGroup->getNumChildren()) || last>=int(m_bookmarkGroup->getNumChildren())) return;
-    m_bookmarkGroup->removeChild(first, std::abs(last-first+1));
+    if (first>=int(m_bookmarkTools->getNumChildren()) || last>=int(m_bookmarkTools->getNumChildren())) return;
+    m_bookmarkTools->removeChild(first, std::abs(last-first+1));
     outLogMsg("bookmarkTool deleted");
 }
 
@@ -266,15 +266,15 @@ void RootScene::resetBookmarks(BookmarkWidget *widget)
 //    const std::vector<osg::Vec3d>& centers = bms->getCenters();
 //    const std::vector<osg::Vec3d>& ups = bms->getUps();
 //    for (size_t i=0; i < bms->getNames().size(); ++i){
-//        m_bookmarkGroup->addChild(new entity::BookmarkTool(eyes[i], centers[i], ups[i]));
+//        m_bookmarkTools->addChild(new entity::BookmarkTool(eyes[i], centers[i], ups[i]));
 //    }
 }
 
 void RootScene::setBookmarkToolVisibility(bool vis)
 {
     // TODO
-    for (size_t i=0; i<m_bookmarkGroup->getNumChildren(); i++){
-        entity::BookmarkTool* bt = dynamic_cast<entity::BookmarkTool*>(m_bookmarkGroup->getChild(i));
+    for (size_t i=0; i<m_bookmarkTools->getNumChildren(); i++){
+        entity::BookmarkTool* bt = dynamic_cast<entity::BookmarkTool*>(m_bookmarkTools->getChild(i));
         if (bt)
             bt->setVisibility(vis);
     }
