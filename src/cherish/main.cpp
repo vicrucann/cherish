@@ -1,6 +1,10 @@
 #include <iostream>
 #include <algorithm>
 
+#ifdef Q_OS_WIN
+#include <Windows.h>
+#endif
+
 #include "CherishApplication.h"
 #include "MainWindow.h"
 #include "Settings.h"
