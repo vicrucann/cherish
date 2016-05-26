@@ -232,6 +232,7 @@ void MainWindow::onBookmarkAddedToWidget(const QModelIndex &, int first, int las
     const std::vector<osg::Vec3d>& eyes =       m_rootScene->getUserScene()->getBookmarks()->getEyes();
     const std::vector<osg::Vec3d>& ups =        m_rootScene->getUserScene()->getBookmarks()->getUps();
     const std::vector<double>& fovs =           m_rootScene->getUserScene()->getBookmarks()->getFovs();
+
     int sz = m_rootScene->getUserScene()->getBookmarks()->getNumBookmarks();
     if (first<0 || first>=sz) return;
     if (last<0 || last>=sz) return;

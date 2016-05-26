@@ -120,6 +120,9 @@ void entity::Bookmarks::deleteBookmark(BookmarkWidget *widget, const QModelIndex
 void entity::Bookmarks::resetModel(BookmarkWidget *widget)
 {
 //    widget->clear();
+    // to load old version data successfully, have to set FOV to deafult since it's missing
+    if (m_fovs.size() != m_names.size()) m_fovs.resize(m_names.size(), 60.);
+
     for (unsigned int i=0; i<m_names.size(); ++i){
         widget->addItem(QString((m_names[i]).c_str()));
         QListWidgetItem* item = widget->item(i);
