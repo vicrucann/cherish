@@ -4,6 +4,8 @@
 #include <QPixmap>
 #include <QString>
 
+#include "Settings.h"
+
 const QIcon &Data::appIcon()
 {
     static QIcon icon(":/logo.png");
@@ -26,15 +28,15 @@ const QIcon &Data::fileCloseIcon()
 
 const QIcon &Data::fileExitIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/file-exit-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(":/file-exit-24px.svg");
+    Q_ASSERT_X(!QPixmap(cher::FA_ICON_PATH + "sign-out.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(cher::FA_ICON_PATH + "sign-out.svg");
     return icon;
 }
 
 const QIcon &Data::fileImageIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/file-image-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(":/file-image-24px.svg");
+    Q_ASSERT_X(!QPixmap(cher::FA_ICON_PATH + "picture-o.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(cher::FA_ICON_PATH + "picture-o.svg");
     return icon;
 }
 
@@ -54,8 +56,8 @@ const QIcon &Data::fileSaveIcon()
 
 const QIcon &Data::fileExportIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/file-export-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(":/file-export-24px.svg");
+    Q_ASSERT_X(!QPixmap(cher::FA_ICON_PATH + "external-link.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(cher::FA_ICON_PATH + "external-link.svg");
     return icon;
 }
 
@@ -124,8 +126,8 @@ const QIcon &Data::sceneSketchIcon()
 
 const QIcon &Data::sceneEraserIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/scene-eraser-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(":/scene-eraser-24px.svg");
+    Q_ASSERT_X(!QPixmap(cher::FA_ICON_PATH + "eraser.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(cher::FA_ICON_PATH + "eraser.svg");
     return icon;
 }
 
@@ -461,17 +463,17 @@ const QIcon &Data::controlCanvasesIcon()
 const QIcon &Data::controlMoveIcon()
 {
     Q_ASSERT_X(!QPixmap(":/control-move-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(QPixmap(":/control-move-24px.svg"));
+    static QIcon icon(":/control-move-24px.svg");
     return icon;
 }
 
 const QIcon &Data::controlCanvasVisibilityIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/control-canvas-visibility-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    Q_ASSERT_X(!QPixmap(":/control-canvas-visibilityno-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    Q_ASSERT_X(!QPixmap(cher::FA_ICON_PATH + "eye.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    Q_ASSERT_X(!QPixmap(cher::FA_ICON_PATH + "eye-slash.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon;
-    icon.addPixmap(QPixmap(":/control-canvas-visibility-24px.svg"), QIcon::Normal, QIcon::On);
-    icon.addPixmap(QPixmap(":/control-canvas-visibilityno-24px.svg"), QIcon::Normal, QIcon::Off);
+    icon.addFile(cher::FA_ICON_PATH + "eye-slash.svg"); // Off by default
+    icon.addFile(cher::FA_ICON_PATH + "eye.svg", QSize(), QIcon::Normal, QIcon::On);
     return icon;
 }
 

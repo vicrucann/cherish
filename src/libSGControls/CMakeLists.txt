@@ -22,6 +22,9 @@ set (libSGControls_SRCS
     LineIntersector.cpp
     ViewerCommand.h
     ViewerCommand.cpp
+    LogFileHandler.h
+    FindNodeVisitor.h
+    FindNodeVisitor.cpp
 )
 
 add_library(libSGControls

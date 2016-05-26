@@ -207,7 +207,7 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
 }
 
 // FIXME: when bookmark is added while all the tools are turned off?
-void entity::UserScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+void entity::UserScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const double &fov)
 {
     if (!m_bookmarks.get()){
         outErrMsg("addBookmark: bookmarks pointer is NULL");
@@ -220,7 +220,7 @@ void entity::UserScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
             return;
         }
     }
-    m_bookmarks->addBookmark(widget, eye, center, up, this->getBookmarkName());
+    m_bookmarks->addBookmark(widget, eye, center, up, this->getBookmarkName(), fov);
 }
 
 void entity::UserScene::updateBookmark(BookmarkWidget *widget, int row)
@@ -309,8 +309,11 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
     // if canvasCurr and canvasPrev are equal, search for the nearest
     // valiable candidate to assign the previous to
     // if no canvases available at all, the observer ptrs are set to NULL
-    if (cnv == m_canvasCurrent.get())
+    if (cnv == m_canvasCurrent.get()){
+        m_canvasCurrent->setColor(cher::CANVAS_CLR_CURRENT);
+        emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasCurrent.get()), 1);
         return true;
+    }
     if (m_canvasCurrent.valid()){
         if (m_canvasPrevious.valid()){
             m_canvasPrevious->setColor(cher::CANVAS_CLR_REST);
@@ -335,8 +338,8 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
     /* make sure node masks are holding as before for the current canvas */
     if (m_canvasPrevious.get()){
         if (!this->getCanvasesButCurrent()){
-            m_canvasCurrent->setNodeMask(~0x0);
-            m_canvasPrevious->setNodeMask(0x1);
+            m_canvasCurrent->setNodeMask(cher::MASK_ALL_IN);
+            m_canvasPrevious->setNodeMask(cher::MASK_CANVAS_OUT);
         }
     }
 
@@ -357,8 +360,9 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
         m_canvasPrevious = NULL;
     }
     if (!cnv){
-        std::cerr << "setCanvasPrevious(): The input canvas pointed is not valid" << std::endl;
-        return false;
+        m_canvasPrevious = 0;
+        if (m_canvasCurrent.get()) m_canvasCurrent->updateFrame(0);
+        return true;
     }
     m_canvasPrevious = cnv;
     m_canvasPrevious->setColor(cher::CANVAS_CLR_PREVIOUS);

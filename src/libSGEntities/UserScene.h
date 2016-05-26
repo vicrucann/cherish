@@ -156,8 +156,9 @@ public:
      * \param widget is the BookmarkWidget which is connected to the Bookmarks data structure
      * \param eye is the vector of camera eye to add as a bookmark
      * \param center is the vector of camera center to add as a bookmark
-     * \param up is the vector of camera up to add as a bookmark */
-    void addBookmark(BookmarkWidget *widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+     * \param up is the vector of camera up to add as a bookmark
+     * \param fov is the camera's projection matrix FOV */
+    void addBookmark(BookmarkWidget *widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov);
 
     /*! Updates the screenshot of the bookmark within the BookmarkWidget.
      * \param widget is the BookmarkWidget which is connected to the Bookmarks data structure

@@ -50,19 +50,23 @@ void AddCanvasCommand::undo()
         m_scene->setCanvasCurrent(m_scene->getCanvasPrevious());
     if (m_canvas == m_scene->getCanvasPrevious() ||
             m_scene->getCanvasCurrent() == m_scene->getCanvasPrevious()){
-        for (unsigned int i = 0; i < m_scene->getNumChildren(); ++i){
-            entity::Canvas* cnvi = dynamic_cast<entity::Canvas*>( m_scene->getChild(i));
-            if (cnvi != NULL && cnvi != m_scene->getCanvasCurrent() && cnvi != m_canvas){
-                m_scene->setCanvasPrevious(cnvi);
-                break;
-            }
-        }
+        if (m_scene->getNumCanvases() == 2)
+            m_scene->setCanvasPrevious(0);
+        else {
+            for (unsigned int i = 0; i < m_scene->getNumChildren(); ++i){
+                entity::Canvas* cnvi = m_scene->getCanvas(i);
+                if (cnvi != NULL && cnvi != m_scene->getCanvasCurrent() && cnvi != m_canvas){
+                    m_scene->setCanvasPrevious(cnvi);
+                    break;
+                }
+            } // for
+        } // else
     }
     // now delete the canvas
     emit m_scene->canvasRemoved(m_scene->getCanvasIndex(m_canvas.get()));
     m_canvas->unselectAll();
     m_scene->removeChild(m_canvas);
-    if (m_scene->getCanvasCurrent()) m_scene->getCanvasCurrent()->updateFrame(0);
+    if (m_scene->getCanvasCurrent()) m_scene->getCanvasCurrent()->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
@@ -72,6 +76,7 @@ void AddCanvasCommand::redo()
 
     m_scene->addChild(m_canvas);
     m_scene->setCanvasCurrent(m_canvas);
+    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 

@@ -70,9 +70,12 @@ public:
     void setNames(const std::vector<std::string>& names);
     const std::vector<std::string>& getNames() const;
 
+    void setFovs(const std::vector<double>& fovs);
+    const std::vector<double>& getFovs() const;
+
     /* other methods */
     void addBookmark(BookmarkWidget* widget,
-                     const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name);
+                     const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name, const double& fov);
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
     void resetModel(BookmarkWidget* widget);
@@ -106,6 +109,7 @@ private:
     std::vector<osg::Vec3d> m_centers;
     std::vector<osg::Vec3d> m_ups;
     std::vector<std::string> m_names;
+    std::vector<double> m_fovs;
 
     int m_row;
 };

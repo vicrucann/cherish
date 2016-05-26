@@ -11,7 +11,7 @@
 CanvasPhotoWidget::CanvasPhotoWidget(QWidget *parent)
     : QTreeWidget(parent)
 {
-    this->setMinimumWidth(cher::APP_WIDGET_WIDTH);
+    this->setMinimumWidth(cher::APP_WIDGET_WIDTH*cher::DPI_SCALING);
     this->setDropIndicatorShown(true);
     this->header()->close();
 }

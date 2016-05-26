@@ -32,7 +32,6 @@
 #include <osg/AutoTransform>
 
 #include "Settings.h"
-#include "../libSGUtils/ObserveSceneCallback.h"
 #include "../libGUI/hudcamera.h"
 #include "UserScene.h"
 #include "Entity2D.h"
@@ -80,7 +79,7 @@ public:
     void addStroke(float u, float v, cher::EVENT event);
     void selectAllStrokes();
     void addPhoto(const std::string& fname);
-    void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+    void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov);
     void addBookmarkTool(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
@@ -122,7 +121,7 @@ protected:
 private:
     osg::ref_ptr<entity::UserScene> m_userScene;
     entity::AxisGlobalTool* m_axisTool;
-    osg::Group* m_bookmarkGroup;
+    osg::Group* m_bookmarkTools;
     std::vector< osg::ref_ptr<entity::Entity2D> > m_buffer; /* copy-paste buffer */
     QUndoStack* m_undoStack;
     bool m_saved;

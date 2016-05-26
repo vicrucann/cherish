@@ -21,13 +21,12 @@ public:
     ~CameraProperties();
 
 signals:
-    void fovChanged(double);
-    void focalChanged(double);
+    void fovChangedBySlider(double);
     void orthoChecked(bool);
 
 public slots:
-    void onFocalChanged(int value);
     void onOrthoChecked(bool val);
+    void onFOVSet(double fov);
 
 private slots:
     void onSliderMoved(int position);

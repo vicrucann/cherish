@@ -15,8 +15,6 @@
 #include <osgGA/EventQueue>
 #include <osgGA/TrackballManipulator>
 
-//#include "CameraChangeCallback.h"
-
 GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::WindowFlags f)
     : QOpenGLWidget(parent, f)
 
@@ -113,15 +111,30 @@ void GLWidget::setCameraView()
     m_viewStack->push(cmd);
 }
 
-void GLWidget::setCameraView(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+void GLWidget::setCameraView(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const double &fov)
 {
     m_manipulator->setTransformation(eye, center, up);
+    osg::Camera* camera = this->getCamera();
+    if (camera){
+        float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());
+        camera->setProjectionMatrixAsPerspective(fov*0.5, ratio, 1.f, 1000.f);
+        emit this->signalFOVSet(fov);
+    }
+
+    /* for stack of camera views */
     this->setCameraView();
 }
 
-void GLWidget::getCameraView(osg::Vec3d &eye, osg::Vec3d &center, osg::Vec3d &up) const
+void GLWidget::getCameraView(osg::Vec3d &eye, osg::Vec3d &center, osg::Vec3d &up, double &fov) const
 {
     m_manipulator->getTransformation(eye, center, up);
+    osg::Camera* camera = this->getCamera();
+    if (!camera) fov = 30.f;
+    else {
+        double ar, zn, zf;
+        camera->getProjectionMatrixAsPerspective(fov, ar, zn, zf);
+    }
+    fov *= 2.; // OSG accepts half angle, but the widget takes the whole angle value
 }
 
 void GLWidget::setMouseMode(const cher::MOUSE_MODE &mode)
@@ -141,7 +154,8 @@ void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const o
 {
     /* save the current camera view */
     osg::Vec3d eye_, center_, up_;
-    this->getCameraView(eye_, center_, up_);
+    double fov_;
+    this->getCameraView(eye_, center_, up_, fov_);
 
     /* move the camera to bookmark view */
     m_manipulator->setTransformation(eye, center, up);
@@ -154,7 +168,7 @@ void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const o
     /* grab the screenshot */
     pmap = this->grab();
 
-    /* turn tools back if they were on */
+    /* FIXME: turn tools back if they were on, if they were on */
     if (toolsOn) m_RootScene->setToolsVisibility(true);
 
     /* return to the current camera view */
@@ -163,25 +177,17 @@ void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const o
 }
 
 /* FOV is a whole angle, not half angle */
-void GLWidget::onFOVChanged(double fov)
+void GLWidget::onFOVChangedSlider(double fov)
 {
     osg::Camera* camera = this->getCamera();
     if (!camera){
-        outErrMsg("onFOVChanged: could not obtain camera ptr");
+        outErrMsg("onFOVChangedSlider: could not obtain camera ptr");
         return;
     }
     float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());
     camera->setProjectionMatrixAsPerspective(fov*0.5, ratio, 1.f, 1000.f);
     camera->dirtyBound();
     this->update();
-}
-
-void GLWidget::onFocalChanged(double focal)
-{
-    double fov = 0;
-    if (focal>0) fov = std::atan(static_cast<float>( this->height())/(2*focal));
-    else fov = 60.f;
-    this->onFOVChanged(fov);
 }
 
 void GLWidget::onOrthoSet(bool ortho)

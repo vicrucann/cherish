@@ -6,7 +6,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/cherish
     ${CMAKE_SOURCE_DIR}/libSGEntities
     ${CMAKE_SOURCE_DIR}/libSGControls
-    ${CMAKE_SOURCE_DIR}/libSGUtils
 )
 
 set(libGUI_SRCS

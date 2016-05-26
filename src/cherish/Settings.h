@@ -123,6 +123,7 @@ enum TraversalMask{
     MASK_CANVAS_OUT = 0x001, /* does not see any of canvas data */
     MASK_CANVASDATA_IN = 0x010, /* sees only geodeData geometries */
     MASK_CANVASFRAME_IN = 0x100, /* sees only canvas frame drawables */
+    MASK_ALL_IN = ~0x0
 };
 
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;
@@ -189,18 +190,24 @@ const float HUD_TEXT_POSX = HUD_LEFT + 2.f;
 const float HUD_TEXT_POSY = HUD_BOTTOM + 15.f;
 const float HUD_TEXT_POSZ = 0.f;
 
+extern double DPI_SCALING;
+
 const size_t APP_SCREENSHOT_HEIGHT = 150;
 const size_t APP_WIDGET_BUTTON = 16;
 const size_t APP_WIDGET_LINEWIDTH = 4;
 const size_t APP_WIDGET_GAP = 6;
 const size_t APP_WIDGET_WIDTH = APP_SCREENSHOT_HEIGHT*1.5+APP_WIDGET_BUTTON*4;
-const size_t APP_MAINWINDOW_ICONSIZE = 24;
+//const size_t APP_MAINWINDOW_ICONSIZE = 24;
 
 const int DelegateVisibilityRole = Qt::UserRole + 1;
 const int DelegateChildRole = Qt::UserRole + 2;
 const int DelegateBGColor = Qt::UserRole + 3;
 
-} // namespace dura
+// UI icons base path
+const QString FA_ICON_PATH = ":/FA-black-svg/FA/black/svg/";
+const QString OI_ICON_PATH = ":/OI-svg/OI/svg/";
+
+} // namespace cher
 
 #endif // SETTINGS
 

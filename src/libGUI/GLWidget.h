@@ -32,20 +32,20 @@ public:
 
     osg::Camera* getCamera() const;
     void setCameraView();
-    void setCameraView(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
-    void getCameraView(osg::Vec3d& eye, osg::Vec3d& center, osg::Vec3d& up) const;
+    void setCameraView(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov);
+    void getCameraView(osg::Vec3d& eye, osg::Vec3d& center, osg::Vec3d& up, double& fov) const;
 
     void setMouseMode(const cher::MOUSE_MODE& mode);
 
 signals:
     void sendAutoSwitchMode(cher::MOUSE_MODE mode);
     void signalMouseModeSet(cher::MOUSE_MODE mode);
+    void signalFOVSet(double fov);
 
 public slots:
     void getTabletActivity(bool active);
     void onRequestScreenshot(QPixmap& pmap, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
-    void onFOVChanged(double fov);
-    void onFocalChanged(double focal);
+    void onFOVChangedSlider(double fov);
     void onOrthoSet(bool ortho);
 
 protected:
