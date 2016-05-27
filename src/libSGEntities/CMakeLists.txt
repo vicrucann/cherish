@@ -27,6 +27,8 @@ set (libSGEntities_SRCS
     Bookmarks.cpp
     SelectedGroup.h
     SelectedGroup.cpp
+    SceneState.h
+    SceneState.cpp
 )
 
 add_library(libSGEntities

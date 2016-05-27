@@ -79,10 +79,11 @@ public:
     const osg::Vec4f& getColor() const;
 
     void setVisibilityFrame(bool vis);
-    bool getVisibility() const;
+    bool getVisibilityFrame() const;
 
     void setVisibilityAll(bool vis);
     bool getVisibilityData() const;
+    void setVisibilityData(bool vis);
 
     osg::Vec3f getGlobalAxisU() const;
     osg::Vec3f getGlobalAxisV() const;

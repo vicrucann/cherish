@@ -15,6 +15,8 @@
 #include <osgGA/EventQueue>
 #include <osgGA/TrackballManipulator>
 
+#include "SceneState.h"
+
 GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::WindowFlags f)
     : QOpenGLWidget(parent, f)
 
@@ -160,16 +162,20 @@ void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const o
     /* move the camera to bookmark view */
     m_manipulator->setTransformation(eye, center, up);
 
-    /* make sure tools are not on */
-    bool toolsOn = m_RootScene->getAxesVisibility();
-    if (toolsOn) m_RootScene->setToolsVisibility(false);
+
+    /* save the current scene state */
+    osg::ref_ptr<entity::SceneState> ss = new entity::SceneState();
+    ss->stripDataFrom(m_RootScene.get());
+
+    /* make sure tools are off */
+    m_RootScene->setToolsVisibility(false);
     this->update();
 
     /* grab the screenshot */
     pmap = this->grab();
 
-    /* FIXME: turn tools back if they were on, if they were on */
-    if (toolsOn) m_RootScene->setToolsVisibility(true);
+    /* apply the saved scene state */
+    m_RootScene->setSceneState(ss);
 
     /* return to the current camera view */
     m_manipulator->setTransformation(eye_, center_, up_);

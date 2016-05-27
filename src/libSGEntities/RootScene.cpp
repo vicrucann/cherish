@@ -272,12 +272,22 @@ void RootScene::resetBookmarks(BookmarkWidget *widget)
 
 void RootScene::setBookmarkToolVisibility(bool vis)
 {
-    // TODO
     for (size_t i=0; i<m_bookmarkTools->getNumChildren(); i++){
         entity::BookmarkTool* bt = dynamic_cast<entity::BookmarkTool*>(m_bookmarkTools->getChild(i));
         if (bt)
             bt->setVisibility(vis);
     }
+}
+
+bool RootScene::getBookmarkToolVisibility() const
+{
+    bool result = true;
+    for (size_t i=0; i<m_bookmarkTools->getNumChildren(); ++i){
+        entity::BookmarkTool* bt = dynamic_cast<entity::BookmarkTool*>(m_bookmarkTools->getChild(i));
+        if (bt)
+            result = bt->getVisibility();
+    }
+    return result;
 }
 
 void RootScene::eraseStroke(entity::Stroke *stroke, int first, int last, cher::EVENT event)
@@ -427,6 +437,65 @@ void RootScene::pasteFromBuffer()
     if (!cmd) return;
     m_undoStack->push(cmd);
     m_saved = false;
+}
+
+entity::SceneState *RootScene::getSceneState() const
+{
+    osg::ref_ptr<entity::SceneState> state = new entity::SceneState;
+    if (!state.get()) return 0;
+
+    state->clear();
+    state->setAxisFlag(this->getAxesVisibility());
+    state->setBookmarksFlag(this->getBookmarkToolVisibility());
+
+    size_t sz = m_userScene->getNumCanvases();
+    for (size_t i=0; i<sz; ++i){
+        entity::Canvas* cnv = m_userScene->getCanvas(i);
+        if (!cnv) continue;
+        state->pushDataFlag(cnv->getVisibilityData());
+        state->pushToolFlag(cnv->getVisibilityFrame());
+        for (int j=0; j<cnv->getNumPhotos(); ++j){
+            entity::Photo* photo = cnv->getPhotoFromIndex(j);
+            if (!photo) continue;
+            state->pushTransparency(photo->getTransparency());
+        }
+    }
+    return state.release();
+}
+
+bool RootScene::setSceneState(entity::SceneState *state)
+{
+    if (!state) return false;
+
+    this->setAxesVisibility(state->getAxisFlag());
+    this->setBookmarkToolVisibility(state->getBookmarksFlag());
+
+    if (state->isEmpty()) return false;
+
+    const std::vector<bool>& cdf = state->getCanvasDataFlags();
+    const std::vector<bool>& ctf = state->getCanvasToolFlags();
+    const std::vector<float>& pt = state->getPhotoTransparencies();
+    size_t sz = m_userScene->getNumCanvases();
+    size_t szP = m_userScene->getNumPhotos();
+
+    if (cdf.size() != ctf.size()) return false;
+    if (cdf.size() != sz || pt.size() != szP) return false;
+
+    int idx = 0;
+    for (size_t i=0; i<sz; ++i){
+        entity::Canvas* cnv = m_userScene->getCanvas(i);
+        if (!cnv) continue;
+        cnv->setVisibilityData(cdf[i]);
+        cnv->setVisibilityFrame(ctf[i]);
+        for (int j=0; j<cnv->getNumPhotos(); ++j){
+            entity::Photo* photo = cnv->getPhotoFromIndex(j);
+            if (!photo) continue;
+            photo->setTransparency(pt[idx]);
+            idx++;
+        }
+    }
+
+    return true;
 }
 
 RootScene::~RootScene()

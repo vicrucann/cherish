@@ -5,6 +5,8 @@
 #include <osg/Group>
 #include <RootScene.h>
 
+class RootScene;
+
 namespace entity{
 
 /*! \class SceneState
@@ -50,16 +52,40 @@ public:
     const std::vector<bool>& getCanvasToolFlags() const;
 
     /*! A setter method to be used within OSG serialization procedures. */
-    void setPhotoTransparencies(const std::vector<double>& transparencies);
+    void setPhotoTransparencies(const std::vector<float>& transparencies);
     /*! A getter method to be used within OSG serialization procedures. */
-    const std::vector<double>& getPhotoTransparencies() const;
+    const std::vector<float>& getPhotoTransparencies() const;
+
+    /*! A method that translates all the necessary RootScene settings into internals of SceneState.
+     * \param scene is the pointer on RootScene variable
+     * \sa RootScene::getSceneState() */
+    void stripDataFrom(RootScene* scene);
+
+    /*! A method to check whether internals are already loaded or not.
+     * \return true if internals are set, and false - otherwise. */
+    bool isEmpty() const;
+
+    /*! A method that clear all the vector containers. */
+    void clear();
+
+    /*! A method to push into vector container a canvas data flag.
+     * \param flag is true for visible and false for invisible */
+    void pushDataFlag(bool flag);
+
+    /*! A method to push into vector container a canvas tool flag.
+     * \param flag is true for visible and false for invisible */
+    void pushToolFlag(bool flag);
+
+    /*! A method to push into vector container a photo transparency value.
+     * \param t is within range from 0 to 1 */
+    void pushTransparency(float t);
 
 private:
     bool m_axisFlag;  /*!< Boolean flag indicating whether global axis visibility is on (true) or off (false). */
     bool m_bookmarksFlag; /*!< Boolean flag indicating whether bookmarks visibility is on (true) or off (false). */
     std::vector<bool> m_canvasDataFlags; /*!< Vector of boolean flags indicating whether canvas content visibility is on (true) or off (false). */
     std::vector<bool> m_canvasToolFlags; /*!< Vector of boolean flags indicating whether canvas tools visibility is on (true) or off (false). */
-    std::vector<double> m_photoTransparencies; /*!< Vector of values indicating photo transparency level - from 0 (invisible) to 1 (visibile). */
+    std::vector<float> m_photoTransparencies; /*!< Vector of values indicating photo transparency level - from 0 (invisible) to 1 (visibile). */
 
 }; // class SceneState
 

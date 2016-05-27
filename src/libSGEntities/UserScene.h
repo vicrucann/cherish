@@ -336,6 +336,9 @@ public:
     /*! \return the number of photos within the given Canvas */
     int getNumPhotos(entity::Canvas* canvas) const;
 
+    /*! \return the number of total photos within the scene */
+    int getNumPhotos();
+
     /*! The method is to edit the canvas 3D position, offset in particular. The offset is defined as a
      * non-zero distance along the canvas normal in either positive or negative direction.
      * \param stack is the command stack for undo/redo framework

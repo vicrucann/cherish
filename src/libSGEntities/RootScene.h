@@ -40,11 +40,15 @@
 #include "Bookmarks.h"
 #include "../libGUI/ListWidget.h"
 #include "ToolGlobal.h"
+#include "SceneState.h"
 
 #include <QUndoStack>
 #include <QModelIndex>
 
 class AddStrokeCommand;
+namespace entity{
+class SceneState;
+}
 
 /*! \class RootScene
  * Class description
@@ -85,7 +89,16 @@ public:
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
     void deleteBookmarkTool(int first, int last);
     void resetBookmarks(BookmarkWidget* widget);
+
+    /*! A method to set visibility of all the bookmarks tools. The visibility cannot be set for individual bookmarks tool, only for the
+     * whole group.
+     * \param vis is the visibility flag: true for visibile and false for invisible state. */
     void setBookmarkToolVisibility(bool vis);
+
+    /*! \return A visibility flag for the set of all the bookmark tools. Since the visibility cannot be set for individual bookmarks,
+     * the returned value represents the visibility of the whole group: true for visibile and false for being invisible. */
+    bool getBookmarkToolVisibility() const;
+
     void eraseStroke(entity::Stroke* stroke, int first, int last, cher::EVENT event);
 
     bool setCanvasCurrent(entity::Canvas* cnv);
@@ -113,6 +126,15 @@ public:
     void copyToBuffer();
     void cutToBuffer();
     void pasteFromBuffer();
+
+    /*! \return A pointer on SceneState. Note: this pointer is not managed by smart pointers and must
+     * be deleted manually.
+     * \sa entity::SceneState::stripDataFrom() */
+    entity::SceneState* getSceneState() const;
+
+    /*! \param A pointer on SceneState instance which is served as a source for RootScene settings.
+     * \return Whether the operation was performed successfully (no size discrepancies found) or not. */
+    bool setSceneState(entity::SceneState* state);
 
 protected:
     ~RootScene();

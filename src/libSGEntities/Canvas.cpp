@@ -223,19 +223,24 @@ void entity::Canvas::setVisibilityFrame(bool vis)
     m_toolFrame->setVisibility(vis);
 }
 
-bool entity::Canvas::getVisibility() const{
+bool entity::Canvas::getVisibilityFrame() const{
     return m_toolFrame->getVisibility();
 }
 
 void entity::Canvas::setVisibilityAll(bool vis)
 {
-    m_switch->setChildValue(m_geodeData, vis);
+    this->setVisibilityData(vis);
     this->setVisibilityFrame(vis);
 }
 
 bool entity::Canvas::getVisibilityData() const
 {
     return m_switch->getChildValue(m_geodeData);
+}
+
+void entity::Canvas::setVisibilityData(bool vis)
+{
+    m_switch->setChildValue(m_geodeData, vis);
 }
 
 /*  V

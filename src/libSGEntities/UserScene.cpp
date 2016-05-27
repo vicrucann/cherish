@@ -450,6 +450,17 @@ int entity::UserScene::getNumPhotos(entity::Canvas *canvas) const
     return canvas->getNumPhotos();
 }
 
+int entity::UserScene::getNumPhotos()
+{
+    int res = 0;
+    for (int i=0; i<this->getNumCanvases(); ++i){
+        entity::Canvas* cnv = this->getCanvas(i);
+        if (!cnv) continue;
+        res += cnv->getNumPhotos();
+    }
+    return res;
+}
+
 void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, cher::EVENT event)
 {
     if (!stack){
