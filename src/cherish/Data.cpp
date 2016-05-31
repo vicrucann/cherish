@@ -105,8 +105,8 @@ const QIcon &Data::editDeleteIcon()
 
 const QIcon &Data::editSettingsIcon()
 {
-    Q_ASSERT_X(!QPixmap(":/edit-settings-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(":/edit-settings-24px.svg");
+    Q_ASSERT_X(!QPixmap(cher::FA_ICON_PATH + "cogs.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(cher::FA_ICON_PATH + "cogs.svg");
     return icon;
 }
 
@@ -481,6 +481,13 @@ const QIcon &Data::controlImagesIcon()
 {
     Q_ASSERT_X(!QPixmap(":/control-images-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(":/control-images-24px.svg");
+    return icon;
+}
+
+const QIcon &Data::controlBookmarkStateIcon()
+{
+    Q_ASSERT_X(!QPixmap(cher::FA_ICON_PATH + "cog.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(cher::FA_ICON_PATH + "cog.svg");
     return icon;
 }
 

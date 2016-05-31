@@ -156,7 +156,8 @@ void MainWindow::recieveBookmark(int row)
     fov = bms->getFovs()[row];
     m_glWidget->setCameraView(eye, center, up, fov);
 
-    m_rootScene->updateBookmark(m_bookmarkWidget, row);
+    // we only want to keep original screenshot
+//    m_rootScene->updateBookmark(m_bookmarkWidget, row);
 }
 
 void MainWindow::onDeleteBookmark(const QModelIndex &index)

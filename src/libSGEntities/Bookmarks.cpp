@@ -8,6 +8,7 @@
 entity::Bookmarks::Bookmarks()
     : QObject()
     , osg::Group()
+    , m_state(new SceneState())
     , m_row(0)
 {
     this->setName("Bookmarks");
@@ -21,6 +22,7 @@ entity::Bookmarks::Bookmarks(const Bookmarks &parent, osg::CopyOp copyop)
     , m_ups(parent.m_ups)
     , m_names(parent.m_names)
     , m_fovs(parent.m_fovs)
+    , m_state(parent.m_state)
     , m_row(parent.m_row)
 {
 }
@@ -75,6 +77,16 @@ const std::vector<double> &entity::Bookmarks::getFovs() const
     return m_fovs;
 }
 
+void entity::Bookmarks::setSceneState(entity::SceneState *state)
+{
+    m_state = state;
+}
+
+const entity::SceneState *entity::Bookmarks::getSceneState() const
+{
+    return m_state;
+}
+
 void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const std::string &name, const double &fov)
 {
     m_eyes.push_back(eye);
@@ -94,7 +106,7 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     item->setIcon(QIcon(pmap));
 }
 
-/* update the look of the bookmakr's screenshot - is performed on every click */
+/* update the look of the bookmakr's screenshot */
 void entity::Bookmarks::updateBookmark(BookmarkWidget *widget, int row)
 {
     if (row >=0 && row < (int)m_eyes.size()){
@@ -248,4 +260,5 @@ REGISTER_OBJECT_WRAPPER(Bookmarks_Wrapper
     ADD_LIST_SERIALIZER(Ups, std::vector<osg::Vec3d>);
     ADD_LIST_SERIALIZER(Names, std::vector<std::string>);
     ADD_LIST_SERIALIZER(Fovs, std::vector<double>);
+    ADD_OBJECT_SERIALIZER(SceneState, entity::SceneState, NULL);
 }

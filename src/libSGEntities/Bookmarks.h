@@ -20,8 +20,12 @@
 #include <QVector>
 
 #include "../libGUI/ListWidget.h"
+#include "SceneState.h"
 
 class BookmarkWidget;
+namespace entity {
+class SceneState;
+}
 
 namespace entity {
 
@@ -73,6 +77,9 @@ public:
     void setFovs(const std::vector<double>& fovs);
     const std::vector<double>& getFovs() const;
 
+    void setSceneState(entity::SceneState* state);
+    const entity::SceneState* getSceneState() const;
+
     /* other methods */
     void addBookmark(BookmarkWidget* widget,
                      const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name, const double& fov);
@@ -110,6 +117,8 @@ private:
     std::vector<osg::Vec3d> m_ups;
     std::vector<std::string> m_names;
     std::vector<double> m_fovs;
+
+    osg::ref_ptr<entity::SceneState> m_state;
 
     int m_row;
 };

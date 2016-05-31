@@ -32,10 +32,14 @@ public:
 signals:
     void clickedDelete(const QModelIndex& index);
     void clickedMove(const QModelIndex& index);
+    void clickedApplyState(const QModelIndex& index);
 
 private:
     QRect getButtonDeleteRect(const QRect& rect) const;
     QRect getButtonMoveRect(const QRect& rect) const;
+    QRect getButtonStateRect(const QRect& rect) const;
+
+    bool isInside(int clickX, int clickY, const QRect& rect) const;
 };
 
 /*! \class CanvasDelegate

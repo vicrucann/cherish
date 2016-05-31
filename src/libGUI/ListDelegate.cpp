@@ -23,24 +23,29 @@ void BookmarkDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opti
     QStyledItemDelegate::paint(painter, option, index);
 
     QRect r = option.rect;
-    QStyleOptionButton buttonDelete, buttonMove;
+    QStyleOptionButton buttonDelete, buttonMove, buttonState;
 
     buttonDelete.rect = getButtonDeleteRect(r);
-    buttonDelete.iconSize = QSize(cher::APP_WIDGET_BUTTON*cher::DPI_SCALING,
-                                  cher::APP_WIDGET_BUTTON*cher::DPI_SCALING);
+    buttonDelete.iconSize = QSize(cher::APP_WIDGET_BUTTON*cher::DPI_SCALING, cher::APP_WIDGET_BUTTON*cher::DPI_SCALING);
     buttonDelete.icon = Data::editDeleteIcon();
     buttonDelete.state = QStyle::State_Enabled;
     buttonDelete.features = QStyleOptionButton::None;
 
     buttonMove.rect = getButtonMoveRect(r);
-    buttonMove.iconSize = QSize(cher::APP_WIDGET_BUTTON*cher::DPI_SCALING,
-                                cher::APP_WIDGET_BUTTON*cher::DPI_SCALING);
+    buttonMove.iconSize = QSize(cher::APP_WIDGET_BUTTON*cher::DPI_SCALING, cher::APP_WIDGET_BUTTON*cher::DPI_SCALING);
     buttonMove.icon = Data::controlMoveIcon();
     buttonMove.state = QStyle::State_Enabled;
     buttonMove.features = QStyleOptionButton::None;
 
+    buttonState.rect = getButtonStateRect(r);
+    buttonState.iconSize = QSize(cher::APP_WIDGET_BUTTON*cher::DPI_SCALING, cher::APP_WIDGET_BUTTON*cher::DPI_SCALING);
+    buttonState.icon = Data::controlBookmarkStateIcon();
+    buttonState.state = QStyle::State_Enabled;
+    buttonState.features = QStyleOptionButton::None;
+
     QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonDelete, painter);
     QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonMove, painter);
+    QApplication::style()->drawControl(QStyle::CE_PushButtonLabel, &buttonState, painter);
 }
 
 bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
@@ -52,11 +57,8 @@ bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, con
         int clickY = e->y();
 
         QRect r = option.rect;
-        QRect br = this->getButtonDeleteRect(r);
-        QRect bm = this->getButtonMoveRect(r);
 
-        if( clickX > br.x() && clickX < br.x() + br.width() )
-            if( clickY > br.y() && clickY < br.y() + br.height() )
+        if( isInside(clickX, clickY, this->getButtonDeleteRect(r)) )
             {
                 if (event->type() == QEvent::MouseButtonPress)
                     return true;
@@ -66,8 +68,19 @@ bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, con
                 }
                 return true;
             }
-        if( clickX > bm.x() && clickX < bm.x() + bm.width() )
-            if( clickY > bm.y() && clickY < bm.y() + bm.height() )
+
+        if( isInside(clickX, clickY, this->getButtonStateRect(r)) )
+            {
+                if (event->type() == QEvent::MouseButtonPress)
+                    return true;
+                else{
+                    outLogMsg("delegate: clicked apply scene state");
+                    emit this->clickedApplyState(index);
+                }
+                return true;
+            }
+
+        if( isInside(clickX, clickY, this->getButtonMoveRect(r)) )
             {
                 if (event->type() == QEvent::MouseButtonPress){
                     // emit to change current before performing the move
@@ -96,6 +109,22 @@ QRect BookmarkDelegate::getButtonMoveRect(const QRect &rect) const
     y = rect.top() + (rect.height() - sz)/2;
     w = h = sz;
     return QRect(x,y,w,h);
+}
+
+QRect BookmarkDelegate::getButtonStateRect(const QRect &rect) const
+{
+    int sz = cher::APP_WIDGET_BUTTON*cher::DPI_SCALING;
+    int x,y,w,h;
+    x = rect.left() + rect.width() - 4*sz;
+    y = rect.top() + (rect.height() - sz)/2;
+    w = h = sz;
+    return QRect(x,y,w,h);
+}
+
+bool BookmarkDelegate::isInside(int clickX, int clickY, const QRect &rect) const
+{
+    return (clickX > rect.x() && clickX < rect.x()+rect.width() &&
+            clickY > rect.y() && clickY < rect.y()+rect.height());
 }
 
 CanvasDelegate::CanvasDelegate(QObject *parent)

@@ -20,6 +20,11 @@
 #include "../libGUI/ListWidget.h"
 #include "../libGUI/TreeWidget.h"
 
+namespace entity {
+class Bookmarks;
+}
+class BookmarkWidget;
+
 /*! \namespace entity
  * \brief Scene graph entities
 */

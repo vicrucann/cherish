@@ -48,6 +48,8 @@
 class AddStrokeCommand;
 namespace entity{
 class SceneState;
+class UserScene;
+class Bookmarks;
 }
 
 /*! \class RootScene
