@@ -13,12 +13,7 @@ class QPixmap;
 class Data
 {
 public:
-    /*! \fn appIcon
-     * to return icon of the application */
     static const QIcon& appIcon();
-
-    /*! \fn fileNewSceneIcon
-     * to return icon */
     static const QIcon& fileNewSceneIcon();
     static const QIcon& fileCloseIcon();
     static const QIcon& fileExitIcon();

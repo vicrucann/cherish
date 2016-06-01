@@ -27,6 +27,9 @@ protected:
      * proximity). This method emits sendTabletActivity().
      * \param event is the event that enters the application. */
     bool event(QEvent* event) Q_DECL_OVERRIDE;
+
+private:
+    void setDPIScalingGUI();
 };
 
 #endif // DUREUAPPLICATION_H

@@ -136,7 +136,7 @@ public:
 
     /*! \param A pointer on SceneState instance which is served as a source for RootScene settings.
      * \return Whether the operation was performed successfully (no size discrepancies found) or not. */
-    bool setSceneState(entity::SceneState* state);
+    bool setSceneState(const entity::SceneState* state);
 
 protected:
     ~RootScene();

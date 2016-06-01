@@ -37,7 +37,9 @@ namespace entity {
  * bookmarks into saving to file procedure which is done by OpenSceneGraph.
  *
  * Scene graph wise, the Bookmarks is an osg::Group node that contains STL data for camera
- * positions and names.
+ * positions and names. Also
+ * osg::Group helps to maintain the SceneState as its children for each corresponding
+ * bookmark without the need of direct serialization of each scene state.
  *
  * The need to inherit QObject class is so that to use signals and slots functionality.
  * The signals and slots are connected to the BookmarkWidget and thus it assures
@@ -59,52 +61,92 @@ public:
     Bookmarks(const Bookmarks& parent, osg::CopyOp copyop = osg::CopyOp::SHALLOW_COPY);
     META_Node(entity, Bookmarks)
 
-    /*! OSG serialization setters and getters - required to register the serialization wrapper */
-
-    /*! Set the vector of eyes */
+    /*! A setter method to be used within OSG serialization procedures. */
     void setEyes(const std::vector<osg::Vec3d>& eyes);
+    /*! A getter method to be used within OSG serialization procedures. */
     const std::vector<osg::Vec3d>& getEyes() const;
 
+    /*! A setter method to be used within OSG serialization procedures. */
     void setCenters(const std::vector<osg::Vec3d>& centers);
+    /*! A getter method to be used within OSG serialization procedures. */
     const std::vector<osg::Vec3d>& getCenters() const;
 
+    /*! A setter method to be used within OSG serialization procedures. */
     void setUps(const std::vector<osg::Vec3d>& ups);
+    /*! A getter method to be used within OSG serialization procedures. */
     const std::vector<osg::Vec3d>& getUps() const;
 
+    /*! A setter method to be used within OSG serialization procedures. */
     void setNames(const std::vector<std::string>& names);
+    /*! A getter method to be used within OSG serialization procedures. */
     const std::vector<std::string>& getNames() const;
 
+    /*! A setter method to be used within OSG serialization procedures. */
     void setFovs(const std::vector<double>& fovs);
+    /*! A getter method to be used within OSG serialization procedures. */
     const std::vector<double>& getFovs() const;
 
-    void setSceneState(entity::SceneState* state);
-    const entity::SceneState* getSceneState() const;
+    /*! \param row is the index of SceneState
+     * \return Pointer on the corresponding SceneState. */
+    const entity::SceneState* getSceneState(int row) const;
+    entity::SceneState* getSceneState(int row);
 
-    /* other methods */
-    void addBookmark(BookmarkWidget* widget,
-                     const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name, const double& fov);
+    /*! A method that performs an addition of a bookmark to the data structure. It also requests
+     * a screenshot of the bookmark from GLWidget, and SceneState to add as a child to the bookmakr
+     * which strips its data from the current state of RootScene.
+     * \param widget is the BookmarkWidget to which a name is added
+     * \eye is the camera eye vector
+     * \center is the camera center vector
+     * \up is the camera up vector
+     * \fov is the camera FOV value */
+    void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name, const double& fov);
+
+    /*! This method might be obsolete in the future */
     void updateBookmark(BookmarkWidget* widget, int row);
+
+    /*! This method perform deletion of the indexed item from the provided widget. Note: it does not
+     * erase elements from internal vector data structures since they are handled by the corresponding
+     * slot onRowsRemoved() (same for the SceneState children).
+     * \param widget is the widget from where the item is removed
+     * \index is the item's index */
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
+
+    /*! This method is called only when a scene is loaded from file. It resets the widget's content,
+     * updates the screenshots.
+     * \param widget is the widget to update */
     void resetModel(BookmarkWidget* widget);
+
+    /*! The method to manually clear all the vector data as well as remove all SceneState children. */
     void clearModel();
+
+    /*! \param row is the index of which name we want to obtain
+     * \return The name of specified row. */
     std::string getBookmarkName(int row) const;
+
+    /*! \return The number of bookmarks. */
     int getNumBookmarks() const;
 
 signals:
-    void sendBookmark(int row);
+    /*! A signal to request GLWidget to be set with correspondance of the passed bookmark
+     * \param row is the bookmark index */
+    void requestBookmarkSet(int row);
+
+    /*! A signal to request bookmark's icon to be updated with correspondance of what GLWidget sees.
+     * \param pixmap is the result icon
+     * \eye is the camera eye vector
+     * \center is the camera center vector
+     * \up is the camera up vector */
     void requestScreenshot(QPixmap& pixmap, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+
+    /*! A singal to request bookmarks scene state to be updated.
+     * \param state is the pointer on SceneState to be updated */
+    void requestSceneData(entity::SceneState* state);
 
 public slots:
     void onClicked(const QModelIndex& index);
     void onItemChanged(QListWidgetItem* item);
     void onRowsMoved(const QModelIndex&, int start, int end, const QModelIndex&, int row);
     void onRowsRemoved(const QModelIndex&, int first, int last);
-    void onCurrentItemChanged(QListWidgetItem * current, QListWidgetItem * previous);
-
-private slots:
-
-protected:
-    ~Bookmarks() {}
 
 private:
     template <typename T>
@@ -117,8 +159,6 @@ private:
     std::vector<osg::Vec3d> m_ups;
     std::vector<std::string> m_names;
     std::vector<double> m_fovs;
-
-    osg::ref_ptr<entity::SceneState> m_state;
 
     int m_row;
 };

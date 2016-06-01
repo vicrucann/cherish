@@ -8,7 +8,6 @@
 entity::Bookmarks::Bookmarks()
     : QObject()
     , osg::Group()
-    , m_state(new SceneState())
     , m_row(0)
 {
     this->setName("Bookmarks");
@@ -22,7 +21,6 @@ entity::Bookmarks::Bookmarks(const Bookmarks &parent, osg::CopyOp copyop)
     , m_ups(parent.m_ups)
     , m_names(parent.m_names)
     , m_fovs(parent.m_fovs)
-    , m_state(parent.m_state)
     , m_row(parent.m_row)
 {
 }
@@ -77,29 +75,52 @@ const std::vector<double> &entity::Bookmarks::getFovs() const
     return m_fovs;
 }
 
-void entity::Bookmarks::setSceneState(entity::SceneState *state)
+const entity::SceneState *entity::Bookmarks::getSceneState(int row) const
 {
-    m_state = state;
+    if (row <0 || row >= (int)this->getNumChildren()){
+        outErrMsg("getSceneState: row index is out of range");
+        return 0;
+    }
+    return dynamic_cast<const entity::SceneState*>(this->getChild(row));
 }
 
-const entity::SceneState *entity::Bookmarks::getSceneState() const
+entity::SceneState *entity::Bookmarks::getSceneState(int row)
 {
-    return m_state;
+    if (row <0 || row >= (int)this->getNumChildren()){
+        outErrMsg("getSceneState: row index is out of range");
+        return 0;
+    }
+    return dynamic_cast<entity::SceneState*>(this->getChild(row));
 }
 
 void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const std::string &name, const double &fov)
 {
+    // push to vector structures
     m_eyes.push_back(eye);
     m_centers.push_back(center);
     m_ups.push_back(up);
     m_names.push_back(name);
     m_fovs.push_back(fov);
+
+    // add scene state as a child of this
+    osg::ref_ptr<entity::SceneState> state = new entity::SceneState;
+    if (!state) return;
+    emit this->requestSceneData(state.get());
+    if (state->isEmpty()){
+        outErrMsg("addBookmark: could not initialize StateScene");
+        return;
+    }
+    this->addChild(state.get());
+    outLogVal("After bookrmak added, num of children", this->getNumChildren());
+
+    // now can add data to the widget
     widget->addItem(QString(name.c_str()));
     outLogVal("number of items", widget->count());
     QListWidgetItem* item = widget->item(widget->count()-1);
     if (!item) return;
     item->setFlags(item->flags() | Qt::ItemIsEditable);
 
+    // take snapshot of the bookmark
     QPixmap pmap;
     int idx = m_eyes.size()-1;
     emit this->requestScreenshot(pmap, m_eyes[idx], m_centers[idx], m_ups[idx]);
@@ -124,11 +145,9 @@ void entity::Bookmarks::deleteBookmark(BookmarkWidget *widget, const QModelIndex
     QListWidgetItem* item = widget->takeItem(index.row());
     if (item){
         delete item;
-        //this->deleteBookmarkData(index.row());
     }
 }
 
-/* resetModel is needed to be called only on loading scene from file */
 void entity::Bookmarks::resetModel(BookmarkWidget *widget)
 {
 //    widget->clear();
@@ -145,7 +164,6 @@ void entity::Bookmarks::resetModel(BookmarkWidget *widget)
     }
 }
 
-/* to manually clear all vectors data */
 void entity::Bookmarks::clearModel()
 {
     m_eyes.clear();
@@ -154,6 +172,7 @@ void entity::Bookmarks::clearModel()
     m_names.clear();
     m_fovs.clear();
     m_row = -1;
+    this->removeChildren(0, this->getNumChildren()-1);
 }
 
 std::string entity::Bookmarks::getBookmarkName(int row) const
@@ -168,6 +187,7 @@ int entity::Bookmarks::getNumBookmarks() const
 {
     assert(m_eyes.size() == m_ups.size() && m_ups.size() == m_centers.size()
            && m_centers.size() == m_names.size() && m_names.size() == m_fovs.size());
+//    assert(m_eyes.size() == this->getNumChildren());
     return m_eyes.size();
 }
 
@@ -177,7 +197,7 @@ void entity::Bookmarks::onClicked(const QModelIndex &index)
     if (index.row() >=0 && index.row() < (int) m_names.size() ){
         m_row = index.row();
         outLogVal("Selected bookmark", m_names[m_row]);
-        emit this->sendBookmark(m_row);
+        emit this->requestBookmarkSet(m_row);
     }
     else
         outLogMsg("onClicked: m_row is out of range");
@@ -206,17 +226,17 @@ void entity::Bookmarks::onRowsMoved(const QModelIndex &, int start, int end, con
     this->moveItem<osg::Vec3d>(start, row, m_ups);
     this->moveItem<std::string>(start, row, m_names);
     this->moveItem<double>(start, row, m_fovs);
+
+    // get pointer in the state to move
+    entity::SceneState* state = this->getSceneState(start);
+    this->removeChild(state);
+    this->insertChild(row, state); // make sure the index is correct since we removed
 }
 
 void entity::Bookmarks::onRowsRemoved(const QModelIndex &, int first, int last)
 {
     outLogVal("onRowsRemoved atBookmarks", first);
     this->deleteBookmarkData(first, last);
-}
-
-void entity::Bookmarks::onCurrentItemChanged(QListWidgetItem *current, QListWidgetItem *previous)
-{
-    outLogMsg("currentItemChanged");
 }
 
 void entity::Bookmarks::deleteBookmarkData(int first, int last)
@@ -235,7 +255,19 @@ void entity::Bookmarks::deleteBookmarkData(int first, int last)
     m_ups.erase(m_ups.begin()+first, m_ups.begin()+last+1);
     m_names.erase(m_names.begin()+first, m_names.begin()+last+1);
     m_fovs.erase(m_fovs.begin()+first, m_fovs.begin()+last+1);
+
+    if (first >= (int)this->getNumChildren() || first < 0){
+        outErrMsg("deleteBookmarkData: first index is out of range");
+        return;
+    }
+    if (last >= (int)this->getNumChildren() || last < 0){
+        outErrMsg("deleteBookmarkData: last index is out of range");
+        return;
+    }
+    this->removeChildren(first, last-first+1);
+
     outLogVal("after removal of row[s], the size is", this->getNumBookmarks());
+    outLogVal("after removal, scene state number", this->getNumChildren());
 }
 
 template <typename T>
@@ -260,5 +292,4 @@ REGISTER_OBJECT_WRAPPER(Bookmarks_Wrapper
     ADD_LIST_SERIALIZER(Ups, std::vector<osg::Vec3d>);
     ADD_LIST_SERIALIZER(Names, std::vector<std::string>);
     ADD_LIST_SERIALIZER(Fovs, std::vector<double>);
-    ADD_OBJECT_SERIALIZER(SceneState, entity::SceneState, NULL);
 }

@@ -76,7 +76,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     /* load UI forms */
 
     /* setup initial mode */
-    this->onNewCanvasXZ();
+//    this->onNewCanvasXZ();
     this->onSketch();
 }
 
@@ -144,7 +144,7 @@ void MainWindow::recieveAutoSwitchMode(cher::MOUSE_MODE mode)
     }
 }
 
-void MainWindow::recieveBookmark(int row)
+void MainWindow::onRequestBookmarkSet(int row)
 {
     outLogMsg("bookmark recieved at MainWindow");
     entity::Bookmarks* bms = m_rootScene->getBookmarksModel();
@@ -154,6 +154,14 @@ void MainWindow::recieveBookmark(int row)
     center = bms->getCenters()[row];
     up = bms->getUps()[row];
     fov = bms->getFovs()[row];
+
+    const entity::SceneState* state = bms->getSceneState(row);
+    if (!state){
+        outErrMsg("onRequestBookmarkSet: state is NULL");
+        return;
+    }
+    m_rootScene->setSceneState(state);
+
     m_glWidget->setCameraView(eye, center, up, fov);
 
     // we only want to keep original screenshot
@@ -209,7 +217,7 @@ void MainWindow::onDeletePhoto(const QModelIndex &index)
         m_rootScene->editPhotoDelete(photo, cnv);
 }
 
-void MainWindow::onVisibilityCanvas(const QModelIndex &index)
+void MainWindow::onVisibilitySetCanvas(const QModelIndex &index)
 {
     entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(index.row());
     if (!cnv){
@@ -300,6 +308,16 @@ void MainWindow::slotPhotoPushed(int parent, int start, int, int destination, in
     if (!photo) return;
 
     m_rootScene->editPhotoPush(photo, canvas_old, canvas_new);
+}
+
+void MainWindow::onRequestSceneData(entity::SceneState *state)
+{
+    if (!state){
+        outErrMsg("onRequestSceneData: state is NULL");
+        return;
+    }
+    else
+        state->stripDataFrom(m_rootScene.get());
 }
 
 /* Create an ordinary single view window on the scene _root
@@ -1017,8 +1035,8 @@ void MainWindow::initializeCallbacks()
                      m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(sendBookmark(int)),
-                     this, SLOT(recieveBookmark(int)),
+    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestBookmarkSet(int)),
+                     this, SLOT(onRequestBookmarkSet(int)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsInserted(QModelIndex,int,int)),
@@ -1054,6 +1072,10 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
                      m_glWidget, SLOT(onRequestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestSceneData(entity::SceneState*)),
+                     this, SLOT(onRequestSceneData(entity::SceneState*)),
                      Qt::UniqueConnection);
 
     /* canvas widget area */
@@ -1099,8 +1121,8 @@ void MainWindow::initializeCallbacks()
                      this, SLOT(onDeletePhoto(QModelIndex)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedVisibility(QModelIndex)),
-                     this, SLOT(onVisibilityCanvas(QModelIndex)),
+    QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedVisibilitySet(QModelIndex)),
+                     this, SLOT(onVisibilitySetCanvas(QModelIndex)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasVisibilitySet(int,bool)),

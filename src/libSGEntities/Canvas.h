@@ -81,6 +81,7 @@ public:
     void setVisibilityFrame(bool vis);
     bool getVisibilityFrame() const;
 
+    bool getVisibilityAll() const;
     void setVisibilityAll(bool vis);
     bool getVisibilityData() const;
     void setVisibilityData(bool vis);

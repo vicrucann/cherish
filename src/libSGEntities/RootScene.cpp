@@ -463,7 +463,7 @@ entity::SceneState *RootScene::getSceneState() const
     return state.release();
 }
 
-bool RootScene::setSceneState(entity::SceneState *state)
+bool RootScene::setSceneState(const entity::SceneState *state)
 {
     if (!state) return false;
 
@@ -485,7 +485,8 @@ bool RootScene::setSceneState(entity::SceneState *state)
     for (size_t i=0; i<sz; ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv) continue;
-        cnv->setVisibilityData(cdf[i]);
+        cnv->setVisibilityAll(cdf[i]);
+        emit m_userScene->canvasVisibilitySet(m_userScene->getCanvasIndex(cnv) , cdf[i]);
         cnv->setVisibilityFrame(ctf[i]);
         for (int j=0; j<cnv->getNumPhotos(); ++j){
             entity::Photo* photo = cnv->getPhotoFromIndex(j);

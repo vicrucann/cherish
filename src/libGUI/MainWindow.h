@@ -38,11 +38,11 @@ public slots:
     void getTabletActivity(bool active);
     void recievedRequestUpdate();
     void recieveAutoSwitchMode(cher::MOUSE_MODE mode);
-    void recieveBookmark(int row);
+    void onRequestBookmarkSet(int row);
     void onDeleteBookmark(const QModelIndex &index);
     void onDeleteCanvas(const QModelIndex& index);
     void onDeletePhoto(const QModelIndex& index);
-    void onVisibilityCanvas(const QModelIndex& index);
+    void onVisibilitySetCanvas(const QModelIndex& index);
     void onMoveBookmark(const QModelIndex &index);
     void onBookmarkAddedToWidget(const QModelIndex &, int first, int last);
     void onBookmarkRemovedFromWidget(const QModelIndex &, int first, int last);
@@ -50,6 +50,7 @@ public slots:
     void slotPhotoTransparencyPlus(const QModelIndex& index);
     void slotPhotoTransparencyMinus(const QModelIndex& index);
     void slotPhotoPushed(int parent, int start, int, int destination, int);
+    void onRequestSceneData(entity::SceneState* state);
 
 signals:
     void signalTabletActivity(bool active);

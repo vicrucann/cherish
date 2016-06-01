@@ -374,10 +374,8 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
 
 void entity::UserScene::setCanvasesButCurrent(bool enabled)
 {
-    if (!m_canvasCurrent.get()){
-        std::cerr << "setCanvasesButCurrent(): No current canvas on scene" << std::endl;
+    if (!m_canvasCurrent.get())
         return;
-    }
 
     for (unsigned int i=0; i<this->getNumChildren(); ++i){
         entity::Canvas* cnv = this->getCanvas(i);

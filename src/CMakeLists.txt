@@ -78,7 +78,7 @@ endif()
 
 
 ## Test settings
-find_package(Qt5Test REQUIRED)
+find_package(Qt5Test 5.4 REQUIRED)
 enable_testing()
 set(QT_QTTEST_LIBRARY
     ${Qt5Test_LIBRARIES}

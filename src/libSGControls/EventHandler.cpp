@@ -126,6 +126,8 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
 {
     m_mode = mode;
 
+    entity::Canvas* cnv = m_scene->getCanvasCurrent();
+
     // TODO: move the below content to GLWidget's function
     switch (m_mode){
     case cher::ENTITY_ROTATE:
@@ -144,14 +146,16 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
         break;
     }
 
-    if ((cher::maskMouse & m_mode) == cher::MOUSE_CANVAS){
-        m_scene->getCanvasCurrent()->unselectAll();
-        m_scene->getCanvasCurrent()->getToolFrame()->setEditable(true);
+    if (cnv) {
+        if ((cher::maskMouse & m_mode) == cher::MOUSE_CANVAS){
+            m_scene->getCanvasCurrent()->unselectAll();
+            m_scene->getCanvasCurrent()->getToolFrame()->setEditable(true);
+        }
+        else{
+            m_scene->getCanvasCurrent()->getToolFrame()->setEditable(false);
+        }
+        m_scene->getCanvasCurrent()->updateFrame(m_scene->getCanvasPrevious());
     }
-    else{
-        m_scene->getCanvasCurrent()->getToolFrame()->setEditable(false);
-    }
-    m_scene->getCanvasCurrent()->updateFrame(m_scene->getCanvasPrevious());
 }
 
 cher::MOUSE_MODE EventHandler::getMode() const
