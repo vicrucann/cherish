@@ -1,6 +1,7 @@
 include_directories(
     ${CMAKE_SOURCE_DIR}/libGUI
     ${CMAKE_SOURCE_DIR}/libSGEntities
+    ${CMAKE_SOURCE_DIR}/tests
 )
 
 if(POLICY CMP0020)

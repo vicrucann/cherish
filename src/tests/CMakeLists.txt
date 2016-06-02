@@ -38,9 +38,9 @@ set(BASETEST_SRC
     )
 
 set(BASETEST_NAME base_test)
-add_executable(${BASETEST_NAME} ${BASETEST_SRC})
+add_executable(${BASETEST_NAME} ${BASETEST_SRC} ${IMG_RSC_ADDED})
 target_link_libraries(${BASETEST_NAME} ${TEST_LIBRARIES})
-add_test(${BASETEST_NAME} ${BASETEST_SRC})
+add_test(${BASETEST_NAME} ${BASETEST_SRC} ${IMG_RSC_ADDED})
 
 # SceneState tests with relation to bookmarks (SG and GUI) and canvas-photo widget (GUI)
 #set(SCENESTATE_SRC SceneStateTest.cpp)

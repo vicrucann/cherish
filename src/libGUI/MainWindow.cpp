@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     , m_undoStack(new QUndoStack(this))
 
-    , m_menuBar(new QMenuBar(0)) // http://stackoverflow.com/questions/8108729/qmenu-does-not-work-on-mac-qt-creator
+    , m_menuBar(new QMenuBar(this))
 
     , m_rootScene(new RootScene(m_undoStack))
     , m_viewStack(new QUndoStack(this))
@@ -80,11 +80,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     this->onSketch();
 }
 
-MainWindow::~MainWindow(){
-    if (m_menuBar)
-        delete m_menuBar;
-}
-
 void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, cher::APPMODE mode) {
     m_desktop = desktop;
     QRect availS = m_desktop->availableGeometry();
@@ -115,6 +110,11 @@ void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, cher::APPMODE mode) {
         exit(1);
     }
     std::cout << "Widget width and height: " << this->width() << " " << this->height() << std::endl;
+}
+
+RootScene *MainWindow::getRootScene() const
+{
+    return m_rootScene.get();
 }
 
 void MainWindow::getTabletActivity(bool active){
@@ -319,19 +319,6 @@ void MainWindow::onRequestSceneData(entity::SceneState *state)
     else
         state->stripDataFrom(m_rootScene.get());
 }
-
-/* Create an ordinary single view window on the scene _root
- * To create outside viewer, use:
- * GLWidget* vwid = createViewer(Qt::Window);
-*/
-/*void MainWindow::onCreateViewer(){
-    GLWidget* m_glWidget = createViewer();
-    QMdiSubWindow* subwin = m_mdiArea->addSubWindow(m_glWidget);
-    subwin->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
-    m_glWidget->showMaximized();
-    subwin->show();
-    this->onSketch();
-}*/
 
 /* Check whether the current scene is empty or not
  * If not - propose to save changes.
@@ -624,16 +611,6 @@ void MainWindow::onNewCanvasRing()
 {
     this->statusBar()->showMessage(tr("This functionality does not exist yet."));
 }
-
-//void MainWindow::onCanvasOffset()
-//{
-//    m_glWidget->setMouseMode(cher::CANVAS_OFFSET);
-//}
-
-//void MainWindow::onCanvasRotate()
-//{
-//    m_glWidget->setMouseMode(cher::CANVAS_ROTATE_U);
-//}
 
 void MainWindow::onCanvasEdit()
 {

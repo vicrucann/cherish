@@ -63,6 +63,7 @@ public:
     void setFilePath(const std::string& name);
     bool isSetFilePath() const;
     bool isSavedToFile() const;
+    void setSavedToFile(bool saved);
     bool isEmptyScene() const;
     void clearUserData();
 
@@ -144,8 +145,8 @@ protected:
 
 private:
     osg::ref_ptr<entity::UserScene> m_userScene;
-    entity::AxisGlobalTool* m_axisTool;
-    osg::Group* m_bookmarkTools;
+    osg::ref_ptr<entity::AxisGlobalTool> m_axisTool;
+    osg::ref_ptr<osg::Group> m_bookmarkTools;
     std::vector< osg::ref_ptr<entity::Entity2D> > m_buffer; /* copy-paste buffer */
     QUndoStack* m_undoStack;
     bool m_saved;

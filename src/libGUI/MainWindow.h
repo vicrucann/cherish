@@ -22,6 +22,7 @@
 #include "ListWidget.h"
 #include "TreeWidget.h"
 #include "Data.h"
+#include "../tests/BaseTest.h"
 
 /*! \class MainWindow
  * Class description
@@ -29,10 +30,12 @@
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
+    friend class BaseTest; // to do unit tests using private methods
+
 public:
     explicit MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-    ~MainWindow();
     void SetDesktopWidget(QDesktopWidget* desktop, cher::APPMODE mode = cher::SCREEN_MIN);
+    RootScene* getRootScene() const;
 
 public slots:
     void getTabletActivity(bool active);

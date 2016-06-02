@@ -58,6 +58,11 @@ bool RootScene::isSavedToFile() const
     return m_saved;
 }
 
+void RootScene::setSavedToFile(bool saved)
+{
+    m_saved = saved;
+}
+
 bool RootScene::isEmptyScene() const
 {
     return m_userScene->isEmptyScene();

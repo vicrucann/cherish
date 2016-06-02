@@ -6,6 +6,7 @@
 #include <QUndoStack>
 #include <QStack>
 #include <QPixmap>
+#include <QScopedPointer>
 
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
