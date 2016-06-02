@@ -8,6 +8,10 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/libSGControls
 )
 
+if(POLICY CMP0020)
+    CMAKE_POLICY(SET CMP0020 NEW)
+endif()
+
 SET( TEST_LIBRARIES
     libSGEntities
     libSGControls
@@ -17,8 +21,22 @@ SET( TEST_LIBRARIES
     ${OPENSCENEGRAPH_LIBRARIES}
 )
 
-# for every test, produce an executable:
-set(BASETEST_SRC BaseTest.h BaseTest.cpp)
+qt5_add_resources(IMG_RSC_ADDED
+    ${CMAKE_SOURCE_DIR}/cherish/Images/Actions.qrc
+    ${CMAKE_SOURCE_DIR}/cherish/Images/Icons.qrc
+)
+
+# base test to inherit, which includes running MainWindow
+set(BASETEST_SRC
+    BaseTest.h
+    BaseTest.cpp
+    ${CMAKE_SOURCE_DIR}/cherish/Data.h
+    ${CMAKE_SOURCE_DIR}/cherish/Data.cpp
+    ${CMAKE_SOURCE_DIR}/cherish/Utilities.h
+    ${CMAKE_SOURCE_DIR}/cherish/Utilities.cpp
+    ${CMAKE_SOURCE_DIR}/cherish/Settings.h
+    )
+
 set(BASETEST_NAME base_test)
 add_executable(${BASETEST_NAME} ${BASETEST_SRC})
 target_link_libraries(${BASETEST_NAME} ${TEST_LIBRARIES})

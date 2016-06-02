@@ -2,6 +2,7 @@
 #include <algorithm>
 
 #include <QtWidgets>
+#include <QtGlobal>
 
 #include "CherishApplication.h"
 #include "Settings.h"
@@ -15,8 +16,8 @@ CherishApplication::CherishApplication(int &argv, char **argc):
     QApplication(argv, argc)
 {
     this->setDPIScalingGUI();
-    Q_INIT_RESOURCE(Actions);
-    Q_INIT_RESOURCE(Icons);
+    //    Q_INIT_RESOURCE(Actions);
+    //    Q_INIT_RESOURCE(Icons);
 }
 
 bool CherishApplication::event(QEvent* event){
