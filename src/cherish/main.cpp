@@ -47,9 +47,8 @@ int main(int argc, char** argv)
 
     CherishApplication cherish_app(argc, argv);
     cherish_app.setWindowIcon(Data::appIcon());
-    QDesktopWidget* desktop = cherish_app.desktop();
     MainWindow mwin;
-    mwin.SetDesktopWidget(desktop, cher::SCREEN_MAX); // pass the desktop geometry and configuration
+    mwin.setWindowState(Qt::WindowMaximized);
     QObject::connect(&cherish_app, SIGNAL(sendTabletActivity(bool)), &mwin, SLOT(getTabletActivity(bool)));
     mwin.show();
 

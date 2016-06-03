@@ -347,71 +347,71 @@ osg::Vec3f Utilities::projectPointOnLine(const osg::Vec3f &iP, const osg::Vec3f 
     return iP + u * ((P-iP)*u)/(u*u);
 }
 
-QCursor *Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
+QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
 {
-    QCursor* cur;
+    QCursor cur = Qt::ArrowCursor;
     switch (mode) {
     case cher::SELECT_ENTITY:
-        cur = new QCursor(Data::sceneSelectPixmap(), 0, 0);
+        cur = QCursor(Data::sceneSelectPixmap(), 0, 0);
         break;
     case cher::ENTITY_MOVE:
-        cur = new QCursor(Data::sceneImageMovePixmap(), -1, -1);
+        cur = QCursor(Data::sceneImageMovePixmap(), -1, -1);
         break;
     case cher::ENTITY_SCALE:
-        cur = new QCursor(Data::sceneImageScalePixmap(), 0, 0);
+        cur = QCursor(Data::sceneImageScalePixmap(), 0, 0);
         break;
     case cher::ENTITY_ROTATE:
-        cur = new QCursor(Data::sceneImageRotatePixmap(), -1, -1);
+        cur = QCursor(Data::sceneImageRotatePixmap(), -1, -1);
         break;
     case cher::ENTITY_FLIPH:
-        cur = new QCursor(Data::sceneImageFlipHPixmap(), -1, -1);
+        cur = QCursor(Data::sceneImageFlipHPixmap(), -1, -1);
         break;
     case cher::ENTITY_FLIPV:
-        cur = new QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
+        cur = QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
         break;
 
     case cher::SELECT_CANVAS:
-        cur = new QCursor(Data::sceneSelect3DPixmap(), 0,0);
+        cur = QCursor(Data::sceneSelect3DPixmap(), 0,0);
         break;
     case cher::MOUSE_CANVAS:
-        cur = new QCursor(Qt::CrossCursor);
+        cur = QCursor(Qt::CrossCursor);
         break;
     case cher::CANVAS_OFFSET:
-        cur = new QCursor(Data::sceneCanvasOffsetCursor(), -1, -1);
+        cur = QCursor(Data::sceneCanvasOffsetCursor(), -1, -1);
         break;
     case cher::CANVAS_ROTATE_UPLUS:
     case cher::CANVAS_ROTATE_UMINUS:
     case cher::CANVAS_ROTATE_VPLUS:
     case cher::CANVAS_ROTATE_VMINUS:
-        cur = new QCursor(Data::sceneCanvasRotateCursor(), -1, -1);
+        cur = QCursor(Data::sceneCanvasRotateCursor(), -1, -1);
         break;
 
     case cher::PEN_SKETCH:
-        cur = new QCursor(Data::sceneSketchPixmap(), 0, Data::sceneSketchPixmap().height());
+        cur = QCursor(Data::sceneSketchPixmap(), 0, Data::sceneSketchPixmap().height());
         break;
     case cher::PEN_DELETE:
-        cur = new QCursor(Data::editDeleteCursor(), 0, 0);
+        cur = QCursor(Data::editDeleteCursor(), 0, 0);
         break;
     case cher::PEN_ERASE:
-        cur = new QCursor(Data::sceneEraserPixmap(), -1, -1);
+        cur = QCursor(Data::sceneEraserPixmap(), -1, -1);
         break;
 
     case cher::CAMERA_ORBIT:
-        cur = new QCursor(Data::sceneOrbitPixmap(), 0, 0);
+        cur = QCursor(Data::sceneOrbitPixmap(), 0, 0);
         break;
     case cher::CAMERA_ZOOM:
-        cur = new QCursor(Data::sceneZoomPixmap(), 0, 0);
+        cur = QCursor(Data::sceneZoomPixmap(), 0, 0);
         break;
     case cher::CAMERA_PAN:
-        cur = new QCursor(Data::scenePanPixmap(), 0, 0);
+        cur = QCursor(Data::scenePanPixmap(), 0, 0);
         break;
     case cher::CAMERA_FIXEDVIEW:
-        cur = 0;
+        cur = Qt::ArrowCursor;
         break;
 
     case cher::CREATE_CANVASCLONE:
     case cher::CREATE_CANVASSEPARATE:
-        cur = new QCursor(Data::sceneCanvasCloneCursor());
+        cur = QCursor(Data::sceneCanvasCloneCursor());
         break;
     default:
         break;

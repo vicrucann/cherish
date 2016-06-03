@@ -67,7 +67,7 @@ public:
 
     static osg::Vec3f projectPointOnLine(const osg::Vec3f& iP, const osg::Vec3f& u, const osg::Vec3f& P);
 
-    static QCursor* getCursorFromMode(cher::MOUSE_MODE mode);
+    static QCursor getCursorFromMode(cher::MOUSE_MODE mode);
 };
 
 #endif // UTILITIES_H

@@ -50,7 +50,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     camera->setName("Camera");
 
     /* view settings */
-    osgViewer::View* view = new osgViewer::View;
+    osg::ref_ptr< osgViewer::View> view = new osgViewer::View;
     view->setCamera(camera);
     view->setSceneData(m_RootScene.get());
     view->setCameraManipulator(m_manipulator.get());
@@ -61,7 +61,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     m_manipulator->getTransformation(m_eye, m_center, m_up);
 
     // viewer settings
-    m_Viewer->addView(view);
+    m_Viewer->addView(view.get());
     m_Viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
     m_Viewer->realize();
 
