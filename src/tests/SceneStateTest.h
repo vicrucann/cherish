@@ -5,17 +5,16 @@
 #include <QTest>
 #include <osg/ref_ptr>
 #include "SceneState.h"
+#include "BaseGuiTest.h"
 
 /*! \class SceneStateTest
  * \brief Class that performs testing of SceneState class in relation to the GUI widgets and
  * scene graph.
 */
-class SceneStateTest : public QObject
+class SceneStateTest : public BaseGuiTest
 {
     Q_OBJECT
 private slots:
-
-    void trialTest();
 
 private:
 

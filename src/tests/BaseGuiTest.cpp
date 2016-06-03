@@ -1,23 +1,20 @@
-#include "BaseTest.h"
+#include "BaseGuiTest.h"
 #include "RootScene.h"
 #include "GLWidget.h"
 #include "RootScene.h"
 
-BaseTest::BaseTest(QWidget *parent)
+BaseGuiTest::BaseGuiTest(QWidget *parent)
     : MainWindow(parent)
 {
 }
 
-void BaseTest::init()
+void BaseGuiTest::init()
 {
     this->onNewCanvasStandard();
 }
 
-void BaseTest::cleanup()
+void BaseGuiTest::cleanup()
 {
     this->getRootScene()->setSavedToFile(true);
     this->onFileNew();
 }
-
-QTEST_MAIN(BaseTest)
-#include "BaseTest.moc"

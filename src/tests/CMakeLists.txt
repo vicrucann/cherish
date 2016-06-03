@@ -21,15 +21,14 @@ SET( TEST_LIBRARIES
     ${OPENSCENEGRAPH_LIBRARIES}
 )
 
-qt5_add_resources(IMG_RSC_ADDED
+## load resources such as icons for actions
+qt5_add_resources(IMAGE_RSC
     ${CMAKE_SOURCE_DIR}/cherish/Images/Actions.qrc
     ${CMAKE_SOURCE_DIR}/cherish/Images/Icons.qrc
 )
 
-# base test to inherit, which includes running MainWindow
-set(BASETEST_SRC
-    BaseTest.h
-    BaseTest.cpp
+## set of base files that every test will, probably, need
+set(CHERISH_SRC
     ${CMAKE_SOURCE_DIR}/cherish/Data.h
     ${CMAKE_SOURCE_DIR}/cherish/Data.cpp
     ${CMAKE_SOURCE_DIR}/cherish/Utilities.h
@@ -37,14 +36,12 @@ set(BASETEST_SRC
     ${CMAKE_SOURCE_DIR}/cherish/Settings.h
     )
 
-set(BASETEST_NAME base_test)
-add_executable(${BASETEST_NAME} ${BASETEST_SRC} ${IMG_RSC_ADDED})
-target_link_libraries(${BASETEST_NAME} ${TEST_LIBRARIES})
-add_test(${BASETEST_NAME} ${BASETEST_SRC} ${IMG_RSC_ADDED})
+## base GUI test to inherit, which inherits MainWindow
+set(BASEGUITEST_SRC BaseGuiTest.h BaseGuiTest.cpp )
 
 # SceneState tests with relation to bookmarks (SG and GUI) and canvas-photo widget (GUI)
-#set(SCENESTATE_SRC SceneStateTest.cpp)
-#set(SCENESTATE_NAME scenestate_test)
-#add_executable(${SCENESTATE_NAME} ${SCENESTATE_SRC})
-#target_link_libraries(${SCENESTATE_NAME} ${TEST_LIBRARIES})
-#add_test(${SCENESTATE_NAME} ${SCENESTATE_SRC})
+set(SCENESTATE_SRC SceneStateTest.h SceneStateTest.cpp ${BASEGUITEST_SRC})
+set(SCENESTATE_NAME scenestate_test)
+add_executable(${SCENESTATE_NAME} ${SCENESTATE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
+target_link_libraries(${SCENESTATE_NAME} ${TEST_LIBRARIES})
+add_test(${SCENESTATE_NAME} ${SCENESTATE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
