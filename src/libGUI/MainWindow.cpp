@@ -23,7 +23,6 @@
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
-    , m_desktop(0)
     , m_mdiArea(new QMdiArea(this))
 
     , m_tabWidget(new QTabWidget())
@@ -60,8 +59,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     m_tabWidget->setTabPosition(QTabWidget::West);
     m_tabWidget->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
     m_tabWidget->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
-    m_bookmarkWidget->setItemDelegate(new BookmarkDelegate);
-    m_canvasWidget->setItemDelegate(new CanvasDelegate);
+    m_bookmarkWidget->setItemDelegate(new BookmarkDelegate(this));
+    m_canvasWidget->setItemDelegate(new CanvasDelegate(this));
 
     /* viewer stack */
     m_viewStack->setUndoLimit(50);
@@ -78,38 +77,6 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     /* setup initial mode */
 //    this->onNewCanvasXZ();
     this->onSketch();
-}
-
-void MainWindow::SetDesktopWidget(QDesktopWidget *desktop, cher::APPMODE mode) {
-    m_desktop = desktop;
-    QRect availS = m_desktop->availableGeometry();
-    QRect fullS = m_desktop->geometry();
-    //int nscreen = m_desktop->screenCount();
-    double scale = 0.9;
-    double scale_inv = 1-scale;
-    switch (mode) {
-    case cher::SCREEN_MIN:
-        this->showNormal();
-        this->move(availS.width()*scale_inv, fullS.height()-availS.height());
-        break;
-    case cher::SCREEN_MAX:
-        this->showMaximized();
-        break;
-    case cher::SCREEN_FULL:
-        this->showFullScreen();
-        break;
-    case cher::SCREEN_VIRTUAL: // needs testing and fixing
-        this->resize(QSize(fullS.width(), fullS.height()));
-        break;
-    case cher::SCREEN_DETACHED:
-        this->resize(QSize(availS.width()*scale, fullS.height()*scale_inv));
-        this->move(availS.width()*scale_inv, fullS.height()-availS.height());
-        break;
-    default:
-        std::cerr << "Application mode not recognized, closing application" << std::endl;
-        exit(1);
-    }
-    std::cout << "Widget width and height: " << this->width() << " " << this->height() << std::endl;
 }
 
 RootScene *MainWindow::getRootScene() const
@@ -258,8 +225,8 @@ void MainWindow::onBookmarkRemovedFromWidget(const QModelIndex &, int first, int
 
 void MainWindow::slotMouseModeSet(cher::MOUSE_MODE mode)
 {
-    QCursor* cur = Utilities::getCursorFromMode(mode);
-    if (cur) m_mdiArea->setCursor(*cur);
+    QCursor cur = Utilities::getCursorFromMode(mode);
+    if (cur.shape() != Qt::ArrowCursor) m_mdiArea->setCursor(cur);
 }
 
 void MainWindow::slotPhotoTransparencyPlus(const QModelIndex &index)
@@ -934,7 +901,7 @@ void MainWindow::initializeToolbars()
     tbInput->addAction(m_actionEraser);
     tbInput->addAction(m_actionCanvasEdit);
 
-    QMenu* menuNewCanvas = new QMenu();
+    QMenu* menuNewCanvas = new QMenu(this);
     menuNewCanvas->addAction(m_actionCanvasXY);
     menuNewCanvas->addAction(m_actionCanvasYZ);
     menuNewCanvas->addAction(m_actionCanvasXZ);
@@ -948,7 +915,7 @@ void MainWindow::initializeToolbars()
     QWidgetAction* waNewCanvas = new QWidgetAction(this);
     waNewCanvas->setDefaultWidget(tbNewCanvas);
 
-    QMenu* menuNewCanvasSet = new QMenu();
+    QMenu* menuNewCanvasSet = new QMenu(this);
     menuNewCanvasSet->addAction(m_actionSetStandard);
 //    menuNewCanvasSet->addAction(m_actionSetCoaxial);
 //    menuNewCanvasSet->addAction(m_actionSetParallel);

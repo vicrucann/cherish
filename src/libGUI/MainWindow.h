@@ -22,7 +22,6 @@
 #include "ListWidget.h"
 #include "TreeWidget.h"
 #include "Data.h"
-#include "../tests/BaseTest.h"
 
 /*! \class MainWindow
  * Class description
@@ -30,11 +29,8 @@
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
-    friend class BaseTest; // to do unit tests using private methods
-
 public:
     explicit MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-    void SetDesktopWidget(QDesktopWidget* desktop, cher::APPMODE mode = cher::SCREEN_MIN);
     RootScene* getRootScene() const;
 
 public slots:
@@ -59,9 +55,8 @@ signals:
     void signalTabletActivity(bool active);
     void signalMouseMode(cher::MOUSE_MODE mode);
 
-private slots:
-    //void onCreateViewer();
-
+protected slots:
+    /* NOTE: there should be no private slots, they are reserved for unit tests solely */
     void onFileNew();
     void onFileOpen();
     void onFileSave();
@@ -112,13 +107,11 @@ private slots:
     void onBookmark();
 
 private:
-    //GLWidget*   createViewer(Qt::WindowFlags f = 0, int viewmode = 1);
     void        initializeActions();
     void        initializeMenus();
     void        initializeToolbars();
     void        initializeCallbacks(); // for ctor
 
-    QDesktopWidget* m_desktop;
     QMdiArea*       m_mdiArea;
 
     QTabWidget*     m_tabWidget;

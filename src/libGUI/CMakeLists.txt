@@ -6,7 +6,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/cherish
     ${CMAKE_SOURCE_DIR}/libSGEntities
     ${CMAKE_SOURCE_DIR}/libSGControls
-    ${CMAKE_SOURCE_DIR}/tests
 )
 
 set(libGUI_SRCS
@@ -42,5 +41,4 @@ add_library(libGUI STATIC
 target_link_libraries( libGUI
     ${QT_LIBRARIES}
     ${OPENSCENEGRAPH_LIBRARIES}
-    ${QT_QTTEST_LIBRARY}
 )
