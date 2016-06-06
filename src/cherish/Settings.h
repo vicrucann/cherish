@@ -6,6 +6,8 @@
 
 #include <osg/Vec4>
 #include <QVariant>
+#include <QDebug>
+#include <QtGlobal>
 
 /*
  * SETTINGS is a configuration variables file for Dureu3d
@@ -19,10 +21,10 @@
 
 /* Debug macros */
 
-#define outLogMsg(msg) std::cout << msg << std::endl;
-#define outLogVal(msg, a) std::cout << msg << ": " << a << std::endl;
-#define outLogVec(msg, x, y, z) std::cout << msg << ": " << x << " " << y << " " << z << std::endl;
-#define outErrMsg(msg) std::cerr << msg << std::endl;
+#define outLogMsg(msg) qDebug() << msg;
+#define outLogVal(msg, a) qDebug() << msg << ": " << a;
+#define outLogVec(msg, x, y, z) qDebug() << msg << ": " << x << " " << y << " " << z;
+#define outErrMsg(msg) qCritical() << msg;
 
 /* The color scheme settings are based on
  * colorscehem solarized
