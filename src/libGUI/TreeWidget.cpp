@@ -132,8 +132,7 @@ void CanvasPhotoWidget::onCanvasVisibilitySet(int row, bool visibility)
         return;
     }
 
-    bool value = item->data(0, cher::DelegateVisibilityRole).toBool();
-    outLogVal("Forcing canvas visibility icon to change from", value);
+//    bool value = item->data(0, cher::DelegateVisibilityRole).toBool();
     outLogVal("Requested visibility", visibility);
     item->setData(0, cher::DelegateVisibilityRole, !visibility );
 }

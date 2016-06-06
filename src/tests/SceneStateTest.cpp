@@ -3,6 +3,8 @@
 #include <osg/ref_ptr>
 #include <QModelIndex>
 #include <QTreeWidgetItem>
+#include <QListWidgetItem>
+#include <QSignalSpy>
 
 #include "Data.h"
 #include "SceneState.h"
@@ -83,7 +85,55 @@ void SceneStateTest::testBookmarkTaken()
 
 void SceneStateTest::testBookmarkClickedOn()
 {
+    int index = 0;
+    entity::Canvas* canvas = m_rootScene->getUserScene()->getCanvas(index);
+    QVERIFY(canvas != 0);
 
+    QTreeWidgetItem* item = m_canvasWidget->topLevelItem(index);
+    QVERIFY(item);
+
+    this->onVisibilitySetCanvas(index);
+    QVERIFY(canvas->getVisibilityAll() == false);
+    QVERIFY(item->data(0, cher::DelegateVisibilityRole).toBool() == true);
+    QVERIFY(m_rootScene->getAxesVisibility() == true);
+    QVERIFY(m_rootScene->getBookmarkToolVisibility() == true);
+
+    this->onBookmark();
+
+    QVERIFY(m_rootScene->getAxesVisibility() == true);
+    QVERIFY(m_rootScene->getBookmarkToolVisibility() == true);
+    QVERIFY(canvas->getVisibilityAll() == false);
+
+    /* reverse the canvas visibility, again */
+    this->onVisibilitySetCanvas(index);
+    QVERIFY(canvas->getVisibilityAll() == true);
+    QVERIFY(item->data(0, cher::DelegateVisibilityRole).toBool() == false);
+
+    /* set up a signal spy to make sure necessary signal is emitted */
+    entity::Bookmarks* bookmarks = m_rootScene->getBookmarksModel();
+    QVERIFY(bookmarks != NULL);
+    QSignalSpy spy1(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)));
+    QSignalSpy spy2(bookmarks, SIGNAL(requestBookmarkSet(int)));
+    QListWidgetItem* itemBM = m_bookmarkWidget->item(0);
+    QVERIFY(itemBM);
+    QRect rect = m_bookmarkWidget->visualItemRect(itemBM);
+
+    /* imitate the click on bookmark */
+    QTest::mouseClick(m_bookmarkWidget->viewport(), Qt::LeftButton, 0, rect.center());
+    /* check for presense of emitted signal */
+    QCOMPARE(spy1.count(), 1);
+    QList<QVariant> args1 = spy1.takeFirst();
+    QVERIFY(args1.at(0).type() == QVariant::ModelIndex);
+
+    QCOMPARE(spy2.count(), 1);
+    QList<QVariant> args2 = spy2.takeFirst();
+    QVERIFY(args2.at(0).type() == QVariant::Int);
+
+    /* see if scene state was set correctly as in the bookmark */
+    QVERIFY(canvas->getVisibilityAll() == false);
+    QVERIFY(item->data(0, cher::DelegateVisibilityRole).toBool() == true);
+    QVERIFY(m_rootScene->getAxesVisibility() == true);
+    QVERIFY(m_rootScene->getBookmarkToolVisibility() == true);
 }
 
 QTEST_MAIN(SceneStateTest)
