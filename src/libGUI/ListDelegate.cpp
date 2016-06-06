@@ -246,10 +246,10 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
                 {
                     if (event->type() == QEvent::MouseButtonPress){
                         outLogMsg("canvas delegate: clicked visibility");
-                        emit this->clickedVisibilitySet(index);
+                        emit this->clickedVisibilitySet(index.row());
 
-                        bool value = index.data(cher::DelegateVisibilityRole).toBool();
-                        model->setData(index, !value, cher::DelegateVisibilityRole);
+//                        bool value = index.data(cher::DelegateVisibilityRole).toBool();
+//                        model->setData(index, !value, cher::DelegateVisibilityRole);
                     }
                     return true;
                 }

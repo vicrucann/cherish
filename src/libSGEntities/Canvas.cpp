@@ -221,12 +221,20 @@ const osg::Vec4f &entity::Canvas::getColor() const
 void entity::Canvas::setVisibilityFrame(bool vis)
 {
     m_switch->setChildValue(m_toolFrame, vis);
-//    m_toolFrame->setVisibility(vis);
 }
 
 bool entity::Canvas::getVisibilityFrame() const{
     return m_switch->getChildValue(m_toolFrame);
-    //    return m_toolFrame->getVisibility();
+}
+
+void entity::Canvas::setVisibilityFrameInternal(bool vis)
+{
+    m_toolFrame->setVisibility(vis);
+}
+
+bool entity::Canvas::getVisibilityFrameInternal() const
+{
+    return m_toolFrame->getVisibility();
 }
 
 bool entity::Canvas::getVisibilityAll() const

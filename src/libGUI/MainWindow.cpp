@@ -184,14 +184,14 @@ void MainWindow::onDeletePhoto(const QModelIndex &index)
         m_rootScene->editPhotoDelete(photo, cnv);
 }
 
-void MainWindow::onVisibilitySetCanvas(const QModelIndex &index)
+void MainWindow::onVisibilitySetCanvas(int index)
 {
-    entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(index.row());
+    entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(index);
     if (!cnv){
         QMessageBox::critical(this, tr("Error"), tr("Could not obtain a canvas pointer"));
         return;
     }
-    cnv->setVisibilityAll(!cnv->getVisibilityData());
+    m_rootScene->setCanvasVisibilityAll(cnv, !cnv->getVisibilityAll());
     this->recievedRequestUpdate();
 }
 
@@ -1065,8 +1065,8 @@ void MainWindow::initializeCallbacks()
                      this, SLOT(onDeletePhoto(QModelIndex)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedVisibilitySet(QModelIndex)),
-                     this, SLOT(onVisibilitySetCanvas(QModelIndex)),
+    QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedVisibilitySet(int)),
+                     this, SLOT(onVisibilitySetCanvas(int)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasVisibilitySet(int,bool)),

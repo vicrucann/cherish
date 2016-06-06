@@ -597,7 +597,7 @@ void entity::UserScene::editCanvasSeparate(QUndoStack *stack, const osg::Vec3f &
 
 void entity::UserScene::editCanvasDelete(QUndoStack *stack, entity::Canvas *canvas)
 {
-    outLogVal("Attempting to delete", canvas->getName());
+    outLogVal("Attempting to delete", canvas->getName().c_str());
     if (!stack){
         outErrMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
                  "Editing is not possible. "
@@ -849,7 +849,7 @@ bool entity::UserScene::printScene()
             if (bms) outLogMsg("Bookmarks data read");
             continue;
         }
-        outLogVal("Canvas name", cnv->getName());
+        outLogVal("Canvas name", cnv->getName().c_str());
 
         osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(cnv->getChild(0));
         assert(t == cnv->getTransform());

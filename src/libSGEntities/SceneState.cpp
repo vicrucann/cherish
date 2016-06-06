@@ -80,7 +80,7 @@ void entity::SceneState::stripDataFrom(RootScene *scene)
         entity::Canvas* cnv = scene->getUserScene()->getCanvas(i);
         if (!cnv) continue;
         m_canvasDataFlags[i] = cnv->getVisibilityAll();
-        m_canvasToolFlags[i] = cnv->getVisibilityFrame();
+        m_canvasToolFlags[i] = cnv->getVisibilityFrameInternal();
         for (int j=0; j < cnv->getNumPhotos(); ++j){
             entity::Photo* photo = cnv->getPhotoFromIndex(j);
             if (!photo) continue;

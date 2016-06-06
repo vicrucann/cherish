@@ -71,6 +71,8 @@ public:
     bool getToolsVisibility() const;
     void setAxesVisibility(bool vis);
     bool getAxesVisibility() const;
+    void setCanvasVisibilityAll(entity::Canvas* canvas, bool vis);
+    bool getCanvasVisibilityAll(entity::Canvas* canvas) const;
 
     bool writeScenetoFile();
     bool exportSceneToFile(const std::string& name);

@@ -41,7 +41,7 @@ public slots:
     void onDeleteBookmark(const QModelIndex &index);
     void onDeleteCanvas(const QModelIndex& index);
     void onDeletePhoto(const QModelIndex& index);
-    void onVisibilitySetCanvas(const QModelIndex& index);
+    void onVisibilitySetCanvas(int index);
     void onMoveBookmark(const QModelIndex &index);
     void onBookmarkAddedToWidget(const QModelIndex &, int first, int last);
     void onBookmarkRemovedFromWidget(const QModelIndex &, int first, int last);
@@ -106,7 +106,7 @@ protected slots:
 
     void onBookmark();
 
-private:
+protected:
     void        initializeActions();
     void        initializeMenus();
     void        initializeToolbars();

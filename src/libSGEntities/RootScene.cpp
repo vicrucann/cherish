@@ -99,6 +99,18 @@ bool RootScene::getAxesVisibility() const{
     return m_axisTool->getVisibility();
 }
 
+void RootScene::setCanvasVisibilityAll(entity::Canvas *canvas, bool vis)
+{
+    if (!canvas) return;
+    canvas->setVisibilityAll(vis);
+    emit m_userScene->canvasVisibilitySet(m_userScene->getCanvasIndex(canvas), vis);
+}
+
+bool RootScene::getCanvasVisibilityAll(entity::Canvas *canvas) const
+{
+    return canvas->getVisibilityAll();
+}
+
 bool RootScene::writeScenetoFile()
 {
     if (m_userScene->getFilePath() == "")
@@ -458,7 +470,7 @@ entity::SceneState *RootScene::getSceneState() const
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv) continue;
         state->pushDataFlag(cnv->getVisibilityData());
-        state->pushToolFlag(cnv->getVisibilityFrame());
+        state->pushToolFlag(cnv->getVisibilityFrameInternal());
         for (int j=0; j<cnv->getNumPhotos(); ++j){
             entity::Photo* photo = cnv->getPhotoFromIndex(j);
             if (!photo) continue;
@@ -492,7 +504,7 @@ bool RootScene::setSceneState(const entity::SceneState *state)
         if (!cnv) continue;
         cnv->setVisibilityAll(cdf[i]);
         emit m_userScene->canvasVisibilitySet(m_userScene->getCanvasIndex(cnv) , cdf[i]);
-        cnv->setVisibilityFrame(ctf[i]);
+        cnv->setVisibilityFrameInternal(ctf[i]);
         for (int j=0; j<cnv->getNumPhotos(); ++j){
             entity::Photo* photo = cnv->getPhotoFromIndex(j);
             if (!photo) continue;
@@ -513,7 +525,7 @@ void RootScene::printScene()
 {
     outLogVal("RootScene #children", this->getNumChildren());
     for (unsigned int i=0; i<this->getNumChildren(); ++i){
-        outLogVal("Child", this->getChild(i)->getName());
+        outLogVal("Child", this->getChild(i)->getName().c_str());
     }
     outLogMsg("For each canvas");
     m_userScene->printScene();

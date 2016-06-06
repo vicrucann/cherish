@@ -3,8 +3,7 @@
 
 #include <QObject>
 #include <QTest>
-#include <osg/ref_ptr>
-#include "SceneState.h"
+
 #include "BaseGuiTest.h"
 
 /*! \class SceneStateTest
@@ -15,8 +14,8 @@ class SceneStateTest : public BaseGuiTest
 {
     Q_OBJECT
 private slots:
-
-private:
+    void testBookmarkTaken();
+    void testBookmarkClickedOn();
 
 };
 

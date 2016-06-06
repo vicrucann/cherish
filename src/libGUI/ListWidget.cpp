@@ -53,7 +53,7 @@ void CanvasWidget::onCanvasAdded(const std::string &name)
         return;
     }
     item->setFlags(item->flags() | Qt::ItemIsEditable);
-    outLogVal("Canvas added to widget", name);
+    outLogVal("Canvas added to widget", name.c_str());
 }
 
 void CanvasWidget::onCanvasRemoved(int row)
@@ -144,7 +144,7 @@ void PhotoWidget::onPhotoAdded(const std::string &name)
         return;
     }
     item->setFlags(item->flags() | Qt::ItemIsEditable);
-    outLogVal("Photo added to widget", name);
+    outLogVal("Photo added to widget", name.c_str());
 }
 
 void PhotoWidget::onPhotoRemoved(int row)

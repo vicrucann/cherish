@@ -196,7 +196,7 @@ void entity::Bookmarks::onClicked(const QModelIndex &index)
     outLogVal("Bookmarks: on clicked", index.row());
     if (index.row() >=0 && index.row() < (int) m_names.size() ){
         m_row = index.row();
-        outLogVal("Selected bookmark", m_names[m_row]);
+        outLogVal("Selected bookmark", m_names[m_row].c_str());
         emit this->requestBookmarkSet(m_row);
     }
     else
@@ -205,7 +205,7 @@ void entity::Bookmarks::onClicked(const QModelIndex &index)
 
 void entity::Bookmarks::onItemChanged(QListWidgetItem *item)
 {
-    outLogVal("onItemChanged: bookmark name edited to", item->text().toStdString());
+    outLogVal("onItemChanged: bookmark name edited to", item->text());
     m_row = item->listWidget()->row(item);
     if (m_row >= 0 && m_row < (int)m_names.size()){
         m_names[m_row] = (item->text()).toStdString();
