@@ -18,6 +18,7 @@ RootScene::RootScene(QUndoStack *undoStack)
     , m_bookmarkTools(new osg::Group)
     , m_undoStack(undoStack)
     , m_saved(false)
+    , m_visibilityBookmarkTool(true)
 {
     // child #0
     if (!this->addChild(m_userScene.get())){
@@ -249,8 +250,12 @@ void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center,
         outLogMsg("addBookmarkTool: none will be added, ptr is null");
         return;
     }
-    if (!m_bookmarkTools->addChild(new entity::BookmarkTool(eye, center, up)))
+    entity::BookmarkTool* bt = new entity::BookmarkTool(eye, center, up);
+    if (!bt) return;
+    if (!m_bookmarkTools->addChild(bt))
         outLogMsg("addBookmarkTool: could not add as child");
+    bt->setVisibility(m_visibilityBookmarkTool);
+
 }
 
 void RootScene::updateBookmark(BookmarkWidget *widget, int row)
@@ -289,20 +294,25 @@ void RootScene::resetBookmarks(BookmarkWidget *widget)
 
 void RootScene::setBookmarkToolVisibility(bool vis)
 {
+    m_visibilityBookmarkTool = vis;
     for (size_t i=0; i<m_bookmarkTools->getNumChildren(); i++){
         entity::BookmarkTool* bt = dynamic_cast<entity::BookmarkTool*>(m_bookmarkTools->getChild(i));
         if (bt)
-            bt->setVisibility(vis);
+            bt->setVisibility(m_visibilityBookmarkTool);
     }
 }
 
 bool RootScene::getBookmarkToolVisibility() const
 {
-    bool result = true;
+    bool result = m_visibilityBookmarkTool;
     for (size_t i=0; i<m_bookmarkTools->getNumChildren(); ++i){
         entity::BookmarkTool* bt = dynamic_cast<entity::BookmarkTool*>(m_bookmarkTools->getChild(i));
-        if (bt)
-            result = bt->getVisibility();
+        if (bt){
+            if (bt->getVisibility() != m_visibilityBookmarkTool){
+                outErrMsg("Re-setting bookmark tool visibility");
+                bt->setVisibility(m_visibilityBookmarkTool);
+            }
+        }
     }
     return result;
 }
@@ -456,7 +466,7 @@ void RootScene::pasteFromBuffer()
     m_saved = false;
 }
 
-entity::SceneState *RootScene::getSceneState() const
+entity::SceneState *RootScene::createSceneState() const
 {
     osg::ref_ptr<entity::SceneState> state = new entity::SceneState;
     if (!state.get()) return 0;

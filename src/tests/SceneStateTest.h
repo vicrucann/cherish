@@ -14,6 +14,7 @@ class SceneStateTest : public BaseGuiTest
 {
     Q_OBJECT
 private slots:
+    void testBasicApi();
     void testBookmarkTaken();
     void testBookmarkClickedOn();
 

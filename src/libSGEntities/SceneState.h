@@ -58,7 +58,7 @@ public:
 
     /*! A method that translates all the necessary RootScene settings into internals of SceneState.
      * \param scene is the pointer on RootScene variable
-     * \sa RootScene::getSceneState() */
+     * \sa RootScene::createSceneState() */
     void stripDataFrom(RootScene* scene);
 
     /*! A method to check whether internals are already loaded or not.
@@ -72,9 +72,15 @@ public:
      * \param flag is true for visible and false for invisible */
     void pushDataFlag(bool flag);
 
+    /*! A method to pop out from vector with canvas data flags.*/
+    void popBackDataFlag();
+
     /*! A method to push into vector container a canvas tool flag.
      * \param flag is true for visible and false for invisible */
     void pushToolFlag(bool flag);
+
+    /*! A method to pop out from vector with canvas tool flags.*/
+    void popBackToolFlag();
 
     /*! A method to push into vector container a photo transparency value.
      * \param t is within range from 0 to 1 */

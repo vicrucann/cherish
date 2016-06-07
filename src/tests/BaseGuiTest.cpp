@@ -14,6 +14,8 @@ void BaseGuiTest::init()
     QVERIFY(m_rootScene.get());
     QVERIFY(m_rootScene->getUserScene());
     QVERIFY(m_rootScene->getUserScene()->getNumCanvases() == 3);
+    m_rootScene->setAxesVisibility(true);
+    m_rootScene->setBookmarkToolVisibility(true);
 }
 
 void BaseGuiTest::cleanup()

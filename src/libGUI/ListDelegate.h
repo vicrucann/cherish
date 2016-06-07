@@ -63,7 +63,7 @@ signals:
     void clickedTransparencyPlus(const QModelIndex& index);
     void clickedTransparencyMinus(const QModelIndex& index);
 
-private:
+public:
     QRect getButtonDeleteRect(const QRect& rect) const;
     QRect getButtonVisibilityRect(const QRect& rect) const;
     QRect getButtonPlusRect(const QRect& rect) const;

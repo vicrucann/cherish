@@ -132,10 +132,10 @@ public:
     void cutToBuffer();
     void pasteFromBuffer();
 
-    /*! \return A pointer on SceneState. Note: this pointer is not managed by smart pointers and must
+    /*! \return A pointer on SceneState allocated instance. Note: this pointer is not managed by smart pointers and must
      * be deleted manually.
      * \sa entity::SceneState::stripDataFrom() */
-    entity::SceneState* getSceneState() const;
+    entity::SceneState* createSceneState() const;
 
     /*! \param A pointer on SceneState instance which is served as a source for RootScene settings.
      * \return Whether the operation was performed successfully (no size discrepancies found) or not. */
@@ -152,6 +152,7 @@ private:
     std::vector< osg::ref_ptr<entity::Entity2D> > m_buffer; /* copy-paste buffer */
     QUndoStack* m_undoStack;
     bool m_saved;
+    bool m_visibilityBookmarkTool;
 };
 
 #endif // SCENE

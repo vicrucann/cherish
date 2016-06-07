@@ -242,7 +242,7 @@ void MainWindow::slotPhotoTransparencyPlus(const QModelIndex &index)
     entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
     if (!photo) return;
 
-    photo->setTransparency(photo->getTransparency()+0.2f);
+    photo->setTransparency(photo->getTransparency()+cher::PHOTO_TRANSPARECY_DELTA);
     this->recievedRequestUpdate();
 }
 
@@ -285,6 +285,8 @@ void MainWindow::onRequestSceneData(entity::SceneState *state)
     }
     else
         state->stripDataFrom(m_rootScene.get());
+    if (state->isEmpty())
+        outLogMsg("MainWindow: failed to strip data to scene state");
 }
 
 /* Check whether the current scene is empty or not

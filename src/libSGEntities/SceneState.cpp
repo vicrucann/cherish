@@ -84,16 +84,17 @@ void entity::SceneState::stripDataFrom(RootScene *scene)
         for (int j=0; j < cnv->getNumPhotos(); ++j){
             entity::Photo* photo = cnv->getPhotoFromIndex(j);
             if (!photo) continue;
-            m_photoTransparencies.push_back(photo->getTransparency());
+            float t = photo->getTransparency();
+            m_photoTransparencies.push_back(t);
         }
     }
 }
 
 bool entity::SceneState::isEmpty() const
 {
-    if (m_canvasDataFlags.size() == 0 || m_canvasToolFlags.size() == 0 || m_photoTransparencies.size() == 0)
-        return false;
-    return true;
+    if (m_canvasDataFlags.size() == 0 || m_canvasToolFlags.size() == 0)
+        return true;
+    return false;
 }
 
 void entity::SceneState::clear()
@@ -108,9 +109,19 @@ void entity::SceneState::pushDataFlag(bool flag)
     m_canvasDataFlags.push_back(flag);
 }
 
+void entity::SceneState::popBackDataFlag()
+{
+    m_canvasDataFlags.pop_back();
+}
+
 void entity::SceneState::pushToolFlag(bool flag)
 {
     m_canvasToolFlags.push_back(flag);
+}
+
+void entity::SceneState::popBackToolFlag()
+{
+    m_canvasToolFlags.pop_back();
 }
 
 void entity::SceneState::pushTransparency(float t)
