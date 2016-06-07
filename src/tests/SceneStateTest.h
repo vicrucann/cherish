@@ -17,6 +17,7 @@ private slots:
     void testBasicApi();
     void testBookmarkTaken();
     void testBookmarkClickedOn();
+    void testReadWrite();
 
 };
 

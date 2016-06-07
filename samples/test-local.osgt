@@ -5,7 +5,7 @@
 entity::UserScene {
   UniqueID 1 
   Name "UserScene" 
-Children 2 {
+Children 4 {
 entity::Canvas {
       UniqueID 2 
       Name "Canvas0" 
@@ -121,10 +121,10 @@ osg::Vec3Array {
                                   UniqueID 20 
                                   Binding BIND_PER_VERTEX 
 vector 4 {
-1.3 1.2 0 
--1.3 1.2 0 
--1.3 -1.2 0 
-1.3 -1.2 0 
+1.1449 1.34594 0 
+-1.2551 1.34594 0 
+-1.2551 -1.05406 0 
+1.1449 -1.05406 0 
 }
 }
                               }
@@ -133,7 +133,7 @@ osg::Vec4Array {
                                   UniqueID 21 
                                   Binding BIND_OVERALL 
 vector 4 {
-0.423529 0.443137 0.768627 1 
+0.576471 0.631373 0.631373 1 
 0 0 0 0 
 0 0 0 0 
 0 0 0 0 
@@ -161,10 +161,10 @@ osg::Vec3Array {
                                   UniqueID 25 
                                   Binding BIND_PER_VERTEX 
 vector 4 {
-1.3 1.2 0 
-1 1.2 0 
-1 0.9 0 
-1.3 0.9 0 
+1.1449 1.34594 0 
+0.844903 1.34594 0 
+0.844903 1.04594 0 
+1.1449 1.04594 0 
 }
 }
                               }
@@ -173,7 +173,7 @@ osg::Vec4Array {
                                   UniqueID 26 
                                   Binding BIND_OVERALL 
 vector 4 {
-0.423529 0.443137 0.768627 1 
+0.576471 0.631373 0.631373 1 
 0 0 0 0 
 0 0 0 0 
 0 0 0 0 
@@ -731,7 +731,7 @@ TRUE TRUE TRUE FALSE FALSE FALSE FALSE
                 osg::Geode {
                   UniqueID 97 
                   NodeMask 0x10 
-Drawables 2 {
+Drawables 5 {
 entity::Stroke {
                       UniqueID 98 
                       Name "Stroke" 
@@ -740,85 +740,19 @@ PrimitiveSetList 1 {
 osg::DrawArrays {
                           UniqueID 99 
                           Mode LINE_STRIP_ADJACENCY 
-Count 71 
+Count 5 
 }
                       }
 VertexArray TRUE {
 osg::Vec3Array {
                           UniqueID 100 
                           Binding BIND_PER_VERTEX 
-vector 71 {
-0.81863 -0.0742133 0 
-0.81863 -0.0627959 0 
-0.816347 -0.0194096 0 
-0.791228 0.0262601 0 
-0.763826 0.049095 0 
-0.72044 0.0719298 0 
-0.656502 0.0764968 0 
-0.62225 0.0764968 0 
-0.581147 0.0650794 0 
-0.565163 0.049095 0 
-0.526344 0.0262601 0 
-0.485241 -0.0148427 0 
-0.446422 -0.0468115 0 
-0.403035 -0.0947647 0 
-0.323113 -0.140434 0 
-0.304846 -0.156419 0 
-0.254609 -0.174687 0 
-0.218073 -0.188388 0 
-0.181537 -0.197522 0 
-0.126734 -0.197522 0 
-0.0102757 -0.192955 0 
--0.0468115 -0.183821 0 
--0.110749 -0.167836 0 
--0.156419 -0.142718 0 
--0.188388 -0.119883 0 
--0.22264 -0.0947647 0 
--0.247758 -0.0742133 0 
--0.254609 -0.0468115 0 
--0.254609 -0.0308271 0 
--0.254609 -0.0125592 0 
--0.250042 0.00342523 0 
--0.236341 0.0216931 0 
--0.224923 0.0285436 0 
--0.211223 0.0308271 0 
--0.188388 0.035394 0 
--0.172403 0.039961 0 
--0.140434 0.039961 0 
--0.133584 0.039961 0 
--0.106182 0.0285436 0 
--0.0879142 0.0125592 0 
--0.0764968 -0.0125592 0 
--0.0673629 -0.0331106 0 
--0.0627959 -0.0582289 0 
--0.0559454 -0.0879142 0 
--0.0468115 -0.1176 0 
--0.0422445 -0.17012 0 
--0.0331106 -0.199805 0 
--0.0216931 -0.213506 0 
--0.0102757 -0.224923 0 
-0.0102757 -0.238624 0 
-0.0468115 -0.245475 0 
-0.0764968 -0.250042 0 
-0.113033 -0.259176 0 
-0.147285 -0.263743 0 
-0.181537 -0.26831 0 
-0.211223 -0.26831 0 
-0.270593 -0.26831 0 
-0.295712 -0.261459 0 
-0.311696 -0.250042 0 
-0.329964 -0.238624 0 
-0.332247 -0.231774 0 
-0.345948 -0.208939 0 
-0.343665 -0.192955 0 
-0.334531 -0.17697 0 
-0.325397 -0.167836 0 
-0.304846 -0.149568 0 
-0.300279 -0.142718 0 
-0.297995 -0.140434 0 
-0.293428 -0.140434 0 
-0.293428 -0.135867 0 
-0.293428 -0.135867 0 
+vector 5 {
+0.373512 0.678695 0 
+0.473639 -0.472448 0 
+0.46913 -0.578716 0 
+0.466308 -0.609192 0 
+0.466308 -0.609192 0 
 }
 }
                       }
@@ -835,85 +769,217 @@ Lines TRUE {
 osg::DrawArrays {
                           UniqueID 102 
                           Mode LINE_STRIP_ADJACENCY 
-Count 71 
+Count 5 
 }
                       }
 Color 0 0 0 1 
 }
-                    entity::Photo {
+                    entity::Stroke {
                       UniqueID 103 
-                      Name "Photo0" 
+                      Name "Stroke" 
+DataVariance DYNAMIC 
 PrimitiveSetList 1 {
 osg::DrawArrays {
                           UniqueID 104 
-                          Mode QUADS 
-Count 4 
+                          Mode LINE_STRIP_ADJACENCY 
+Count 22 
 }
                       }
 VertexArray TRUE {
 osg::Vec3Array {
                           UniqueID 105 
                           Binding BIND_PER_VERTEX 
-vector 4 {
--1 -0.629331 0 
-1 -0.629331 0 
-1 0.629331 0 
--1 0.629331 0 
-}
-}
-                      }
-NormalArray TRUE {
-osg::Vec3Array {
-                          UniqueID 106 
-                          Binding BIND_OVERALL 
-vector 1 {
-0 0 1 
+vector 22 {
+0.511105 0.901075 0 
+0.511158 0.895672 0 
+0.507638 0.865342 0 
+0.492169 0.777535 0 
+0.466839 0.668543 0 
+0.461393 0.59396 0 
+0.452536 0.442449 0 
+0.443262 0.302933 0 
+0.425912 0.166494 0 
+0.427972 0.0511928 0 
+0.421374 -0.0471539 0 
+0.418371 -0.110477 0 
+0.417723 -0.224748 0 
+0.423786 -0.282738 0 
+0.420821 -0.326647 0 
+0.421559 -0.362679 0 
+0.425003 -0.419268 0 
+0.43512 -0.463682 0 
+0.434091 -0.49298 0 
+0.435927 -0.509598 0 
+0.438729 -0.521978 0 
+0.438729 -0.521978 0 
 }
 }
                       }
 ColorArray TRUE {
 osg::Vec4Array {
-                          UniqueID 107 
+                          UniqueID 106 
                           Binding BIND_OVERALL 
 vector 1 {
-1 1 1 1 
+0 0.168627 0.211765 1 
 }
 }
                       }
-TexCoordArrayList 1 {
-osg::Vec2Array {
-                          UniqueID 108 
-                          Binding BIND_PER_VERTEX 
-vector 4 {
-0 0 
-1 0 
-1 1 
-0 1 
-}
+Lines TRUE {
+osg::DrawArrays {
+                          UniqueID 107 
+                          Mode LINE_STRIP_ADJACENCY 
+Count 22 
 }
                       }
-Texture TRUE {
-osg::Texture2D {
+Color 0 0 0 1 
+}
+                    entity::Stroke {
+                      UniqueID 108 
+                      Name "Stroke" 
+DataVariance DYNAMIC 
+PrimitiveSetList 1 {
+osg::DrawArrays {
                           UniqueID 109 
-                          WRAP_S CLAMP 
-WRAP_T CLAMP 
-WRAP_R CLAMP 
-MIN_FILTER LINEAR_MIPMAP_LINEAR 
-MAG_FILTER LINEAR 
-Swizzle RGBA 
-Image TRUE {
-ClassName osg::Image 
-                            UniqueID 110 
-                            FileName "C:/cygwin64/home/vr267/github/cherish/samples/ds-32.bmp" 
-                            WriteHint 0 2 
-                            DataVariance STATIC 
-}
-TextureWidth 1024 
-TextureHeight 1024 
+                          Mode LINE_STRIP_ADJACENCY 
+Count 11 
 }
                       }
-Width 1 
-Height 0.629331 
+VertexArray TRUE {
+osg::Vec3Array {
+                          UniqueID 110 
+                          Binding BIND_PER_VERTEX 
+vector 11 {
+0.259727 0.58399 0 
+0.255843 0.538561 0 
+0.25213 0.427303 0 
+0.238744 0.17779 0 
+0.231508 0.0664203 0 
+0.204167 -0.135779 0 
+0.198139 -0.177754 0 
+0.199509 -0.211849 0 
+0.19863 -0.234955 0 
+0.199383 -0.238731 0 
+0.199383 -0.238731 0 
+}
+}
+                      }
+ColorArray TRUE {
+osg::Vec4Array {
+                          UniqueID 111 
+                          Binding BIND_OVERALL 
+vector 1 {
+0 0.168627 0.211765 1 
+}
+}
+                      }
+Lines TRUE {
+osg::DrawArrays {
+                          UniqueID 112 
+                          Mode LINE_STRIP_ADJACENCY 
+Count 11 
+}
+                      }
+Color 0 0 0 1 
+}
+                    entity::Stroke {
+                      UniqueID 113 
+                      Name "Stroke" 
+DataVariance DYNAMIC 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                          UniqueID 114 
+                          Mode LINE_STRIP_ADJACENCY 
+Count 14 
+}
+                      }
+VertexArray TRUE {
+osg::Vec3Array {
+                          UniqueID 115 
+                          Binding BIND_PER_VERTEX 
+vector 14 {
+0.0675549 0.691002 0 
+0.0681363 0.68822 0 
+0.0423967 0.548449 0 
+0.00687613 0.438368 0 
+-0.01904 0.32871 0 
+-0.0787268 0.117522 0 
+-0.102785 0.0320197 0 
+-0.127568 -0.0665263 0 
+-0.183813 -0.253906 0 
+-0.189456 -0.304377 0 
+-0.190829 -0.347329 0 
+-0.193596 -0.367243 0 
+-0.192535 -0.375028 0 
+-0.192535 -0.375028 0 
+}
+}
+                      }
+ColorArray TRUE {
+osg::Vec4Array {
+                          UniqueID 116 
+                          Binding BIND_OVERALL 
+vector 1 {
+0 0.168627 0.211765 1 
+}
+}
+                      }
+Lines TRUE {
+osg::DrawArrays {
+                          UniqueID 117 
+                          Mode LINE_STRIP_ADJACENCY 
+Count 14 
+}
+                      }
+Color 0 0 0 1 
+}
+                    entity::Stroke {
+                      UniqueID 118 
+                      Name "Stroke" 
+DataVariance DYNAMIC 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                          UniqueID 119 
+                          Mode LINE_STRIP_ADJACENCY 
+Count 12 
+}
+                      }
+VertexArray TRUE {
+osg::Vec3Array {
+                          UniqueID 120 
+                          Binding BIND_PER_VERTEX 
+vector 12 {
+-0.263314 0.718974 0 
+-0.302276 0.624639 0 
+-0.340178 0.497971 0 
+-0.369444 0.401023 0 
+-0.44989 0.142922 0 
+-0.546842 -0.105623 0 
+-0.573271 -0.184516 0 
+-0.59965 -0.227804 0 
+-0.611667 -0.255123 0 
+-0.617847 -0.266996 0 
+-0.621353 -0.267347 0 
+-0.621353 -0.267347 0 
+}
+}
+                      }
+ColorArray TRUE {
+osg::Vec4Array {
+                          UniqueID 121 
+                          Binding BIND_OVERALL 
+vector 1 {
+0 0.168627 0.211765 1 
+}
+}
+                      }
+Lines TRUE {
+osg::DrawArrays {
+                          UniqueID 122 
+                          Mode LINE_STRIP_ADJACENCY 
+Count 12 
+}
+                      }
+Color 0 0 0 1 
 }
                   }
 }
@@ -925,18 +991,18 @@ TRUE TRUE
           }
 Matrix {
             1 0 0 0 
-            0 -1.03473e-13 1 0 
-            0 -1 -1.03473e-13 0 
-            0 0 0 1 
+            0 1 0 0 
+            0 0 1 0 
+            0 0.6 0 1 
           }
           
 }
       }
-MatrixRotation {
+MatrixTranslation {
         1 0 0 0 
-        0 -1.03473e-13 1 0 
-        0 -1 -1.03473e-13 0 
-        0 0 0 1 
+        0 1 0 0 
+        0 0 1 0 
+        0 0.6 0 1 
       }
       
 Transform TRUE {
@@ -954,42 +1020,43 @@ osg::Geode {
           UniqueID 97 
         }
       }
-Normal 0 -1 -1.03473e-13 
+Center 0 0.6 0 
+Normal 0 0 1 
 }
     entity::Canvas {
-      UniqueID 111 
+      UniqueID 123 
       Name "Canvas1" 
 Children 1 {
 osg::MatrixTransform {
-          UniqueID 112 
+          UniqueID 124 
           Name "Transform" 
 Children 1 {
 osg::Switch {
-              UniqueID 113 
+              UniqueID 125 
               Name "Switch" 
 Children 2 {
 osg::Group {
-                  UniqueID 114 
+                  UniqueID 126 
                   Name "groupFrame" 
 NodeMask 0x100 
 Children 1 {
 osg::Switch {
-                      UniqueID 115 
+                      UniqueID 127 
                       Children 7 {
 osg::Geode {
-                          UniqueID 116 
+                          UniqueID 128 
                           Drawables 1 {
 osg::Geometry {
-                              UniqueID 117 
+                              UniqueID 129 
                               StateSet TRUE {
 osg::StateSet {
-                                  UniqueID 118 
+                                  UniqueID 130 
                                   ModeList 1 {
 GL_LINE_STIPPLE ON|OVERRIDE 
 }
 AttributeList 1 {
 osg::LineStipple {
-                                      UniqueID 119 
+                                      UniqueID 131 
                                       Pattern 0xf00f 
 }
                                     Value OVERRIDE 
@@ -998,26 +1065,26 @@ osg::LineStipple {
                               }
 PrimitiveSetList 1 {
 osg::DrawArrays {
-                                  UniqueID 120 
+                                  UniqueID 132 
                                   Mode LINE_STRIP 
 Count 4 
 }
                               }
 VertexArray TRUE {
 osg::Vec3Array {
-                                  UniqueID 121 
+                                  UniqueID 133 
                                   Binding BIND_PER_VERTEX 
 vector 4 {
-1.3 -1.34515e-13 2.22346e-21 
--1.3 1.34515e-13 -2.22346e-21 
--1.3 1.34515e-13 -2.22346e-21 
-1.3 -1.34515e-13 2.22346e-21 
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
 }
 }
                               }
 ColorArray TRUE {
 osg::Vec4Array {
-                                  UniqueID 122 
+                                  UniqueID 134 
                                   Binding BIND_OVERALL 
 vector 4 {
 0.423529 0.443137 0.768627 1 
@@ -1031,13 +1098,13 @@ vector 4 {
                           }
 }
                         osg::Geode {
-                          UniqueID 123 
+                          UniqueID 135 
                           Drawables 1 {
 osg::Geometry {
-                              UniqueID 124 
+                              UniqueID 136 
                               StateSet TRUE {
 osg::StateSet {
-                                  UniqueID 125 
+                                  UniqueID 137 
                                   ModeList 3 {
 2848 ON 
 GL_LIGHTING OFF 
@@ -1045,11 +1112,11 @@ GL_BLEND ON
 }
 AttributeList 2 {
 osg::LineWidth {
-                                      UniqueID 126 
+                                      UniqueID 138 
                                     }
                                     Value OFF 
 osg::BlendFunc {
-                                      UniqueID 127 
+                                      UniqueID 139 
                                       SourceRGB SRC_ALPHA 
 SourceAlpha SRC_ALPHA 
 DestinationRGB ONE_MINUS_SRC_ALPHA 
@@ -1061,29 +1128,29 @@ DestinationAlpha ONE_MINUS_SRC_ALPHA
                               }
 PrimitiveSetList 1 {
 osg::DrawArrays {
-                                  UniqueID 128 
+                                  UniqueID 140 
                                   Mode LINE_LOOP 
 Count 4 
 }
                               }
 VertexArray TRUE {
 osg::Vec3Array {
-                                  UniqueID 129 
+                                  UniqueID 141 
                                   Binding BIND_PER_VERTEX 
 vector 4 {
-1.3 1.28352 0 
--1.3 1.28352 0 
--1.3 -1.28352 0 
-1.3 -1.28352 0 
+1.3 1.2 0 
+-1.3 1.2 0 
+-1.3 -1.2 0 
+1.3 -1.2 0 
 }
 }
                               }
 ColorArray TRUE {
 osg::Vec4Array {
-                                  UniqueID 130 
+                                  UniqueID 142 
                                   Binding BIND_OVERALL 
 vector 4 {
-0.827451 0.211765 0.509804 1 
+0.423529 0.443137 0.768627 1 
 0 0 0 0 
 0 0 0 0 
 0 0 0 0 
@@ -1094,36 +1161,36 @@ vector 4 {
                           }
 }
                         osg::Geode {
-                          UniqueID 131 
+                          UniqueID 143 
                           Drawables 1 {
 osg::Geometry {
-                              UniqueID 132 
+                              UniqueID 144 
                               Name "Pickable" 
 PrimitiveSetList 1 {
 osg::DrawArrays {
-                                  UniqueID 133 
+                                  UniqueID 145 
                                   Mode QUADS 
 Count 4 
 }
                               }
 VertexArray TRUE {
 osg::Vec3Array {
-                                  UniqueID 134 
+                                  UniqueID 146 
                                   Binding BIND_PER_VERTEX 
 vector 4 {
-1.3 1.28352 0 
-1 1.28352 0 
-1 0.983523 0 
-1.3 0.983523 0 
+1.3 1.2 0 
+1 1.2 0 
+1 0.9 0 
+1.3 0.9 0 
 }
 }
                               }
 ColorArray TRUE {
 osg::Vec4Array {
-                                  UniqueID 135 
+                                  UniqueID 147 
                                   Binding BIND_OVERALL 
 vector 4 {
-0.827451 0.211765 0.509804 1 
+0.423529 0.443137 0.768627 1 
 0 0 0 0 
 0 0 0 0 
 0 0 0 0 
@@ -1134,29 +1201,29 @@ vector 4 {
                           }
 }
                         osg::Camera {
-                          UniqueID 136 
+                          UniqueID 148 
                           StateSet TRUE {
 osg::StateSet {
-                              UniqueID 137 
+                              UniqueID 149 
                             }
                           }
 Children 1 {
 osg::Geode {
-                              UniqueID 138 
+                              UniqueID 150 
                               Drawables 3 {
 osg::Geometry {
-                                  UniqueID 139 
+                                  UniqueID 151 
                                   Name "Center" 
 PrimitiveSetList 1 {
 osg::DrawArrays {
-                                      UniqueID 140 
+                                      UniqueID 152 
                                       Mode QUADS 
 Count 4 
 }
                                   }
 VertexArray TRUE {
 osg::Vec3Array {
-                                      UniqueID 141 
+                                      UniqueID 153 
                                       Binding BIND_PER_VERTEX 
 vector 4 {
 0 0 0 
@@ -1168,7 +1235,7 @@ vector 4 {
                                   }
 ColorArray TRUE {
 osg::Vec4Array {
-                                      UniqueID 142 
+                                      UniqueID 154 
                                       Binding BIND_OVERALL 
 vector 4 {
 0.396078 0.482353 0.513726 1 
@@ -1180,18 +1247,18 @@ vector 4 {
                                   }
 }
                                 osg::Geometry {
-                                  UniqueID 143 
+                                  UniqueID 155 
                                   Name "AxisU" 
 PrimitiveSetList 1 {
 osg::DrawArrays {
-                                      UniqueID 144 
+                                      UniqueID 156 
                                       Mode QUADS 
 Count 4 
 }
                                   }
 VertexArray TRUE {
 osg::Vec3Array {
-                                      UniqueID 145 
+                                      UniqueID 157 
                                       Binding BIND_PER_VERTEX 
 vector 4 {
 0 0 0 
@@ -1203,7 +1270,7 @@ vector 4 {
                                   }
 ColorArray TRUE {
 osg::Vec4Array {
-                                      UniqueID 146 
+                                      UniqueID 158 
                                       Binding BIND_OVERALL 
 vector 4 {
 0.396078 0.482353 0.513726 1 
@@ -1215,18 +1282,18 @@ vector 4 {
                                   }
 }
                                 osg::Geometry {
-                                  UniqueID 147 
+                                  UniqueID 159 
                                   Name "AxisV" 
 PrimitiveSetList 1 {
 osg::DrawArrays {
-                                      UniqueID 148 
+                                      UniqueID 160 
                                       Mode QUADS 
 Count 4 
 }
                                   }
 VertexArray TRUE {
 osg::Vec3Array {
-                                      UniqueID 149 
+                                      UniqueID 161 
                                       Binding BIND_PER_VERTEX 
 vector 4 {
 0 0 0 
@@ -1238,7 +1305,7 @@ vector 4 {
                                   }
 ColorArray TRUE {
 osg::Vec4Array {
-                                      UniqueID 150 
+                                      UniqueID 162 
                                       Binding BIND_OVERALL 
 vector 4 {
 0.396078 0.482353 0.513726 1 
@@ -1259,116 +1326,11 @@ RenderOrder POST_RENDER 0
 InheritanceMask COMPUTE_NEAR_FAR_MODE|CULLING_MODE|LOD_SCALE|SMALL_FEATURE_CULLING_PIXEL_SIZE|CLAMP_PROJECTION_MATRIX_CALLBACK|NEAR_FAR_RATIO|IMPOSTOR_ACTIVE|DEPTH_SORT_IMPOSTOR_SPRITES|IMPOSTOR_PIXEL_ERROR_THRESHOLD|NUM_FRAMES_TO_KEEP_IMPOSTORS_SPRITES|CULL_MASK|CULL_MASK_LEFT|CULL_MASK_RIGHT|CLEAR_COLOR|LIGHTING_MODE|LIGHT|DRAW_BUFFER|READ_BUFFER 
 }
                         osg::Geode {
-                          UniqueID 151 
+                          UniqueID 163 
                           Drawables 4 {
 osg::Geometry {
-                              UniqueID 152 
-                              Name "ScaleUV1" 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 153 
-                                  Mode QUADS 
-Count 4 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 154 
-                                  Binding BIND_PER_VERTEX 
-vector 4 {
-0 0 0 
-0 0 0 
-0 0 0 
-0 0 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 155 
-                                  Binding BIND_OVERALL 
-vector 4 {
-0.396078 0.482353 0.513726 1 
-0 0 0 0 
-0 0 0 0 
-0 0 0 0 
-}
-}
-                              }
-}
-                            osg::Geometry {
-                              UniqueID 156 
-                              Name "ScaleUV2" 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 157 
-                                  Mode QUADS 
-Count 4 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 158 
-                                  Binding BIND_PER_VERTEX 
-vector 4 {
-0 0 0 
-0 0 0 
-0 0 0 
-0 0 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 159 
-                                  Binding BIND_OVERALL 
-vector 4 {
-0.396078 0.482353 0.513726 1 
-0 0 0 0 
-0 0 0 0 
-0 0 0 0 
-}
-}
-                              }
-}
-                            osg::Geometry {
-                              UniqueID 160 
-                              Name "ScaleUV3" 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 161 
-                                  Mode QUADS 
-Count 4 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 162 
-                                  Binding BIND_PER_VERTEX 
-vector 4 {
-0 0 0 
-0 0 0 
-0 0 0 
-0 0 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 163 
-                                  Binding BIND_OVERALL 
-vector 4 {
-0.396078 0.482353 0.513726 1 
-0 0 0 0 
-0 0 0 0 
-0 0 0 0 
-}
-}
-                              }
-}
-                            osg::Geometry {
                               UniqueID 164 
-                              Name "ScaleUV4" 
+                              Name "ScaleUV1" 
 PrimitiveSetList 1 {
 osg::DrawArrays {
                                   UniqueID 165 
@@ -1401,20 +1363,125 @@ vector 4 {
 }
                               }
 }
+                            osg::Geometry {
+                              UniqueID 168 
+                              Name "ScaleUV2" 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 169 
+                                  Mode QUADS 
+Count 4 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 170 
+                                  Binding BIND_PER_VERTEX 
+vector 4 {
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 171 
+                                  Binding BIND_OVERALL 
+vector 4 {
+0.396078 0.482353 0.513726 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                              }
+}
+                            osg::Geometry {
+                              UniqueID 172 
+                              Name "ScaleUV3" 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 173 
+                                  Mode QUADS 
+Count 4 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 174 
+                                  Binding BIND_PER_VERTEX 
+vector 4 {
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 175 
+                                  Binding BIND_OVERALL 
+vector 4 {
+0.396078 0.482353 0.513726 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                              }
+}
+                            osg::Geometry {
+                              UniqueID 176 
+                              Name "ScaleUV4" 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 177 
+                                  Mode QUADS 
+Count 4 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 178 
+                                  Binding BIND_PER_VERTEX 
+vector 4 {
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 179 
+                                  Binding BIND_OVERALL 
+vector 4 {
+0.396078 0.482353 0.513726 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                              }
+}
                           }
 }
                         osg::Geode {
-                          UniqueID 168 
+                          UniqueID 180 
                           Drawables 2 {
 osg::Geometry {
-                              UniqueID 169 
+                              UniqueID 181 
                               Name "Normal1" 
 StateSet TRUE {
 osg::StateSet {
-                                  UniqueID 170 
+                                  UniqueID 182 
                                   AttributeList 1 {
 osg::LineWidth {
-                                      UniqueID 171 
+                                      UniqueID 183 
                                       Width 10 
 }
                                     Value OFF 
@@ -1423,14 +1490,14 @@ osg::LineWidth {
                               }
 PrimitiveSetList 1 {
 osg::DrawArrays {
-                                  UniqueID 172 
+                                  UniqueID 184 
                                   Mode LINES 
 Count 2 
 }
                               }
 VertexArray TRUE {
 osg::Vec3Array {
-                                  UniqueID 173 
+                                  UniqueID 185 
                                   Binding BIND_PER_VERTEX 
 vector 2 {
 0 0 0 
@@ -1440,7 +1507,7 @@ vector 2 {
                               }
 ColorArray TRUE {
 osg::Vec4Array {
-                                  UniqueID 174 
+                                  UniqueID 186 
                                   Binding BIND_OVERALL 
 vector 2 {
 0.14902 0.545098 0.823529 1 
@@ -1450,14 +1517,14 @@ vector 2 {
                               }
 }
                             osg::Geometry {
-                              UniqueID 175 
+                              UniqueID 187 
                               Name "Normal2" 
 StateSet TRUE {
 osg::StateSet {
-                                  UniqueID 176 
+                                  UniqueID 188 
                                   AttributeList 1 {
 osg::LineWidth {
-                                      UniqueID 177 
+                                      UniqueID 189 
                                       Width 10 
 }
                                     Value OFF 
@@ -1466,14 +1533,14 @@ osg::LineWidth {
                               }
 PrimitiveSetList 1 {
 osg::DrawArrays {
-                                  UniqueID 178 
+                                  UniqueID 190 
                                   Mode LINES 
 Count 2 
 }
                               }
 VertexArray TRUE {
 osg::Vec3Array {
-                                  UniqueID 179 
+                                  UniqueID 191 
                                   Binding BIND_PER_VERTEX 
 vector 2 {
 0 0 0 
@@ -1483,7 +1550,7 @@ vector 2 {
                               }
 ColorArray TRUE {
 osg::Vec4Array {
-                                  UniqueID 180 
+                                  UniqueID 192 
                                   Binding BIND_OVERALL 
 vector 2 {
 0.14902 0.545098 0.823529 1 
@@ -1495,97 +1562,11 @@ vector 2 {
                           }
 }
                         osg::Geode {
-                          UniqueID 181 
+                          UniqueID 193 
                           Drawables 4 {
 osg::Geometry {
-                              UniqueID 182 
-                              Name "RotateX1" 
-StateSet TRUE {
-osg::StateSet {
-                                  UniqueID 183 
-                                  AttributeList 1 {
-osg::LineWidth {
-                                      UniqueID 184 
-                                      Width 10 
-}
-                                    Value OFF 
-}
-}
-                              }
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 185 
-                                  Mode LINES 
-Count 2 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 186 
-                                  Binding BIND_PER_VERTEX 
-vector 2 {
-0 0 0 
-0 0 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 187 
-                                  Binding BIND_OVERALL 
-vector 2 {
-0.423529 0.443137 0.768627 1 
-0 0 0 0 
-}
-}
-                              }
-}
-                            osg::Geometry {
-                              UniqueID 188 
-                              Name "RotateY1" 
-StateSet TRUE {
-osg::StateSet {
-                                  UniqueID 189 
-                                  AttributeList 1 {
-osg::LineWidth {
-                                      UniqueID 190 
-                                      Width 10 
-}
-                                    Value OFF 
-}
-}
-                              }
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 191 
-                                  Mode LINES 
-Count 2 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 192 
-                                  Binding BIND_PER_VERTEX 
-vector 2 {
-0 0 0 
-0 0 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 193 
-                                  Binding BIND_OVERALL 
-vector 2 {
-0.709804 0.537255 0 1 
-0 0 0 0 
-}
-}
-                              }
-}
-                            osg::Geometry {
                               UniqueID 194 
-                              Name "RotateX2" 
+                              Name "RotateX1" 
 StateSet TRUE {
 osg::StateSet {
                                   UniqueID 195 
@@ -1628,7 +1609,7 @@ vector 2 {
 }
                             osg::Geometry {
                               UniqueID 200 
-                              Name "RotateY2" 
+                              Name "RotateY1" 
 StateSet TRUE {
 osg::StateSet {
                                   UniqueID 201 
@@ -1669,44 +1650,130 @@ vector 2 {
 }
                               }
 }
+                            osg::Geometry {
+                              UniqueID 206 
+                              Name "RotateX2" 
+StateSet TRUE {
+osg::StateSet {
+                                  UniqueID 207 
+                                  AttributeList 1 {
+osg::LineWidth {
+                                      UniqueID 208 
+                                      Width 10 
+}
+                                    Value OFF 
+}
+}
+                              }
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 209 
+                                  Mode LINES 
+Count 2 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 210 
+                                  Binding BIND_PER_VERTEX 
+vector 2 {
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 211 
+                                  Binding BIND_OVERALL 
+vector 2 {
+0.423529 0.443137 0.768627 1 
+0 0 0 0 
+}
+}
+                              }
+}
+                            osg::Geometry {
+                              UniqueID 212 
+                              Name "RotateY2" 
+StateSet TRUE {
+osg::StateSet {
+                                  UniqueID 213 
+                                  AttributeList 1 {
+osg::LineWidth {
+                                      UniqueID 214 
+                                      Width 10 
+}
+                                    Value OFF 
+}
+}
+                              }
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 215 
+                                  Mode LINES 
+Count 2 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 216 
+                                  Binding BIND_PER_VERTEX 
+vector 2 {
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 217 
+                                  Binding BIND_OVERALL 
+vector 2 {
+0.709804 0.537255 0 1 
+0 0 0 0 
+}
+}
+                              }
+}
                           }
 }
                       }
 ValueList 7 {
-FALSE FALSE FALSE FALSE FALSE FALSE FALSE 
+TRUE TRUE TRUE FALSE FALSE FALSE FALSE 
 }
 }
                   }
 }
                 osg::Geode {
-                  UniqueID 206 
+                  UniqueID 218 
                   NodeMask 0x10 
 Drawables 1 {
 entity::Photo {
-                      UniqueID 207 
-                      Name "Photo1" 
+                      UniqueID 219 
+                      Name "Photo0" 
 PrimitiveSetList 1 {
 osg::DrawArrays {
-                          UniqueID 208 
+                          UniqueID 220 
                           Mode QUADS 
 Count 4 
 }
                       }
 VertexArray TRUE {
 osg::Vec3Array {
-                          UniqueID 209 
+                          UniqueID 221 
                           Binding BIND_PER_VERTEX 
 vector 4 {
--1 -0.983523 0 
-1 -0.983523 0 
-1 0.983523 0 
--1 0.983523 0 
+-1 -0.629331 0 
+1 -0.629331 0 
+1 0.629331 0 
+-1 0.629331 0 
 }
 }
                       }
 NormalArray TRUE {
 osg::Vec3Array {
-                          UniqueID 210 
+                          UniqueID 222 
                           Binding BIND_OVERALL 
 vector 1 {
 0 0 1 
@@ -1715,7 +1782,7 @@ vector 1 {
                       }
 ColorArray TRUE {
 osg::Vec4Array {
-                          UniqueID 211 
+                          UniqueID 223 
                           Binding BIND_OVERALL 
 vector 1 {
 1 1 1 1 
@@ -1724,7 +1791,7 @@ vector 1 {
                       }
 TexCoordArrayList 1 {
 osg::Vec2Array {
-                          UniqueID 212 
+                          UniqueID 224 
                           Binding BIND_PER_VERTEX 
 vector 4 {
 0 0 
@@ -1736,7 +1803,7 @@ vector 4 {
                       }
 Texture TRUE {
 osg::Texture2D {
-                          UniqueID 213 
+                          UniqueID 225 
                           WRAP_S CLAMP 
 WRAP_T CLAMP 
 WRAP_R CLAMP 
@@ -1745,8 +1812,8 @@ MAG_FILTER LINEAR
 Swizzle RGBA 
 Image TRUE {
 ClassName osg::Image 
-                            UniqueID 214 
-                            FileName "C:/cygwin64/home/vr267/github/cherish/samples/test.bmp" 
+                            UniqueID 226 
+                            FileName "C:/cygwin64/home/vr267/github/cherish/samples/ds-32.bmp" 
                             WriteHint 0 2 
                             DataVariance STATIC 
 }
@@ -1755,57 +1822,987 @@ TextureHeight 1024
 }
                       }
 Width 1 
-Height 0.983523 
+Height 0.629331 
 }
                   }
 }
               }
 ValueList 2 {
-TRUE FALSE 
+TRUE TRUE 
 }
 }
           }
 Matrix {
-            -1.03473e-13 0 1 0 
+            -1.03473e-013 0 1 0 
             0 1 0 0 
-            -1 0 -1.03473e-13 0 
+            -1 0 -1.03473e-013 0 
+            0 0.6 0 1 
+          }
+          
+}
+      }
+MatrixRotation {
+        -1.03473e-013 0 1 0 
+        0 1 0 0 
+        -1 0 -1.03473e-013 0 
+        0 0 0 1 
+      }
+      
+MatrixTranslation {
+        1 0 0 0 
+        0 1 0 0 
+        0 0 1 0 
+        0 0.6 0 1 
+      }
+      
+Transform TRUE {
+osg::MatrixTransform {
+          UniqueID 124 
+        }
+      }
+Switch TRUE {
+osg::Switch {
+          UniqueID 125 
+        }
+      }
+GeodeData TRUE {
+osg::Geode {
+          UniqueID 218 
+        }
+      }
+Center 0 0.6 0 
+Normal -1 0 -1.03473e-013 
+}
+    entity::Canvas {
+      UniqueID 227 
+      Name "Canvas2" 
+Children 1 {
+osg::MatrixTransform {
+          UniqueID 228 
+          Name "Transform" 
+Children 1 {
+osg::Switch {
+              UniqueID 229 
+              Name "Switch" 
+Children 2 {
+osg::Group {
+                  UniqueID 230 
+                  Name "groupFrame" 
+NodeMask 0x100 
+Children 1 {
+osg::Switch {
+                      UniqueID 231 
+                      Children 7 {
+osg::Geode {
+                          UniqueID 232 
+                          Drawables 1 {
+osg::Geometry {
+                              UniqueID 233 
+                              StateSet TRUE {
+osg::StateSet {
+                                  UniqueID 234 
+                                  ModeList 1 {
+GL_LINE_STIPPLE ON|OVERRIDE 
+}
+AttributeList 1 {
+osg::LineStipple {
+                                      UniqueID 235 
+                                      Pattern 0xf00f 
+}
+                                    Value OVERRIDE 
+}
+}
+                              }
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 236 
+                                  Mode LINE_STRIP 
+Count 4 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 237 
+                                  Binding BIND_PER_VERTEX 
+vector 4 {
+-1.05857e-013 1.02304 -1.53525e-021 
+-1.05857e-013 1.02304 -1.53525e-021 
+1.42478e-013 -1.37696 2.91168e-021 
+1.42478e-013 -1.37696 2.91168e-021 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 238 
+                                  Binding BIND_OVERALL 
+vector 4 {
+0.423529 0.443137 0.768627 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                              }
+}
+                          }
+}
+                        osg::Geode {
+                          UniqueID 239 
+                          Drawables 1 {
+osg::Geometry {
+                              UniqueID 240 
+                              StateSet TRUE {
+osg::StateSet {
+                                  UniqueID 241 
+                                  ModeList 3 {
+2848 ON 
+GL_LIGHTING OFF 
+GL_BLEND ON 
+}
+AttributeList 2 {
+osg::LineWidth {
+                                      UniqueID 242 
+                                    }
+                                    Value OFF 
+osg::BlendFunc {
+                                      UniqueID 243 
+                                      SourceRGB SRC_ALPHA 
+SourceAlpha SRC_ALPHA 
+DestinationRGB ONE_MINUS_SRC_ALPHA 
+DestinationAlpha ONE_MINUS_SRC_ALPHA 
+}
+                                    Value OFF 
+}
+}
+                              }
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 244 
+                                  Mode LINE_LOOP 
+Count 4 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 245 
+                                  Binding BIND_PER_VERTEX 
+vector 4 {
+1.22922 1.02304 0 
+-1.17078 1.02304 0 
+-1.17078 -1.37696 0 
+1.22922 -1.37696 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 246 
+                                  Binding BIND_OVERALL 
+vector 4 {
+0.827451 0.211765 0.509804 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                              }
+}
+                          }
+}
+                        osg::Geode {
+                          UniqueID 247 
+                          Drawables 1 {
+osg::Geometry {
+                              UniqueID 248 
+                              Name "Pickable" 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 249 
+                                  Mode QUADS 
+Count 4 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 250 
+                                  Binding BIND_PER_VERTEX 
+vector 4 {
+1.22922 1.02304 0 
+0.92922 1.02304 0 
+0.92922 0.723043 0 
+1.22922 0.723043 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 251 
+                                  Binding BIND_OVERALL 
+vector 4 {
+0.827451 0.211765 0.509804 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                              }
+}
+                          }
+}
+                        osg::Camera {
+                          UniqueID 252 
+                          StateSet TRUE {
+osg::StateSet {
+                              UniqueID 253 
+                            }
+                          }
+Children 1 {
+osg::Geode {
+                              UniqueID 254 
+                              Drawables 3 {
+osg::Geometry {
+                                  UniqueID 255 
+                                  Name "Center" 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                      UniqueID 256 
+                                      Mode QUADS 
+Count 4 
+}
+                                  }
+VertexArray TRUE {
+osg::Vec3Array {
+                                      UniqueID 257 
+                                      Binding BIND_PER_VERTEX 
+vector 4 {
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+}
+}
+                                  }
+ColorArray TRUE {
+osg::Vec4Array {
+                                      UniqueID 258 
+                                      Binding BIND_OVERALL 
+vector 4 {
+0.396078 0.482353 0.513726 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                                  }
+}
+                                osg::Geometry {
+                                  UniqueID 259 
+                                  Name "AxisU" 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                      UniqueID 260 
+                                      Mode QUADS 
+Count 4 
+}
+                                  }
+VertexArray TRUE {
+osg::Vec3Array {
+                                      UniqueID 261 
+                                      Binding BIND_PER_VERTEX 
+vector 4 {
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+}
+}
+                                  }
+ColorArray TRUE {
+osg::Vec4Array {
+                                      UniqueID 262 
+                                      Binding BIND_OVERALL 
+vector 4 {
+0.396078 0.482353 0.513726 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                                  }
+}
+                                osg::Geometry {
+                                  UniqueID 263 
+                                  Name "AxisV" 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                      UniqueID 264 
+                                      Mode QUADS 
+Count 4 
+}
+                                  }
+VertexArray TRUE {
+osg::Vec3Array {
+                                      UniqueID 265 
+                                      Binding BIND_PER_VERTEX 
+vector 4 {
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+}
+}
+                                  }
+ColorArray TRUE {
+osg::Vec4Array {
+                                      UniqueID 266 
+                                      Binding BIND_OVERALL 
+vector 4 {
+0.396078 0.482353 0.513726 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                                  }
+}
+                              }
+}
+                          }
+ClearMask DEPTH 
+ClearColor 0 0 0 1 
+ClearAccum 0 0 0 1 
+RenderOrder POST_RENDER 0 
+InheritanceMask COMPUTE_NEAR_FAR_MODE|CULLING_MODE|LOD_SCALE|SMALL_FEATURE_CULLING_PIXEL_SIZE|CLAMP_PROJECTION_MATRIX_CALLBACK|NEAR_FAR_RATIO|IMPOSTOR_ACTIVE|DEPTH_SORT_IMPOSTOR_SPRITES|IMPOSTOR_PIXEL_ERROR_THRESHOLD|NUM_FRAMES_TO_KEEP_IMPOSTORS_SPRITES|CULL_MASK|CULL_MASK_LEFT|CULL_MASK_RIGHT|CLEAR_COLOR|LIGHTING_MODE|LIGHT|DRAW_BUFFER|READ_BUFFER 
+}
+                        osg::Geode {
+                          UniqueID 267 
+                          Drawables 4 {
+osg::Geometry {
+                              UniqueID 268 
+                              Name "ScaleUV1" 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 269 
+                                  Mode QUADS 
+Count 4 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 270 
+                                  Binding BIND_PER_VERTEX 
+vector 4 {
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 271 
+                                  Binding BIND_OVERALL 
+vector 4 {
+0.396078 0.482353 0.513726 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                              }
+}
+                            osg::Geometry {
+                              UniqueID 272 
+                              Name "ScaleUV2" 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 273 
+                                  Mode QUADS 
+Count 4 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 274 
+                                  Binding BIND_PER_VERTEX 
+vector 4 {
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 275 
+                                  Binding BIND_OVERALL 
+vector 4 {
+0.396078 0.482353 0.513726 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                              }
+}
+                            osg::Geometry {
+                              UniqueID 276 
+                              Name "ScaleUV3" 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 277 
+                                  Mode QUADS 
+Count 4 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 278 
+                                  Binding BIND_PER_VERTEX 
+vector 4 {
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 279 
+                                  Binding BIND_OVERALL 
+vector 4 {
+0.396078 0.482353 0.513726 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                              }
+}
+                            osg::Geometry {
+                              UniqueID 280 
+                              Name "ScaleUV4" 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 281 
+                                  Mode QUADS 
+Count 4 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 282 
+                                  Binding BIND_PER_VERTEX 
+vector 4 {
+0 0 0 
+0 0 0 
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 283 
+                                  Binding BIND_OVERALL 
+vector 4 {
+0.396078 0.482353 0.513726 1 
+0 0 0 0 
+0 0 0 0 
+0 0 0 0 
+}
+}
+                              }
+}
+                          }
+}
+                        osg::Geode {
+                          UniqueID 284 
+                          Drawables 2 {
+osg::Geometry {
+                              UniqueID 285 
+                              Name "Normal1" 
+StateSet TRUE {
+osg::StateSet {
+                                  UniqueID 286 
+                                  AttributeList 1 {
+osg::LineWidth {
+                                      UniqueID 287 
+                                      Width 10 
+}
+                                    Value OFF 
+}
+}
+                              }
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 288 
+                                  Mode LINES 
+Count 2 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 289 
+                                  Binding BIND_PER_VERTEX 
+vector 2 {
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 290 
+                                  Binding BIND_OVERALL 
+vector 2 {
+0.14902 0.545098 0.823529 1 
+0 0 0 0 
+}
+}
+                              }
+}
+                            osg::Geometry {
+                              UniqueID 291 
+                              Name "Normal2" 
+StateSet TRUE {
+osg::StateSet {
+                                  UniqueID 292 
+                                  AttributeList 1 {
+osg::LineWidth {
+                                      UniqueID 293 
+                                      Width 10 
+}
+                                    Value OFF 
+}
+}
+                              }
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 294 
+                                  Mode LINES 
+Count 2 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 295 
+                                  Binding BIND_PER_VERTEX 
+vector 2 {
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 296 
+                                  Binding BIND_OVERALL 
+vector 2 {
+0.14902 0.545098 0.823529 1 
+0 0 0 0 
+}
+}
+                              }
+}
+                          }
+}
+                        osg::Geode {
+                          UniqueID 297 
+                          Drawables 4 {
+osg::Geometry {
+                              UniqueID 298 
+                              Name "RotateX1" 
+StateSet TRUE {
+osg::StateSet {
+                                  UniqueID 299 
+                                  AttributeList 1 {
+osg::LineWidth {
+                                      UniqueID 300 
+                                      Width 10 
+}
+                                    Value OFF 
+}
+}
+                              }
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 301 
+                                  Mode LINES 
+Count 2 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 302 
+                                  Binding BIND_PER_VERTEX 
+vector 2 {
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 303 
+                                  Binding BIND_OVERALL 
+vector 2 {
+0.423529 0.443137 0.768627 1 
+0 0 0 0 
+}
+}
+                              }
+}
+                            osg::Geometry {
+                              UniqueID 304 
+                              Name "RotateY1" 
+StateSet TRUE {
+osg::StateSet {
+                                  UniqueID 305 
+                                  AttributeList 1 {
+osg::LineWidth {
+                                      UniqueID 306 
+                                      Width 10 
+}
+                                    Value OFF 
+}
+}
+                              }
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 307 
+                                  Mode LINES 
+Count 2 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 308 
+                                  Binding BIND_PER_VERTEX 
+vector 2 {
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 309 
+                                  Binding BIND_OVERALL 
+vector 2 {
+0.709804 0.537255 0 1 
+0 0 0 0 
+}
+}
+                              }
+}
+                            osg::Geometry {
+                              UniqueID 310 
+                              Name "RotateX2" 
+StateSet TRUE {
+osg::StateSet {
+                                  UniqueID 311 
+                                  AttributeList 1 {
+osg::LineWidth {
+                                      UniqueID 312 
+                                      Width 10 
+}
+                                    Value OFF 
+}
+}
+                              }
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 313 
+                                  Mode LINES 
+Count 2 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 314 
+                                  Binding BIND_PER_VERTEX 
+vector 2 {
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 315 
+                                  Binding BIND_OVERALL 
+vector 2 {
+0.423529 0.443137 0.768627 1 
+0 0 0 0 
+}
+}
+                              }
+}
+                            osg::Geometry {
+                              UniqueID 316 
+                              Name "RotateY2" 
+StateSet TRUE {
+osg::StateSet {
+                                  UniqueID 317 
+                                  AttributeList 1 {
+osg::LineWidth {
+                                      UniqueID 318 
+                                      Width 10 
+}
+                                    Value OFF 
+}
+}
+                              }
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                                  UniqueID 319 
+                                  Mode LINES 
+Count 2 
+}
+                              }
+VertexArray TRUE {
+osg::Vec3Array {
+                                  UniqueID 320 
+                                  Binding BIND_PER_VERTEX 
+vector 2 {
+0 0 0 
+0 0 0 
+}
+}
+                              }
+ColorArray TRUE {
+osg::Vec4Array {
+                                  UniqueID 321 
+                                  Binding BIND_OVERALL 
+vector 2 {
+0.709804 0.537255 0 1 
+0 0 0 0 
+}
+}
+                              }
+}
+                          }
+}
+                      }
+ValueList 7 {
+TRUE TRUE TRUE FALSE FALSE FALSE FALSE 
+}
+}
+                  }
+}
+                osg::Geode {
+                  UniqueID 322 
+                  NodeMask 0x10 
+Drawables 1 {
+entity::Stroke {
+                      UniqueID 323 
+                      Name "Stroke" 
+DataVariance DYNAMIC 
+PrimitiveSetList 1 {
+osg::DrawArrays {
+                          UniqueID 324 
+                          Mode LINE_STRIP_ADJACENCY 
+Count 73 
+}
+                      }
+VertexArray TRUE {
+osg::Vec3Array {
+                          UniqueID 325 
+                          Binding BIND_PER_VERTEX 
+vector 73 {
+0.122069 0.29349 0 
+0.139061 0.292827 0 
+0.163634 0.291868 0 
+0.200189 0.278242 0 
+0.371421 0.180938 0 
+0.459055 0.108392 0 
+0.598918 -0.0423895 0 
+0.640706 -0.12227 0 
+0.672216 -0.26899 0 
+0.659081 -0.332965 0 
+0.566105 -0.472216 0 
+0.493812 -0.513525 0 
+0.42395 -0.564289 0 
+0.346967 -0.600922 0 
+0.209377 -0.640613 0 
+0.100897 -0.647404 0 
+-0.0871564 -0.646576 0 
+-0.160844 -0.639416 0 
+-0.244397 -0.608721 0 
+-0.32146 -0.569565 0 
+-0.386193 -0.517981 0 
+-0.457971 -0.44862 0 
+-0.511578 -0.378981 0 
+-0.558807 -0.308348 0 
+-0.592276 -0.241461 0 
+-0.601368 -0.21085 0 
+-0.613777 -0.148238 0 
+-0.613071 -0.0911012 0 
+-0.572642 0.0344448 0 
+-0.533242 0.100718 0 
+-0.486806 0.155976 0 
+-0.444324 0.176552 0 
+-0.403714 0.193124 0 
+-0.3649 0.197578 0 
+-0.320416 0.195695 0 
+-0.251614 0.192784 0 
+-0.156333 0.188752 0 
+-0.0624165 0.184778 0 
+0.028359 0.176824 0 
+0.0671182 0.152487 0 
+0.117883 0.119191 0 
+0.156132 0.0736743 0 
+0.192776 0.0278603 0 
+0.212368 -0.0196367 0 
+0.232216 -0.0696489 0 
+0.244292 -0.117511 0 
+0.247497 -0.182647 0 
+0.240912 -0.208455 0 
+0.223728 -0.260113 0 
+0.206886 -0.278998 0 
+0.158903 -0.30723 0 
+0.111601 -0.304584 0 
+0.0585373 -0.301616 0 
+0.0210746 -0.29292 0 
+-0.000717908 -0.282918 0 
+-0.0186219 -0.270962 0 
+-0.0365433 -0.256847 0 
+-0.0468249 -0.236645 0 
+-0.0550134 -0.220968 0 
+-0.0579043 -0.18612 0 
+-0.0623006 -0.16645 0 
+-0.0627683 -0.149192 0 
+-0.0635259 -0.121239 0 
+-0.0603205 -0.0978676 0 
+-0.0510068 -0.0876618 0 
+-0.0340151 -0.0778485 0 
+-0.0206839 -0.0742489 0 
+-0.00914171 -0.0748215 0 
+0.00453928 -0.0818996 0 
+0.018102 -0.0847101 0 
+0.0258175 -0.0850946 0 
+0.0278913 -0.0894716 0 
+0.0278913 -0.0894716 0 
+}
+}
+                      }
+ColorArray TRUE {
+osg::Vec4Array {
+                          UniqueID 326 
+                          Binding BIND_OVERALL 
+vector 1 {
+0 0.168627 0.211765 1 
+}
+}
+                      }
+Lines TRUE {
+osg::DrawArrays {
+                          UniqueID 327 
+                          Mode LINE_STRIP_ADJACENCY 
+Count 73 
+}
+                      }
+Color 0 0 0 1 
+}
+                  }
+}
+              }
+ValueList 2 {
+TRUE TRUE 
+}
+}
+          }
+Matrix {
+            1 0 0 0 
+            0 -1.03473e-013 1 0 
+            0 -1 -1.03473e-013 0 
             0 0 0 1 
           }
           
 }
       }
 MatrixRotation {
-        -1.03473e-13 0 1 0 
-        -0 1 0 0 
-        -1 -0 -1.03473e-13 0 
+        1 0 0 0 
+        0 -1.03473e-013 1 0 
+        0 -1 -1.03473e-013 0 
         0 0 0 1 
       }
       
 Transform TRUE {
 osg::MatrixTransform {
-          UniqueID 112 
+          UniqueID 228 
         }
       }
 Switch TRUE {
 osg::Switch {
-          UniqueID 113 
+          UniqueID 229 
         }
       }
 GeodeData TRUE {
 osg::Geode {
-          UniqueID 206 
+          UniqueID 322 
         }
       }
-Normal -1 0 -1.03473e-13 
+Normal 0 -1 -1.03473e-013 
+}
+    entity::Bookmarks {
+      UniqueID 328 
+      Name "Bookmarks" 
+Children 2 {
+entity::SceneState {
+          UniqueID 329 
+          CanvasDataFlags 3 {
+TRUE FALSE TRUE 
+}
+CanvasToolFlags 3 {
+TRUE TRUE TRUE 
+}
+PhotoTransparencies 1 {
+1 
+}
+}
+        entity::SceneState {
+          UniqueID 330 
+          CanvasDataFlags 3 {
+TRUE TRUE FALSE 
+}
+CanvasToolFlags 3 {
+TRUE TRUE TRUE 
+}
+PhotoTransparencies 1 {
+1 
+}
+}
+      }
+Eyes 2 {
+-1.84065 5.23835 4.00285 -4.82883 1.88129 4.47149 
+}
+Centers 2 {
+0 0 0 0 0 0 
+}
+Ups 2 {
+0.3658 -0.480525 0.797048 0.568266 -0.331455 0.753134 
+}
+Names 2 {
+Bookmark0 Bookmark1 
+}
+Fovs 2 {
+60 60 
+}
 }
   }
 Bookmarks TRUE {
 entity::Bookmarks {
-      UniqueID 215 
-      Name "Bookmarks" 
-}
+      UniqueID 328 
+    }
   }
-IdCanvas 2 
-IdPhoto 2 
+IdCanvas 3 
+IdPhoto 1 
+IdBookmark 2 
 FilePath "C:/cygwin64/home/vr267/github/cherish/samples/test-local.osgt" 
 }

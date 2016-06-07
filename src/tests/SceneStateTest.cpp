@@ -243,5 +243,63 @@ void SceneStateTest::testBookmarkClickedOn()
     QVERIFY(m_rootScene->getBookmarkToolVisibility() == true);
 }
 
+void SceneStateTest::testReadWrite()
+{
+    /* set 0th canvas invisible */
+    int index = 0;
+    QSignalSpy spy_visibility(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedVisibilitySet(int)));
+    QTreeWidgetItem* item_canvas = m_canvasWidget->topLevelItem(index);
+    QVERIFY(item_canvas);
+    QRect rect_canvas = m_canvasWidget->visualItemRect(item_canvas);
+    QRect rect_visibility = m_canvasWidget->getCanvasDelegate()->getButtonVisibilityRect(rect_canvas);
+    QTest::mouseClick(m_canvasWidget->viewport(), Qt::LeftButton, 0, rect_visibility.center());
+    QCOMPARE(spy_visibility.count(), 1);
+    entity::Canvas* canvas = m_rootScene->getUserScene()->getCanvas(index);
+    QVERIFY(canvas);
+    QVERIFY(!canvas->getVisibilityAll());
+
+    /* take bookmark with this settings */
+    QSignalSpy spy_bookmark(m_rootScene->getUserScene()->getBookmarks(), SIGNAL(requestSceneData(entity::SceneState*)));
+    this->onBookmark();
+    QCOMPARE(spy_bookmark.count(), 1);
+    const entity::Bookmarks* bookmarks = m_rootScene->getUserScene()->getBookmarks();
+    QVERIFY(bookmarks);
+    QCOMPARE((int)bookmarks->getNumChildren(), 1);
+    QCOMPARE(m_bookmarkWidget->count(), 1);
+    QCOMPARE((int)bookmarks->getSceneState(0)->getCanvasDataFlags().size(), 3);
+    QCOMPARE(bookmarks->getSceneState(0)->getCanvasDataFlags()[0], false);
+    QCOMPARE(bookmarks->getSceneState(0)->getCanvasDataFlags()[1], true);
+    QCOMPARE(bookmarks->getSceneState(0)->getCanvasDataFlags()[2], true);
+
+    /* save scene as a file */
+    QString filename = "RW_SceneStateTest.osgt";
+    m_rootScene->setFilePath(filename.toStdString());
+    QVERIFY(m_rootScene->writeScenetoFile());
+    QVERIFY(m_rootScene->isSavedToFile());
+
+    /* clear scene */
+    this->onFileClose();
+
+    /* open the saved file */
+    m_rootScene->setFilePath(filename.toStdString());
+    QVERIFY(m_rootScene->isSetFilePath());
+    QVERIFY(m_rootScene->loadSceneFromFile());
+    this->initializeCallbacks();
+    m_rootScene->resetBookmarks(m_bookmarkWidget);
+    m_rootScene->getUserScene()->resetModel(m_canvasWidget);
+    QVERIFY(!m_rootScene->getUserScene()->getCanvas(index)->getVisibilityAll());
+
+    /* check the scene state */
+    QVERIFY(m_rootScene->getBookmarksModel());
+    QCOMPARE((int)m_rootScene->getBookmarksModel()->getNumChildren(), 1);
+    QCOMPARE(m_bookmarkWidget->count(), 1);
+    entity::SceneState* state = m_rootScene->getBookmarksModel()->getSceneState(0);
+    QVERIFY(state);
+    QCOMPARE((int)state->getCanvasDataFlags().size(), 3);
+    QCOMPARE(state->getCanvasDataFlags()[0], false);
+    QCOMPARE(state->getCanvasDataFlags()[1], true);
+    QCOMPARE(state->getCanvasDataFlags()[2], true);
+}
+
 QTEST_MAIN(SceneStateTest)
 #include "SceneStateTest.moc"
