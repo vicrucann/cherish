@@ -289,6 +289,11 @@ void MainWindow::onRequestSceneData(entity::SceneState *state)
         outLogMsg("MainWindow: failed to strip data to scene state");
 }
 
+void MainWindow::onRequestSceneStateSet(entity::SceneState *state)
+{
+    m_rootScene->setSceneState(state);
+}
+
 /* Check whether the current scene is empty or not
  * If not - propose to save changes.
  * Clear the scene graph
@@ -1022,6 +1027,10 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestSceneData(entity::SceneState*)),
                      this, SLOT(onRequestSceneData(entity::SceneState*)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestSceneStateSet(entity::SceneState*)),
+                     this, SLOT(onRequestSceneStateSet(entity::SceneState*)),
                      Qt::UniqueConnection);
 
     /* canvas widget area */

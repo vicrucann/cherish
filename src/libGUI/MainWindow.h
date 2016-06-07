@@ -50,6 +50,7 @@ public slots:
     void slotPhotoTransparencyMinus(const QModelIndex& index);
     void slotPhotoPushed(int parent, int start, int, int destination, int);
     void onRequestSceneData(entity::SceneState* state);
+    void onRequestSceneStateSet(entity::SceneState* state);
 
 signals:
     void signalTabletActivity(bool active);

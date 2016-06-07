@@ -142,6 +142,8 @@ signals:
      * \param state is the pointer on SceneState to be updated */
     void requestSceneData(entity::SceneState* state);
 
+    void requestSceneStateSet(entity::SceneState* state);
+
 public slots:
     void onClicked(const QModelIndex& index);
     void onItemChanged(QListWidgetItem* item);
