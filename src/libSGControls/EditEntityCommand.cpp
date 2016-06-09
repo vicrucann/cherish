@@ -136,77 +136,14 @@ this->setText(QObject::tr("Delete %1")
 
 void EditCanvasDeleteCommand::undo()
 {
-    // add canvas back to scene
-    for (int i=0; i<m_bookmarks->getNumBookmarks(); ++i){
-        entity::SceneState* state = m_bookmarks->getSceneState(i);
-        state->pushDataFlag(m_canvas->getVisibilityAll());
-        state->pushToolFlag(m_canvas->getVisibilityFrameInternal());
-
-        // if canvas contains any photos, insert photo transparencies too
-        for (int j=0; j<m_canvas->getNumPhotos(); ++j){
-            entity::Photo* photo = m_canvas->getPhotoFromIndex(j);
-            if (!photo) continue;
-            state->pushTransparency(photo->getTransparency());
-        }
-    }
-
-    // gui reflection
-    emit m_scene->canvasAdded(m_canvas->getName());
-
-    // scene graph addition
-    m_scene->addChild(m_canvas);
-    m_scene->setCanvasCurrent(m_canvas);
-    //see if any canvas contains any photos, they will be added to canvas widget
-    if (m_canvas->getGeodeData()){
-        for (size_t i=0; i<m_canvas->getNumPhotos(); ++i){
-            entity::Photo* photo = m_canvas->getPhotoFromIndex(i);
-            if (!photo) continue;
-            emit m_scene->photoAdded(photo->getName(), m_scene->getCanvasIndex(m_canvas.get()));
-        }
-    }
-    m_scene->updateWidgets();
+    if (!m_scene->addCanvas(m_canvas.get()))
+        qFatal("EditCanvasDelete::undo() - failed adding canvas to scene graph");
 }
 
 void EditCanvasDeleteCommand::redo()
 {
-    // remove the canvas from bookmarks' scene states
-    int index = m_scene->getCanvasIndex(m_canvas);
-    for (int i=0; i<m_bookmarks->getNumBookmarks(); ++i){
-        entity::SceneState* state = m_bookmarks->getSceneState(i);
-        if (!state) continue;
-        state->eraseDataFlag(index);
-        state->eraseToolFlag(index);
-
-        // if canvas contains any photos, erase data of photo transparencies too
-        for (int j=0; j<m_canvas->getNumPhotos(); ++j){
-            entity::Photo* photo = m_canvas->getPhotoFromIndex(j);
-            if (!photo) continue;
-            int idx = m_scene->getPhotoIndex(photo, m_canvas);
-            state->eraseTransparency(idx);
-        }
-    }
-
-    // current-previous issues
-    if (m_canvas == m_scene->getCanvasCurrent())
-        m_scene->setCanvasCurrent(m_scene->getCanvasPrevious());
-    if (m_canvas == m_scene->getCanvasPrevious() ||
-            m_scene->getCanvasCurrent() == m_scene->getCanvasPrevious()){
-        for (unsigned int i = 0; i < m_scene->getNumChildren(); ++i){
-            entity::Canvas* cnvi = dynamic_cast<entity::Canvas*>( m_scene->getChild(i));
-            if (cnvi != NULL && cnvi != m_scene->getCanvasCurrent() && cnvi != m_canvas){
-                m_scene->setCanvasPrevious(cnvi);
-                break;
-            }
-        }
-    }
-
-    // now delete the canvas
-    // from gui
-    emit m_scene->canvasRemoved(m_scene->getCanvasIndex(m_canvas.get()));
-
-    // from scene graph
-    m_scene->removeChild(m_canvas);
-    m_scene->updateWidgets();
+    if (!m_scene->removeCanvas(m_canvas.get()))
+        qFatal("EditCanvasDelete::redo() - failed removing canvas from scene graph");
 }
 
 EditStrokeDeleteCommand::EditStrokeDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, entity::Stroke *stroke, QUndoCommand *parent)
@@ -244,19 +181,14 @@ this->setText(QObject::tr("Delete photo from %1")
 
 void EditPhotoDeleteCommand::undo()
 {
-    m_canvas->getGeodeData()->addDrawable(m_photo.get());
-    emit m_scene->photoAdded(m_photo->getName(), m_scene->getCanvasIndex(m_canvas.get()));
-    m_scene->updateWidgets();
+    if (!m_scene->addPhoto(m_canvas.get(), m_photo.get()))
+        qFatal("EditPhotoDeleteCommand:: undo() failed");
 }
 
 void EditPhotoDeleteCommand::redo()
 {
-    /* order is important: first remove from widget tree;
-     * then remove from scene graph */
-    emit m_scene->photoRemoved(m_scene->getCanvasIndex(m_canvas.get()),
-                               m_scene->getPhotoIndex(m_photo.get(), m_canvas.get()));
-    m_canvas->getGeodeData()->removeDrawable(m_photo.get());
-    m_scene->updateWidgets();
+    if (!m_scene->removePhoto(m_canvas.get(), m_photo.get()))
+        qFatal("EditPhotoDeleteCommand:: redo() failed");
 }
 
 EditEntitiesMoveCommand::EditEntitiesMoveCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double du, double dv, QUndoCommand *parent)

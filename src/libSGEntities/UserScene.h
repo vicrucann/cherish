@@ -19,11 +19,18 @@
 #include "Bookmarks.h"
 #include "../libGUI/ListWidget.h"
 #include "../libGUI/TreeWidget.h"
+#include "../libSGControls/AddEntityCommand.h"
+#include "../libSGControls/EditEntityCommand.h"
 
 namespace entity {
 class Bookmarks;
 }
 class BookmarkWidget;
+class AddCanvasCommand;
+class AddPhotoCommand;
+class EditCanvasDeleteCommand;
+class AddCanvasSeparationCommand;
+class EditPhotoDeleteCommand;
 
 /*! \namespace entity
  * \brief Scene graph entities
@@ -43,11 +50,14 @@ namespace entity {
  * inserted when the user creates the first bookmark of the scene. Here is an example
  * of possible user scene structure:
  *
- *     UserScene -> Canvas0     [previous]
- *        |-> Canvas1
- *        |-> Bookmarks
- *        |-> Canvas2     [current]
- *        |-> ... (other canvases)
+ *     UserScene -> groupCanvas -> Canvas0      [previous]
+ *               |             |-> Canvas1
+ *               |             |-> Canvas2      [current]
+ *               |             |-> ... (other canvases)
+ *               |-> groupBookmarks -> SceneState0  [ bookmark0 ]
+ *                                 |-> SceneState1  [ bookmark1 ]
+ *
+
  *
  * The UserScene inherits osg::Group and QObject. The osg::Group is necessary for a scene graph
  * representation, while QObject allows for signal and slots functionality. Most of the signal and
@@ -81,37 +91,46 @@ public:
      * \return a non-constant Bookmarks group (editable) */
     entity::Bookmarks* getBookmarksModel() const;
 
+
     /*! \fn setIdCanvas
      * \param id is setter for the m_idCanvas
      * Must not be used within the application. */
     void setIdCanvas(unsigned int id);
+
     /*! \fn getIdCanvas
      * \return The maximum ID of canvas, m_idCanvas */
     unsigned int getIdCanvas() const;
+
 
     /*! \fn setIdPhoto
      * \param id is setter for the m_idPhoto
      * Must not be used within the application. */
     void setIdPhoto(unsigned int id);
+
     /*! \fn getIdPhoto
      * \return The maximum ID of photo, m_idPhoto */
     unsigned int getIdPhoto() const;
+
 
     /*! \fn setIdBookmark
      * \param id is setter for the m_idBookmark
      * Must not be used within the application. */
     void setIdBookmark(unsigned int id);
+
     /*! \fn getIdBookmark
      * \return The maximum ID of bookmark, m_idBookmark */
     unsigned int getIdBookmark() const;
+
 
     /*! \fn setFilePath
      * \param name is of type std::string to set up a file path variable where
      * the scene graph is saved to. Can be used within the application. */
     void setFilePath(const std::string& name);
+
     /*! \fn getFilePath
      * \return Name of file path variable where the scene fraph is saved to */
     const std::string& getFilePath() const;
+
     /*! \fn isSetFilePath
      * \return Bool value indicating whether the file path was set or not */
     bool isSetFilePath() const;
@@ -189,9 +208,8 @@ public:
     /*! Gets a pointer to a Canvas based on UserScene child index. This method is useful
      * when, for example, we need to iterate through all the canvases of UserScene.
      * \code
-     *     for (int i=0; i<scene->getNumChildren(); ++i){
+     *     for (int i=0; i<scene->getNumCanvases(); ++i){
      *         entity::Canvas* canvas = scene->getCanvas(i);
-     *         if (!canvas) continue; // it can be NULL if the child is Bookmarks structure
      *         // do stuff with canvas
      *     }
      * \endcode
@@ -213,9 +231,9 @@ public:
      * therefore it is important to keep them updated in case if scene graph is dramatically
      * re-designed. The level for the Stroke is defined:
      *
-     *     RootScene -> UserScene -> Canvas -> Canvas::m_transform -> Canvas::m_switch -> Canvas::m_geodeData -> Stroke
+     *     RootScene -> UserScene -> UserScene::m_groupCanvases -> Canvas -> Canvas::m_transform -> Canvas::m_switch -> Canvas::m_geodeData -> Stroke
      *
-     *        [1]        [2]          [3]            [4]                   [5]                     [6]              [7]
+     *        [1]        [2]                [3]                     [4]            [5]                     [6]              [7]                 [8]
      *
      * To simplify, a relative deepness is used, i.e., \code UserScene::getCanvasLevel() + 4 \endcode.
      * \return a deepness level of Stroke from the RootScene. */
@@ -226,9 +244,9 @@ public:
      * therefore it is important to keep them updated in case if scene graph is dramatically
      * re-designed. The level for the Canvas is defined:
      *
-     *     RootScene -> UserScene -> Canvas
+     *     RootScene -> UserScene -> UserScene::m_groupCanvases -> Canvas
      *
-     *        [1]        [2]          [3]
+     *        [1]        [2]                [3]                     [4]
      *
      * \return a deepness level of Canvas from the RootScene. */
     int getCanvasLevel() const;
@@ -238,9 +256,9 @@ public:
      * therefore it is important to keep them updated in case if scene graph is dramatically
      * re-designed. The level for the Photo is defined:
      *
-     *     RootScene -> UserScene -> Canvas -> Canvas::m_transform -> Canvas::m_switch -> Canvas::m_geodeData -> Photo
+     *     RootScene -> UserScene ->UserScene::m_groupCanvases -> Canvas -> Canvas::m_transform -> Canvas::m_switch -> Canvas::m_geodeData -> Photo
      *
-     *        [1]        [2]          [3]            [4]                   [5]                     [6]              [7]
+     *        [1]        [2]                    [3]                [4]               [5]                   [6]              [7]                 [8]
      *
      * To simplify, a relative deepness is used, i.e., \code UserScene::getCanvasLevel() + 4 \endcode.
      * \return a deepness level of Photo from the RootScene. */
@@ -343,6 +361,9 @@ public:
 
     /*! \return the number of total photos within the scene */
     int getNumPhotos();
+
+    /*! \return the total number of photos that contain all the canvases before the given one */
+    int getNumPhotosTill(entity::Canvas* canvas);
 
     /*! The method is to edit the canvas 3D position, offset in particular. The offset is defined as a
      * non-zero distance along the canvas normal in either positive or negative direction.
@@ -512,7 +533,6 @@ public slots:
     void onRightClicked(const QModelIndex& index);
 
 protected:
-    ~UserScene();
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -565,9 +585,63 @@ protected:
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 private:
-    osg::ref_ptr<osg::Group> m_groupBookmarks;
-    osg::ref_ptr<osg::Group> m_groupCanvases;
-    osg::ref_ptr<entity::Bookmarks> m_bookmarks; /*!< Pointer on Bookmarks data structure, it is one of the direct children of UserScene. */
+    friend class ::AddCanvasCommand;
+    friend class ::AddPhotoCommand;
+    friend class ::EditCanvasDeleteCommand;
+    friend class ::AddCanvasSeparationCommand;
+    friend class ::EditPhotoDeleteCommand;
+
+    /*! Function to be accessed from AddEntityCommand classes only. It modifies the internal scene graph
+     * by adding a canvas as a child to m_groupCanvases. When the canvas is added, it is also made sure:
+     *
+     * * bookmarks' scene states structures are updated
+     * * GUI elements are updated correspondingly, such as CanvasWidget
+     * * This canvas is set to be current
+     * * GLWidget is updated
+     * * Canvas frame is updated
+     *
+     * \param canvas is a canvas to add
+     * \return true if successfully added to scene graph, false - otherwise. */
+    bool addCanvas(entity::Canvas* canvas);
+
+    /*! Function to be accessed from AddEntityCommand classes only. It mordifies the internal scene graph
+     * by removing the canvas as a child of m_groupCanvases. When the canvas is removed, it is also made sure:
+     *
+     * * bookmarks' scene states structures are updated
+     * * current/previous canvas rules hold
+     * * GUI elements are updated correspondingly, such as CanvasWidget
+     * * GLWidget is updated
+     * * Canvas frame is updated
+     * \param canvas is the canvas to remove
+     * \return true if successfully removed from scene graph, false - otherwise. */
+    bool removeCanvas(entity::Canvas* canvas);
+
+    /*! Function to be accessed from AddEntityCommand classes only. It modifies the internal scene graph
+     * by adding a photo to the canvas as a child. When photo is added, it is also made sure:
+     *
+     * * bookmarks' scene states are updated
+     * * GUI elements are updated
+     * * Canvas frame is updated
+     * * GLWidget is updated
+     * \param canvas is canvas to where the photo is added
+     * \param photo is a photo to add
+     * \return true if successfully added to scene graph, false - otherwise. */
+    bool addPhoto(entity::Canvas* canvas, entity::Photo* photo);
+
+    /*! Function to be accessed from AddEntityCommand classes only. It modifies the internal scene graph
+     * by removing a photo from the canvas as a child. When photo is removed, it is also made sure:
+     *
+     * * bookmarks' scene states are updated
+     * * GUI elements are updated
+     * * Canvas frame is updated
+     * * GLWidget is updated
+     * \param canvas is canvas from where the photo is removed
+     * \param photo is a photo to remove
+     * \return true if successfully removed from scene graph, false - otherwise. */
+    bool removePhoto(entity::Canvas* canvas, entity::Photo* photo);
+
+    osg::ref_ptr<osg::Group> m_groupCanvases; /*!< Group that contains all the bookmarks. */
+    osg::ref_ptr<entity::Bookmarks> m_groupBookmarks; /*!< Pointer on Bookmarks data structure, it is one of the direct children of UserScene. */
     osg::observer_ptr<entity::Canvas> m_canvasCurrent; /*!< Observer pointer on current canvas. */
     osg::observer_ptr<entity::Canvas> m_canvasPrevious; /*!< Observer pointer on previous canvas. */
     osg::ref_ptr<entity::Canvas> m_canvasClone; /*!< Smart pointer for clone and separation canvas operations. */

@@ -13,9 +13,8 @@
 
 entity::UserScene::UserScene()
     : osg::Group()
-    , m_groupBookmarks(new osg::Group)
     , m_groupCanvases(new osg::Group)
-    , m_bookmarks(new entity::Bookmarks)
+    , m_groupBookmarks(new entity::Bookmarks)
     , m_canvasCurrent(NULL)
     , m_canvasPrevious(NULL)
     , m_canvasClone(0)
@@ -35,15 +34,14 @@ entity::UserScene::UserScene()
     , m_filePath("")
 {
     this->setName("UserScene");
-//    this->addChild(m_groupBookmarks);
-//    this->addChild(m_groupCanvases);
+    this->addChild(m_groupBookmarks);
+    this->addChild(m_groupCanvases);
 }
 
 entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& copyop)
     : osg::Group(scene, copyop)
-    , m_groupBookmarks(scene.m_groupBookmarks)
     , m_groupCanvases(scene.m_groupCanvases)
-    , m_bookmarks(scene.m_bookmarks)
+    , m_groupBookmarks(scene.m_groupBookmarks)
     , m_canvasCurrent(scene.m_canvasCurrent)
     , m_canvasPrevious(scene.m_canvasPrevious)
     , m_canvasClone(0)
@@ -66,17 +64,17 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
 
 void entity::UserScene::setBookmarks(entity::Bookmarks *group)
 {
-    m_bookmarks = group;
+    m_groupBookmarks = group;
 }
 
 const entity::Bookmarks *entity::UserScene::getBookmarks() const
 {
-    return m_bookmarks;
+    return m_groupBookmarks;
 }
 
 entity::Bookmarks *entity::UserScene::getBookmarksModel() const
 {
-    return m_bookmarks.get();
+    return m_groupBookmarks.get();
 }
 
 void entity::UserScene::setIdCanvas(unsigned int id)
@@ -212,39 +210,28 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
     stack->push(cmd);
 }
 
-// FIXME: when bookmark is added while all the tools are turned off?
 void entity::UserScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const double &fov)
 {
-    if (!m_bookmarks.get()){
-        outErrMsg("addBookmark: bookmarks pointer is NULL");
-        return;
-    }
-    if (!this->containsNode(m_bookmarks)){
-        m_bookmarks->clearModel();
-        if (!this->addChild(m_bookmarks)){
-            outErrMsg("addBookmark: could not set up root pointer correctly");
-            return;
-        }
-    }
-    m_bookmarks->addBookmark(widget, eye, center, up, this->getBookmarkName(), fov);
+    if (!m_groupBookmarks.get())
+        qFatal("UserScene::addBookmark() - bookmarks were not initialized properly");
+
+    m_groupBookmarks->addBookmark(widget, eye, center, up, this->getBookmarkName(), fov);
 }
 
 void entity::UserScene::updateBookmark(BookmarkWidget *widget, int row)
 {
-    if (!m_bookmarks.get()){
-        outErrMsg("addBookmark: bookmarks pointer is NULL");
-        return;
-    }
-    m_bookmarks->updateBookmark(widget, row);
+    if (!m_groupBookmarks.get())
+        qFatal("UserScene::updateBookmark() - bookmarks were not initialized properly");
+
+    m_groupBookmarks->updateBookmark(widget, row);
 }
 
 void entity::UserScene::deleteBookmark(BookmarkWidget *widget, const QModelIndex &index)
 {
-    if (!m_bookmarks.get()){
-        outErrMsg("addBookmark: bookmarks pointer is NULL");
-        return;
-    }
-    m_bookmarks->deleteBookmark(widget, index);
+    if (!m_groupBookmarks.get())
+        qFatal("UserScene::deleteBookmark() - bookmarks were not initialized properly");
+
+    m_groupBookmarks->deleteBookmark(widget, index);
 }
 
 void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, int first, int last, cher::EVENT event)
@@ -277,8 +264,9 @@ void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, i
 
 entity::Canvas* entity::UserScene::getCanvas(unsigned int id)
 {
-    return dynamic_cast<entity::Canvas*>(this->getChild(id));
-    //return getCanvas(this->getChild(id)->getName());
+    if (!m_groupCanvases.get())
+        qFatal("UserScene::getCanvas() canvas group is NULL");
+    return dynamic_cast<entity::Canvas*>(m_groupCanvases->getChild(id));
 }
 
 entity::Canvas* entity::UserScene::getCanvas(const std::string& name)
@@ -286,7 +274,7 @@ entity::Canvas* entity::UserScene::getCanvas(const std::string& name)
     FindNodeVisitor fnv(name);
     this->accept(fnv);
     if (fnv.getNode() == NULL){
-        std::cerr << "getCanvas(): No entity with such name found: " << name << std::endl;
+        qDebug("UserScene::getCanvas() no entity with such name exists within the scene graph");
         return NULL;
     }
     return dynamic_cast<entity::Canvas*>(fnv.getNode());
@@ -301,7 +289,7 @@ int entity::UserScene::getStrokeLevel() const
 /* to use in EventHandler */
 int entity::UserScene::getCanvasLevel() const
 {
-    return 3;
+    return 4;
 }
 
 /* to use in EventHandler */
@@ -312,8 +300,8 @@ int entity::UserScene::getPhotoLevel() const
 
 bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
 {
-    // if canvasCurr and canvasPrev are equal, search for the nearest
-    // valiable candidate to assign the previous to
+    // if current and previous are equal, search for the nearest
+    // valiable candidate to assign the previous to;
     // if no canvases available at all, the observer ptrs are set to NULL
     if (cnv == m_canvasCurrent.get()){
         m_canvasCurrent->setColor(cher::CANVAS_CLR_CURRENT);
@@ -383,7 +371,7 @@ void entity::UserScene::setCanvasesButCurrent(bool enabled)
     if (!m_canvasCurrent.get())
         return;
 
-    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+    for (int i=0; i<this->getNumCanvases(); ++i){
         entity::Canvas* cnv = this->getCanvas(i);
         if (!cnv) return;
         if (cnv != m_canvasCurrent.get()){
@@ -397,6 +385,9 @@ void entity::UserScene::setCanvasesButCurrent(bool enabled)
 
 bool entity::UserScene::getCanvasesButCurrent() const
 {
+    if (!m_canvasCurrent.get() || !m_canvasPrevious.get())
+        return false;
+
     return m_canvasCurrent->getNodeMask() == m_canvasPrevious->getNodeMask();
 }
 
@@ -412,41 +403,40 @@ entity::Canvas*entity::UserScene::getCanvasPrevious() const
 
 int entity::UserScene::getCanvasIndex(entity::Canvas *canvas) const
 {
-    int bms = this->getChildIndex(m_bookmarks);
-    int cnv = this->getChildIndex(canvas);
-    return (cnv<bms? cnv : cnv-1);
+    if (!m_groupCanvases.get())
+        return -1;
+    return m_groupCanvases->getChildIndex(canvas);
 }
 
 int entity::UserScene::getPhotoIndex(entity::Photo *photo, Canvas *canvas) const
 {
     int idx = -1;
     if (!canvas->getGeodeData()) return idx;
-    for (size_t i=0; i< canvas->getGeodeData()->getNumChildren(); ++i){
-        entity::Photo* pi = dynamic_cast<entity::Photo*>(canvas->getGeodeData()->getChild(i));
-        if (!pi) continue;
+    for (int i=0; i< canvas->getNumPhotos(); ++i){
+        entity::Photo* pi = canvas->getPhotoFromIndex(i);
+        if (!pi) qFatal("UserScene::getPhotoFromIndex() failed");
         idx++;
-        if (pi == photo) return idx;
+        if (pi == photo) break;
     }
     return idx;
 }
 
 entity::Canvas *entity::UserScene::getCanvasFromIndex(int row)
 {
-    int bms = this->getChildIndex(m_bookmarks.get());
-    return row>=bms? dynamic_cast<entity::Canvas*>(this->getChild(row+1)) :
-                     dynamic_cast<entity::Canvas*>(this->getChild(row));
+    if (!m_groupCanvases.get())
+        return 0;
+    return dynamic_cast<entity::Canvas*>(m_groupCanvases->getChild(row));
 }
 
 entity::Photo *entity::UserScene::getPhotoFromIndex(Canvas *canvas, int row)
 {
+    if (!canvas) return NULL;
     return canvas->getPhotoFromIndex(row);
 }
 
 int entity::UserScene::getNumCanvases() const
 {
-    int bms = this->getChildIndex(m_bookmarks.get());
-    int numChild = this->getNumChildren();
-    return bms == numChild? numChild : numChild-1;
+    return m_groupCanvases->getNumChildren();
 }
 
 int entity::UserScene::getNumPhotos(entity::Canvas *canvas) const
@@ -465,14 +455,29 @@ int entity::UserScene::getNumPhotos()
     return res;
 }
 
+int entity::UserScene::getNumPhotosTill(entity::Canvas *canvas)
+{
+    int result = 0;
+    if (!canvas) {
+        qWarning("UserScene::getNumPhotosTill() - input canvas is NULL");
+        return result;
+    }
+
+    for (int i=0; i<this->getNumCanvases(); ++i){
+        entity::Canvas* cnv = this->getCanvas(i);
+        if (!cnv) qFatal("UserScene::getNumPhotosTill() - one of the canvases is NULL");
+
+        result += cnv->getNumPhotos();
+
+        if (canvas == cnv)
+            break;
+    }
+    return result;
+}
+
 void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& translate, cher::EVENT event)
 {
-    if (!stack){
-        outErrMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
-                 "Editing is not possible. "
-                 "Restart the program to ensure undo stack initialization.");
-        return;
-    }
+    if (!stack) qFatal("editCanvasOffset(): undo stack is NULL, it is not initialized. Editing is not possible.");
 
     switch (event){
     case cher::EVENT_OFF:
@@ -500,12 +505,7 @@ void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& tr
 
 void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rotation, const osg::Vec3f &center3d, cher::EVENT event)
 {
-    if (!stack){
-        outErrMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
-                 "Editing is not possible. "
-                 "Restart the program to ensure undo stack initialization.");
-        return;
-    }
+    if (!stack) qFatal("editCanvasRotate(): undo stack is NULL, it is not initialized. Editing is not possible.");
 
     switch (event){
     case cher::EVENT_OFF:
@@ -537,12 +537,7 @@ void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rot
 
 void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &translate, cher::EVENT event)
 {
-    if (!stack){
-        outErrMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
-                 "Editing is not possible. "
-                 "Restart the program to ensure undo stack initialization.");
-        return;
-    }
+    if (!stack) qFatal("editCanvasClone(): undo stack is NULL, it is not initialized. Editing is not possible.");
 
     switch (event){
     case cher::EVENT_OFF:
@@ -570,12 +565,7 @@ void entity::UserScene::editCanvasClone(QUndoStack *stack, const osg::Vec3f &tra
 
 void entity::UserScene::editCanvasSeparate(QUndoStack *stack, const osg::Vec3f &translate, cher::EVENT event)
 {
-    if (!stack){
-        outErrMsg("editCanvasOffset(): undo stack is NULL, it is not initialized. "
-                 "Editing is not possible. "
-                 "Restart the program to ensure undo stack initialization.");
-        return;
-    }
+    if (!stack) qFatal("editCanvasSeparate(): undo stack is NULL, it is not initialized. Editing is not possible.");
 
     switch (event){
     case cher::EVENT_OFF:
@@ -603,20 +593,16 @@ void entity::UserScene::editCanvasSeparate(QUndoStack *stack, const osg::Vec3f &
 
 void entity::UserScene::editCanvasDelete(QUndoStack *stack, entity::Canvas *canvas)
 {
-    outLogVal("Attempting to delete", canvas->getName().c_str());
-    if (!stack){
-        outErrMsg("editCanvasRotate(): undo stack is NULL, it is not initialized. "
-                 "Editing is not possible. "
-                 "Restart the program to ensure undo stack initialization.");
-        return;
-    }
+    qDebug() << "Attempting to delete: " << canvas->getName().c_str();
+    if (!stack) qFatal("editCanvasDelete(): undo stack is NULL, it is not initialized. Editing is not possible.");
     if (!canvas){
-        outErrMsg("editCanvasDelete: canvas is NULL");
+        qCritical("editCanvasDelete: canvas is NULL");
         return;
     }
+
     EditCanvasDeleteCommand* cmd = new EditCanvasDeleteCommand(this, canvas);
     if (!cmd){
-        outErrMsg("editCanvasDelete: could not allocate DeleteCommand");
+        qCritical("editCanvasDelete: could not allocate DeleteCommand");
         return;
     }
     stack->push(cmd);
@@ -624,21 +610,21 @@ void entity::UserScene::editCanvasDelete(QUndoStack *stack, entity::Canvas *canv
 
 void entity::UserScene::editPhotoDelete(QUndoStack *stack, entity::Photo *photo, Canvas *canvas)
 {
-    if (!stack){
-        outErrMsg("editPhotoDelete(): undo stack is NULL.");
+    if (!stack) qFatal("editPhotoDelete(): undo stack is NULL, it is not initialized. Editing is not possible.");
+    if (!photo) {
+        qCritical("editPhotoDelete: photo is NULL");
         return;
     }
-    if (!photo)
-        return;
 
     if (!canvas->getGeodeData()->containsDrawable(photo)){
-        outErrMsg("editPhotoDelete: current canvas does not contain that photo."
+        qCritical("editPhotoDelete: current canvas does not contain that photo."
                   "Deletion is not possible.");
         return;
     }
+
     EditPhotoDeleteCommand* cmd = new EditPhotoDeleteCommand(this, canvas, photo);
     if (!cmd){
-        outErrMsg("editPhotoDelete: undo/redo command is NULL");
+        qCritical("editPhotoDelete: undo/redo command is NULL");
         return;
     }
     stack->push(cmd);
@@ -646,36 +632,40 @@ void entity::UserScene::editPhotoDelete(QUndoStack *stack, entity::Photo *photo,
 
 void entity::UserScene::editPhotoPush(QUndoStack *stack, entity::Photo *photo, Canvas *source, Canvas *destination)
 {
-    if (!stack){
-        outErrMsg("editPhotoDelete(): undo stack is NULL.");
+    if (!stack) qFatal("editPhotoPush(): undo stack is NULL, it is not initialized. Editing is not possible.");
+    if (!photo || !destination || !source){
+        qCritical("editPhotoPush: pointers are NULL");
         return;
     }
-    if (!photo || !destination || !source)
-        return;
+
 
     if (!source->getGeodeData()->containsDrawable(photo)){
-        outErrMsg("editPhotoDelete: source canvas does not contain that photo."
+        qCritical("editPhotoDelete: source canvas does not contain that photo."
                           "Scene movement is not possible.");
                 return;
     }
 
     EditPhotoPushCommand* cmd = new EditPhotoPushCommand(this, source, destination, photo);
-    if (!cmd) return;
+    if (!cmd){
+        qCritical("editPhotoPush: undo/redo command is NULL");
+        return;}
     stack->push(cmd);
 }
 
 void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
 {
-    if (!stack){
-        outErrMsg("editStrokesPush: stack is NULL");
-        return;
-    }
-    outLogMsg("Pushing strokes to previously selected canvas (highlighted violet)");
+    if (!stack) qFatal("editPhotoPush(): undo stack is NULL, it is not initialized. Editing is not possible.");
+    qDebug("Pushing strokes to previously selected canvas (highlighted violet)");
     osg::Vec3f eye, c, u;
     camera->getViewMatrixAsLookAt(eye, c, u);
 
-    if (!m_canvasCurrent || !m_canvasPrevious) return;
-    if (eye.isNaN()) return;
+    if (!m_canvasCurrent || !m_canvasPrevious) {
+        qCritical("editStrokesPush: pointer are NULL");
+        return;}
+    if (eye.isNaN()) {
+        qWarning("editStrokesPush: camera's eye is NAN");
+        return;
+    }
 
     const std::vector<entity::Entity2D*>& strokes = m_canvasCurrent->getStrokesSelected();
 
@@ -691,7 +681,7 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
                                                              m_canvasPrevious.get(),
                                                              eye);
     if (!cmd){
-        outErrMsg("editStrokePush: undo/redo command is NULL");
+        qCritical("editStrokePush: undo/redo command is NULL");
         return;
     }
     stack->push(cmd);
@@ -699,18 +689,15 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
 
 void entity::UserScene::editStrokesMove(QUndoStack *stack, double u, double v, cher::EVENT event)
 {
-    if (!stack){
-        outErrMsg("editStrokesMove(): undo stack is NULL.");
-        return;
-    }
+    if (!stack) qFatal("editStrokeMove(): undo stack is NULL, it is not initialized. Editing is not possible.");
     switch (event){
     case cher::EVENT_OFF:
-        outLogMsg("EditStrokesMove: event off called");
+        qDebug("EditStrokesMove: event off called");
         if (this->entitiesSelectedValid())
             this->entitiesMoveFinish(stack);
         break;
     case cher::EVENT_PRESSED:
-        outLogMsg("EditStrokesMove: event pressed called");
+        qDebug("EditStrokesMove: event pressed called");
         this->entitiesMoveStart(u,v);
         this->entitiesMoveAppend(u,v);
         break;
@@ -722,7 +709,7 @@ void entity::UserScene::editStrokesMove(QUndoStack *stack, double u, double v, c
     case cher::EVENT_RELEASED:
         if (!this->entitiesSelectedValid())
             break;
-        outLogMsg("EditStrokesMove: event release called");
+        qDebug("EditStrokesMove: event release called");
         this->entitiesMoveAppend(u,v);
         this->entitiesMoveFinish(stack);
         break;
@@ -733,20 +720,17 @@ void entity::UserScene::editStrokesMove(QUndoStack *stack, double u, double v, c
 
 void entity::UserScene::editStrokesScale(QUndoStack *stack, double u, double v, cher::EVENT event)
 {
-    if (!stack){
-        outErrMsg("editStrokesScale(): undo stack is NULL.");
-        return;
-    }
+    if (!stack) qFatal("editStrokesScale(): undo stack is NULL, it is not initialized. Editing is not possible.");
     switch (event){
     case cher::EVENT_OFF:
-        outLogMsg("EditStrokesScale: event off called");
+        qDebug("EditStrokesScale: event off called");
         if (this->entitiesSelectedValid()){
-            outLogMsg("EditStrokesScale: event off performed");
+            qDebug("EditStrokesScale: event off performed");
             this->entitiesScaleFinish(stack);
         }
         break;
     case cher::EVENT_PRESSED:
-        outLogMsg("EditStrokesScale: event pressed called");
+        qDebug("EditStrokesScale: event pressed called");
         this->entitiesScaleStart(u,v);
         this->entitiesScaleAppend(u,v);
         break;
@@ -758,7 +742,7 @@ void entity::UserScene::editStrokesScale(QUndoStack *stack, double u, double v, 
     case cher::EVENT_RELEASED:
         if (!this->entitiesSelectedValid())
             break;
-        outLogMsg("EditStrokesScale: event release called");
+        qDebug("EditStrokesScale: event release called");
         this->entitiesScaleAppend(u,v);
         this->entitiesScaleFinish(stack);
         break;
@@ -769,20 +753,17 @@ void entity::UserScene::editStrokesScale(QUndoStack *stack, double u, double v, 
 
 void entity::UserScene::editStrokesRotate(QUndoStack *stack, double u, double v, cher::EVENT event)
 {
-    if (!stack){
-        outErrMsg("editStrokesScale(): undo stack is NULL.");
-        return;
-    }
+    if (!stack) qFatal("editStrokesRotate(): undo stack is NULL, it is not initialized. Editing is not possible.");
     switch (event){
     case cher::EVENT_OFF:
-        outLogMsg("EditStrokesScale: event off called");
+        qDebug("EditStrokesScale: event off called");
         if (this->entitiesSelectedValid()){
-            outLogMsg("EditStrokesScale: event off performed");
+            qDebug("EditStrokesScale: event off performed");
             this->entitiesRotateFinish(stack);
         }
         break;
     case cher::EVENT_PRESSED:
-        outLogMsg("EditStrokesScale: event pressed called");
+        qDebug("EditStrokesScale: event pressed called");
         this->entitiesRotateStart(u,v);
         this->entitiesRotateAppend(u,v);
         break;
@@ -794,7 +775,7 @@ void entity::UserScene::editStrokesRotate(QUndoStack *stack, double u, double v,
     case cher::EVENT_RELEASED:
         if (!this->entitiesSelectedValid())
             break;
-        outLogMsg("EditStrokesScale: event release called");
+        qDebug("EditStrokesScale: event release called");
         this->entitiesRotateAppend(u,v);
         this->entitiesRotateFinish(stack);
         break;
@@ -805,22 +786,19 @@ void entity::UserScene::editStrokesRotate(QUndoStack *stack, double u, double v,
 
 void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stroke)
 {
-    if (!stack){
-        outErrMsg("editStrokeDelete: stack is NULL");
-        return;
-    }
+    if (!stack) qFatal("editStrokeDelete(): undo stack is NULL, it is not initialized. Editing is not possible.");
     if (!stroke){
-        outErrMsg("editStrokeDelete: stroke is NULL");
+        qCritical("editStrokeDelete: stroke is NULL");
         return;
     }
     if (!this->getCanvasCurrent()->getGeodeData()->containsDrawable(stroke)){
-        outErrMsg("editStrokeDelete: current canvas does not contain that stroke."
+        qWarning("editStrokeDelete: current canvas does not contain that stroke."
                   "Deletion is not possible.");
         return;
     }
     EditStrokeDeleteCommand* cmd = new EditStrokeDeleteCommand(this, m_canvasCurrent.get(), stroke);
     if (!cmd){
-        outErrMsg("editStrokeDelete: undo/redo command is NULL");
+        qCritical("editStrokeDelete: undo/redo command is NULL");
         return;
     }
     stack->push(cmd);
@@ -828,12 +806,7 @@ void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stro
 
 bool entity::UserScene::isEmptyScene() const
 {
-    return this->getNumChildren()==0? true : false;
-}
-
-entity::UserScene::~UserScene()
-{
-
+    return this->getNumCanvases()==0? true : false;
 }
 
 bool entity::UserScene::clearUserData()
@@ -842,20 +815,16 @@ bool entity::UserScene::clearUserData()
     m_idCanvas=0;
     m_idPhoto=0;
     m_idBookmark=0;
-    return this->removeChildren(0, this->getNumChildren());
+    return m_groupCanvases->removeChildren(0, this->getNumCanvases());
 }
 
 bool entity::UserScene::printScene()
 {
-    for (unsigned int i = 0; i < this->getNumChildren(); ++i){
+    for (int i = 0; i < this->getNumCanvases(); ++i){
         Canvas* cnv = this->getCanvas(i);
-        if (!cnv){
-            entity::Bookmarks* bms = dynamic_cast<entity::Bookmarks*>(this->getChild(i));
-            assert(bms == m_bookmarks);
-            if (bms) outLogMsg("Bookmarks data read");
-            continue;
-        }
-        outLogVal("Canvas name", cnv->getName().c_str());
+        if (!cnv) qFatal("printScene canvas is NULL");
+
+        qDebug() << "Canvas name " << cnv->getName().c_str();
 
         osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(cnv->getChild(0));
         assert(t == cnv->getTransform());
@@ -866,6 +835,7 @@ bool entity::UserScene::printScene()
 //        osg::Geode* data = dynamic_cast<osg::Geode*>(sw->getChild(1));
 //        assert(data == cnv->getGeodeData());
     }
+
     return true;
 }
 
@@ -877,9 +847,9 @@ void entity::UserScene::updateWidgets()
 void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
 {
     widget->clear();
-    for (size_t i=0; i<this->getNumChildren(); ++i){
+    for (int i=0; i<this->getNumCanvases(); ++i){
         entity::Canvas* cnv = this->getCanvas(i);
-        if (!cnv) continue;
+        if (!cnv) qFatal("UserScene::resetModel canvas is NULL");
         emit this->canvasAdded(cnv->getName().c_str());
 
         if (cnv == m_canvasCurrent.get())
@@ -918,7 +888,7 @@ void entity::UserScene::onItemChanged(QTreeWidgetItem *item, int column)
         int row = widget->indexOfTopLevelItem(item);
         if (row >= this->getNumCanvases() || row < 0) return;
         entity::Canvas* cnv = this->getCanvasFromIndex(row);
-        if (!cnv) return;
+        if (!cnv) qFatal("UserScene::onItemChanged() - canvas is NULL");
         cnv->setName(item->text(column).toStdString());
     }
     /* if photo */
@@ -928,14 +898,14 @@ void entity::UserScene::onItemChanged(QTreeWidgetItem *item, int column)
         int rowP = widget->indexOfTopLevelItem(parent);
         if (rowP >= this->getNumCanvases() || rowP < 0) return;
         entity::Canvas* canvas = this->getCanvasFromIndex(rowP);
-        if (!canvas) return;
+        if (!canvas) qFatal("UserScene::onItemChanged() - canvas is NULL");
         int row = parent->indexOfChild(item);
         if (row >= this->getNumPhotos(canvas) || row < 0) return;
 
         entity::Photo* photo = this->getPhotoFromIndex(canvas, row);
-        if (!photo) return;
+        if (!photo) qFatal("UserScene::onItemChanged() - photo is NULL");
         photo->setName(item->text(column).toStdString());
-        outLogMsg("photo name changed");
+        qDebug("photo name changed");
     }
 }
 
@@ -951,10 +921,10 @@ void entity::UserScene::onClicked(const QModelIndex &index)
             return;
         entity::Canvas* cnv = this->getCanvasFromIndex(index.row());
         if (!cnv){
-            outErrMsg("UserScene onClicked: canvas ptr is NULL");
+            qWarning("UserScene onClicked: canvas ptr is NULL");
             return;
         }
-        outLogMsg("Changing current canvas from canvas widget");
+        qDebug("Changing current canvas from canvas widget");
         this->setCanvasCurrent(cnv);
         this->updateWidgets();
     }
@@ -967,10 +937,10 @@ void entity::UserScene::onRightClicked(const QModelIndex &index)
     if (index.data(cher::DelegateChildRole).toInt() == 1){
         entity::Canvas* cnv = this->getCanvasFromIndex(index.row());
         if (!cnv){
-            outErrMsg("UserScene onRightClicked: canvas ptr is NULL");
+            qWarning("UserScene onRightClicked: canvas ptr is NULL");
             return;
         }
-        outLogMsg("Changing previous/target canvas from canvas widget");
+        qDebug("Changing previous/target canvas from canvas widget");
         if (cnv == m_canvasCurrent.get() || cnv == m_canvasPrevious.get())
             return;
         this->setCanvasPrevious(cnv);
@@ -996,9 +966,13 @@ std::string entity::UserScene::getBookmarkName()
 std::string entity::UserScene::getEntityName(const std::string &name, unsigned int id) const
 {
     char buffer[10];
-    sprintf_s(buffer, sizeof(buffer), "%d", id);  // replace back to snprintf in final
-    //snprintf(buffer, sizeof(buffer), "%d", id);
-    //itoa(id, buffer, 10);
+
+#ifdef Q_OS_WIN
+    sprintf_s(buffer, sizeof(buffer), "%d", id);  // especially if msvc < 2015
+#else
+    snprintf(buffer, sizeof(buffer), "%d", id);
+#endif // Q_OS_WIN
+
     return name + std::string(buffer);//std::to_string(static_cast<long double>(id));
 }
 
@@ -1344,7 +1318,7 @@ void entity::UserScene::canvasCloneStart()
     }
     m_canvasClone = cnv;
 
-    if (!this->addChild(m_canvasClone.get())){
+    if (!m_groupCanvases->addChild(m_canvasClone.get())){
         outErrMsg("canvasCloneStart: could not add clone as a child");
         return;
     }
@@ -1352,7 +1326,7 @@ void entity::UserScene::canvasCloneStart()
     /* have to set the clone as current so that to calculate offset correctly */
     if (!this->setCanvasCurrent(m_canvasClone.get())){
         outErrMsg("canvasCloneStart: could not set clone as current");
-        this->removeChild(m_canvasClone.get());
+        m_groupCanvases->removeChild(m_canvasClone.get());
         m_canvasClone = 0;
         return;
     }
@@ -1380,7 +1354,7 @@ void entity::UserScene::canvasCloneFinish(QUndoStack *stack)
     this->setCanvasCurrent(m_canvasPrevious.get());
 
     AddCanvasCommand* cmd = new AddCanvasCommand(this, *(m_canvasClone.get()));
-    this->removeChild(m_canvasClone.get());
+    m_groupCanvases->removeChild(m_canvasClone.get());
     m_canvasClone = 0;
     if (!cmd){
         outErrMsg("canvasCloneFinish: could not allocated AddCanvasCommand");
@@ -1411,7 +1385,7 @@ void entity::UserScene::canvasSeparateStart()
     // now clone contains all the strokes needed
     m_canvasCurrent->unselectAll();
 
-    if (!this->addChild(m_canvasClone.get())){
+    if (!m_groupCanvases->addChild(m_canvasClone.get())){
         outErrMsg("canvasCloneStart: could not add clone as a child");
         return;
     }
@@ -1419,7 +1393,7 @@ void entity::UserScene::canvasSeparateStart()
     /* have to set the clone as current so that to calculate offset correctly */
     if (!this->setCanvasCurrent(m_canvasClone.get())){
         outErrMsg("canvasCloneStart: could not set clone as current");
-        this->removeChild(m_canvasClone.get());
+        m_groupCanvases->removeChild(m_canvasClone.get());
         m_canvasClone = 0;
         return;
     }
@@ -1449,7 +1423,7 @@ void entity::UserScene::canvasSeparateFinish(QUndoStack *stack)
     AddCanvasSeparationCommand* cmd = new AddCanvasSeparationCommand(this, m_canvasCurrent.get(),
                                                                      m_canvasClone.get());
 
-    this->removeChild(m_canvasClone.get());
+    m_groupCanvases->removeChild(m_canvasClone.get());
     m_canvasClone = 0;
     if (!cmd){
         outErrMsg("canvasCloneFinish: could not allocated AddCanvasCommand");
@@ -1504,6 +1478,160 @@ void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
     EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(this, m_deltaR);
     stack->push(cmd);
     m_deltaR = osg::Quat(0,0,0,1);
+}
+
+bool entity::UserScene::addCanvas(entity::Canvas *canvas)
+{
+    if (!canvas) qFatal("UserScene::addCanvas(Canvas*): canvas is NULL");
+    if (!canvas->getGeodeData()) qFatal("UserScene::addCanvas() - geodeData is null");
+
+    // gui elements
+    emit canvasAdded(canvas->getName());
+    //see if any canvas contains any photos, they will be added to canvas widget
+    for (int i=0; i<canvas->getNumPhotos(); ++i){
+        entity::Photo* photo = canvas->getPhotoFromIndex(i);
+        if (!photo) qFatal("UserScene::addCanvas() - photo is null");
+        emit this->photoAdded(photo->getName(), this->getCanvasIndex(canvas));
+    }
+
+    // scene graph addition
+    bool result = m_groupCanvases->addChild(canvas);
+    this->setCanvasCurrent(canvas);
+
+    // for each bookmark's state, add data for new canvas
+    int index = this->getCanvasIndex(canvas);
+    int idx = this->getNumPhotosTill(canvas);
+    for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_groupBookmarks->getSceneState(i);
+        if (!state) qFatal("UserScene::addCanvas(): could not obtain a scene state");
+
+        state->insertToolFlag(index, canvas->getVisibilityAll());
+        state->insertToolFlag(index, canvas->getVisibilityFrameInternal());
+
+        // if canvas contains any photos, insert photo transparencies too
+        for (int j=0; j<canvas->getNumPhotos(); ++j){
+            entity::Photo* photo = canvas->getPhotoFromIndex(j);
+            if (!photo) qFatal("UserScene::addCanvas(): photo is NULL");
+            state->insertTransparency(idx++, photo->getTransparency());
+        }
+    }
+
+    // update frame and widget
+    canvas->updateFrame(this->getCanvasPrevious());
+    this->updateWidgets();
+
+    return result;
+}
+
+bool entity::UserScene::removeCanvas(entity::Canvas *canvas)
+{
+    if (!canvas) qFatal("UserScene::removeCanvas(Canvas*): canvas is NULL");
+    if (!canvas->getGeodeData()) qFatal("UserScene::removeCanvas() - geodeData is null");
+
+    int index = this->getCanvasIndex(canvas);
+    // for each bookmark's state, remove data of the canvas
+    for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_groupBookmarks->getSceneState(i);
+        if (!state) qFatal("UserScene::removeCanvas(): could not obtain a scene state");
+        state->eraseDataFlag(index);
+        state->eraseToolFlag(index);
+//        state->popBackDataFlag();
+//        state->popBackToolFlag();
+
+        // if canvas contains any photos, erase data of photo transparencies too
+        for (int j=0; j<canvas->getNumPhotos(); ++j){
+            entity::Photo* photo = canvas->getPhotoFromIndex(j);
+            if (!photo) qFatal("UserScene::removeCanvas() - photo is null");
+            int idx = this->getPhotoIndex(photo, canvas);
+            state->eraseTransparency(idx);
+        }
+    }
+
+    // make sure current/previous rules hold
+    if (canvas == m_canvasCurrent.get())
+        this->setCanvasCurrent(m_canvasPrevious.get());
+    if (canvas == m_canvasPrevious.get() || m_canvasCurrent.get() == m_canvasPrevious.get()){
+        if (this->getNumCanvases() == 2)
+            this->setCanvasPrevious(0);
+        else {
+            for (int i = 0; i < this->getNumCanvases(); ++i){
+                entity::Canvas* cnvi = this->getCanvas(i);
+                if (cnvi != NULL && cnvi != m_canvasCurrent.get() && cnvi != canvas){
+                    this->setCanvasPrevious(cnvi);
+                    break;
+                }
+            } // for
+        } // else
+    }
+
+    // gui elements
+    emit this->canvasRemoved(index);
+
+    // scene graph
+    canvas->unselectAll();
+    bool result = m_groupCanvases->removeChild(canvas);
+
+    // updates
+    if (m_canvasCurrent.get())
+        m_canvasCurrent->updateFrame(m_canvasPrevious.get());
+    this->updateWidgets();
+
+    return result;
+}
+
+bool entity::UserScene::addPhoto(Canvas *canvas, entity::Photo *photo)
+{
+    if (!canvas) qFatal("UserScene::addPhoto() - canvas is null");
+    if (!canvas->getGeodeData()) qFatal("UserScene::addPhoto() - geodeData is null");
+    if (!photo) qFatal("UserScene::addPhoto() - photo is null");
+
+    // add photo transparecy to each bookmark's scene state
+    int idx = this->getNumPhotosTill(canvas);
+    for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_groupBookmarks->getSceneState(i);
+        if (!state) qFatal("UserScene::addPhoto(): could not obtain a scene state");
+        state->insertTransparency(idx, photo->getTransparency());
+    }
+
+    // add photo to scene graph
+    bool result = canvas->getGeodeData()->addDrawable(photo);
+
+    // gui elements
+    emit this->photoAdded(photo->getName(), this->getCanvasIndex(canvas));
+
+    // updates
+    canvas->updateFrame(m_canvasPrevious.get());
+    this->updateWidgets();
+
+    return result;
+}
+
+bool entity::UserScene::removePhoto(entity::Canvas *canvas, entity::Photo *photo)
+{
+    if (!canvas) qFatal("UserScene::removePhoto() - canvas is null");
+    if (!canvas->getGeodeData()) qFatal("UserScene::removePhoto() - geodeData is null");
+    if (!photo) qFatal("UserScene::removePhoto() - photo is null");
+
+    // remove photo transparencies from each bookmark's scene state
+    int idx = this->getNumPhotosTill(canvas);
+    for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_groupBookmarks->getSceneState(i);
+        if (!state) qFatal("UserScene::removePhoto(): could not obtain a scene state");
+        state->eraseTransparency(idx);
+    }
+
+    // remove from gui elements (order is important)
+    emit this->photoRemoved(this->getCanvasIndex(canvas), this->getPhotoIndex(photo, canvas));
+
+    // remove from scene graph
+    bool result = canvas->getGeodeData()->removeDrawable(photo);
+
+    // make sure it is not a part of selected group, or it will stay within the scene graph
+    canvas->removeEntitySelected(photo);
+    canvas->updateFrame(m_canvasPrevious.get());
+    this->updateWidgets();
+
+    return result;
 }
 
 REGISTER_OBJECT_WRAPPER(UserScene_Wrapper

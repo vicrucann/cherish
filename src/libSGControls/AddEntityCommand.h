@@ -13,6 +13,11 @@
 #include "Bookmarks.h"
 #include "SceneState.h"
 
+namespace entity {
+class UserScene;
+class Bookmarks;
+}
+
 /*! \class AddCanvasCommand
  * Class description
 */
