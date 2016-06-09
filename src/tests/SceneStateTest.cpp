@@ -281,16 +281,15 @@ void SceneStateTest::testReadWrite()
     this->onFileClose();
 
     /* open the saved file */
-//    QSignalSpy spy_ssset(m_rootScene->getUserScene()->getBookmarks(), SIGNAL(requestSceneStateSet(entity::SceneState*)));
-//    QSignalSpy spy_screenshot(m_rootScene->getUserScene()->getBookmarks(), SIGNAL(requestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)));
     m_rootScene->setFilePath(filename.toStdString());
     QVERIFY(m_rootScene->isSetFilePath());
     QVERIFY(m_rootScene->loadSceneFromFile());
     this->initializeCallbacks();
     m_rootScene->resetBookmarks(m_bookmarkWidget);
-//    QCOMPARE(spy_ssset.count(), 1);
-//    QCOMPARE(spy_screenshot.count(), 1);
+    QVERIFY(m_rootScene->getUserScene());
     m_rootScene->getUserScene()->resetModel(m_canvasWidget);
+    QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 3);
+    QVERIFY(m_rootScene->getUserScene()->getCanvas(index));
     QVERIFY(!m_rootScene->getUserScene()->getCanvas(index)->getVisibilityAll());
 
     /* check the scene state */
@@ -320,6 +319,7 @@ void SceneStateTest::testAddCanvas()
     const entity::SceneState* state = m_rootScene->getUserScene()->getBookmarks()->getSceneState(0);
     QVERIFY(state);
     QCOMPARE((int)state->getCanvasDataFlags().size(), 3);
+    QCOMPARE((int)state->getCanvasToolFlags().size(), 3);
     QCOMPARE(state->getCanvasDataFlags()[0], false);
     QCOMPARE(state->getCanvasToolFlags()[0], true);
 
@@ -449,6 +449,7 @@ void SceneStateTest::testDeleteCanvas()
     QCOMPARE((int)state->getCanvasDataFlags().size(), 2);
     QCOMPARE((int) state->getCanvasToolFlags().size(), 2);
     QCOMPARE((int)state->getPhotoTransparencies().size(), 0);
+    QCOMPARE(m_rootScene->getUserScene()->getNumPhotos(), 0);
 
     /* check setting scene state does not fail */
     QVERIFY(m_rootScene->setSceneState(state));

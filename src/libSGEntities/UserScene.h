@@ -80,9 +80,9 @@ public:
 
     META_Node(entity, UserScene)
 
-    /*! Setters and getters methods for OSG serialization. The setters methods are never used
-     * as-is within the application, and are only for OSG serialization requirement.
-*/
+
+    void setGroupCanvases(osg::Group* group);
+    const osg::Group* getGroupCanvases() const;
 
     void setBookmarks(entity::Bookmarks* group);
     const entity::Bookmarks* getBookmarks() const;

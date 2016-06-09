@@ -85,22 +85,9 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
 
 void entity::Canvas::initializeTools()
 {
-    outLogMsg("Canvas tools initialization");
-    if (m_switch->getNumChildren() == 0){
-        outLogMsg("  from scratch");
-        m_switch->addChild(m_toolFrame, true);
-        outLogMsg("canvas tools added");
-    }
-    /* remove all but geode data */
-    else if (m_switch->getNumChildren() >=1 && m_switch->getNumChildren() <= 4 ){
-        osg::Node* tfn = this->getTool("groupFrame");
-        if (tfn) m_switch->replaceChild(tfn, m_toolFrame);
-        else outErrMsg("frame node is null, construction tools are not initialized");
-        this->updateFrame();
-    }
-    else
-        outErrMsg("Canvas tool init: switch does not contain neither 0 nor 4 children. "
-                  "Tools were not initialized.");
+    if (!m_switch.get() || !m_toolFrame)
+        qFatal("Canvas::initializeTools() - pointers are NULL");
+    m_switch->addChild(m_toolFrame, true);
 }
 
 /* Method to initialize canvases' geometrical properties

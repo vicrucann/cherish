@@ -14,8 +14,13 @@ class SceneStateTest : public BaseGuiTest
 {
     Q_OBJECT
 private slots:
+    /*! Battery of tests to check basic API functionality */
     void testBasicApi();
+
+    /*! Battery of tests to check saving of bookmark and its corresponding scene states to scene graph */
     void testBookmarkTaken();
+
+    /*! Battery of tests to check clicking on bookmakrs from GUI and its application to the scene graph */
     void testBookmarkClickedOn();
 
     /*! Battery of tests to check reading and writing of bookmakrs and their corresponding scene states to file */

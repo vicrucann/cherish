@@ -79,10 +79,9 @@ void RootScene::setToolsVisibility(bool vis)
 {
     this->setAxesVisibility(vis);
     this->setBookmarkToolVisibility(vis);
-    for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){
+    for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
-        if (!cnv)
-            continue;
+        if (!cnv) qFatal("RootScene::setToolsVisibility() canvas is NULL");
         cnv->setVisibilityFrame(vis);
     }
 }
@@ -158,11 +157,9 @@ bool RootScene::loadSceneFromFile()
     m_userScene = newscene.get();
 
     /* load the construction tools and set photo textures */
-    for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){
+    for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
-        if (!cnv){
-            continue;
-        }
+        if (!cnv) qFatal("RootScene::loadSceneFromFile() canvas is NULL");
         cnv->initializeTools();
 
         /* photo textures */
@@ -174,11 +171,9 @@ bool RootScene::loadSceneFromFile()
     }
 
     /* update current/previous canvases */
-    for (unsigned int i=0; i<m_userScene->getNumChildren(); ++i){
+    for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
-        if (!cnv){
-            continue;
-        }
+        if (!cnv) qFatal("RootScene::loadSceneFromFile() canvas is NULL");
         cnv->setColor(cher::CANVAS_CLR_REST);
         m_userScene->setCanvasCurrent(cnv);
     }

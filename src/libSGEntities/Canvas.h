@@ -160,7 +160,6 @@ private:
     entity::FrameTool* m_toolFrame;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
-//    std::vector<entity::Entity2D*> m_selectedEntities; /* list of selected entities */
     entity::SelectedGroup m_selectedGroup;
     osg::Vec3f m_center; /* 3D global - virtual plane parameter */
     osg::Vec3f m_normal; /* 3D global - virtual plane parameter*/

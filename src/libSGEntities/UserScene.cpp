@@ -62,6 +62,16 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
 {
 }
 
+void entity::UserScene::setGroupCanvases(osg::Group *group)
+{
+    m_groupCanvases = group;
+}
+
+const osg::Group *entity::UserScene::getGroupCanvases() const
+{
+    return m_groupCanvases.get();
+}
+
 void entity::UserScene::setBookmarks(entity::Bookmarks *group)
 {
     m_groupBookmarks = group;
@@ -467,10 +477,9 @@ int entity::UserScene::getNumPhotosTill(entity::Canvas *canvas)
         entity::Canvas* cnv = this->getCanvas(i);
         if (!cnv) qFatal("UserScene::getNumPhotosTill() - one of the canvases is NULL");
 
-        result += cnv->getNumPhotos();
-
         if (canvas == cnv)
             break;
+        result += cnv->getNumPhotos();
     }
     return result;
 }
@@ -1505,7 +1514,7 @@ bool entity::UserScene::addCanvas(entity::Canvas *canvas)
         entity::SceneState* state = m_groupBookmarks->getSceneState(i);
         if (!state) qFatal("UserScene::addCanvas(): could not obtain a scene state");
 
-        state->insertToolFlag(index, canvas->getVisibilityAll());
+        state->insertDataFlag(index, canvas->getVisibilityAll());
         state->insertToolFlag(index, canvas->getVisibilityFrameInternal());
 
         // if canvas contains any photos, insert photo transparencies too
@@ -1618,6 +1627,7 @@ bool entity::UserScene::removePhoto(entity::Canvas *canvas, entity::Photo *photo
         entity::SceneState* state = m_groupBookmarks->getSceneState(i);
         if (!state) qFatal("UserScene::removePhoto(): could not obtain a scene state");
         state->eraseTransparency(idx);
+        // FIXME: if number if photos is more than one?
     }
 
     // remove from gui elements (order is important)
@@ -1639,6 +1649,7 @@ REGISTER_OBJECT_WRAPPER(UserScene_Wrapper
                         , entity::UserScene
                         , "osg::Object osg::Group entity::UserScene")
 {
+    ADD_OBJECT_SERIALIZER(GroupCanvases, osg::Group, NULL);
     ADD_OBJECT_SERIALIZER(Bookmarks, entity::Bookmarks, NULL);
     ADD_UINT_SERIALIZER(IdCanvas, 0);
     ADD_UINT_SERIALIZER(IdPhoto, 0);
