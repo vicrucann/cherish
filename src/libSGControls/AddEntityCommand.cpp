@@ -6,6 +6,7 @@ AddCanvasCommand::AddCanvasCommand(entity::UserScene* scene, const osg::Matrix& 
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(new entity::Canvas)
+    , m_bookmarks(scene->getBookmarksModel())
 {
     m_canvas->initializeSG();
     m_canvas->setName(name);
@@ -19,6 +20,7 @@ AddCanvasCommand::AddCanvasCommand(entity::UserScene* scene, const entity::Canva
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(copy.clone())
+    , m_bookmarks(scene->getBookmarksModel())
 {
     this->setText(QObject::tr("Clone to canvas %1")
                   .arg(QString(m_canvas->getName().c_str())));
@@ -28,6 +30,7 @@ AddCanvasCommand::AddCanvasCommand(entity::UserScene *scene, const osg::Vec3f &n
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(new entity::Canvas())
+    , m_bookmarks(scene->getBookmarksModel())
 {
     m_canvas->initializeSG();
     m_canvas->setName(name);
@@ -45,6 +48,14 @@ AddCanvasCommand::AddCanvasCommand(entity::UserScene *scene, const osg::Vec3f &n
 
 void AddCanvasCommand::undo()
 {
+    // for each bookmark's state, remove data of the canvas
+    for (int i=0; i<m_bookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_bookmarks->getSceneState(i);
+        if (!state) continue;
+        state->popBackDataFlag();
+        state->popBackToolFlag();
+    }
+
     // make sure current/previous rules hold
     if (m_canvas == m_scene->getCanvasCurrent())
         m_scene->setCanvasCurrent(m_scene->getCanvasPrevious());
@@ -63,8 +74,10 @@ void AddCanvasCommand::undo()
         } // else
     }
     // now delete the canvas
+    // gui elements
     emit m_scene->canvasRemoved(m_scene->getCanvasIndex(m_canvas.get()));
     m_canvas->unselectAll();
+    // from scene graph
     m_scene->removeChild(m_canvas);
     if (m_scene->getCanvasCurrent()) m_scene->getCanvasCurrent()->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
@@ -72,8 +85,18 @@ void AddCanvasCommand::undo()
 
 void AddCanvasCommand::redo()
 {
+    // for each bookmark's state, add data for new canvas
+    for (int i=0; i<m_bookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_bookmarks->getSceneState(i);
+        if (!state) continue;
+        state->pushDataFlag(true);
+        state->pushToolFlag(true);
+    }
+
+    // gui elements
     emit m_scene->canvasAdded(m_canvas->getName());
 
+    // scene graph addition
     m_scene->addChild(m_canvas);
     m_scene->setCanvasCurrent(m_canvas);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
@@ -85,6 +108,7 @@ AddPhotoCommand::AddPhotoCommand(entity::UserScene* scene, const std::string& fn
     , m_scene(scene)
     , m_canvas(scene->getCanvasCurrent())
     , m_photo(new entity::Photo)
+    , m_bookmarks(scene->getBookmarksModel())
 {
     m_photo->setName(ename);
     m_photo->loadImage(fname);
@@ -98,10 +122,22 @@ AddPhotoCommand::AddPhotoCommand(entity::UserScene* scene, const std::string& fn
 
 void AddPhotoCommand::undo()
 {
+    // remove photo transparencies from each bookmark's scene state
+    for (int i=0; i<m_bookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_bookmarks->getSceneState(i);
+        if (!state) continue;
+        state->popBackTransparency();
+    }
+
+    // remove from gui elements
     emit m_scene->photoRemoved(m_scene->getCanvasIndex(m_canvas.get()),
                                m_scene->getPhotoIndex(m_photo.get(), m_canvas.get()));
+
+    // remove from scene graph
     if (!m_canvas->getGeodeData()->removeChild(m_photo.get()))
         outErrMsg("Could not remove photo from current canvas");
+
+    // make sure it is not a part of selected group, or it will stay within the scene graph
     m_canvas->removeEntitySelected(m_photo.get());
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
@@ -109,9 +145,18 @@ void AddPhotoCommand::undo()
 
 void AddPhotoCommand::redo()
 {
+    // add photo transparecy to each bookmark's scene state
+    for (int i=0; i<m_bookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_bookmarks->getSceneState(i);
+        if (!state) continue;
+        state->pushTransparency(m_photo->getTransparency());
+    }
+
+    // add photo to scene graph
     if (!m_canvas->getGeodeData()->addDrawable(m_photo.get()))
         outErrMsg("Could not add photo to current canvas");
 
+    // gui reflection
     emit m_scene->photoAdded(m_photo->getName(), m_scene->getCanvasIndex(m_canvas.get()));
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
@@ -155,6 +200,7 @@ AddCanvasSeparationCommand::AddCanvasSeparationCommand(entity::UserScene *scene,
     , m_source(source)
     , m_target(new entity::Canvas)
     , m_entities(0)
+    , m_bookmarks(scene->getBookmarksModel())
 {
     m_target->initializeSG();
     m_target->setName(copy->getName());
@@ -173,6 +219,13 @@ AddCanvasSeparationCommand::AddCanvasSeparationCommand(entity::UserScene *scene,
 
 void AddCanvasSeparationCommand::undo()
 {
+    // for each bookmark's state, remove data of the canvas
+    for (int i=0; i<m_bookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_bookmarks->getSceneState(i);
+        if (!state) continue;
+        state->popBackDataFlag();
+        state->popBackToolFlag();
+    }
     // make sure current/previous rules hold
     if (m_target == m_scene->getCanvasCurrent())
         m_scene->setCanvasCurrent(m_scene->getCanvasPrevious());
@@ -200,6 +253,15 @@ void AddCanvasSeparationCommand::undo()
 
 void AddCanvasSeparationCommand::redo()
 {
+    // for each bookmark's state, add data for new canvas
+    for (int i=0; i<m_bookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_bookmarks->getSceneState(i);
+        if (!state) continue;
+        state->pushDataFlag(true);
+        state->pushToolFlag(true);
+    }
+
+    // gui reflection
     emit m_scene->canvasAdded(m_target->getName());
 
     // add entities to target, remove from source

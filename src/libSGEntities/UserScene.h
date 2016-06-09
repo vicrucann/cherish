@@ -565,6 +565,8 @@ protected:
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 private:
+    osg::ref_ptr<osg::Group> m_groupBookmarks;
+    osg::ref_ptr<osg::Group> m_groupCanvases;
     osg::ref_ptr<entity::Bookmarks> m_bookmarks; /*!< Pointer on Bookmarks data structure, it is one of the direct children of UserScene. */
     osg::observer_ptr<entity::Canvas> m_canvasCurrent; /*!< Observer pointer on current canvas. */
     osg::observer_ptr<entity::Canvas> m_canvasPrevious; /*!< Observer pointer on previous canvas. */

@@ -128,6 +128,7 @@ EditCanvasDeleteCommand::EditCanvasDeleteCommand(entity::UserScene *scene, entit
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(canvas)
+    , m_bookmarks(scene->getBookmarksModel())
 {
 this->setText(QObject::tr("Delete %1")
               .arg(QString(m_canvas->getName().c_str())));
@@ -135,13 +136,30 @@ this->setText(QObject::tr("Delete %1")
 
 void EditCanvasDeleteCommand::undo()
 {
+    // add canvas back to scene
+    for (int i=0; i<m_bookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_bookmarks->getSceneState(i);
+        state->pushDataFlag(m_canvas->getVisibilityAll());
+        state->pushToolFlag(m_canvas->getVisibilityFrameInternal());
+
+        // if canvas contains any photos, insert photo transparencies too
+        for (int j=0; j<m_canvas->getNumPhotos(); ++j){
+            entity::Photo* photo = m_canvas->getPhotoFromIndex(j);
+            if (!photo) continue;
+            state->pushTransparency(photo->getTransparency());
+        }
+    }
+
+    // gui reflection
     emit m_scene->canvasAdded(m_canvas->getName());
+
+    // scene graph addition
     m_scene->addChild(m_canvas);
     m_scene->setCanvasCurrent(m_canvas);
-    /* see if any canvas contains any photos, they will be added to canvas widget */
+    //see if any canvas contains any photos, they will be added to canvas widget
     if (m_canvas->getGeodeData()){
-        for (size_t i=0; i<m_canvas->getGeodeData()->getNumChildren(); ++i){
-            entity::Photo* photo = dynamic_cast<entity::Photo*>(m_canvas->getGeodeData()->getChild(i));
+        for (size_t i=0; i<m_canvas->getNumPhotos(); ++i){
+            entity::Photo* photo = m_canvas->getPhotoFromIndex(i);
             if (!photo) continue;
             emit m_scene->photoAdded(photo->getName(), m_scene->getCanvasIndex(m_canvas.get()));
         }
@@ -151,6 +169,24 @@ void EditCanvasDeleteCommand::undo()
 
 void EditCanvasDeleteCommand::redo()
 {
+    // remove the canvas from bookmarks' scene states
+    int index = m_scene->getCanvasIndex(m_canvas);
+    for (int i=0; i<m_bookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_bookmarks->getSceneState(i);
+        if (!state) continue;
+        state->eraseDataFlag(index);
+        state->eraseToolFlag(index);
+
+        // if canvas contains any photos, erase data of photo transparencies too
+        for (int j=0; j<m_canvas->getNumPhotos(); ++j){
+            entity::Photo* photo = m_canvas->getPhotoFromIndex(j);
+            if (!photo) continue;
+            int idx = m_scene->getPhotoIndex(photo, m_canvas);
+            state->eraseTransparency(idx);
+        }
+    }
+
+    // current-previous issues
     if (m_canvas == m_scene->getCanvasCurrent())
         m_scene->setCanvasCurrent(m_scene->getCanvasPrevious());
     if (m_canvas == m_scene->getCanvasPrevious() ||
@@ -163,8 +199,12 @@ void EditCanvasDeleteCommand::redo()
             }
         }
     }
+
     // now delete the canvas
+    // from gui
     emit m_scene->canvasRemoved(m_scene->getCanvasIndex(m_canvas.get()));
+
+    // from scene graph
     m_scene->removeChild(m_canvas);
     m_scene->updateWidgets();
 }
@@ -196,6 +236,7 @@ EditPhotoDeleteCommand::EditPhotoDeleteCommand(entity::UserScene *scene, entity:
     , m_scene(scene)
     , m_canvas(canvas)
     , m_photo(photo)
+    , m_bookmarks(scene->getBookmarksModel())
 {
 this->setText(QObject::tr("Delete photo from %1")
               .arg(QString(m_canvas->getName().c_str())));

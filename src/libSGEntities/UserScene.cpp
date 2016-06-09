@@ -13,6 +13,8 @@
 
 entity::UserScene::UserScene()
     : osg::Group()
+    , m_groupBookmarks(new osg::Group)
+    , m_groupCanvases(new osg::Group)
     , m_bookmarks(new entity::Bookmarks)
     , m_canvasCurrent(NULL)
     , m_canvasPrevious(NULL)
@@ -33,10 +35,14 @@ entity::UserScene::UserScene()
     , m_filePath("")
 {
     this->setName("UserScene");
+//    this->addChild(m_groupBookmarks);
+//    this->addChild(m_groupCanvases);
 }
 
 entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& copyop)
     : osg::Group(scene, copyop)
+    , m_groupBookmarks(scene.m_groupBookmarks)
+    , m_groupCanvases(scene.m_groupCanvases)
     , m_bookmarks(scene.m_bookmarks)
     , m_canvasCurrent(scene.m_canvasCurrent)
     , m_canvasPrevious(scene.m_canvasPrevious)

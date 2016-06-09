@@ -10,6 +10,8 @@
 #include "Canvas.h"
 #include "Photo.h"
 #include "Stroke.h"
+#include "Bookmarks.h"
+#include "SceneState.h"
 
 /*! \class AddCanvasCommand
  * Class description
@@ -35,6 +37,7 @@ public:
 private:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::ref_ptr<entity::Canvas> m_canvas;
+    osg::observer_ptr<entity::Bookmarks> m_bookmarks;
 };
 
 /*! \class AddCanvasSeparationCommand
@@ -61,6 +64,7 @@ private:
     osg::observer_ptr<entity::Canvas> m_source;
     osg::ref_ptr<entity::Canvas> m_target;
     std::vector<entity::Entity2D*> m_entities;
+    osg::observer_ptr<entity::Bookmarks> m_bookmarks;
 };
 
 /*! \class AddPhotoCommand
@@ -84,6 +88,7 @@ private:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::ref_ptr<entity::Photo> m_photo;
+    osg::observer_ptr<entity::Bookmarks> m_bookmarks;
 };
 
 /*! \class AddStrokeCommand

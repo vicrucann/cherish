@@ -86,6 +86,36 @@ public:
      * \param t is within range from 0 to 1 */
     void pushTransparency(float t);
 
+    /*! A method to pop out from the vector container of photo transparency values. */
+    void popBackTransparency();
+
+    /*! A method to insert into vector with canvas data flags.
+     * \param index is specified index at which needed to be inserted
+     * \param flag is the value to be inserted */
+    void insertDataFlag(int index, bool flag);
+
+    /*! A method to erase from vector with canvas data flags.
+     * \param index is specified index which needs to be erased */
+    void eraseDataFlag(int index);
+
+    /*! A method to insert into vector with canvas tool flags.
+     * \param index is specified index at which needed to be inserted
+     * \param flag is the value to be inserted */
+    void insertToolFlag(int index, bool flag);
+
+    /*! A method to erase from vector with canvas tool flags.
+     * \param index is specified index which needs to be erased */
+    void eraseToolFlag(int index);
+
+    /*! A method to insert into vector with photo transparency values.
+     * \param index is specified index at which needed to be inserted
+     * \param t is the value to be inserted */
+    void insertTransparency(int index, float t);
+
+    /*! A method to erase from vector with photo transparencies.
+     * \param index is specified index which needs to be erased */
+    void eraseTransparency(int index);
+
 private:
     bool m_axisFlag;  /*!< Boolean flag indicating whether global axis visibility is on (true) or off (false). */
     bool m_bookmarksFlag; /*!< Boolean flag indicating whether bookmarks visibility is on (true) or off (false). */

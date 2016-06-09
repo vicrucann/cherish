@@ -93,8 +93,12 @@ float entity::Photo::getAngle() const
 */
 void entity::Photo::loadImage(const std::string& fname)
 {
+    qDebug() << "Trying to load image data...";
     osg::Image* image = osgDB::readImageFile(fname);
+    if (!image) return;
+    qDebug() << "DONE: Image read from file name";
     m_texture->setImage(image);
+    qDebug() << "DONE: Texure extracted from image";
 
     float aspectRatio = static_cast<float>(image->s()) / static_cast<float>(image->t());
     m_width = cher::PHOTO_MINW;
