@@ -41,7 +41,14 @@ set(BASEGUITEST_SRC BaseGuiTest.h BaseGuiTest.cpp )
 
 # SceneState tests with relation to bookmarks (SG and GUI) and canvas-photo widget (GUI)
 set(SCENESTATE_SRC SceneStateTest.h SceneStateTest.cpp ${BASEGUITEST_SRC})
-set(SCENESTATE_NAME scenestate_test)
+set(SCENESTATE_NAME test_scenestate)
 add_executable(${SCENESTATE_NAME} ${SCENESTATE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
 target_link_libraries(${SCENESTATE_NAME} ${TEST_LIBRARIES})
 add_test(${SCENESTATE_NAME} ${SCENESTATE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
+
+# UserScene tests
+set(USERSCENE_SRC UserSceneTest.h UserSceneTest.cpp ${BASEGUITEST_SRC})
+set(USERSCENE_NAME test_userscene)
+add_executable(${USERSCENE_NAME} ${USERSCENE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
+target_link_libraries(${USERSCENE_NAME} ${TEST_LIBRARIES})
+add_test(${USERSCENE_NAME} ${USERSCENE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})

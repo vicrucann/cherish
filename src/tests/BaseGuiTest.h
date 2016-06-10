@@ -4,11 +4,14 @@
 #include <QObject>
 #include <QTest>
 #include <QtGlobal>
-#include <QScopedPointer>
+
+#include <osg/observer_ptr>
 
 #include "MainWindow.h"
 #include "CherishApplication.h"
 #include "Settings.h"
+#include "Canvas.h"
+#include "UserScene.h"
 
 class MainWindow;
 
@@ -27,11 +30,16 @@ public:
     explicit BaseGuiTest(QWidget *parent = 0);
 
 private slots:
+
     /*! Slot is called before each test functions is executed. */
     void init();
 
     /*! Slot is called after every test function is executed. */
     void cleanup();
+
+private:
+    osg::observer_ptr<entity::Canvas> m_canvas0, m_canvas1, m_canvas2;
+    osg::observer_ptr<entity::UserScene> m_scene;
 };
 
 #endif // BASETEST_H
