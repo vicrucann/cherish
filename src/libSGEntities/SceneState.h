@@ -113,8 +113,14 @@ public:
     void insertTransparency(int index, float t);
 
     /*! A method to erase from vector with photo transparencies.
-     * \param index is specified index which needs to be erased */
-    void eraseTransparency(int index);
+     * \param start is specified start index  from which needs to be erased (inclusive)
+     * \param number is the number of consequtive elements to erase */
+    void eraseTransparency(int start, int number);
+
+    /*! A method to reset a vector value with photo transparencies.
+     * \param index is specified index  which needs to be reset
+     * \param t is the new transparency value */
+    void resetTransparency(int index, float t);
 
 private:
     bool m_axisFlag;  /*!< Boolean flag indicating whether global axis visibility is on (true) or off (false). */

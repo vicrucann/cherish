@@ -242,7 +242,7 @@ void MainWindow::slotPhotoTransparencyPlus(const QModelIndex &index)
     entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
     if (!photo) return;
 
-    photo->setTransparency(photo->getTransparency()+cher::PHOTO_TRANSPARECY_DELTA);
+    m_rootScene->getUserScene()->editPhotoTransparency(photo, cnv, photo->getTransparency()+cher::PHOTO_TRANSPARECY_DELTA);
     this->recievedRequestUpdate();
 }
 
@@ -259,7 +259,7 @@ void MainWindow::slotPhotoTransparencyMinus(const QModelIndex &index)
     entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
     if (!photo) return;
 
-    photo->setTransparency(photo->getTransparency()-cher::PHOTO_TRANSPARECY_DELTA);
+    m_rootScene->getUserScene()->editPhotoTransparency(photo, cnv, photo->getTransparency()-cher::PHOTO_TRANSPARECY_DELTA);
     this->recievedRequestUpdate();
 }
 

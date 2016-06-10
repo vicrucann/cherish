@@ -431,6 +431,12 @@ public:
     void editPhotoPush(QUndoStack* stack, entity::Photo* photo, entity::Canvas* source,
                        entity::Canvas* destination);
 
+    /*! This method changes transparency level within scene graph and across bookmarks' scene states.
+     * \param photo is the photo to edit
+     * \param canvas is the canvas to which the photo belongs to
+     * \param t is the new transparency level, in range from 0 to 1. */
+    void editPhotoTransparency(entity::Photo* photo, entity::Canvas* canvas, float t);
+
     /*! The method is to transfer a set of strokes from current canvas to previous. The transfer is projective, i.e. under
      * given camera view the whole sketching image does not change, although the set of strokes now belongs to the
      * previous canvas.

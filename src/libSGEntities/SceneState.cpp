@@ -186,14 +186,26 @@ void entity::SceneState::insertTransparency(int index, float t)
     m_photoTransparencies.insert(m_photoTransparencies.begin()+index, t);
 }
 
-void entity::SceneState::eraseTransparency(int index)
+void entity::SceneState::eraseTransparency(int start, int number)
 {
-    if (index<0 || index>=(int)m_canvasDataFlags.size()){
+    if (start<0 || start>=(int)m_canvasDataFlags.size() ||
+            number<0 || number>(int)m_canvasDataFlags.size() ||
+            start+number>(int)m_canvasDataFlags.size() ){
         qFatal("eraseTransparency called: index is out of range. "
                "No erase will be performed. Scene state data is out of sync.");
         return;
     }
-    m_photoTransparencies.erase(m_photoTransparencies.begin() + index);
+    m_photoTransparencies.erase(m_photoTransparencies.begin()+start, m_photoTransparencies.begin()+start+number);
+}
+
+void entity::SceneState::resetTransparency(int index, float t)
+{
+    if (index<0 || index>=(int)m_photoTransparencies.size()){
+        qFatal("insertTransparency called: index is out of range. "
+               "No insert will be performed. Scene state data is out of sync.");
+        return;
+    }
+    m_photoTransparencies[index] = t;
 }
 
 REGISTER_OBJECT_WRAPPER(SceneState_Wrapper

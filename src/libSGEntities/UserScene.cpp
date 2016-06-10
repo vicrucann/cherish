@@ -661,6 +661,23 @@ void entity::UserScene::editPhotoPush(QUndoStack *stack, entity::Photo *photo, C
     stack->push(cmd);
 }
 
+void entity::UserScene::editPhotoTransparency(entity::Photo *photo, entity::Canvas *canvas, float t)
+{
+    if (!photo || !canvas) return;
+    // TODO:
+    // if (canvas->containsPhoto(photo))
+    photo->setTransparency(t);
+    int index = this->getPhotoIndex(photo, canvas);
+    for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
+        entity::SceneState* state = m_groupBookmarks->getSceneState(i);
+        if (!state) {
+            qCritical("editPhotoTransparency : state is NULL");
+            continue;
+        }
+        state->resetTransparency(index, t);
+    }
+}
+
 void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
 {
     if (!stack) qFatal("editPhotoPush(): undo stack is NULL, it is not initialized. Editing is not possible.");
@@ -1548,11 +1565,11 @@ bool entity::UserScene::removeCanvas(entity::Canvas *canvas)
 //        state->popBackToolFlag();
 
         // if canvas contains any photos, erase data of photo transparencies too
-        for (int j=0; j<canvas->getNumPhotos(); ++j){
-            entity::Photo* photo = canvas->getPhotoFromIndex(j);
-            if (!photo) qFatal("UserScene::removeCanvas() - photo is null");
-            int idx = this->getPhotoIndex(photo, canvas);
-            state->eraseTransparency(idx);
+        if (canvas->getNumPhotos() > 0){
+            if (canvas->getPhotoFromIndex(0)){
+                int start = this->getPhotoIndex(canvas->getPhotoFromIndex(0), canvas);
+                state->eraseTransparency(start, canvas->getNumPhotos());
+            }
         }
     }
 
@@ -1626,8 +1643,7 @@ bool entity::UserScene::removePhoto(entity::Canvas *canvas, entity::Photo *photo
     for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
         entity::SceneState* state = m_groupBookmarks->getSceneState(i);
         if (!state) qFatal("UserScene::removePhoto(): could not obtain a scene state");
-        state->eraseTransparency(idx);
-        // FIXME: if number if photos is more than one?
+        state->eraseTransparency(idx, 1);
     }
 
     // remove from gui elements (order is important)
