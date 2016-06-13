@@ -149,10 +149,10 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     if (cnv) {
         if ((cher::maskMouse & m_mode) == cher::MOUSE_CANVAS){
             m_scene->getCanvasCurrent()->unselectAll();
-            m_scene->getCanvasCurrent()->getToolFrame()->setEditable(true);
+            m_scene->getCanvasCurrent()->setModeEdit(true);
         }
         else{
-            m_scene->getCanvasCurrent()->getToolFrame()->setEditable(false);
+            m_scene->getCanvasCurrent()->setModeEdit(false);
         }
         m_scene->getCanvasCurrent()->updateFrame(m_scene->getCanvasPrevious());
     }
@@ -785,8 +785,7 @@ void EventHandler::setDrawableColorFromMode(osg::Drawable *draw)
     if (!draw) {
         /* when mouse is not hovering over anything
          * set the color to normal (gray) for all the canvas selection frame. */
-        m_scene->getCanvasCurrent()->getToolFrame()->setColor(cher::CANVAS_CLR_CURRENT,
-                                                              cher::CANVAS_CLR_INTERSECTION);
+        m_scene->getCanvasCurrent()->setColor(cher::CANVAS_CLR_CURRENT, cher::CANVAS_CLR_INTERSECTION);
         return;
     }
     osg::Geometry* geom = dynamic_cast<osg::Geometry*>(draw);

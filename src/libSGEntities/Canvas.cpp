@@ -25,37 +25,12 @@ entity::Canvas::Canvas()
     , m_switch(new osg::Switch)
     , m_geodeData(new osg::Geode)
 
-    , m_toolFrame(new entity::FrameTool)
-
     , m_strokeCurrent(0)
-//    , m_selectedGroup(0)
 
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
     , m_normal(cher::NORMAL)
     , m_edit(false)
 {
-    /* OpenGL state machine for the canvas */
-    osg::StateSet* stateset = new osg::StateSet;
-    osg::LineWidth* linewidth = new osg::LineWidth();
-    linewidth->setWidth(cher::CANVAS_LINE_WIDTH);
-    osg::BlendFunc* blendfunc = new osg::BlendFunc();
-    //blendfunc->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ANTIALIAS);
-    stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
-    stateset->setAttributeAndModes(blendfunc, osg::StateAttribute::ON);
-    stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
-    stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
-    stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-    this->setStateSet(stateset);
-
-    /* name settings */
-    m_transform->setName("Transform");
-    m_switch->setName("Switch");
-
-    /*  set traversal masks */
-    this->setNodeMask(cher::MASK_CANVAS_IN);
-    m_geodeData->setNodeMask(cher::MASK_CANVASDATA_IN);
-    m_toolFrame->setNodeMask(cher::MASK_CANVASFRAME_IN);
-
     outLogMsg("New Canvas ctor complete");
 }
 
@@ -70,23 +45,28 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_toolFrame(cnv.m_toolFrame)
 
     , m_strokeCurrent(0)
-//    , m_selectedGroup(0)
 
     , m_center(cnv.m_center)
     , m_normal(cnv.m_normal)
     , m_edit(cnv.m_edit)
 {
-    this->setNodeMask(cher::MASK_CANVAS_IN);
-    m_geodeData->setNodeMask(cher::MASK_CANVASDATA_IN);
-    m_toolFrame->setNodeMask(cher::MASK_CANVASFRAME_IN);
-
     outLogMsg("new Canvas by copy ctor complete");
 }
 
 void entity::Canvas::initializeTools()
 {
-    if (!m_switch.get() || !m_toolFrame)
-        qFatal("Canvas::initializeTools() - pointers are NULL");
+    m_toolFrame = new entity::FrameTool();
+    if (!m_toolFrame) qFatal("Canvas::initializeTools() - pointers are NULL");
+    m_toolFrame->setNodeMask(cher::MASK_CANVASFRAME_IN);
+
+    if (!m_switch.get()) qFatal("Canvas::initializeTools() - pointers are NULL");
+
+    // FIXME: tools are not supposed to be saved on disk
+    if (m_switch->getNumChildren() == 2){
+        int index = m_switch->getChild(0) == m_geodeData.get() ? 1 : 0;
+        m_switch->removeChild(index, 1);
+    }
+
     m_switch->addChild(m_toolFrame, true);
 }
 
@@ -96,18 +76,41 @@ void entity::Canvas::initializeTools()
 */
 void entity::Canvas::initializeSG()
 {
+    /* OpenGL settings */
+    this->initializeStateMachine();
+
+    /*  set traversal masks for intersectors (to be used from EventHandler) */
+    this->setNodeMask(cher::MASK_CANVAS_IN);
+    m_geodeData->setNodeMask(cher::MASK_CANVASDATA_IN);
+
+    /* scene graph elements */
     this->addChild(m_transform.get());
     m_transform->setName("Transform");
     m_transform->addChild(m_switch.get());
     m_switch->setName("Switch");
+    m_switch->addChild(m_geodeData.get(), true); // 1st child of m_switch
+    this->initializeTools(); // 2nd child of m_switch
 
-    this->initializeTools();
-    /* _geodeData is  empty, it is for user input: strokes */
-    m_switch->addChild(m_geodeData.get(), true);
-
+    /* update internal parameters */
     this->updateTransforms();
     this->setColor(cher::CANVAS_CLR_REST);
     this->setVertices(m_center, cher::CANVAS_MINW, cher::CANVAS_MINH, cher::CANVAS_CORNER, cher::CANVAS_AXIS);
+}
+
+void entity::Canvas::initializeStateMachine()
+{
+    /* OpenGL state machine for the canvas */
+    osg::StateSet* stateset = new osg::StateSet;
+    osg::LineWidth* linewidth = new osg::LineWidth();
+    linewidth->setWidth(cher::CANVAS_LINE_WIDTH);
+    osg::BlendFunc* blendfunc = new osg::BlendFunc();
+    //blendfunc->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::ANTIALIAS);
+    stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
+    stateset->setAttributeAndModes(blendfunc, osg::StateAttribute::ON);
+    stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
+    stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
+    stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+    this->setStateSet(stateset);
 }
 
 void entity::Canvas::setMatrixRotation(const osg::Matrix& R)
@@ -195,9 +198,9 @@ const osg::Vec3f& entity::Canvas::getNormal() const
     return m_normal;
 }
 
-void entity::Canvas::setColor(const osg::Vec4f &color)
+void entity::Canvas::setColor(const osg::Vec4f &color, const osg::Vec4f &colorIntersection)
 {
-    m_toolFrame->setColor(color);
+    m_toolFrame->setColor(color, colorIntersection);
 }
 
 const osg::Vec4f &entity::Canvas::getColor() const
@@ -339,7 +342,7 @@ void entity::Canvas::unselectAll()
 {
     this->setStrokeCurrent(false);
     this->unselectEntities();
-    this->getToolFrame()->setEditable(false);
+    this->setModeEdit(false);
 }
 
 void entity::Canvas::unselectEntities()
@@ -533,15 +536,7 @@ const osg::Vec3Array *entity::Canvas::getFrame() const
 
 void entity::Canvas::setModeEdit(bool on)
 {
-//    if (on){
-//        std::cout << "setModeEdit(): ON - " << on << std::endl;
-//        this->setColor(cher::CANVAS_CLR_EDIT);
-//        this->setVisibilityAll(true);
-//    }
-//    else{
-//        std::cout << "setModeEdit(): OFF - " << on << std::endl;
-//        this->setColor(cher::CANVAS_CLR_CURRENT);
-//    }
+    m_toolFrame->setEditable(on);
     m_edit = on;
 }
 
@@ -716,7 +711,7 @@ osg::Node* entity::Canvas::getTool(const std::string &name)
     return fnv.getNode();
 }
 
-entity::FrameTool *entity::Canvas::getToolFrame() const
+const entity::FrameTool *entity::Canvas::getToolFrame() const
 {
     return m_toolFrame;
 }

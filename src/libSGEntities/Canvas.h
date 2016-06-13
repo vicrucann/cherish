@@ -46,6 +46,7 @@ public:
 
     virtual void initializeTools();
     virtual void initializeSG();
+    virtual void initializeStateMachine();
 
     META_Node(entity, Canvas)
 
@@ -75,7 +76,7 @@ public:
 
     /* other API methods */
 
-    void setColor(const osg::Vec4f& color);
+    void setColor(const osg::Vec4f& color, const osg::Vec4f& colorIntersection = cher::CANVAS_CLR_PREVIOUS);
     const osg::Vec4f& getColor() const;
 
     void setVisibilityFrame(bool vis);
@@ -135,7 +136,7 @@ public:
     entity::Canvas* separate();
 
     osg::Node* getTool(const std::string& name);
-    entity::FrameTool* getToolFrame() const;
+    const entity::FrameTool* getToolFrame() const;
 
     int getNumPhotos() const;
     entity::Photo* getPhotoFromIndex(int row) const;
@@ -157,7 +158,7 @@ private:
     osg::ref_ptr<osg::Geode> m_geodeData; /* keeps user canvas 2d entities such as strokes and photos */
 
     /* construction geodes */
-    entity::FrameTool* m_toolFrame;
+    osg::ref_ptr<entity::FrameTool> m_toolFrame;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
     entity::SelectedGroup m_selectedGroup;

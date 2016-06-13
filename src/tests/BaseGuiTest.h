@@ -37,7 +37,7 @@ private slots:
     /*! Slot is called after every test function is executed. */
     void cleanup();
 
-private:
+protected:
     osg::observer_ptr<entity::Canvas> m_canvas0, m_canvas1, m_canvas2;
     osg::observer_ptr<entity::UserScene> m_scene;
 };

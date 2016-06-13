@@ -21,14 +21,13 @@ RootScene::RootScene(QUndoStack *undoStack)
     , m_visibilityBookmarkTool(true)
 {
     // child #0
+    m_userScene->initializeSG();
     if (!this->addChild(m_userScene.get())){
-        outErrMsg("RootScene(): could not add user scene as a child");
         outErrMsg("RootScene(): could not add user scene as a child");
     }
 
     // child #1
     if (!this->addChild(m_axisTool)){
-        outErrMsg("RootScene(): could not add axes as a child");
         outErrMsg("RootScene(): could not add axes as a child");
     }
 
@@ -113,13 +112,10 @@ bool RootScene::getCanvasVisibilityAll(entity::Canvas *canvas) const
 
 bool RootScene::writeScenetoFile()
 {
-    if (m_userScene->getFilePath() == "")
-        return false;
-    if (osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())){
-        m_saved = true;
-        return true;
-    }
-    return false;
+    if (m_userScene->getFilePath() == "") return false;
+    if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) return false;
+    m_saved = true;
+    return true;
 }
 
 bool RootScene::exportSceneToFile(const std::string &name)
@@ -141,11 +137,15 @@ bool RootScene::loadSceneFromFile()
         outErrMsg("loadSceneFromFile: node is NULL");
         return false;
     }
+    qDebug() << "Loaded node, number of children: " << node->asGroup()->getNumChildren();
+
     osg::ref_ptr<entity::UserScene> newscene = dynamic_cast<entity::UserScene*>(node);
     if (!newscene.get()){
         outErrMsg("loadSceneFromFile: could not load from file, or could not perform the dynamic_cast<osg::Group*>");
         return false;
     }
+    qDebug() << "Loaded scene, number of children: " << newscene->getNumChildren();
+    qDebug() << "Loaded scene, number of canvases: " << newscene->getNumCanvases();
 
     /* replace the original */
     if (!this->replaceChild(m_userScene.get(), newscene.get())){
@@ -161,6 +161,7 @@ bool RootScene::loadSceneFromFile()
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv) qFatal("RootScene::loadSceneFromFile() canvas is NULL");
         cnv->initializeTools();
+        cnv->initializeStateMachine();
 
         /* photo textures */
         for (size_t i=0; i<cnv->getGeodeData()->getNumChildren(); ++i){

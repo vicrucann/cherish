@@ -112,6 +112,7 @@ protected:
     void        initializeMenus();
     void        initializeToolbars();
     void        initializeCallbacks(); // for ctor
+    bool        loadSceneFromFile();
 
     QMdiArea*       m_mdiArea;
 

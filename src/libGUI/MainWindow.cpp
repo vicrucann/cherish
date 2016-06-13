@@ -319,20 +319,13 @@ void MainWindow::onFileOpen()
                                                  QString(), tr("OSG files (*.osg *.osgt)"));
     if (!fname.isEmpty()){
         m_rootScene->setFilePath(fname.toStdString());
-        if (!m_rootScene->loadSceneFromFile()){
+        if (!this->loadSceneFromFile()){
             QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
             m_rootScene->setFilePath("");
         }
         else
             this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
     }
-
-    m_glWidget->update();
-    this->initializeCallbacks();
-    m_rootScene->resetBookmarks(m_bookmarkWidget);
-    m_rootScene->getUserScene()->resetModel(m_canvasWidget);
-
-    this->statusBar()->showMessage(tr("Scene loaded."));
 }
 
 /* Take content of scene graph
@@ -1111,4 +1104,16 @@ void MainWindow::initializeCallbacks()
                      m_cameraProperties, SLOT(onFOVSet(double)),
                      Qt::UniqueConnection);
 
+}
+
+bool MainWindow::loadSceneFromFile()
+{
+    if (!m_rootScene->isSetFilePath()) return false;
+    if (!m_rootScene->loadSceneFromFile()) return false;
+    m_glWidget->update();
+    this->initializeCallbacks();
+    m_rootScene->resetBookmarks(m_bookmarkWidget);
+    if (!m_rootScene->getUserScene()) return false;
+    m_rootScene->getUserScene()->resetModel(m_canvasWidget);
+    return true;
 }

@@ -80,6 +80,9 @@ public:
 
     META_Node(entity, UserScene)
 
+    /*! A method to initialized a scene graph of UserScene. Normally, it should be called after the ctor, e.g.,
+     * from RootScene ctor. */
+    void initializeSG();
 
     void setGroupCanvases(osg::Group* group);
     const osg::Group* getGroupCanvases() const;

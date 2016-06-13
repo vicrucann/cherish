@@ -283,11 +283,7 @@ void SceneStateTest::testReadWrite()
     /* open the saved file */
     m_rootScene->setFilePath(filename.toStdString());
     QVERIFY(m_rootScene->isSetFilePath());
-    QVERIFY(m_rootScene->loadSceneFromFile());
-    this->initializeCallbacks();
-    m_rootScene->resetBookmarks(m_bookmarkWidget);
-    QVERIFY(m_rootScene->getUserScene());
-    m_rootScene->getUserScene()->resetModel(m_canvasWidget);
+    QVERIFY(this->loadSceneFromFile());
     QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 3);
     QVERIFY(m_rootScene->getUserScene()->getCanvas(index));
     QVERIFY(!m_rootScene->getUserScene()->getCanvas(index)->getVisibilityAll());
