@@ -1550,6 +1550,9 @@ bool entity::UserScene::addCanvas(entity::Canvas *canvas)
 
     // update frame and widget
     canvas->updateFrame(this->getCanvasPrevious());
+    bool vis = true;
+    emit this->requestSceneToolStatus(vis);
+    canvas->setVisibilityFrameInternal(vis);
     this->updateWidgets();
 
     return result;

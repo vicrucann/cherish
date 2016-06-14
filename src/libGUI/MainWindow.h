@@ -51,6 +51,7 @@ public slots:
     void slotPhotoPushed(int parent, int start, int, int destination, int);
     void onRequestSceneData(entity::SceneState* state);
     void onRequestSceneStateSet(entity::SceneState* state);
+    void onRequestSceneToolStatus(bool& visibility);
 
 signals:
     void signalTabletActivity(bool active);

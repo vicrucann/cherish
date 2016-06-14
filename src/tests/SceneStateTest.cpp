@@ -53,27 +53,27 @@ void SceneStateTest::testBasicApi()
     QCOMPARE(m_rootScene->getAxesVisibility(), false);
     QCOMPARE(m_rootScene->getBookmarkToolVisibility(), false);
 
-    QVERIFY(m_rootScene->getUserScene()->getCanvas(0));
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(0)->getVisibilityAll(), false);
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(0)->getVisibilityData(), false);
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(0)->getVisibilityFrame(), false);
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(0)->getVisibilityFrameInternal(), true);
+    QVERIFY(m_canvas0.get());
+    QCOMPARE(m_canvas0->getVisibilityAll(), false);
+    QCOMPARE(m_canvas0->getVisibilityData(), false);
+    QCOMPARE(m_canvas0->getVisibilityFrame(), false);
+    QCOMPARE(m_canvas0->getVisibilityFrameInternal(), true);
 
-    QVERIFY(m_rootScene->getUserScene()->getCanvas(1));
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(1)->getVisibilityAll(), false);
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(1)->getVisibilityData(), false);
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(1)->getVisibilityFrame(), false);
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(1)->getVisibilityFrameInternal(), false);
+    QVERIFY(m_canvas1.get());
+    QCOMPARE(m_canvas1->getVisibilityAll(), false);
+    QCOMPARE(m_canvas1->getVisibilityData(), false);
+    QCOMPARE(m_canvas1->getVisibilityFrame(), false);
+    QCOMPARE(m_canvas1->getVisibilityFrameInternal(), false);
 
-    QVERIFY(m_rootScene->getUserScene()->getCanvas(2));
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(2)->getVisibilityAll(), true);
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(2)->getVisibilityData(), true);
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(2)->getVisibilityFrame(), true);
-    QCOMPARE(m_rootScene->getUserScene()->getCanvas(2)->getVisibilityFrameInternal(), false);
+    QVERIFY(m_canvas2.get());
+    QCOMPARE(m_canvas2->getVisibilityAll(), true);
+    QCOMPARE(m_canvas2->getVisibilityData(), true);
+    QCOMPARE(m_canvas2->getVisibilityFrame(), true);
+    QCOMPARE(m_canvas2->getVisibilityFrameInternal(), false);
 
     /* add a photo and check photo transparency is saved to the state */
-    m_rootScene->setCanvasCurrent(m_rootScene->getUserScene()->getCanvas(0));
-    QCOMPARE(m_rootScene->getCanvasCurrent(), m_rootScene->getUserScene()->getCanvas(0));
+    m_rootScene->setCanvasCurrent(m_canvas0.get());
+    QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas0.get());
     QString fname1 = "../../samples/ds-32.bmp";
     m_rootScene->addPhoto(fname1.toStdString());
     QCOMPARE((int)m_rootScene->getCanvasCurrent()->getNumChildren(), 1);
@@ -83,8 +83,8 @@ void SceneStateTest::testBasicApi()
     QCOMPARE(m_rootScene->getUserScene()->getPhotoFromIndex(m_rootScene->getCanvasCurrent(), 0)->getTransparency(), state_stripped->getPhotoTransparencies()[0]);
 
     /* add another photo, change its transparency and check if it's saved successfully within scene state */
-    m_rootScene->setCanvasCurrent(m_rootScene->getUserScene()->getCanvas(1));
-    QCOMPARE(m_rootScene->getCanvasCurrent(), m_rootScene->getUserScene()->getCanvas(1));
+    m_rootScene->setCanvasCurrent(m_canvas1.get());
+    QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas1.get());
     QString fname2 = "../../samples/test.bmp";
     m_rootScene->addPhoto(fname2.toStdString());
     QCOMPARE((int)m_rootScene->getCanvasCurrent()->getNumChildren(), 1);
@@ -117,20 +117,19 @@ void SceneStateTest::testBookmarkTaken()
 {
     /* set 0-th canvas as invisible */
     int index = 0;
-    entity::Canvas* canvas = m_rootScene->getUserScene()->getCanvas(index);
-    QVERIFY(canvas != 0);
+    QVERIFY(m_canvas0.get());
     QTreeWidgetItem* item = m_canvasWidget->topLevelItem(index);
     QVERIFY(item);
 
     /* check it is visible in scene graph */
-    QVERIFY(canvas->getVisibilityAll() == true);
+    QVERIFY(m_canvas0->getVisibilityAll() == true);
     /* check GUI icon corresponds to visibility */
     QVERIFY(item->data(0, cher::DelegateVisibilityRole).toBool() == false);
 
     /* swap the visibility to the opposite */
     this->onVisibilitySetCanvas(index);
     /* check it is invisible in scene graph */
-    QVERIFY(canvas->getVisibilityAll() == false);
+    QVERIFY(m_canvas0->getVisibilityAll() == false);
     /* check GUI icon corresponds to invisibility */
     QVERIFY(item->data(0, cher::DelegateVisibilityRole).toBool() == true);
     /* intial scene graph settings */
@@ -176,7 +175,7 @@ void SceneStateTest::testBookmarkTaken()
     osg::ref_ptr<entity::SceneState> state_new = m_rootScene->createSceneState();
     QVERIFY(m_rootScene->getAxesVisibility() == true);
     QVERIFY(m_rootScene->getBookmarkToolVisibility() == true);
-    QVERIFY(canvas->getVisibilityAll() == false);
+    QVERIFY(m_canvas0->getVisibilityAll() == false);
     QVERIFY(item->data(0, cher::DelegateVisibilityRole).toBool() == true);
 
     QVERIFY(!state_new->isEmpty());
@@ -193,14 +192,12 @@ void SceneStateTest::testBookmarkTaken()
 void SceneStateTest::testBookmarkClickedOn()
 {
     int index = 0;
-    entity::Canvas* canvas = m_rootScene->getUserScene()->getCanvas(index);
-    QVERIFY(canvas != 0);
 
     QTreeWidgetItem* item = m_canvasWidget->topLevelItem(index);
     QVERIFY(item);
 
     this->onVisibilitySetCanvas(index);
-    QVERIFY(canvas->getVisibilityAll() == false);
+    QVERIFY(m_canvas0->getVisibilityAll() == false);
     QVERIFY(item->data(0, cher::DelegateVisibilityRole).toBool() == true);
     QVERIFY(m_rootScene->getAxesVisibility() == true);
     QVERIFY(m_rootScene->getBookmarkToolVisibility() == true);
@@ -209,11 +206,11 @@ void SceneStateTest::testBookmarkClickedOn()
 
     QVERIFY(m_rootScene->getAxesVisibility() == true);
     QVERIFY(m_rootScene->getBookmarkToolVisibility() == true);
-    QVERIFY(canvas->getVisibilityAll() == false);
+    QVERIFY(m_canvas0->getVisibilityAll() == false);
 
     /* reverse the canvas visibility, again */
     this->onVisibilitySetCanvas(index);
-    QVERIFY(canvas->getVisibilityAll() == true);
+    QVERIFY(m_canvas0->getVisibilityAll() == true);
     QVERIFY(item->data(0, cher::DelegateVisibilityRole).toBool() == false);
 
     /* set up a signal spy to make sure necessary signal is emitted */
@@ -237,7 +234,7 @@ void SceneStateTest::testBookmarkClickedOn()
     QVERIFY(args2.at(0).type() == QVariant::Int);
 
     /* see if scene state was set correctly as in the bookmark */
-    QVERIFY(canvas->getVisibilityAll() == false);
+    QVERIFY(m_canvas0->getVisibilityAll() == false);
     QVERIFY(item->data(0, cher::DelegateVisibilityRole).toBool() == true);
     QVERIFY(m_rootScene->getAxesVisibility() == true);
     QVERIFY(m_rootScene->getBookmarkToolVisibility() == true);
@@ -254,9 +251,7 @@ void SceneStateTest::testReadWrite()
     QRect rect_visibility = m_canvasWidget->getCanvasDelegate()->getButtonVisibilityRect(rect_canvas);
     QTest::mouseClick(m_canvasWidget->viewport(), Qt::LeftButton, 0, rect_visibility.center());
     QCOMPARE(spy_visibility.count(), 1);
-    entity::Canvas* canvas = m_rootScene->getUserScene()->getCanvas(index);
-    QVERIFY(canvas);
-    QVERIFY(!canvas->getVisibilityAll());
+    QVERIFY(!m_canvas0->getVisibilityAll());
 
     /* take bookmark with this settings */
     QSignalSpy spy_bookmark(m_rootScene->getUserScene()->getBookmarks(), SIGNAL(requestSceneData(entity::SceneState*)));
@@ -305,10 +300,8 @@ void SceneStateTest::testAddCanvas()
     QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 3);
     /* set 0-th canvas as invisible */
     int index = 0;
-    entity::Canvas* canvas = m_rootScene->getUserScene()->getCanvas(index);
-    QVERIFY(canvas != 0);
     this->onVisibilitySetCanvas(index);
-    QVERIFY(canvas->getVisibilityAll() == false);
+    QVERIFY(m_canvas0->getVisibilityAll() == false);
 
     /* take a bookmark */
     this->onBookmark();
@@ -356,10 +349,8 @@ void SceneStateTest::testAddPhoto()
     QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 3);
     /* set 0-th canvas as invisible */
     int index = 0;
-    entity::Canvas* canvas0 = m_rootScene->getUserScene()->getCanvas(index);
-    QVERIFY(canvas0 != 0);
     this->onVisibilitySetCanvas(index);
-    QVERIFY(canvas0->getVisibilityAll() == false);
+    QVERIFY(m_canvas0->getVisibilityAll() == false);
 
     /* take a bookmark */
     this->onBookmark();
@@ -370,26 +361,22 @@ void SceneStateTest::testAddPhoto()
     QCOMPARE(state->getCanvasToolFlags()[0], true);
 
     /* add photo to 1st canvas */
-    entity::Canvas* canvas1 = m_rootScene->getUserScene()->getCanvas(1);
-    QVERIFY(canvas1);
-    m_rootScene->setCanvasCurrent(canvas1);
-    QCOMPARE(m_rootScene->getCanvasCurrent(), canvas1);
+    m_rootScene->setCanvasCurrent(m_canvas1.get());
+    QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas1.get());
     QString filename1 = "../../samples/ds-32.bmp";
     m_rootScene->addPhoto(filename1.toStdString());
-    QCOMPARE(canvas1->getNumPhotos(), 1);
+    QCOMPARE(m_canvas1->getNumPhotos(), 1);
 
     /* make sure the transparency is a part of scene states */
     QCOMPARE((int)state->getPhotoTransparencies().size(), 1);
     QCOMPARE(state->getPhotoTransparencies()[0], 1.);
 
     /* add another photo to second canvas */
-    entity::Canvas* canvas2 = m_rootScene->getUserScene()->getCanvas(2);
-    QVERIFY(canvas2);
-    m_rootScene->setCanvasCurrent(canvas2);
-    QCOMPARE(m_rootScene->getCanvasCurrent(), canvas2);
+    m_rootScene->setCanvasCurrent(m_canvas2.get());
+    QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas2.get());
     QString filename2 = "../../samples/test.bmp";
     m_rootScene->addPhoto(filename2.toStdString());
-    QCOMPARE(canvas2->getNumPhotos(), 1);
+    QCOMPARE(m_canvas2->getNumPhotos(), 1);
 
     /* make sure the transparency is a part of scene states */
     QCOMPARE((int)state->getPhotoTransparencies().size(), 2);
@@ -417,17 +404,15 @@ void SceneStateTest::testAddPhoto()
 void SceneStateTest::testDeleteCanvas()
 {
     /* set 0-th canvas as invisible */
-    entity::Canvas* canvas0 = m_rootScene->getUserScene()->getCanvas(0);
-    QVERIFY(canvas0 != 0);
     this->onVisibilitySetCanvas(0);
-    QVERIFY(canvas0->getVisibilityAll() == false);
+    QVERIFY(m_canvas0->getVisibilityAll() == false);
 
     /* add photo to 0th canvas */
-    m_rootScene->setCanvasCurrent(canvas0);
-    QCOMPARE(m_rootScene->getCanvasCurrent(), canvas0);
+    m_rootScene->setCanvasCurrent(m_canvas0.get());
+    QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas0.get());
     QString filename0 = "../../samples/ds-32.bmp";
     m_rootScene->addPhoto(filename0.toStdString());
-    QCOMPARE(canvas0->getNumPhotos(), 1);
+    QCOMPARE(m_canvas0->getNumPhotos(), 1);
 
     /* take a bookmark */
     this->onBookmark();
@@ -440,16 +425,16 @@ void SceneStateTest::testDeleteCanvas()
     QCOMPARE(state->getCanvasToolFlags()[0], true);
 
     /* add another photo to the same canvas */
-    QCOMPARE(m_rootScene->getCanvasCurrent(), canvas0);
+    QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas0.get());
     QString filename1 = "../../samples/test.bmp";
     m_rootScene->addPhoto(filename1.toStdString());
-    QCOMPARE(canvas0->getNumPhotos(), 2);
+    QCOMPARE(m_canvas0->getNumPhotos(), 2);
     QCOMPARE((int)state->getPhotoTransparencies().size(), 2);
     /* check setting scene state does not fail */
     QVERIFY(m_rootScene->setSceneState(state));
 
     /* delete 0th canvas from scene */
-    m_rootScene->editCanvasDelete(canvas0);
+    m_rootScene->editCanvasDelete(m_canvas0.get());
     QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 2);
     QCOMPARE((int)state->getCanvasDataFlags().size(), 2);
     QCOMPARE((int) state->getCanvasToolFlags().size(), 2);
@@ -477,17 +462,15 @@ void SceneStateTest::testDeleteCanvas()
 
 void SceneStateTest::testDeletePhoto()
 {
-    entity::Canvas* canvas0 = m_rootScene->getUserScene()->getCanvas(0);
-    QVERIFY(canvas0);
-    m_rootScene->setCanvasCurrent(canvas0);
-    QCOMPARE(m_rootScene->getCanvasCurrent(), canvas0);
+    m_rootScene->setCanvasCurrent(m_canvas0.get());
+    QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas0.get());
 
     /* add photo to 0th canvas */
-    m_rootScene->setCanvasCurrent(canvas0);
-    QCOMPARE(m_rootScene->getCanvasCurrent(), canvas0);
+    m_rootScene->setCanvasCurrent(m_canvas0.get());
+    QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas0.get());
     QString filename0 = "../../samples/ds-32.bmp";
     m_rootScene->addPhoto(filename0.toStdString());
-    QCOMPARE(canvas0->getNumPhotos(), 1);
+    QCOMPARE(m_canvas0->getNumPhotos(), 1);
 
     /* take a bookmark */
     this->onBookmark();
@@ -500,17 +483,17 @@ void SceneStateTest::testDeletePhoto()
     QCOMPARE(state->getCanvasToolFlags()[0], true);
 
     /* add another photo to the same canvas */
-    QCOMPARE(m_rootScene->getCanvasCurrent(), canvas0);
+    QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas0.get());
     QString filename1 = "../../samples/test.bmp";
     m_rootScene->addPhoto(filename1.toStdString());
-    QCOMPARE(canvas0->getNumPhotos(), 2);
+    QCOMPARE(m_canvas0->getNumPhotos(), 2);
     QCOMPARE((int)state->getPhotoTransparencies().size(), 2);
     /* check setting scene state does not fail */
     QVERIFY(m_rootScene->setSceneState(state));
 
     /* imitate mouse click within CanvasPhotoWidget delegate to trigger clickedTransparencyMinus signal */
     QSignalSpy spy_minus(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedTransparencyMinus(QModelIndex)));
-    QTreeWidgetItem* item = m_canvasWidget->topLevelItem(m_rootScene->getUserScene()->getCanvasIndex(canvas0));
+    QTreeWidgetItem* item = m_canvasWidget->topLevelItem(m_rootScene->getUserScene()->getCanvasIndex(m_canvas0.get()));
     QVERIFY(item);
     QCOMPARE(item->childCount(), 2);
     m_canvasWidget->expandAll();
@@ -526,18 +509,18 @@ void SceneStateTest::testDeletePhoto()
     QVERIFY(args.at(0).type() == QVariant::ModelIndex);
 
     QCOMPARE((int)state->getPhotoTransparencies().size(), 2);
-    entity::Photo* photo0 = canvas0->getPhotoFromIndex(0);
+    entity::Photo* photo0 = m_canvas0->getPhotoFromIndex(0);
     QVERIFY(photo0);
     QCOMPARE(photo0->getTransparency(), 1.);
     QCOMPARE(photo0->getTransparency(), state->getPhotoTransparencies()[0]);
-    entity::Photo* photo1 = canvas0->getPhotoFromIndex(1);
+    entity::Photo* photo1 = m_canvas0->getPhotoFromIndex(1);
     QVERIFY(photo1);
     QCOMPARE(photo1->getTransparency(), 1-cher::PHOTO_TRANSPARECY_DELTA);
     QCOMPARE(photo1->getTransparency(), state->getPhotoTransparencies()[1]);
 
     /* delete 0th photo, with name ds-32.bmp */
     QSignalSpy spy_delete0(m_rootScene->getUserScene(), SIGNAL(photoRemoved(int,int)));
-    m_rootScene->editPhotoDelete(photo0, canvas0);
+    m_rootScene->editPhotoDelete(photo0, m_canvas0.get());
     QCOMPARE(spy_delete0.count(), 1);
     QCOMPARE((int)state->getPhotoTransparencies().size(), 1);
     QVERIFY(photo1);
@@ -547,7 +530,7 @@ void SceneStateTest::testDeletePhoto()
 
     /* delete 1st photo, with name test.bmp */
     QSignalSpy spy_delete1(m_rootScene->getUserScene(), SIGNAL(photoRemoved(int,int)));
-    m_rootScene->editPhotoDelete(photo1, canvas0);
+    m_rootScene->editPhotoDelete(photo1, m_canvas0.get());
     QCOMPARE(spy_delete1.count(), 1);
     QCOMPARE((int)state->getPhotoTransparencies().size(), 0);
     QVERIFY(item);
@@ -556,7 +539,7 @@ void SceneStateTest::testDeletePhoto()
     /* perform undo (return 1st photo with name test.bmp) */
     m_undoStack->undo();
     QCOMPARE(m_rootScene->getUserScene()->getNumPhotos(), 1);
-    photo1 = m_rootScene->getUserScene()->getPhotoFromIndex(canvas0, 0);
+    photo1 = m_rootScene->getUserScene()->getPhotoFromIndex(m_canvas0.get(), 0);
     QVERIFY(photo1);
     QCOMPARE(photo1->getName().c_str(), "Photo1");
     QCOMPARE(photo1->getTransparency(), 1-cher::PHOTO_TRANSPARECY_DELTA);
