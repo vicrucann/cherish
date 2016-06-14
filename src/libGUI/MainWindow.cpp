@@ -294,6 +294,11 @@ void MainWindow::onRequestSceneStateSet(entity::SceneState *state)
     m_rootScene->setSceneState(state);
 }
 
+void MainWindow::onRequestSceneToolStatus(bool &visibility)
+{
+    visibility = m_actionTools->isChecked();
+}
+
 /* Check whether the current scene is empty or not
  * If not - propose to save changes.
  * Clear the scene graph
@@ -451,12 +456,8 @@ void MainWindow::onPaste()
 
 void MainWindow::onTools()
 {
-    if (m_actionTools->isChecked()){
-        m_rootScene->setToolsVisibility(true);
-    }
-    else{
-        m_rootScene->setToolsVisibility(false);
-    }
+    qDebug() << "Tools: change status called to " << m_actionTools->isChecked();
+    m_rootScene->setToolsVisibility(m_actionTools->isChecked()? true : false);
     this->recievedRequestUpdate();
 }
 
@@ -972,6 +973,10 @@ void MainWindow::initializeCallbacks()
     /* connect MainWindow with UserScene */
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(sendRequestUpdate()),
                      this, SLOT(recievedRequestUpdate()),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestSceneToolStatus(bool&)),
+                     this, SLOT(onRequestSceneToolStatus(bool&)),
                      Qt::UniqueConnection);
 
     /* bookmark widget data */

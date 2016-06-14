@@ -528,6 +528,11 @@ signals:
      * This value also corresponds to Canvas::getVisibilityData(). */
     void canvasVisibilitySet(int row, bool visibility);
 
+    /*! A signal to be emitted on addition of new canvas to the scene. It requests tool's status of MainWindow, and turns
+     * the internal frame on or off depending on the result.
+     * \param visibility is a boolean flag which indicated whether the tools are on (true) of off (false). */
+    void requestSceneToolStatus(bool& visibility);
+
 public slots:
     /*! A slot which is called when the canvas name was edited from CanvasPhotoWidget. Based on the edited item, the slot
      * edits the name of the corresponding canvas. This slot is connected to CanvasPhotoWidget::itemChanged() */

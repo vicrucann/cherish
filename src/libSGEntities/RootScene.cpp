@@ -81,7 +81,7 @@ void RootScene::setToolsVisibility(bool vis)
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv) qFatal("RootScene::setToolsVisibility() canvas is NULL");
-        cnv->setVisibilityFrame(vis);
+        cnv->setVisibilityFrameInternal(vis);
     }
 }
 

@@ -472,7 +472,7 @@ const QIcon &Data::controlCanvasVisibilityIcon()
     Q_ASSERT_X(!QPixmap(cher::FA_ICON_PATH + "eye.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
     Q_ASSERT_X(!QPixmap(cher::FA_ICON_PATH + "eye-slash.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon;
-    icon.addFile(cher::FA_ICON_PATH + "eye-slash.svg"); // Off by default
+    icon.addFile(cher::FA_ICON_PATH + "eye-slash.svg");
     icon.addFile(cher::FA_ICON_PATH + "eye.svg", QSize(), QIcon::Normal, QIcon::On);
     return icon;
 }
