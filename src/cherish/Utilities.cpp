@@ -247,7 +247,7 @@ int Utilities::getCanvasesIntersection(entity::Canvas *current, entity::Canvas *
     /* if intersection found */
     if (is == 2){
         /* get four local vertices of current canvas */
-        const osg::Vec3Array* vertices = current->getFrame();
+        const osg::Vec3Array* vertices = current->getFrameVertices();
         osg::Vec3f v1 = (*vertices)[0];
         osg::Vec3f v2 = (*vertices)[1];
         osg::Vec3f v3 = (*vertices)[2];

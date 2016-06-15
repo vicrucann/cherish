@@ -529,9 +529,20 @@ void entity::Canvas::updateFrame(entity::Canvas* against)
     this->setIntersection(against);
 }
 
-const osg::Vec3Array *entity::Canvas::getFrame() const
+const osg::Vec3Array *entity::Canvas::getFrameVertices() const
 {
     return m_toolFrame->getVertices();
+}
+
+bool entity::Canvas::detachFrame()
+{
+    return m_switch->removeChild(m_toolFrame.get());
+}
+
+bool entity::Canvas::attachFrame()
+{
+    if (!m_toolFrame.get()) return false;
+    return m_switch->addChild(m_toolFrame.get());
 }
 
 void entity::Canvas::setModeEdit(bool on)

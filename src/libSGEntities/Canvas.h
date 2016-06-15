@@ -125,7 +125,17 @@ public:
     /* re-calculate frame's geometry and plane center transform
      * based on canvas content location */
     void updateFrame(entity::Canvas *against = 0);
-    const osg::Vec3Array* getFrame() const;
+    const osg::Vec3Array* getFrameVertices() const;
+
+    /*! A method which is called when performing RootScene::writeScenetoFile to temporarly detach the frame tools.
+     * The memory for tools is not freed since it is managed by a smart pointer (osg::ref_ptr).
+     * \sa detachFrame */
+    bool detachFrame();
+
+    /*! A method which is called when performing RootScene::writeScenetoFile to attach the frame tools back.
+     * The memory for tools is not freed since it is managed by a smart pointer (osg::ref_ptr).
+     * \sa detachFrame */
+    bool attachFrame();
 
     void setModeEdit(bool on); // changes certain colors, shows or hides normal
     bool getModeEdit() const;

@@ -112,10 +112,30 @@ bool RootScene::getCanvasVisibilityAll(entity::Canvas *canvas) const
 
 bool RootScene::writeScenetoFile()
 {
+    bool result = true;
     if (m_userScene->getFilePath() == "") return false;
-    if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) return false;
-    m_saved = true;
-    return true;
+
+    /* for each canvas, detach its tools */
+    for (int i=0; i<m_userScene->getNumCanvases(); ++i){
+        entity::Canvas* canvas = m_userScene->getCanvas(i);
+        if (!canvas) continue;
+        canvas->detachFrame();
+    }
+
+    if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) result = false;
+
+    /* for each canvas, attach its tools back */
+    for (int i=0; i<m_userScene->getNumCanvases(); ++i){
+        entity::Canvas* canvas = m_userScene->getCanvas(i);
+        if (!canvas) continue;
+        if (!canvas->attachFrame()){
+            qCritical("RootScene::writeSceneToFile: could not attach the tools back");
+            result = false;
+        }
+    }
+
+    m_saved = result;
+    return result;
 }
 
 bool RootScene::exportSceneToFile(const std::string &name)
