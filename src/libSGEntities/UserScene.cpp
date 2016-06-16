@@ -427,8 +427,7 @@ int entity::UserScene::getCanvasIndex(entity::Canvas *canvas) const
 int entity::UserScene::getPhotoIndex(entity::Photo *photo, Canvas *canvas) const
 {
     int idx = -1;
-    if (!canvas->getGroupData()) return idx;
-    for (int i=0; i< canvas->getNumPhotos(); ++i){
+    for (size_t i=0; i< canvas->getNumPhotos(); ++i){
         entity::Photo* pi = canvas->getPhotoFromIndex(i);
         if (!pi) qFatal("UserScene::getPhotoFromIndex() failed");
         idx++;
@@ -631,7 +630,7 @@ void entity::UserScene::editPhotoDelete(QUndoStack *stack, entity::Photo *photo,
         return;
     }
 
-    if (!canvas->getGroupData()->containsDrawable(photo)){
+    if (!canvas->containsEntity(photo)){
         qCritical("editPhotoDelete: current canvas does not contain that photo."
                   "Deletion is not possible.");
         return;
@@ -654,7 +653,7 @@ void entity::UserScene::editPhotoPush(QUndoStack *stack, entity::Photo *photo, C
     }
 
 
-    if (!source->getGroupData()->containsDrawable(photo)){
+    if (!source->containsEntity(photo)){
         qCritical("editPhotoDelete: source canvas does not contain that photo."
                           "Scene movement is not possible.");
                 return;
@@ -823,7 +822,7 @@ void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stro
         qCritical("editStrokeDelete: stroke is NULL");
         return;
     }
-    if (!this->getCanvasCurrent()->getGroupData()->containsDrawable(stroke)){
+    if (!m_canvasCurrent->containsEntity(stroke)){
         qWarning("editStrokeDelete: current canvas does not contain that stroke."
                   "Deletion is not possible.");
         return;
@@ -863,9 +862,6 @@ bool entity::UserScene::printScene()
 
         osg::Switch* sw = dynamic_cast<osg::Switch*>(t->getChild(0));
         assert(sw == cnv->getSwitch());
-
-//        osg::Geode* data = dynamic_cast<osg::Geode*>(sw->getChild(1));
-//        assert(data == cnv->getGroupData());
     }
 
     return true;
@@ -892,9 +888,8 @@ void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
             emit this->canvasSelectedColor(this->getCanvasIndex(cnv),0);
 
         /* if canvas has any photos, reset photowidget */
-        if (!cnv->getGroupData()) continue;
-        for (size_t j=0; j<cnv->getGroupData()->getNumChildren(); ++j){
-            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGroupData()->getChild(j));
+        for (size_t j=0; j<cnv->getNumPhotos(); ++j){
+            entity::Photo* photo = cnv->getPhotoFromIndex(j);
             if (!photo) continue;
             emit this->photoAdded(photo->getName(), this->getCanvasIndex(cnv));
         }
@@ -1021,7 +1016,7 @@ void entity::UserScene::strokeStart()
     }
     entity::Stroke* stroke = new entity::Stroke();
     m_canvasCurrent->setStrokeCurrent(stroke);
-    m_canvasCurrent->getGroupData()->addDrawable(stroke);
+    m_canvasCurrent->addEntity(stroke);
 }
 
 void entity::UserScene::strokeAppend(float u, float v)
@@ -1054,7 +1049,7 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
         outErrMsg("strokeFinish(): stroke pointer is NULL, impossible to finish the stroke");
         return;
     }
-    m_canvasCurrent->getGroupData()->removeChild(stroke); // remove the "current" copy
+    m_canvasCurrent->removeEntity(stroke); // remove the "current" copy
     m_canvasCurrent->setStrokeCurrent(false);
     outLogMsg("strokeFinish()");
 }
@@ -1123,7 +1118,7 @@ void entity::UserScene::entitiesScaleStart(double u, double v)
     if (!m_canvasCurrent->getVisibilityData())
         m_canvasCurrent->setVisibilityAll(true);
 
-    osg::Vec3f center = m_canvasCurrent->getGroupData()->getBoundingBox().center();
+    osg::Vec3f center = m_canvasCurrent->getBoundingBoxCenter();
     m_u = center.x();
     m_v = center.y();
 
@@ -1181,7 +1176,7 @@ void entity::UserScene::entitiesRotateStart(double u, double v)
     if (!m_canvasCurrent->getVisibilityData())
         m_canvasCurrent->setVisibilityAll(true);
 
-    osg::Vec3f center = m_canvasCurrent->getGroupData()->getBoundingBox().center();
+    osg::Vec3f center = m_canvasCurrent->getBoundingBoxCenter();
     if (center.z() > cher::EPSILON){
         outLogVec("center", center.x(), center.y(), center.z());
         outErrMsg("entitiesRotateStart: z coordiante is not close to zero");
@@ -1515,12 +1510,11 @@ void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
 bool entity::UserScene::addCanvas(entity::Canvas *canvas)
 {
     if (!canvas) qFatal("UserScene::addCanvas(Canvas*): canvas is NULL");
-    if (!canvas->getGroupData()) qFatal("UserScene::addCanvas() - geodeData is null");
 
     // gui elements
     emit canvasAdded(canvas->getName());
     //see if any canvas contains any photos, they will be added to canvas widget
-    for (int i=0; i<canvas->getNumPhotos(); ++i){
+    for (size_t i=0; i<canvas->getNumPhotos(); ++i){
         entity::Photo* photo = canvas->getPhotoFromIndex(i);
         if (!photo) qFatal("UserScene::addCanvas() - photo is null");
         emit this->photoAdded(photo->getName(), this->getCanvasIndex(canvas));
@@ -1541,7 +1535,7 @@ bool entity::UserScene::addCanvas(entity::Canvas *canvas)
         state->insertToolFlag(index, canvas->getVisibilityFrameInternal());
 
         // if canvas contains any photos, insert photo transparencies too
-        for (int j=0; j<canvas->getNumPhotos(); ++j){
+        for (size_t j=0; j<canvas->getNumPhotos(); ++j){
             entity::Photo* photo = canvas->getPhotoFromIndex(j);
             if (!photo) qFatal("UserScene::addCanvas(): photo is NULL");
             state->insertTransparency(idx++, photo->getTransparency());
@@ -1561,7 +1555,6 @@ bool entity::UserScene::addCanvas(entity::Canvas *canvas)
 bool entity::UserScene::removeCanvas(entity::Canvas *canvas)
 {
     if (!canvas) qFatal("UserScene::removeCanvas(Canvas*): canvas is NULL");
-    if (!canvas->getGroupData()) qFatal("UserScene::removeCanvas() - geodeData is null");
 
     int index = this->getCanvasIndex(canvas);
     // for each bookmark's state, remove data of the canvas
@@ -1613,61 +1606,6 @@ bool entity::UserScene::removeCanvas(entity::Canvas *canvas)
 
     return result;
 }
-
-//bool entity::UserScene::addPhoto(Canvas *canvas, entity::Photo *photo)
-//{
-//    if (!canvas) qFatal("UserScene::addPhoto() - canvas is null");
-//    if (!canvas->getGroupData()) qFatal("UserScene::addPhoto() - geodeData is null");
-//    if (!photo) qFatal("UserScene::addPhoto() - photo is null");
-
-//    // add photo transparecy to each bookmark's scene state
-//    int idx = this->getNumPhotosTill(canvas);
-//    for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
-//        entity::SceneState* state = m_groupBookmarks->getSceneState(i);
-//        if (!state) qFatal("UserScene::addPhoto(): could not obtain a scene state");
-//        state->insertTransparency(idx, photo->getTransparency());
-//    }
-
-//    // add photo to scene graph
-//    bool result = canvas->getGroupData()->addDrawable(photo);
-
-//    // gui elements
-//    emit this->photoAdded(photo->getName(), this->getCanvasIndex(canvas));
-
-//    // updates
-//    canvas->updateFrame(m_canvasPrevious.get());
-//    this->updateWidgets();
-
-//    return result;
-//}
-
-//bool entity::UserScene::removePhoto(entity::Canvas *canvas, entity::Photo *photo)
-//{
-//    if (!canvas) qFatal("UserScene::removePhoto() - canvas is null");
-//    if (!canvas->getGroupData()) qFatal("UserScene::removePhoto() - geodeData is null");
-//    if (!photo) qFatal("UserScene::removePhoto() - photo is null");
-
-//    // remove photo transparencies from each bookmark's scene state
-//    int idx = this->getNumPhotosTill(canvas);
-//    for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
-//        entity::SceneState* state = m_groupBookmarks->getSceneState(i);
-//        if (!state) qFatal("UserScene::removePhoto(): could not obtain a scene state");
-//        state->eraseTransparency(idx, 1);
-//    }
-
-//    // remove from gui elements (order is important)
-//    emit this->photoRemoved(this->getCanvasIndex(canvas), this->getPhotoIndex(photo, canvas));
-
-//    // remove from scene graph
-//    bool result = canvas->getGroupData()->removeDrawable(photo);
-
-//    // make sure it is not a part of selected group, or it will stay within the scene graph
-//    canvas->removeEntitySelected(photo);
-//    canvas->updateFrame(m_canvasPrevious.get());
-//    this->updateWidgets();
-
-//    return result;
-//}
 
 bool entity::UserScene::addEntity(entity::Canvas *canvas, Entity2D *entity)
 {

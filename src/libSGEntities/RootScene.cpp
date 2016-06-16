@@ -184,8 +184,8 @@ bool RootScene::loadSceneFromFile()
         cnv->initializeStateMachine();
 
         /* photo textures */
-        for (size_t i=0; i<cnv->getGroupData()->getNumChildren(); ++i){
-            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGroupData()->getChild(i));
+        for (size_t i=0; i<cnv->getNumPhotos(); ++i){
+            entity::Photo* photo = cnv->getPhotoFromIndex(i);
             if (!photo) continue;
             photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTextureAsAttribute());
         }
@@ -497,7 +497,7 @@ entity::SceneState *RootScene::createSceneState() const
         if (!cnv) continue;
         state->pushDataFlag(cnv->getVisibilityData());
         state->pushToolFlag(cnv->getVisibilityFrameInternal());
-        for (int j=0; j<cnv->getNumPhotos(); ++j){
+        for (size_t j=0; j<cnv->getNumPhotos(); ++j){
             entity::Photo* photo = cnv->getPhotoFromIndex(j);
             if (!photo) continue;
             state->pushTransparency(photo->getTransparency());
@@ -531,7 +531,7 @@ bool RootScene::setSceneState(const entity::SceneState *state)
         cnv->setVisibilityAll(cdf[i]);
         emit m_userScene->canvasVisibilitySet(m_userScene->getCanvasIndex(cnv) , cdf[i]);
         cnv->setVisibilityFrameInternal(ctf[i]);
-        for (int j=0; j<cnv->getNumPhotos(); ++j){
+        for (size_t j=0; j<cnv->getNumPhotos(); ++j){
             entity::Photo* photo = cnv->getPhotoFromIndex(j);
             if (!photo) continue;
             photo->setTransparency(pt[idx]);

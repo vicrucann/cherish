@@ -41,14 +41,21 @@ class Canvas : public osg::Group {
 public:
     Canvas();
 
-    /* ctor to be used only within serializer, do not use it anywhere else */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     Canvas(const Canvas& cnv, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
+    /*! Method is either called automatically when running initializeSG or when reading scene from file. */
     virtual void initializeTools();
+
+    /*! Method to initialize canvases' geometrical properties. Must be called each time a canvas is allocated. */
     virtual void initializeSG();
+
+    /*! Method is called automatically from initializeSG() to initialize OpenGL state machine or when reading scene from file. */
     virtual void initializeStateMachine();
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+public:
     META_Node(entity, Canvas)
 
     /* setters and getters for serialization only! */
@@ -65,9 +72,8 @@ public:
     void setSwitch(osg::Switch* sw);
     const osg::Switch* getSwitch() const;
 
-    void setGroupData(osg::Geode* geode);
-    const osg::Geode* getGroupData() const;
-    osg::Geode* getGroupData();
+    void setGroupData(osg::Group* group);
+    const osg::Group* getGroupData() const;
 
     void setGeodeStrokes(osg::Geode* geode);
     const osg::Geode* getGeodeStrokes() const;
@@ -121,6 +127,8 @@ public:
     osg::Vec3f getSelectedEntitiesCenter2D() const;
     osg::Vec3f getCenter2D() const;
     osg::Vec3f getCenterMean() const;
+    const osg::Vec3f& getBoundingBoxCenter() const;
+    osg::BoundingBox getBoundingBox() const;
 
     void moveEntities(std::vector<Entity2D *> &entities, double du, double dv);
     void moveEntitiesSelected(double du, double dv);
@@ -156,7 +164,7 @@ public:
     const entity::FrameTool* getToolFrame() const;
 
     unsigned int getNumEntities() const;
-    int getNumPhotos() const;
+    unsigned int getNumPhotos() const;
     entity::Photo* getPhotoFromIndex(int row) const;
 
     /*! Method to iterate throught all the entities: both strokes and photos
@@ -166,6 +174,7 @@ public:
 
     bool addEntity(entity::Entity2D* entity);
     bool removeEntity(entity::Entity2D* entity);
+    bool containsEntity(entity::Entity2D* entity);
 
 protected:
     void updateTransforms();
@@ -179,7 +188,7 @@ private:
     osg::Matrix m_mT; /* part of m_transform */
     osg::ref_ptr<osg::MatrixTransform> m_transform; /* matrix transform in 3D space */
     osg::ref_ptr<osg::Switch> m_switch; /* inisible or not, the whole canvas content */
-    osg::ref_ptr<osg::Geode> m_groupData; /* keeps user canvas 2d entities such as strokes and photos */
+    osg::ref_ptr<osg::Group> m_groupData; /* keeps user canvas 2d entities such as strokes and photos */
     osg::ref_ptr<osg::Geode> m_geodeStrokes; // contains all the strokes as children
     osg::ref_ptr<osg::Geode> m_geodePhotos; // contains all the photos as children
 

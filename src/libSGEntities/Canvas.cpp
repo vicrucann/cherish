@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <iostream>
+#include <algorithm>
 
 #include "Canvas.h"
 #include "Settings.h"
@@ -15,7 +16,6 @@
 #include <osg/StateSet>
 #include <osg/Plane>
 #include <osg/BlendFunc>
-#include <osg/BoundingSphere>
 
 #include <QtGlobal>
 
@@ -25,7 +25,7 @@ entity::Canvas::Canvas()
     , m_mT(osg::Matrix::translate(0,0,0))
     , m_transform(new osg::MatrixTransform(m_mR * m_mT))
     , m_switch(new osg::Switch)
-    , m_groupData(new osg::Geode)
+    , m_groupData(new osg::Group)
     , m_geodeStrokes(new osg::Geode)
     , m_geodePhotos(new osg::Geode)
 
@@ -67,7 +67,6 @@ void entity::Canvas::initializeTools()
 
     if (!m_switch.get()) qFatal("Canvas::initializeTools() - pointers are NULL");
 
-    // FIXME: tools are not supposed to be saved on disk
     if (m_switch->getNumChildren() == 2){
         int index = m_switch->getChild(0) == m_groupData.get() ? 1 : 0;
         m_switch->removeChild(index, 1);
@@ -76,10 +75,6 @@ void entity::Canvas::initializeTools()
     m_switch->addChild(m_toolFrame, true);
 }
 
-/* Method to initialize canvases' geometrical properties
- * must be called from AddCanvasCommand right after the canvas
- * allocated.
-*/
 void entity::Canvas::initializeSG()
 {
     /* OpenGL settings */
@@ -95,6 +90,8 @@ void entity::Canvas::initializeSG()
     m_transform->addChild(m_switch.get());
     m_switch->setName("Switch");
     m_switch->addChild(m_groupData.get(), true); // 1st child of m_switch
+    m_groupData->addChild(m_geodeStrokes.get());
+    m_groupData->addChild(m_geodePhotos.get());
     this->initializeTools(); // 2nd child of m_switch
 
     /* update internal parameters */
@@ -169,17 +166,12 @@ const osg::Switch* entity::Canvas::getSwitch() const
     return m_switch.get();
 }
 
-void entity::Canvas::setGroupData(osg::Geode* geode)
+void entity::Canvas::setGroupData(osg::Group *group)
 {
-    m_groupData = geode;
+    m_groupData = group;
 }
 
-const osg::Geode* entity::Canvas::getGroupData() const
-{
-    return m_groupData.get();
-}
-
-osg::Geode*entity::Canvas::getGroupData()
+const osg::Group *entity::Canvas::getGroupData() const
 {
     return m_groupData.get();
 }
@@ -344,8 +336,8 @@ void entity::Canvas::rotate(const osg::Matrix& mr, const osg::Vec3f &c3d_new)
         }
         /* move every child back in local delta translation (diff between old and new centers) */
         osg::Vec3f delta2d = c2d_old - c2d_new;
-        for (size_t i=0; i<m_groupData->getNumChildren(); ++i){
-            entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_groupData->getChild(i));
+        for (size_t i=0; i<this->getNumEntities(); ++i){
+            entity::Entity2D* entity = this->getEntity(i);
             if (!entity){
                 outErrMsg("rotate canvas: could not dynamic_cast to Entity2D*");
                 return;
@@ -379,13 +371,10 @@ void entity::Canvas::unselectEntities()
 void entity::Canvas::selectAllStrokes()
 {
     this->unselectEntities();
-    for (unsigned int i = 0; i < m_groupData->getNumChildren(); i++){
-        entity::Entity2D* entity = dynamic_cast<entity::Entity2D*>(m_groupData->getChild(i));
+    for (unsigned int i = 0; i < this->getNumEntities(); i++){
+        entity::Entity2D* entity = this->getEntity(i);
         if (!entity) continue;
         this->addEntitySelected(entity);
-//        entity::Entity2D* entity = dynamic_cast<entity::Entity2D>(m_groupData->getChild(i));
-//        if (!entity) continue;
-//        this->addEntitySelected(entity);
     }
 }
 
@@ -416,7 +405,16 @@ entity::Stroke *entity::Canvas::getStrokeCurrent() const
  */
 void entity::Canvas::addEntitySelected(Entity2D *entity)
 {
-    m_selectedGroup.addEntity(entity, m_groupData.get());
+    switch (entity->getEntityType()){
+    case cher::ENTITY_STROKE:
+        m_selectedGroup.addEntity(entity, m_geodeStrokes.get());
+        break;
+    case cher::ENTITY_PHOTO:
+        m_selectedGroup.addEntity(entity, m_geodePhotos.get());
+        break;
+    default:
+        break;
+    }
 }
 
 /* whenever an entity is substracted from selection,
@@ -466,9 +464,36 @@ osg::Vec3f entity::Canvas::getCenter2D() const
 
 osg::Vec3f entity::Canvas::getCenterMean() const
 {
-    osg::BoundingBox bb = m_groupData->getBoundingBox();
+    osg::BoundingBox bb = this->getBoundingBox();
     if (!bb.valid()) return m_center;
     return bb.center() * m_transform->getMatrix();
+}
+
+const osg::Vec3f &entity::Canvas::getBoundingBoxCenter() const
+{
+    osg::BoundingBox bb = this->getBoundingBox();
+    if (!bb.valid()) return m_center;
+    return bb.center();
+}
+
+osg::BoundingBox entity::Canvas::getBoundingBox() const
+{
+    osg::BoundingBox result;
+    osg::BoundingBox bb_strokes = m_geodeStrokes->getBoundingBox();
+    osg::BoundingBox bb_photos = m_geodePhotos->getBoundingBox();
+    if (bb_strokes.valid() && bb_photos.valid()){
+        double xmin = std::min(bb_strokes.xMin(), bb_photos.xMin());
+        double ymin = std::min(bb_strokes.yMin(), bb_photos.yMin());
+        double zmin = std::min(bb_strokes.zMin(), bb_photos.zMin());
+        double xmax = std::max(bb_strokes.xMax(), bb_photos.xMax());
+        double ymax = std::max(bb_strokes.yMax(), bb_photos.yMax());
+        double zmax = std::max(bb_strokes.zMax(), bb_photos.zMax());
+        result.set(xmin,ymin,zmin, xmax,ymax,zmax);
+    }
+    else if (bb_strokes.valid()) result = bb_strokes;
+    else if (bb_photos.valid()) result = bb_photos;
+
+    return result;
 }
 
 /* Will be most likely called from EditEntityCommand since the vector of entities is specified */
@@ -516,7 +541,7 @@ void entity::Canvas::rotateEntitiesSelected(double theta)
  */
 void entity::Canvas::updateFrame(entity::Canvas* against)
 {
-    if (m_groupData->getNumChildren() > 0){
+    if (this->getNumEntities() > 0){
         /* if there is a selected group, draw edit frame around it
          * the frame will allow to perform move, scale, rotate */
         if (m_selectedGroup.getSize() > 0){
@@ -532,7 +557,7 @@ void entity::Canvas::updateFrame(entity::Canvas* against)
         /* if there is no selection, draw a normal canvas frame */
         else{
             /* local bounding box */
-            osg::BoundingBox bb = m_groupData->getBoundingBox();
+            osg::BoundingBox bb = this->getBoundingBox();
             if (bb.valid()){
                 /* new 2d local center */
                 osg::Vec3f c2d_new = bb.center();
@@ -602,8 +627,8 @@ entity::Canvas *entity::Canvas::clone() const
     clone->setMatrixTranslation(this->getMatrixTranslation());
     clone->setName(this->getName());
 
-    for (unsigned int i=0; i<m_groupData->getNumChildren(); ++i){
-        entity::Entity2D* entcopy = dynamic_cast<entity::Entity2D*>(m_groupData->getChild(i));
+    for (unsigned int i=0; i<this->getNumEntities(); ++i){
+        entity::Entity2D* entcopy = this->getEntity(i);
         switch(entcopy->getEntityType()){
         case cher::ENTITY_STROKE:
         {
@@ -611,7 +636,7 @@ entity::Canvas *entity::Canvas::clone() const
             if (stroke){
                 entity::Stroke* si = new entity::Stroke(*stroke, osg::CopyOp::DEEP_COPY_ALL);
                 if (si){
-                    if (!clone->getGroupData()->addDrawable(si)) outErrMsg("canvas clone: could not add stroke as drawable");
+                    if (!clone->addEntity(si)) outErrMsg("canvas clone: could not add stroke as drawable");
                 }
                 else outErrMsg("canvas clone: coult not clone the stroke");
             }
@@ -646,7 +671,7 @@ entity::Canvas *entity::Canvas::separate()
             // copy the stroke
             entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(entcopy);
             if (stroke){
-                if (!clone->getGroupData()->addDrawable(stroke))
+                if (!clone->addEntity(stroke))
                     outErrMsg("canvas separate: could not copy stroke");
             }
             break;
@@ -755,15 +780,9 @@ unsigned int entity::Canvas::getNumEntities() const
 }
 
 /* returnds total number of photos that belong to the canvas */
-int entity::Canvas::getNumPhotos() const
+unsigned int entity::Canvas::getNumPhotos() const
 {
-    int res = 0;
-    for (size_t i=0; i<m_groupData->getNumChildren(); ++i){
-        entity::Photo* photo = dynamic_cast<entity::Photo*>(m_groupData->getChild(i));
-        if (photo)
-            res++;
-    }
-    return res;
+    return m_geodePhotos->getNumChildren();
 }
 
 /* returns row's consequitive photo from scene graph;
@@ -778,15 +797,8 @@ int entity::Canvas::getNumPhotos() const
 */
 entity::Photo *entity::Canvas::getPhotoFromIndex(int row) const
 {
-    int idx = -1;
-    for (size_t i=0; i<m_groupData->getNumChildren(); ++i){
-        entity::Photo* photo = dynamic_cast<entity::Photo*>(m_groupData->getChild(i));
-        if (photo){
-            idx++;
-            if (idx == row) return photo;
-        }
-    }
-    return 0;
+    if (row<0 || row>=(int)m_geodePhotos->getNumChildren()) return NULL;
+    return dynamic_cast<entity::Photo*>(m_geodePhotos->getChild(row));
 }
 
 entity::Entity2D *entity::Canvas::getEntity(unsigned int i) const
@@ -811,6 +823,9 @@ bool entity::Canvas::addEntity(entity::Entity2D *entity)
     switch(entity->getEntityType()){
     case cher::ENTITY_STROKE:
         result = m_geodeStrokes->addDrawable(entity);
+        break;
+    case cher::ENTITY_PHOTO:
+        result = m_geodePhotos->addDrawable(entity);
         break;
     default:
         break;
@@ -838,6 +853,11 @@ bool entity::Canvas::removeEntity(entity::Entity2D *entity)
     return result;
 }
 
+bool entity::Canvas::containsEntity(entity::Entity2D *entity)
+{
+    return (m_geodeStrokes->containsDrawable(entity) || m_geodePhotos->containsDrawable(entity));
+}
+
 REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
                         , new entity::Canvas
                         , entity::Canvas
@@ -848,7 +868,7 @@ REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
 
     ADD_OBJECT_SERIALIZER(Transform, osg::MatrixTransform, NULL);
     ADD_OBJECT_SERIALIZER(Switch, osg::Switch, NULL);
-    ADD_OBJECT_SERIALIZER(GroupData, osg::Geode, NULL);
+    ADD_OBJECT_SERIALIZER(GroupData, osg::Group, NULL);
     ADD_OBJECT_SERIALIZER(GeodeStrokes, osg::Geode, NULL);
     ADD_OBJECT_SERIALIZER(GeodePhotos, osg::Geode, NULL);
 

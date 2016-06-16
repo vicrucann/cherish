@@ -68,7 +68,7 @@ void UserSceneTest::testWriteReadBookmarks()
     m_scene->setCanvasCurrent(m_canvas0.get());
     QString filename_photo = "../../samples/ds-32.bmp";
     m_rootScene->addPhoto(filename_photo.toStdString());
-    QCOMPARE(m_canvas0->getNumPhotos(), 1);
+    QCOMPARE((int)m_canvas0->getNumPhotos(), 1);
 
     /* take bookmark */
     this->onBookmark();
@@ -96,8 +96,8 @@ void UserSceneTest::testWriteReadBookmarks()
     QVERIFY(this->loadSceneFromFile());
     m_scene = m_rootScene->getUserScene();
     QVERIFY(m_scene.get());
-    QCOMPARE(m_scene->getNumCanvases(), 3);
-    QCOMPARE(m_scene->getNumPhotos(), 1);
+    QCOMPARE((int)m_scene->getNumCanvases(), 3);
+    QCOMPARE((int)m_scene->getNumPhotos(), 1);
 
     /* test if bookmarks data loaded correctly */
     bookmarks = m_scene->getBookmarksModel();

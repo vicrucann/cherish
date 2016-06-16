@@ -588,9 +588,6 @@ protected:
     bool addCanvas(entity::Canvas* canvas);
     bool removeCanvas(entity::Canvas* canvas);
 
-//    bool addPhoto(entity::Canvas* canvas, entity::Photo* photo);
-//    bool removePhoto(entity::Canvas* canvas, entity::Photo* photo);
-
     bool addEntity(entity::Canvas* canvas, entity::Entity2D* entity);
     bool removeEntity(entity::Canvas* canvas, entity::Entity2D* entity);
 
