@@ -811,8 +811,9 @@ bool entity::Canvas::removeEntity(entity::Entity2D *entity)
     case cher::ENTITY_STROKE:
         /* remove from scene graph */
         result = m_geodeStrokes->removeDrawable(entity);
-        /* remove from selected entities group */
-        this->removeEntitySelected(entity);
+        break;
+    case cher::ENTITY_PHOTO:
+        result = m_geodePhotos->removeDrawable(entity);
         break;
     default:
         break;

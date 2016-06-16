@@ -1666,7 +1666,7 @@ bool entity::UserScene::removeEntity(entity::Canvas *canvas, Entity2D *entity)
         for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
             entity::SceneState* state = m_groupBookmarks->getSceneState(i);
             if (!state) return result;
-            state->eraseTransparency(idx, photo->getTransparency());
+            state->eraseTransparency(idx, 1);
         }
         emit this->photoRemoved(this->getCanvasIndex(canvas), this->getPhotoIndex(photo, canvas));
         break;

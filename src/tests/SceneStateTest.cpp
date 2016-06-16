@@ -532,8 +532,8 @@ void SceneStateTest::testDeletePhoto()
 
     /* perform undo (return 1st photo with name test.bmp) */
     m_undoStack->undo();
-    QCOMPARE((int)m_rootScene->getUserScene()->getNumPhotos(), 1);
-    photo1 = m_rootScene->getUserScene()->getPhoto(m_canvas0.get(), 0);
+    QCOMPARE((int)m_scene->getNumPhotos(), 1);
+    photo1 = m_scene->getPhoto(m_canvas0.get(), 0);
     QVERIFY(photo1);
     QCOMPARE(photo1->getName().c_str(), "Photo1");
     QCOMPARE(photo1->getTransparency(), 1-cher::PHOTO_TRANSPARECY_DELTA);
