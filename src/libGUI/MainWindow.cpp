@@ -173,7 +173,7 @@ void MainWindow::onDeletePhoto(const QModelIndex &index)
     entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
     if (!cnv) return;
 
-    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhoto(cnv, index.row());
     if (!photo) return;
 
     QMessageBox::StandardButton reply = QMessageBox::question(this,
@@ -239,7 +239,7 @@ void MainWindow::slotPhotoTransparencyPlus(const QModelIndex &index)
     entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
     if (!cnv) return;
 
-    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhoto(cnv, index.row());
     if (!photo) return;
 
     m_rootScene->getUserScene()->editPhotoTransparency(photo, cnv, photo->getTransparency()+cher::PHOTO_TRANSPARECY_DELTA);
@@ -256,7 +256,7 @@ void MainWindow::slotPhotoTransparencyMinus(const QModelIndex &index)
     entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
     if (!cnv) return;
 
-    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhoto(cnv, index.row());
     if (!photo) return;
 
     m_rootScene->getUserScene()->editPhotoTransparency(photo, cnv, photo->getTransparency()-cher::PHOTO_TRANSPARECY_DELTA);
@@ -271,7 +271,7 @@ void MainWindow::slotPhotoPushed(int parent, int start, int, int destination, in
     entity::Canvas* canvas_new = m_rootScene->getUserScene()->getCanvasFromIndex(destination);
     if (!canvas_new) return;
 
-    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(canvas_old, start);
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhoto(canvas_old, start);
     if (!photo) return;
 
     m_rootScene->editPhotoPush(photo, canvas_old, canvas_new);

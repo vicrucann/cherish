@@ -43,8 +43,27 @@ public:
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
     Canvas(const Canvas& cnv, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
+
+private:
+    /* forbid direct children manipulation of canvas */
+    using osg::Group::addChild;
+    using osg::Group::insertChild;
+    using osg::Group::removeChild;
+    using osg::Group::removeChildren;
+    using osg::Group::replaceChild;
+    using osg::Group::setChild;
+    using osg::Group::asNode;
+    using osg::Group::asDrawable;
+    using osg::Group::asGeometry;
+    using osg::Group::asGeode;
+    using osg::Group::asGroup;
+    using osg::Group::asTransform;
+    using osg::Group::asCamera;
+    using osg::Group::asSwitch;
+
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
+public:
     /*! Method is either called automatically when running initializeSG or when reading scene from file. */
     virtual void initializeTools();
 
@@ -89,23 +108,47 @@ public:
 
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
+    /*! A method to set up canvas frame color. \sa getColor */
     void setColor(const osg::Vec4f& color, const osg::Vec4f& colorIntersection = cher::CANVAS_CLR_PREVIOUS);
+    /*! \return color of canvas frame. \sa setColor */
     const osg::Vec4f& getColor() const;
 
+protected:
     void setVisibilityFrame(bool vis);
     bool getVisibilityFrame() const;
+public:
     void setVisibilityFrameInternal(bool vis);
     bool getVisibilityFrameInternal() const;
-
     bool getVisibilityAll() const;
     void setVisibilityAll(bool vis);
+protected:
     bool getVisibilityData() const;
     void setVisibilityData(bool vis);
 
-    osg::Vec3f getGlobalAxisU() const;
-    osg::Vec3f getGlobalAxisV() const;
+public:
+    /*!
+     *  V
+     *  |
+     *  |____ U
+     *  /
+     * normal
+     *
+     * \return direction of U axis in global space.
+     * \sa getGlobalAxisV() */
+    const osg::Vec3f& getGlobalAxisU() const;
 
-    osg::Geometry* getGeometryPickable() const;
+    /*!
+     *  V
+     *  |
+     *  |____ U
+     *  /
+     * normal
+     *
+     * \return direction of V axis in global space.
+     * \sa getGlobalAxisU() */
+    const osg::Vec3f& getGlobalAxisV() const;
+
+    const osg::Geometry* getGeometryPickable() const;
 
     void translate(const osg::Matrix& mt);
     void rotate(const osg::Matrix& mr, const osg::Vec3f& c3d_new);
@@ -123,10 +166,10 @@ public:
     const std::vector<Entity2D *> &getStrokesSelected() const;
     int getStrokesSelectedSize() const;
     bool isEntitiesSelected() const;
-    osg::Vec3f getStrokesSelectedCenter() const;
-    osg::Vec3f getSelectedEntitiesCenter2D() const;
-    osg::Vec3f getCenter2D() const;
-    osg::Vec3f getCenterMean() const;
+    const osg::Vec3f& getStrokesSelectedCenter() const;
+    const osg::Vec3f& getSelectedEntitiesCenter2D() const;
+    const osg::Vec3f& getCenter2D() const;
+    const osg::Vec3f& getCenterMean() const;
     const osg::Vec3f& getBoundingBoxCenter() const;
     osg::BoundingBox getBoundingBox() const;
 
@@ -137,9 +180,11 @@ public:
     void rotateEntities(std::vector<entity::Entity2D*> entities, double theta, osg::Vec3f center);
     void rotateEntitiesSelected(double theta);
 
-    /* re-calculate frame's geometry and plane center transform
-     * based on canvas content location */
+    /*! Method to re-calculate frame;s geometry and plane center transform based on canvas content location.
+     * \param against is a Canvas against which an intersection is calculated. Normally it is UserScene::m_canvasPrevious. */
     void updateFrame(entity::Canvas *against = 0);
+
+    /*! \return 4 coordinates of canvas frame vertices. */
     const osg::Vec3Array* getFrameVertices() const;
 
     /*! A method which is called when performing RootScene::writeScenetoFile to temporarly detach the frame tools.
@@ -156,16 +201,15 @@ public:
     bool getModeEdit() const;
 
     osg::Plane getPlane() const;
-    osg::MatrixTransform* getMatrixTransform() const;
+
     entity::Canvas* clone() const;
     entity::Canvas* separate();
 
-    osg::Node* getTool(const std::string& name);
     const entity::FrameTool* getToolFrame() const;
 
     unsigned int getNumEntities() const;
     unsigned int getNumPhotos() const;
-    entity::Photo* getPhotoFromIndex(int row) const;
+    entity::Photo* getPhoto(int row) const;
 
     /*! Method to iterate throught all the entities: both strokes and photos
      * \param i is the index of desired entity
@@ -174,14 +218,16 @@ public:
 
     bool addEntity(entity::Entity2D* entity);
     bool removeEntity(entity::Entity2D* entity);
-    bool containsEntity(entity::Entity2D* entity);
+    bool containsEntity(entity::Entity2D* entity) const;
 
 protected:
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void updateTransforms();
     void resetTransforms();
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
     void setVerticesDefault(const osg::Vec3f& center);
     void setIntersection(entity::Canvas* against = 0);
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 private:
     osg::Matrix m_mR; /* part of m_transform */

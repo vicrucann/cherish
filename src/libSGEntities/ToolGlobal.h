@@ -103,7 +103,7 @@ public:
     void setColorIntersection(const osg::Vec4f& colorIntersect);
     void setEditable(bool editable);
 
-    osg::Geometry* getPickable() const;
+    const osg::Geometry* getPickable() const;
     bool isSelected() const;
 
     /* Entity2D API */

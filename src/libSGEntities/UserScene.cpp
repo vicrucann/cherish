@@ -428,8 +428,8 @@ int entity::UserScene::getPhotoIndex(entity::Photo *photo, Canvas *canvas) const
 {
     int idx = -1;
     for (size_t i=0; i< canvas->getNumPhotos(); ++i){
-        entity::Photo* pi = canvas->getPhotoFromIndex(i);
-        if (!pi) qFatal("UserScene::getPhotoFromIndex() failed");
+        entity::Photo* pi = canvas->getPhoto(i);
+        if (!pi) qFatal("UserScene::getPhotoIndex() failed");
         idx++;
         if (pi == photo) break;
     }
@@ -443,10 +443,10 @@ entity::Canvas *entity::UserScene::getCanvasFromIndex(int row)
     return dynamic_cast<entity::Canvas*>(m_groupCanvases->getChild(row));
 }
 
-entity::Photo *entity::UserScene::getPhotoFromIndex(Canvas *canvas, int row)
+entity::Photo *entity::UserScene::getPhoto(Canvas *canvas, int row)
 {
     if (!canvas) return NULL;
-    return canvas->getPhotoFromIndex(row);
+    return canvas->getPhoto(row);
 }
 
 int entity::UserScene::getNumCanvases() const
@@ -889,13 +889,13 @@ void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
 
         /* if canvas has any photos, reset photowidget */
         for (size_t j=0; j<cnv->getNumPhotos(); ++j){
-            entity::Photo* photo = cnv->getPhotoFromIndex(j);
+            entity::Photo* photo = cnv->getPhoto(j);
             if (!photo) continue;
             emit this->photoAdded(photo->getName(), this->getCanvasIndex(cnv));
         }
 
         /* set canvas visibility on scene and on GUI */
-        if (!cnv->getVisibilityData()){
+        if (!cnv->getVisibilityAll()){
             cnv->setVisibilityAll(false);
             int row = this->getCanvasIndex(cnv);
             outLogVal("Trying to set up canvas visibility scene and GUI", row);
@@ -929,7 +929,7 @@ void entity::UserScene::onItemChanged(QTreeWidgetItem *item, int column)
         int row = parent->indexOfChild(item);
         if (row >= this->getNumPhotos(canvas) || row < 0) return;
 
-        entity::Photo* photo = this->getPhotoFromIndex(canvas, row);
+        entity::Photo* photo = this->getPhoto(canvas, row);
         if (!photo) qFatal("UserScene::onItemChanged() - photo is NULL");
         photo->setName(item->text(column).toStdString());
         qDebug("photo name changed");
@@ -1007,7 +1007,7 @@ void entity::UserScene::strokeStart()
 {
     m_canvasCurrent->unselectEntities();
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
     outLogMsg("strokeStart()");
     if (this->strokeValid()){
@@ -1062,7 +1062,7 @@ bool entity::UserScene::strokeValid() const
 void entity::UserScene::entitiesMoveStart(double u, double v)
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
     m_u = u;
     m_v = v;
@@ -1115,7 +1115,7 @@ bool entity::UserScene::entitiesSelectedValid() const
 void entity::UserScene::entitiesScaleStart(double u, double v)
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
     osg::Vec3f center = m_canvasCurrent->getBoundingBoxCenter();
@@ -1173,7 +1173,7 @@ void entity::UserScene::entitiesScaleFinish(QUndoStack *stack)
 void entity::UserScene::entitiesRotateStart(double u, double v)
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
     osg::Vec3f center = m_canvasCurrent->getBoundingBoxCenter();
@@ -1263,7 +1263,7 @@ void entity::UserScene::entitiesRotateFinish(QUndoStack *stack)
 void entity::UserScene::eraseStart(entity::Stroke *stroke, osg::Vec3d &hit)
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 }
 
@@ -1289,7 +1289,7 @@ bool entity::UserScene::eraseValid(Stroke *stroke) const
 void entity::UserScene::canvasOffsetStart()
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
     if (this->canvasEditValid()){
@@ -1332,7 +1332,7 @@ bool entity::UserScene::canvasEditValid() const
 void entity::UserScene::canvasCloneStart()
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
     m_canvasCurrent->unselectAll();
@@ -1398,7 +1398,7 @@ bool entity::UserScene::canvasCloneValid() const
 void entity::UserScene::canvasSeparateStart()
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
     entity::Canvas* cnv = m_canvasCurrent->separate();
@@ -1462,7 +1462,7 @@ void entity::UserScene::canvasSeparateFinish(QUndoStack *stack)
 void entity::UserScene::canvasRotateStart()
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
     if (this->canvasEditValid()){
@@ -1515,7 +1515,7 @@ bool entity::UserScene::addCanvas(entity::Canvas *canvas)
     emit canvasAdded(canvas->getName());
     //see if any canvas contains any photos, they will be added to canvas widget
     for (size_t i=0; i<canvas->getNumPhotos(); ++i){
-        entity::Photo* photo = canvas->getPhotoFromIndex(i);
+        entity::Photo* photo = canvas->getPhoto(i);
         if (!photo) qFatal("UserScene::addCanvas() - photo is null");
         emit this->photoAdded(photo->getName(), this->getCanvasIndex(canvas));
     }
@@ -1536,7 +1536,7 @@ bool entity::UserScene::addCanvas(entity::Canvas *canvas)
 
         // if canvas contains any photos, insert photo transparencies too
         for (size_t j=0; j<canvas->getNumPhotos(); ++j){
-            entity::Photo* photo = canvas->getPhotoFromIndex(j);
+            entity::Photo* photo = canvas->getPhoto(j);
             if (!photo) qFatal("UserScene::addCanvas(): photo is NULL");
             state->insertTransparency(idx++, photo->getTransparency());
         }
@@ -1568,8 +1568,8 @@ bool entity::UserScene::removeCanvas(entity::Canvas *canvas)
 
         // if canvas contains any photos, erase data of photo transparencies too
         if (canvas->getNumPhotos() > 0){
-            if (canvas->getPhotoFromIndex(0)){
-                int start = this->getPhotoIndex(canvas->getPhotoFromIndex(0), canvas);
+            if (canvas->getPhoto(0)){
+                int start = this->getPhotoIndex(canvas->getPhoto(0), canvas);
                 state->eraseTransparency(start, canvas->getNumPhotos());
             }
         }

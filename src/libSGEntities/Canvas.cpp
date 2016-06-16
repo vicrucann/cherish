@@ -247,6 +247,7 @@ bool entity::Canvas::getVisibilityFrameInternal() const
 
 bool entity::Canvas::getVisibilityAll() const
 {
+    Q_ASSERT(this->getVisibilityFrame()==this->getVisibilityData());
     return this->getVisibilityData();
 }
 
@@ -266,33 +267,21 @@ void entity::Canvas::setVisibilityData(bool vis)
     m_switch->setChildValue(m_groupData, vis);
 }
 
-/*  V
- *  |
- *  |____ U
- *  /
- * normal
- */
-osg::Vec3f entity::Canvas::getGlobalAxisU() const
+const osg::Vec3f &entity::Canvas::getGlobalAxisU() const
 {
     osg::Vec3f u_loc = osg::Vec3f(1,0,0);
     osg::Matrix M = m_transform->getMatrix();
     return M * u_loc;
 }
 
-/*  V
- *  |
- *  |____ U
- *  /
- * normal
- */
-osg::Vec3f entity::Canvas::getGlobalAxisV() const
+const osg::Vec3f &entity::Canvas::getGlobalAxisV() const
 {
     osg::Vec3f v_loc = osg::Vec3f(0,1,0);
     osg::Matrix M = m_transform->getMatrix();
     return M * v_loc;
 }
 
-osg::Geometry *entity::Canvas::getGeometryPickable() const
+const osg::Geometry *entity::Canvas::getGeometryPickable() const
 {
     return m_toolFrame->getPickable();
 }
@@ -447,22 +436,22 @@ bool entity::Canvas::isEntitiesSelected() const
 /* returns global center of selected entities;
  * if there is no selected entities, returns canvas center
 */
-osg::Vec3f entity::Canvas::getStrokesSelectedCenter() const
+const osg::Vec3f &entity::Canvas::getStrokesSelectedCenter() const
 {
     return m_selectedGroup.getCenter3D(m_transform->getMatrix());
 }
 
-osg::Vec3f entity::Canvas::getSelectedEntitiesCenter2D() const
+const osg::Vec3f &entity::Canvas::getSelectedEntitiesCenter2D() const
 {
     return m_selectedGroup.getCenter2DCustom();
 }
 
-osg::Vec3f entity::Canvas::getCenter2D() const
+const osg::Vec3f &entity::Canvas::getCenter2D() const
 {
     return m_center * m_transform->getMatrix();
 }
 
-osg::Vec3f entity::Canvas::getCenterMean() const
+const osg::Vec3f &entity::Canvas::getCenterMean() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
     if (!bb.valid()) return m_center;
@@ -613,11 +602,6 @@ osg::Plane entity::Canvas::getPlane() const
     return plane;
 }
 
-osg::MatrixTransform* entity::Canvas::getMatrixTransform() const
-{
-    return m_transform.get();
-}
-
 entity::Canvas *entity::Canvas::clone() const
 {
     osg::ref_ptr<entity::Canvas> clone = new Canvas;
@@ -753,22 +737,6 @@ void entity::Canvas::setIntersection(entity::Canvas *against)
     m_toolFrame->setIntersection(P1,P2,P3,P4);
 }
 
-osg::Node* entity::Canvas::getTool(const std::string &name)
-{
-    if (!m_switch.get()){
-        outErrMsg("getTool: switch is NULL");
-        return 0;
-    }
-
-    FindNodeVisitor fnv(name);
-    m_switch->accept(fnv);
-    if (fnv.getNode() == NULL){
-        outErrMsg("getTool: FNV returned NULL");
-        return 0;
-    }
-    return fnv.getNode();
-}
-
 const entity::FrameTool *entity::Canvas::getToolFrame() const
 {
     return m_toolFrame;
@@ -795,7 +763,7 @@ unsigned int entity::Canvas::getNumPhotos() const
  *          \-> pointClouds -> ...
  * It will allow to skip looping through all the elements in the below function.
 */
-entity::Photo *entity::Canvas::getPhotoFromIndex(int row) const
+entity::Photo *entity::Canvas::getPhoto(int row) const
 {
     if (row<0 || row>=(int)m_geodePhotos->getNumChildren()) return NULL;
     return dynamic_cast<entity::Photo*>(m_geodePhotos->getChild(row));
@@ -853,7 +821,7 @@ bool entity::Canvas::removeEntity(entity::Entity2D *entity)
     return result;
 }
 
-bool entity::Canvas::containsEntity(entity::Entity2D *entity)
+bool entity::Canvas::containsEntity(entity::Entity2D *entity) const
 {
     return (m_geodeStrokes->containsDrawable(entity) || m_geodePhotos->containsDrawable(entity));
 }

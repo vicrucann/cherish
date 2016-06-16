@@ -11,21 +11,18 @@ void MainWindowTest::testToolsOnOff()
     QCOMPARE(m_canvasWidget->topLevelItemCount(), 3);
 
     QCOMPARE(m_canvas0->getVisibilityAll(), false);
-    QCOMPARE(m_canvas0->getVisibilityData(), m_canvas0->getVisibilityFrame());
     QCOMPARE(m_canvas0->getVisibilityFrameInternal(), true);
     QTreeWidgetItem* item0 = m_canvasWidget->topLevelItem(0);
     QVERIFY(item0);
     QCOMPARE(item0->data(0, cher::DelegateVisibilityRole).toBool(), true);
 
     QCOMPARE(m_canvas1->getVisibilityAll(), true);
-    QCOMPARE(m_canvas1->getVisibilityData(), m_canvas1->getVisibilityFrame());
     QCOMPARE(m_canvas1->getVisibilityFrameInternal(), true);
     QTreeWidgetItem* item1 = m_canvasWidget->topLevelItem(1);
     QVERIFY(item1);
     QCOMPARE(item1->data(0, cher::DelegateVisibilityRole).toBool(), false);
 
     QCOMPARE(m_canvas2->getVisibilityAll(), false);
-    QCOMPARE(m_canvas2->getVisibilityData(), m_canvas2->getVisibilityFrame());
     QCOMPARE(m_canvas2->getVisibilityFrameInternal(), true);
     QTreeWidgetItem* item2 = m_canvasWidget->topLevelItem(2);
     QVERIFY(item2);
@@ -44,17 +41,14 @@ void MainWindowTest::testToolsOnOff()
     QVERIFY(args_tools.at(0).toBool() == false);
 
     QCOMPARE(m_canvas0->getVisibilityAll(), false);
-    QCOMPARE(m_canvas0->getVisibilityData(), m_canvas0->getVisibilityFrame());
     QCOMPARE(m_canvas0->getVisibilityFrameInternal(), false);
     QCOMPARE(item0->data(0, cher::DelegateVisibilityRole).toBool(), true);
 
     QCOMPARE(m_canvas1->getVisibilityAll(), true);
-    QCOMPARE(m_canvas1->getVisibilityData(), m_canvas1->getVisibilityFrame());
     QCOMPARE(m_canvas1->getVisibilityFrameInternal(), false);
     QCOMPARE(item1->data(0, cher::DelegateVisibilityRole).toBool(), false);
 
     QCOMPARE(m_canvas2->getVisibilityAll(), false);
-    QCOMPARE(m_canvas2->getVisibilityData(), m_canvas2->getVisibilityFrame());
     QCOMPARE(m_canvas2->getVisibilityFrameInternal(), false);
     QCOMPARE(item2->data(0, cher::DelegateVisibilityRole).toBool(), true);
 
@@ -66,7 +60,6 @@ void MainWindowTest::testToolsOnOff()
     /* turn visibility back for canvas0 while tools are off */
     this->onVisibilitySetCanvas(0);
     QCOMPARE(m_canvas0->getVisibilityAll(), true);
-    QCOMPARE(m_canvas0->getVisibilityData(), m_canvas0->getVisibilityFrame());
     QCOMPARE(m_canvas0->getVisibilityFrameInternal(), false);
     QCOMPARE(item0->data(0, cher::DelegateVisibilityRole).toBool(), false);
 
@@ -81,7 +74,6 @@ void MainWindowTest::testToolsOnOff()
     QTreeWidgetItem* item3 = m_canvasWidget->topLevelItem(3);
     QVERIFY(item3);
     QCOMPARE(m_canvas3->getVisibilityAll(), true);
-    QCOMPARE(m_canvas3->getVisibilityData(), m_canvas3->getVisibilityFrame());
     QCOMPARE(m_canvas3->getVisibilityFrameInternal(), false);
     QCOMPARE(item3->data(0, cher::DelegateVisibilityRole).toBool(), false);
 
@@ -90,22 +82,18 @@ void MainWindowTest::testToolsOnOff()
     m_actionTools->setChecked(true);
 
     QCOMPARE(m_canvas0->getVisibilityAll(), true);
-    QCOMPARE(m_canvas0->getVisibilityData(), m_canvas0->getVisibilityFrame());
     QCOMPARE(m_canvas0->getVisibilityFrameInternal(), true);
     QCOMPARE(item0->data(0, cher::DelegateVisibilityRole).toBool(), false);
 
     QCOMPARE(m_canvas1->getVisibilityAll(), true);
-    QCOMPARE(m_canvas1->getVisibilityData(), m_canvas1->getVisibilityFrame());
     QCOMPARE(m_canvas1->getVisibilityFrameInternal(), true);
     QCOMPARE(item1->data(0, cher::DelegateVisibilityRole).toBool(), false);
 
     QCOMPARE(m_canvas2->getVisibilityAll(), false);
-    QCOMPARE(m_canvas2->getVisibilityData(), m_canvas2->getVisibilityFrame());
     QCOMPARE(m_canvas2->getVisibilityFrameInternal(), true);
     QCOMPARE(item2->data(0, cher::DelegateVisibilityRole).toBool(), true);
 
     QCOMPARE(m_canvas3->getVisibilityAll(), true);
-    QCOMPARE(m_canvas3->getVisibilityData(), m_canvas3->getVisibilityFrame());
     QCOMPARE(m_canvas3->getVisibilityFrameInternal(), true);
     QCOMPARE(item3->data(0, cher::DelegateVisibilityRole).toBool(), false);
 

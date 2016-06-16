@@ -82,7 +82,7 @@ void entity::SceneState::stripDataFrom(RootScene *scene)
         m_canvasDataFlags[i] = cnv->getVisibilityAll();
         m_canvasToolFlags[i] = cnv->getVisibilityFrameInternal();
         for (size_t j=0; j < cnv->getNumPhotos(); ++j){
-            entity::Photo* photo = cnv->getPhotoFromIndex(j);
+            entity::Photo* photo = cnv->getPhoto(j);
             if (!photo) continue;
             float t = photo->getTransparency();
             m_photoTransparencies.push_back(t);

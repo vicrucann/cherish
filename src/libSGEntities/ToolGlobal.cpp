@@ -491,7 +491,7 @@ void entity::FrameTool::setEditable(bool editable)
     m_editable = editable;
 }
 
-osg::Geometry *entity::FrameTool::getPickable() const
+const osg::Geometry *entity::FrameTool::getPickable() const
 {
     return m_geomPickable;
 }

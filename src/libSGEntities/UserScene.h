@@ -314,7 +314,7 @@ public:
      * \param photo is a Photo of which index we want to obtain
      * \param canvas is a Canvas that contains the photo
      * \return index of the given Photo within the given Canvas as is in CanvasWidget.
-     * \sa getPhotoFromIndex() */
+     * \sa getPhoto() */
     int getPhotoIndex(entity::Photo* photo, entity::Canvas* canvas) const;
 
     /*! A method to return a Canvas pointer given sequential index within CanvasWidget.
@@ -331,7 +331,7 @@ public:
      * \param row is the sequential index as is in CanvasWidget
      * \return Photo pointer of the index.
      * \sa getPhotoIndex() */
-    entity::Photo* getPhotoFromIndex(entity::Canvas* canvas, int row);
+    entity::Photo* getPhoto(entity::Canvas* canvas, int row);
 
     /*! \return the number of canvases on the scene */
     int getNumCanvases() const;
