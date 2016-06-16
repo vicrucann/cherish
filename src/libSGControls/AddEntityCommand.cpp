@@ -1,6 +1,7 @@
 #include "AddEntityCommand.h"
 
 #include <QObject>
+#include <QDebug>
 
 AddCanvasCommand::AddCanvasCommand(entity::UserScene* scene, const osg::Matrix& R, const osg::Matrix& T, const std::string& name, QUndoCommand* parent)
     : QUndoCommand(parent)
@@ -69,7 +70,6 @@ AddPhotoCommand::AddPhotoCommand(entity::UserScene* scene, const std::string& fn
     m_photo->loadImage(fname);
 
     m_photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
-//    m_canvas->getGeodeData()->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute() );
 
     this->setText(QObject::tr("Add photo to %1")
                   .arg(QString(m_canvas->getName().c_str())));
@@ -77,13 +77,13 @@ AddPhotoCommand::AddPhotoCommand(entity::UserScene* scene, const std::string& fn
 
 void AddPhotoCommand::undo()
 {
-    if (!m_scene->removePhoto(m_canvas.get(), m_photo.get()))
+    if (!m_scene->removeEntity(m_canvas.get(), m_photo.get()))
         qFatal("AddPhotoCommand::undo() failed");
 }
 
 void AddPhotoCommand::redo()
 {
-    if (!m_scene->addPhoto(m_canvas.get(), m_photo.get()))
+    if (!m_scene->addEntity(m_canvas.get(), m_photo.get()))
         qFatal("AddPhotoCommand::redo() failed");
 }
 
@@ -104,19 +104,14 @@ AddStrokeCommand::~AddStrokeCommand()
 
 void AddStrokeCommand::undo()
 {
-    if (!m_canvas->getGeodeData()->removeDrawable(m_stroke))
-        outErrMsg("undo(): problem while removing stroke from a canvas");
-    m_canvas->removeEntitySelected(m_stroke);
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
+    if (!m_scene->removeEntity(m_canvas.get(), m_stroke.get()))
+        qCritical("undo(): problem while removing stroke from a canvas");
 }
 
 void AddStrokeCommand::redo()
 {
-    if (!m_canvas->getGeodeData()->addDrawable(m_stroke))
-        outErrMsg("redo(): problem while adding stroke to a canvas");
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
+    if (!m_scene->addEntity(m_canvas.get(), m_stroke.get()))
+        qCritical("redo(): problem while adding stroke to a canvas");
 }
 
 AddCanvasSeparationCommand::AddCanvasSeparationCommand(entity::UserScene *scene, entity::Canvas *source, entity::Canvas *copy, QUndoCommand *parent)
@@ -133,13 +128,13 @@ AddCanvasSeparationCommand::AddCanvasSeparationCommand(entity::UserScene *scene,
     m_target->setMatrixTranslation(copy->getMatrixTranslation());
 
     this->setText(QObject::tr("Separate to canvas %1") .arg(QString(m_target->getName().c_str())));
-    for (size_t i=0; i<copy->getGeodeData()->getNumChildren(); ++i){
-        entity::Entity2D* ent = dynamic_cast<entity::Entity2D*>(copy->getGeodeData()->getDrawable(i));
+    for (size_t i=0; i<copy->getNumEntities(); ++i){
+        entity::Entity2D* ent = copy->getEntity(i);
         if (!ent) continue;
         m_entities.push_back(ent);
     }
-    if (m_entities.size() != m_target->getGeodeData()->getNumChildren())
-        outErrMsg("AddCanvasSeparationCommand: failed to initialize entities");
+    if (m_entities.size() != m_target->getNumEntities())
+        qCritical("AddCanvasSeparationCommand: failed to initialize entities");
 }
 
 void AddCanvasSeparationCommand::undo()
@@ -166,10 +161,10 @@ void AddCanvasSeparationCommand::moveEntities(entity::Canvas *from, entity::Canv
     for (size_t i=0; i<m_entities.size(); ++i){
         entity::Entity2D* entity = m_entities.at(i);
         if (!entity) continue;
-        if (!to->getGeodeData()->addDrawable(entity))
-            outErrMsg("AddCanvasSeparationCommand: could not add entity to the target");
-        if (!from->getGeodeData()->removeDrawable(entity))
-            outErrMsg("AddCanvasSeparationCommand: could not remove entity from the source");
+        if (!m_scene->addEntity(to, entity))
+            qCritical("AddCanvasSeparationCommand: could not add entity to the target");
+        if (!m_scene->removeEntity(from, entity))
+            qCritical("AddCanvasSeparationCommand: could not remove entity from the source");
     }
     to->updateFrame(0);
     from->updateFrame(0);

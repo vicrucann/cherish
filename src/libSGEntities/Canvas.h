@@ -48,6 +48,7 @@ public:
     virtual void initializeSG();
     virtual void initializeStateMachine();
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     META_Node(entity, Canvas)
 
     /* setters and getters for serialization only! */
@@ -64,9 +65,15 @@ public:
     void setSwitch(osg::Switch* sw);
     const osg::Switch* getSwitch() const;
 
-    void setGeodeData(osg::Geode* geode);
-    const osg::Geode* getGeodeData() const;
-    osg::Geode* getGeodeData();
+    void setGroupData(osg::Geode* geode);
+    const osg::Geode* getGroupData() const;
+    osg::Geode* getGroupData();
+
+    void setGeodeStrokes(osg::Geode* geode);
+    const osg::Geode* getGeodeStrokes() const;
+
+    void setGeodePhotos(osg::Geode* geode);
+    const osg::Geode* getGeodePhotos() const;
 
     void setCenter(const osg::Vec3f& center);
     const osg::Vec3f& getCenter() const;
@@ -74,7 +81,7 @@ public:
     void setNormal(const osg::Vec3f& normal);
     const osg::Vec3f& getNormal() const;
 
-    /* other API methods */
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
     void setColor(const osg::Vec4f& color, const osg::Vec4f& colorIntersection = cher::CANVAS_CLR_PREVIOUS);
     const osg::Vec4f& getColor() const;
@@ -148,12 +155,19 @@ public:
     osg::Node* getTool(const std::string& name);
     const entity::FrameTool* getToolFrame() const;
 
+    unsigned int getNumEntities() const;
     int getNumPhotos() const;
     entity::Photo* getPhotoFromIndex(int row) const;
 
-protected:
-    ~Canvas();
+    /*! Method to iterate throught all the entities: both strokes and photos
+     * \param i is the index of desired entity
+     * \return const pointer on entity. */
+    entity::Entity2D* getEntity(unsigned int i) const;
 
+    bool addEntity(entity::Entity2D* entity);
+    bool removeEntity(entity::Entity2D* entity);
+
+protected:
     void updateTransforms();
     void resetTransforms();
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
@@ -165,7 +179,9 @@ private:
     osg::Matrix m_mT; /* part of m_transform */
     osg::ref_ptr<osg::MatrixTransform> m_transform; /* matrix transform in 3D space */
     osg::ref_ptr<osg::Switch> m_switch; /* inisible or not, the whole canvas content */
-    osg::ref_ptr<osg::Geode> m_geodeData; /* keeps user canvas 2d entities such as strokes and photos */
+    osg::ref_ptr<osg::Geode> m_groupData; /* keeps user canvas 2d entities such as strokes and photos */
+    osg::ref_ptr<osg::Geode> m_geodeStrokes; // contains all the strokes as children
+    osg::ref_ptr<osg::Geode> m_geodePhotos; // contains all the photos as children
 
     /* construction geodes */
     osg::ref_ptr<entity::FrameTool> m_toolFrame;

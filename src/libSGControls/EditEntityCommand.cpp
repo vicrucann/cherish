@@ -85,13 +85,11 @@ EditStrokesPushCommand::EditStrokesPushCommand(entity::UserScene *scene, const s
 void EditStrokesPushCommand::undo()
 {
     this->doPushStrokes(*(m_canvasTarget.get()), *(m_canvasCurrent.get()));
-    m_scene->updateWidgets();
 }
 
 void EditStrokesPushCommand::redo()
 {
     this->doPushStrokes(*(m_canvasCurrent.get()), *(m_canvasTarget.get()));
-    m_scene->updateWidgets();
 }
 
 void EditStrokesPushCommand::doPushStrokes(entity::Canvas& source, entity::Canvas& target)
@@ -103,9 +101,9 @@ void EditStrokesPushCommand::doPushStrokes(entity::Canvas& source, entity::Canva
     const osg::Vec3f center = target.getCenter();
 
     for (unsigned int i=0; i<m_entities.size(); ++i){
-        entity::Stroke* s = dynamic_cast<entity::Stroke*> (m_entities.at(i));
-        if (!s) continue;
-        osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(s->getVertexArray());
+        entity::Stroke* stroke = dynamic_cast<entity::Stroke*> (m_entities.at(i));
+        if (!stroke) continue;
+        osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(stroke->getVertexArray());
         for (unsigned int j=0; j<verts->size(); ++j){
             osg::Vec3f p = (*verts)[j];
             osg::Vec3f P = p * M;
@@ -115,11 +113,11 @@ void EditStrokesPushCommand::doPushStrokes(entity::Canvas& source, entity::Canva
             osg::Vec3f p_ = P_ * invM;
             (*verts)[j] = osg::Vec3f(p_.x(), p_.y(), 0.f);
         }
-        target.getGeodeData()->addDrawable(s);
-        source.getGeodeData()->removeDrawable(s);
+        m_scene->addEntity(&target, stroke);
+        m_scene->removeEntity(&source, stroke);
 
         verts->dirty();
-        s->dirtyBound();
+        stroke->dirtyBound();
     }
     target.updateFrame();
 }
@@ -158,14 +156,12 @@ EditStrokeDeleteCommand::EditStrokeDeleteCommand(entity::UserScene *scene, entit
 
 void EditStrokeDeleteCommand::undo()
 {
-    m_canvas->getGeodeData()->addDrawable(m_stroke.get());
-    m_scene->updateWidgets();
+    m_scene->addEntity(m_canvas.get(), m_stroke.get());
 }
 
 void EditStrokeDeleteCommand::redo()
 {
-    m_canvas->getGeodeData()->removeDrawable(m_stroke.get());
-    m_scene->updateWidgets();
+    m_scene->removeEntity(m_canvas.get(), m_stroke.get());
 }
 
 EditPhotoDeleteCommand::EditPhotoDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, entity::Photo *photo, QUndoCommand *parent)
@@ -181,13 +177,13 @@ this->setText(QObject::tr("Delete photo from %1")
 
 void EditPhotoDeleteCommand::undo()
 {
-    if (!m_scene->addPhoto(m_canvas.get(), m_photo.get()))
+    if (!m_scene->addEntity(m_canvas.get(), m_photo.get()))
         qFatal("EditPhotoDeleteCommand:: undo() failed");
 }
 
 void EditPhotoDeleteCommand::redo()
 {
-    if (!m_scene->removePhoto(m_canvas.get(), m_photo.get()))
+    if (!m_scene->removeEntity(m_canvas.get(), m_photo.get()))
         qFatal("EditPhotoDeleteCommand:: redo() failed");
 }
 
@@ -290,10 +286,10 @@ void EditPasteCommand::undo()
 {
     m_canvas->unselectEntities();
     for (size_t i=0; i<m_entities.size();++i){
-        m_canvas->getGeodeData()->removeDrawable(m_entities.at(i));
+        entity::Entity2D* entity = m_entities.at(i);
+        if (!entity) continue;
+        m_scene->removeEntity(m_canvas.get(), entity);
     }
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
 }
 
 void EditPasteCommand::redo()
@@ -303,11 +299,9 @@ void EditPasteCommand::redo()
         entity::Entity2D* entity = m_entities.at(i);
         if (!entity) continue;
         entity->moveDelta(0.2, 0.2);
-        m_canvas->getGeodeData()->addDrawable(entity);
+        m_scene->addEntity(m_canvas.get(), entity);
         m_canvas->addEntitySelected(entity);
     }
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
 }
 
 EditCutCommand::EditCutCommand(entity::UserScene* scene, entity::Canvas*  canvas,
@@ -329,7 +323,7 @@ void EditCutCommand::undo()
     for (size_t i=0; i<m_buffer.size(); ++i){
         entity::Entity2D* entity = m_buffer.at(i).get();
         if (!entity) continue;
-        m_canvas->getGeodeData()->addDrawable(entity);
+        m_scene->addEntity(m_canvas.get(), entity);
         m_canvas->addEntitySelected(entity);
     }
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
@@ -345,10 +339,8 @@ void EditCutCommand::redo()
     }
     m_scene->setCanvasCurrent(m_canvas.get());
     for (size_t i=0; i<m_buffer.size(); ++i){
-        m_canvas->getGeodeData()->removeDrawable(m_buffer.at(i));
+        m_scene->removeEntity(m_canvas.get(), m_buffer.at(i));
     }
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
 }
 
 EditPhotoPushCommand::EditPhotoPushCommand(entity::UserScene *scene, entity::Canvas *source, entity::Canvas *destination, entity::Photo *photo, QUndoCommand *parent)
@@ -366,19 +358,13 @@ EditPhotoPushCommand::EditPhotoPushCommand(entity::UserScene *scene, entity::Can
 
 void EditPhotoPushCommand::undo()
 {
-//    m_source->getGeodeData()->insertChild(m_start, m_photo.get());
-    m_source->getGeodeData()->addDrawable(m_photo.get());
-    m_destination->getGeodeData()->removeChild(m_photo.get());
-    m_source->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
+    m_scene->addEntity(m_source.get(), m_photo.get());
+    m_scene->removeEntity(m_destination.get(), m_photo.get());
 }
 
 void EditPhotoPushCommand::redo()
 {
     m_photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
-//    m_destination->getGeodeData()->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
-    m_destination->getGeodeData()->addDrawable(m_photo.get());
-    m_source->getGeodeData()->removeDrawable(m_photo.get());
-    m_destination->updateFrame(m_scene->getCanvasPrevious());
-    m_scene->updateWidgets();
+    m_scene->addEntity(m_destination.get(), m_photo.get());
+    m_scene->addEntity(m_source.get(), m_photo.get());
 }

@@ -31,6 +31,12 @@ class AddPhotoCommand;
 class EditCanvasDeleteCommand;
 class AddCanvasSeparationCommand;
 class EditPhotoDeleteCommand;
+class AddStrokeCommand;
+class EditStrokesPushCommand;
+class EditStrokeDeleteCommand;
+class EditPasteCommand;
+class EditCutCommand;
+class EditPhotoPushCommand;
 
 /*! \namespace entity
  * \brief Scene graph entities
@@ -84,55 +90,26 @@ public:
      * from RootScene ctor. */
     void initializeSG();
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void setGroupCanvases(osg::Group* group);
     const osg::Group* getGroupCanvases() const;
 
     void setBookmarks(entity::Bookmarks* group);
     const entity::Bookmarks* getBookmarks() const;
-
-    /*! \fn getBookmarksModel
-     * \return a non-constant Bookmarks group (editable) */
     entity::Bookmarks* getBookmarksModel() const;
 
-
-    /*! \fn setIdCanvas
-     * \param id is setter for the m_idCanvas
-     * Must not be used within the application. */
     void setIdCanvas(unsigned int id);
-
-    /*! \fn getIdCanvas
-     * \return The maximum ID of canvas, m_idCanvas */
     unsigned int getIdCanvas() const;
 
-
-    /*! \fn setIdPhoto
-     * \param id is setter for the m_idPhoto
-     * Must not be used within the application. */
     void setIdPhoto(unsigned int id);
-
-    /*! \fn getIdPhoto
-     * \return The maximum ID of photo, m_idPhoto */
     unsigned int getIdPhoto() const;
 
-
-    /*! \fn setIdBookmark
-     * \param id is setter for the m_idBookmark
-     * Must not be used within the application. */
     void setIdBookmark(unsigned int id);
-
-    /*! \fn getIdBookmark
-     * \return The maximum ID of bookmark, m_idBookmark */
     unsigned int getIdBookmark() const;
 
-
-    /*! \fn setFilePath
-     * \param name is of type std::string to set up a file path variable where
-     * the scene graph is saved to. Can be used within the application. */
     void setFilePath(const std::string& name);
-
-    /*! \fn getFilePath
-     * \return Name of file path variable where the scene fraph is saved to */
     const std::string& getFilePath() const;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
     /*! \fn isSetFilePath
      * \return Bool value indicating whether the file path was set or not */
@@ -596,64 +573,30 @@ protected:
     void canvasRotateAppend(const osg::Quat& r, const osg::Vec3f& center3d);
     void canvasRotateFinish(QUndoStack* stack);
 
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
-
-private:
     friend class ::AddCanvasCommand;
     friend class ::AddPhotoCommand;
     friend class ::EditCanvasDeleteCommand;
     friend class ::AddCanvasSeparationCommand;
     friend class ::EditPhotoDeleteCommand;
+    friend class ::AddStrokeCommand;
+    friend class ::EditStrokesPushCommand;
+    friend class ::EditStrokeDeleteCommand;
+    friend class ::EditPasteCommand;
+    friend class ::EditCutCommand;
+    friend class ::EditPhotoPushCommand;
 
-    /*! Function to be accessed from AddEntityCommand classes only. It modifies the internal scene graph
-     * by adding a canvas as a child to m_groupCanvases. When the canvas is added, it is also made sure:
-     *
-     * * bookmarks' scene states structures are updated
-     * * GUI elements are updated correspondingly, such as CanvasWidget
-     * * This canvas is set to be current
-     * * GLWidget is updated
-     * * Canvas frame is updated
-     *
-     * \param canvas is a canvas to add
-     * \return true if successfully added to scene graph, false - otherwise. */
     bool addCanvas(entity::Canvas* canvas);
-
-    /*! Function to be accessed from AddEntityCommand classes only. It mordifies the internal scene graph
-     * by removing the canvas as a child of m_groupCanvases. When the canvas is removed, it is also made sure:
-     *
-     * * bookmarks' scene states structures are updated
-     * * current/previous canvas rules hold
-     * * GUI elements are updated correspondingly, such as CanvasWidget
-     * * GLWidget is updated
-     * * Canvas frame is updated
-     * \param canvas is the canvas to remove
-     * \return true if successfully removed from scene graph, false - otherwise. */
     bool removeCanvas(entity::Canvas* canvas);
 
-    /*! Function to be accessed from AddEntityCommand classes only. It modifies the internal scene graph
-     * by adding a photo to the canvas as a child. When photo is added, it is also made sure:
-     *
-     * * bookmarks' scene states are updated
-     * * GUI elements are updated
-     * * Canvas frame is updated
-     * * GLWidget is updated
-     * \param canvas is canvas to where the photo is added
-     * \param photo is a photo to add
-     * \return true if successfully added to scene graph, false - otherwise. */
-    bool addPhoto(entity::Canvas* canvas, entity::Photo* photo);
+//    bool addPhoto(entity::Canvas* canvas, entity::Photo* photo);
+//    bool removePhoto(entity::Canvas* canvas, entity::Photo* photo);
 
-    /*! Function to be accessed from AddEntityCommand classes only. It modifies the internal scene graph
-     * by removing a photo from the canvas as a child. When photo is removed, it is also made sure:
-     *
-     * * bookmarks' scene states are updated
-     * * GUI elements are updated
-     * * Canvas frame is updated
-     * * GLWidget is updated
-     * \param canvas is canvas from where the photo is removed
-     * \param photo is a photo to remove
-     * \return true if successfully removed from scene graph, false - otherwise. */
-    bool removePhoto(entity::Canvas* canvas, entity::Photo* photo);
+    bool addEntity(entity::Canvas* canvas, entity::Entity2D* entity);
+    bool removeEntity(entity::Canvas* canvas, entity::Entity2D* entity);
 
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+private:
     osg::ref_ptr<osg::Group> m_groupCanvases; /*!< Group that contains all the bookmarks. */
     osg::ref_ptr<entity::Bookmarks> m_groupBookmarks; /*!< Pointer on Bookmarks data structure, it is one of the direct children of UserScene. */
     osg::observer_ptr<entity::Canvas> m_canvasCurrent; /*!< Observer pointer on current canvas. */

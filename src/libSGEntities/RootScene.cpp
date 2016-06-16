@@ -184,8 +184,8 @@ bool RootScene::loadSceneFromFile()
         cnv->initializeStateMachine();
 
         /* photo textures */
-        for (size_t i=0; i<cnv->getGeodeData()->getNumChildren(); ++i){
-            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGeodeData()->getChild(i));
+        for (size_t i=0; i<cnv->getGroupData()->getNumChildren(); ++i){
+            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGroupData()->getChild(i));
             if (!photo) continue;
             photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTextureAsAttribute());
         }
