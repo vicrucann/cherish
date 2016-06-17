@@ -14,7 +14,7 @@
 #include "EditEntityCommand.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
-    : osg::Group()
+    : osg::ProtectedGroup()
     , m_userScene(new entity::UserScene)
     , m_axisTool(new entity::AxisGlobalTool)
     , m_bookmarkTools(new osg::Group)

@@ -23,9 +23,6 @@ public:
     virtual void setColor(const osg::Vec4f& color) = 0;
 
     virtual cher::ENTITY_TYPE getEntityType() const = 0;
-
-protected:
-    ~Entity2D() {}
 };
 }
 

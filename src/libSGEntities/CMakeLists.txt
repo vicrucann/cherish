@@ -9,6 +9,7 @@ include_directories(
 )
 
 set (libSGEntities_SRCS
+    ProtectedGroup.h
     Canvas.h
     Canvas.cpp
     RootScene.h

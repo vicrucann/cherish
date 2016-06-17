@@ -1,27 +1,12 @@
 #ifndef CANVAS
 #define CANVAS
 
-/* The canvas is defined by its center location -R3
- * and its normal -R3. The default size values are provided
- * when construction the Canvas.
- * When more drawables are introduced by user, e.g., strokes,
- * the canvas borders are redifined (expanded) using osg::BoundingBox().
- *
- * TODO:
- * For current canvas only: intersections (projection) line with
- * previous canvas.
- * Proper canvas transform when rotating (the offset is already done).
- *
- * Canvas has the next branch structure:
- * Canvas -> Switch (-> Transform) -> Geometry -> Canvas drawables
- *                                           |-> User drawables (strokes)
- */
-
 #include "Settings.h"
 #include "Stroke.h"
 #include "Photo.h"
 #include "ToolGlobal.h"
 #include "SelectedGroup.h"
+#include "ProtectedGroup.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
@@ -37,30 +22,12 @@ namespace entity {
 /*! \class Canvas
  * Class description
 */
-class Canvas : public osg::Group {
+class Canvas : public osg::ProtectedGroup {
 public:
     Canvas();
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
     Canvas(const Canvas& cnv, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
-
-private:
-    /* forbid direct children manipulation of canvas */
-    using osg::Group::addChild;
-    using osg::Group::insertChild;
-    using osg::Group::removeChild;
-    using osg::Group::removeChildren;
-    using osg::Group::replaceChild;
-    using osg::Group::setChild;
-    using osg::Group::asNode;
-    using osg::Group::asDrawable;
-    using osg::Group::asGeometry;
-    using osg::Group::asGeode;
-    using osg::Group::asGroup;
-    using osg::Group::asTransform;
-    using osg::Group::asCamera;
-    using osg::Group::asSwitch;
-
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 public:

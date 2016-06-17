@@ -12,7 +12,7 @@
 #include <osgDB/ReadFile>
 
 entity::UserScene::UserScene()
-    : osg::Group()
+    : osg::ProtectedGroup()
     , m_groupCanvases(new osg::Group)
     , m_groupBookmarks(new entity::Bookmarks)
     , m_canvasCurrent(NULL)
@@ -39,7 +39,7 @@ entity::UserScene::UserScene()
 }
 
 entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& copyop)
-    : osg::Group(scene, copyop)
+    : osg::ProtectedGroup(scene, copyop)
     , m_groupCanvases(scene.m_groupCanvases)
     , m_groupBookmarks(scene.m_groupBookmarks)
     , m_canvasCurrent(scene.m_canvasCurrent)

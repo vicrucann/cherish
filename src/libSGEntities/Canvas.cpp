@@ -18,9 +18,10 @@
 #include <osg/BlendFunc>
 
 #include <QtGlobal>
+#include <QDebug>
 
 entity::Canvas::Canvas()
-    : osg::Group()
+    : osg::ProtectedGroup()
     , m_mR(osg::Matrix::rotate(0, cher::NORMAL))
     , m_mT(osg::Matrix::translate(0,0,0))
     , m_transform(new osg::MatrixTransform(m_mR * m_mT))
@@ -35,11 +36,11 @@ entity::Canvas::Canvas()
     , m_normal(cher::NORMAL)
     , m_edit(false)
 {
-    outLogMsg("New Canvas ctor complete");
+    qDebug("New Canvas ctor complete");
 }
 
 entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
-    : osg::Group(cnv, copyop)
+    : osg::ProtectedGroup(cnv, copyop)
     , m_mR(cnv.m_mR)
     , m_mT(cnv.m_mT)
     , m_transform(cnv.m_transform)
@@ -56,7 +57,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_normal(cnv.m_normal)
     , m_edit(cnv.m_edit)
 {
-    outLogMsg("new Canvas by copy ctor complete");
+    qDebug("new Canvas by copy ctor complete");
 }
 
 void entity::Canvas::initializeTools()

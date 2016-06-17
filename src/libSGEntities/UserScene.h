@@ -13,6 +13,7 @@
 #include <osg/observer_ptr>
 #include <osgDB/ObjectWrapper>
 
+#include "ProtectedGroup.h"
 #include "Canvas.h"
 #include "Stroke.h"
 #include "Photo.h"
@@ -71,7 +72,7 @@ namespace entity {
  * requires QObject to be first. For more details on this, see:
  * http://www.setnode.com/blog/qt-staticmetaobject-is-not-a-member-of/
 */
-class UserScene : public QObject, public osg::Group
+class UserScene : public QObject, public osg::ProtectedGroup
 {
     Q_OBJECT
 public:
