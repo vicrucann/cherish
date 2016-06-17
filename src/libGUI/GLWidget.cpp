@@ -245,7 +245,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         return;
     case Qt::Key_A:
         if ((event->modifiers() & Qt::ControlModifier))
-            m_RootScene->selectAllStrokes();
+            m_RootScene->selectAllEntities();
         return;
     default:
         break;

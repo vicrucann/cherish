@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include <QtGlobal>
+
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
 #include <osgDB/Registry>
@@ -115,6 +117,11 @@ bool RootScene::writeScenetoFile()
     bool result = true;
     if (m_userScene->getFilePath() == "") return false;
 
+    /* save current scene state */
+    osg::ref_ptr<entity::SceneState> state = new entity::SceneState;
+    state->stripDataFrom(this);
+    Q_ASSERT(!state->isEmpty());
+
     /* for each canvas, detach its tools */
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* canvas = m_userScene->getCanvas(i);
@@ -133,6 +140,9 @@ bool RootScene::writeScenetoFile()
             result = false;
         }
     }
+
+    /* re-apply the saved scene state */
+    Q_ASSERT(this->setSceneState(state));
 
     m_saved = result;
     return result;
@@ -243,10 +253,10 @@ void RootScene::addStroke(float u, float v, cher::EVENT event)
     m_saved = false;
 }
 
-void RootScene::selectAllStrokes()
+void RootScene::selectAllEntities()
 {
     if (this->getCanvasCurrent())
-        this->getCanvasCurrent()->selectAllStrokes();
+        this->getCanvasCurrent()->selectAllEntities();
 }
 
 void RootScene::addPhoto(const std::string& fname)
@@ -446,7 +456,7 @@ void RootScene::copyToBuffer()
     m_buffer.clear();
     if (!m_userScene->getCanvasCurrent()) return;
 
-    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
+    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getEntitiesSelected();
     if (selected.size()==0) return;
 
     for (size_t i=0; i<selected.size(); ++i){
@@ -462,11 +472,11 @@ void RootScene::cutToBuffer()
 {
     m_buffer.clear();
     if (!m_userScene->getCanvasCurrent()) return;
-    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
+    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getEntitiesSelected();
     if (selected.size()==0) return;
 
     EditCutCommand* cmd = new EditCutCommand(m_userScene.get(), this->getCanvasCurrent(),
-                                             this->getCanvasCurrent()->getStrokesSelected(),
+                                             this->getCanvasCurrent()->getEntitiesSelected(),
                                              m_buffer);
     if (!cmd) return;
     m_undoStack->push(cmd);

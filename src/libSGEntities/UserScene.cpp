@@ -62,6 +62,7 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
 {
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 void entity::UserScene::initializeSG()
 {
     this->addChild(m_groupBookmarks);
@@ -132,6 +133,7 @@ const std::string &entity::UserScene::getFilePath() const
 {
     return m_filePath;
 }
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 bool entity::UserScene::isSetFilePath() const
 {
@@ -698,7 +700,7 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
         return;
     }
 
-    const std::vector<entity::Entity2D*>& strokes = m_canvasCurrent->getStrokesSelected();
+    const std::vector<entity::Entity2D*>& strokes = m_canvasCurrent->getEntitiesSelected();
 
     if (strokes.size() == 0) return;
 
@@ -975,6 +977,8 @@ void entity::UserScene::onRightClicked(const QModelIndex &index)
     }
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 std::string entity::UserScene::getCanvasName()
 {
     return this->getEntityName(cher::NAME_CANVAS, m_idCanvas++);
@@ -1092,7 +1096,7 @@ void entity::UserScene::entitiesMoveFinish(QUndoStack *stack)
     m_canvasCurrent->moveEntitiesSelected(-m_du, -m_dv);
 
     EditEntitiesMoveCommand* cmd = new EditEntitiesMoveCommand(this,
-                                                             m_canvasCurrent->getStrokesSelected(),
+                                                             m_canvasCurrent->getEntitiesSelected(),
                                                              m_canvasCurrent.get(),
                                                              m_du, m_dv);
     if (!cmd){
@@ -1109,7 +1113,7 @@ void entity::UserScene::entitiesMoveFinish(QUndoStack *stack)
 
 bool entity::UserScene::entitiesSelectedValid() const
 {
-    return ((m_canvasCurrent->getStrokesSelectedSize() > 0? true : false) && m_inits);
+    return ((m_canvasCurrent->getEntitiesSelectedSize() > 0? true : false) && m_inits);
 }
 
 void entity::UserScene::entitiesScaleStart(double u, double v)
@@ -1118,7 +1122,7 @@ void entity::UserScene::entitiesScaleStart(double u, double v)
     if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
-    osg::Vec3f center = m_canvasCurrent->getBoundingBoxCenter();
+    osg::Vec3f center = m_canvasCurrent->getBoundingBoxCenter2D();
     m_u = center.x();
     m_v = center.y();
 
@@ -1154,10 +1158,10 @@ void entity::UserScene::entitiesScaleFinish(QUndoStack *stack)
 
     EditEntitiesScaleCommand* cmd =
             new EditEntitiesScaleCommand(this,
-                                         m_canvasCurrent->getStrokesSelected(),
+                                         m_canvasCurrent->getEntitiesSelected(),
                                          m_canvasCurrent.get(),
                                          m_scaleX, m_scaleX,
-                                         m_canvasCurrent->getSelectedEntitiesCenter2D() );
+                                         m_canvasCurrent->getEntitiesSelectedCenter2D() );
     m_du = m_u = 0;
     m_dv = m_v = 0;
     m_inits = false;
@@ -1176,7 +1180,7 @@ void entity::UserScene::entitiesRotateStart(double u, double v)
     if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
-    osg::Vec3f center = m_canvasCurrent->getBoundingBoxCenter();
+    osg::Vec3f center = m_canvasCurrent->getBoundingBoxCenter2D();
     if (center.z() > cher::EPSILON){
         outLogVec("center", center.x(), center.y(), center.z());
         outErrMsg("entitiesRotateStart: z coordiante is not close to zero");
@@ -1244,10 +1248,10 @@ void entity::UserScene::entitiesRotateFinish(QUndoStack *stack)
     m_canvasCurrent->rotateEntitiesSelected(-m_rotate);
 
     EditEntitiesRotateCommand* cmd = new EditEntitiesRotateCommand(this,
-                                                                 m_canvasCurrent->getStrokesSelected(),
+                                                                 m_canvasCurrent->getEntitiesSelected(),
                                                                  m_canvasCurrent.get(),
                                                                  m_rotate,
-                                                                   m_canvasCurrent->getSelectedEntitiesCenter2D());
+                                                                   m_canvasCurrent->getEntitiesSelectedCenter2D());
     m_u = m_v = 0;
     m_du = m_dv = 0;
     m_rotate = 0;
@@ -1501,7 +1505,7 @@ void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
         return;
     }
     m_canvasCurrent->setModeEdit(false);
-    m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()), m_canvasCurrent->getCenterMean());
+    m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()), m_canvasCurrent->getBoundingBoxCenter3D());
     EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(this, m_deltaR);
     stack->push(cmd);
     m_deltaR = osg::Quat(0,0,0,1);
@@ -1687,6 +1691,8 @@ bool entity::UserScene::removeEntity(entity::Canvas *canvas, Entity2D *entity)
 
     return result;
 }
+
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 REGISTER_OBJECT_WRAPPER(UserScene_Wrapper
                         , new entity::UserScene

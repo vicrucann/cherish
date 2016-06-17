@@ -361,15 +361,15 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     case osgGA::GUIEventAdapter::PUSH:
         outLogVec("canvas-rotate pressed, quat", rot.x(), rot.y(), rot.z());
         outLogVal("canvas-rotate pressed, quat.w", rot.w());
-        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), cher::EVENT_PRESSED);
+        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getBoundingBoxCenter3D(), cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         outLogVec("canvas-rotate released, quat", rot.x(), rot.y(), rot.z());
         outLogVal("canvas-rotate released, quat.w", rot.w());
-        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), cher::EVENT_RELEASED);
+        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getBoundingBoxCenter3D(), cher::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getCenterMean(), cher::EVENT_DRAGGED);
+        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getBoundingBoxCenter3D(), cher::EVENT_DRAGGED);
         break;
     default:
         break;
@@ -451,13 +451,13 @@ void EventHandler::doEditEntitiesMove(const osgGA::GUIEventAdapter &ea, osgGA::G
         return;
 
     /* if there are no strokes in canvas, return*/
-    if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0){
+    if (m_scene->getCanvasCurrent()->getEntitiesSelectedSize() == 0){
         outErrMsg("doEditEntitiesMove: there are no strokes to move");
         return;
     }
 
     /* if no strokes are selected, return */
-    if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0)
+    if (m_scene->getCanvasCurrent()->getEntitiesSelectedSize() == 0)
         return;
 
     /* get mouse ray intersection with canvas plane */
@@ -499,13 +499,13 @@ void EventHandler::doEditEntitiesScale(const osgGA::GUIEventAdapter &ea, osgGA::
         return;
 
     /* if there are no strokes in canvas, return*/
-    if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0){
+    if (m_scene->getCanvasCurrent()->getEntitiesSelectedSize() == 0){
         outErrMsg("doEditEntitiesMove: there are no strokes to move");
         return;
     }
 
     /* if no strokes are selected, return */
-    if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0)
+    if (m_scene->getCanvasCurrent()->getEntitiesSelectedSize() == 0)
         return;
 
     /* get mouse ray intersection with canvas plane */
@@ -548,13 +548,13 @@ void EventHandler::doEditEntitiesRotate(const osgGA::GUIEventAdapter &ea, osgGA:
 
 
     /* if there are no strokes in canvas, return*/
-    if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0){
+    if (m_scene->getCanvasCurrent()->getEntitiesSelectedSize() == 0){
         outErrMsg("doEditEntitiesMove: there are no strokes to move");
         return;
     }
 
     /* if no strokes are selected, return */
-    if (m_scene->getCanvasCurrent()->getStrokesSelectedSize() == 0)
+    if (m_scene->getCanvasCurrent()->getEntitiesSelectedSize() == 0)
         return;
 
     /* get mouse ray intersection with canvas plane */

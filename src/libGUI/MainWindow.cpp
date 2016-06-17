@@ -537,7 +537,7 @@ void MainWindow::onNewCanvasOrtho()
 {
     entity::Canvas* canvas = m_rootScene->getCanvasCurrent();
     if (!canvas) return;
-    osg::Vec3f center_glo = canvas->getStrokesSelectedCenter();
+    osg::Vec3f center_glo = canvas->getEntitiesSelectedCenter3D();
     osg::Vec3f normal = canvas->getGlobalAxisV();
     m_rootScene->addCanvas(normal, center_glo);
 

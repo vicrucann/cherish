@@ -116,6 +116,7 @@ void entity::Canvas::initializeStateMachine()
     this->setStateSet(stateset);
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 void entity::Canvas::setMatrixRotation(const osg::Matrix& R)
 {
     m_mR = R;
@@ -200,12 +201,14 @@ void entity::Canvas::setCenter(const osg::Vec3f &center)
 {
     m_center = center;
 }
+#endif
 
 const osg::Vec3f& entity::Canvas::getCenter() const
 {
     return m_center;
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 void entity::Canvas::setNormal(const osg::Vec3f &normal)
 {
     m_normal = normal;
@@ -215,6 +218,7 @@ const osg::Vec3f& entity::Canvas::getNormal() const
 {
     return m_normal;
 }
+#endif
 
 void entity::Canvas::setColor(const osg::Vec4f &color, const osg::Vec4f &colorIntersection)
 {
@@ -226,6 +230,7 @@ const osg::Vec4f &entity::Canvas::getColor() const
     return m_toolFrame->getColor();
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 void entity::Canvas::setVisibilityFrame(bool vis)
 {
     m_switch->setChildValue(m_toolFrame, vis);
@@ -234,6 +239,7 @@ void entity::Canvas::setVisibilityFrame(bool vis)
 bool entity::Canvas::getVisibilityFrame() const{
     return m_switch->getChildValue(m_toolFrame);
 }
+#endif
 
 void entity::Canvas::setVisibilityFrameInternal(bool vis)
 {
@@ -257,6 +263,7 @@ void entity::Canvas::setVisibilityAll(bool vis)
     this->setVisibilityFrame(vis);
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 bool entity::Canvas::getVisibilityData() const
 {
     return m_switch->getChildValue(m_groupData);
@@ -266,6 +273,7 @@ void entity::Canvas::setVisibilityData(bool vis)
 {
     m_switch->setChildValue(m_groupData, vis);
 }
+#endif
 
 const osg::Vec3f &entity::Canvas::getGlobalAxisU() const
 {
@@ -297,8 +305,6 @@ void entity::Canvas::translate(const osg::Matrix& mt)
     this->updateTransforms();
 }
 
-// rotates the current params on mr matrix around point c2d_new which is given
-// in local canvas coordinates (basically, center of bounding box of geodeData)
 void entity::Canvas::rotate(const osg::Matrix& mr, const osg::Vec3f &c3d_new)
 {
     if (mr.isNaN()){
@@ -357,7 +363,7 @@ void entity::Canvas::unselectEntities()
     m_selectedGroup.resetAll();
 }
 
-void entity::Canvas::selectAllStrokes()
+void entity::Canvas::selectAllEntities()
 {
     this->unselectEntities();
     for (unsigned int i = 0; i < this->getNumEntities(); i++){
@@ -415,33 +421,27 @@ void entity::Canvas::removeEntitySelected(Entity2D *entity)
     m_selectedGroup.removeEntity(entity);
 }
 
-const std::vector<entity::Entity2D* >& entity::Canvas::getStrokesSelected() const
+const std::vector<entity::Entity2D* >& entity::Canvas::getEntitiesSelected() const
 {
     return m_selectedGroup.getEntities();
 }
 
-int entity::Canvas::getStrokesSelectedSize() const
+int entity::Canvas::getEntitiesSelectedSize() const
 {
     return m_selectedGroup.getSize();
 }
 
-/* returns whether the frame is in selected mode (true) or normal (false);
- * used in EventHandler;
-*/
 bool entity::Canvas::isEntitiesSelected() const
 {
     return m_toolFrame->isSelected();
 }
 
-/* returns global center of selected entities;
- * if there is no selected entities, returns canvas center
-*/
-const osg::Vec3f &entity::Canvas::getStrokesSelectedCenter() const
+const osg::Vec3f &entity::Canvas::getEntitiesSelectedCenter3D() const
 {
     return m_selectedGroup.getCenter3D(m_transform->getMatrix());
 }
 
-const osg::Vec3f &entity::Canvas::getSelectedEntitiesCenter2D() const
+const osg::Vec3f &entity::Canvas::getEntitiesSelectedCenter2D() const
 {
     return m_selectedGroup.getCenter2DCustom();
 }
@@ -451,14 +451,14 @@ const osg::Vec3f &entity::Canvas::getCenter2D() const
     return m_center * m_transform->getMatrix();
 }
 
-const osg::Vec3f &entity::Canvas::getCenterMean() const
+const osg::Vec3f &entity::Canvas::getBoundingBoxCenter3D() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
     if (!bb.valid()) return m_center;
     return bb.center() * m_transform->getMatrix();
 }
 
-const osg::Vec3f &entity::Canvas::getBoundingBoxCenter() const
+const osg::Vec3f &entity::Canvas::getBoundingBoxCenter2D() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
     if (!bb.valid()) return m_center;
@@ -485,7 +485,6 @@ osg::BoundingBox entity::Canvas::getBoundingBox() const
     return result;
 }
 
-/* Will be most likely called from EditEntityCommand since the vector of entities is specified */
 void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, double du, double dv)
 {
     m_selectedGroup.move(entities, du, dv);
@@ -671,6 +670,7 @@ entity::Canvas *entity::Canvas::separate()
     return clone.release();
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 // updates internals from m_r and m_t
 void entity::Canvas::updateTransforms()
 {
@@ -736,6 +736,7 @@ void entity::Canvas::setIntersection(entity::Canvas *against)
     }
     m_toolFrame->setIntersection(P1,P2,P3,P4);
 }
+#endif
 
 const entity::FrameTool *entity::Canvas::getToolFrame() const
 {
