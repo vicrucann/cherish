@@ -59,7 +59,9 @@ void UserSceneTest::testWriteReadCanvases()
     QCOMPARE((int)m_canvas0->getSwitch()->getNumChildren(), 2);
     QCOMPARE(m_canvas0->getSwitch()->getChild(0), m_canvas0->getGroupData());
     QCOMPARE(m_canvas0->getSwitch()->getChild(1), m_canvas0->getToolFrame());
-
+    QCOMPARE((int)m_canvas0->getGroupData()->getNumChildren(), 2);
+    QCOMPARE(m_canvas0->getGroupData()->getChild(0), m_canvas0->getGeodeStrokes());
+    QCOMPARE(m_canvas0->getGroupData()->getChild(1), m_canvas0->getGeodePhotos());
 }
 
 void UserSceneTest::testWriteReadBookmarks()
