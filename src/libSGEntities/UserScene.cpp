@@ -1,6 +1,6 @@
-#include "assert.h"
-
 #include "UserScene.h"
+
+#include <QtGlobal>
 
 #include "Settings.h"
 #include "Utilities.h"
@@ -152,7 +152,7 @@ void entity::UserScene::addCanvas(QUndoStack *stack, const osg::Vec3f &normal, c
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
-    AddCanvasCommand* cmd = new AddCanvasCommand(this, normal, center,
+    fur::AddCanvasCommand* cmd = new fur::AddCanvasCommand(this, normal, center,
                                                  getEntityName(cher::NAME_CANVAS, m_idCanvas++));
     if (!cmd){
         outErrMsg("addCanvas: cmd is NULL");
@@ -168,7 +168,7 @@ void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
-    AddCanvasCommand* cmd = new AddCanvasCommand(this, R, T, name);
+    fur::AddCanvasCommand* cmd = new fur::AddCanvasCommand(this, R, T, name);
     if (!cmd){
         outErrMsg("addCanvas: cmd is NULL");
         return;
@@ -220,9 +220,9 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
-    AddPhotoCommand* cmd = new AddPhotoCommand(this, fname, this->getPhotoName());
+    fur::AddPhotoCommand* cmd = new fur::AddPhotoCommand(this, fname, this->getPhotoName());
     if (!cmd){
-        outErrMsg("addPhoto(): could not allocate AddPhotoCommand.");
+        outErrMsg("addPhoto(): could not allocate fur::AddPhotoCommand.");
         return;
     }
     stack->push(cmd);
@@ -616,7 +616,7 @@ void entity::UserScene::editCanvasDelete(QUndoStack *stack, entity::Canvas *canv
         return;
     }
 
-    EditCanvasDeleteCommand* cmd = new EditCanvasDeleteCommand(this, canvas);
+    fur::EditCanvasDeleteCommand* cmd = new fur::EditCanvasDeleteCommand(this, canvas);
     if (!cmd){
         qCritical("editCanvasDelete: could not allocate DeleteCommand");
         return;
@@ -638,7 +638,7 @@ void entity::UserScene::editPhotoDelete(QUndoStack *stack, entity::Photo *photo,
         return;
     }
 
-    EditPhotoDeleteCommand* cmd = new EditPhotoDeleteCommand(this, canvas, photo);
+    fur::EditPhotoDeleteCommand* cmd = new fur::EditPhotoDeleteCommand(this, canvas, photo);
     if (!cmd){
         qCritical("editPhotoDelete: undo/redo command is NULL");
         return;
@@ -661,7 +661,7 @@ void entity::UserScene::editPhotoPush(QUndoStack *stack, entity::Photo *photo, C
                 return;
     }
 
-    EditPhotoPushCommand* cmd = new EditPhotoPushCommand(this, source, destination, photo);
+    fur::EditPhotoPushCommand* cmd = new fur::EditPhotoPushCommand(this, source, destination, photo);
     if (!cmd){
         qCritical("editPhotoPush: undo/redo command is NULL");
         return;}
@@ -709,7 +709,7 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
 //        return;
 //    }
 
-    EditStrokesPushCommand* cmd = new EditStrokesPushCommand(this, strokes,
+    fur::EditStrokesPushCommand* cmd = new fur::EditStrokesPushCommand(this, strokes,
                                                              m_canvasCurrent.get(),
                                                              m_canvasPrevious.get(),
                                                              eye);
@@ -829,7 +829,7 @@ void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stro
                   "Deletion is not possible.");
         return;
     }
-    EditStrokeDeleteCommand* cmd = new EditStrokeDeleteCommand(this, m_canvasCurrent.get(), stroke);
+    fur::EditStrokeDeleteCommand* cmd = new fur::EditStrokeDeleteCommand(this, m_canvasCurrent.get(), stroke);
     if (!cmd){
         qCritical("editStrokeDelete: undo/redo command is NULL");
         return;
@@ -860,10 +860,10 @@ bool entity::UserScene::printScene()
         qDebug() << "Canvas name " << cnv->getName().c_str();
 
         osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(cnv->getChild(0));
-        assert(t == cnv->getTransform());
+        Q_ASSERT(t == cnv->getTransform());
 
         osg::Switch* sw = dynamic_cast<osg::Switch*>(t->getChild(0));
-        assert(sw == cnv->getSwitch());
+        Q_ASSERT(sw == cnv->getSwitch());
     }
 
     return true;
@@ -1036,7 +1036,7 @@ void entity::UserScene::strokeAppend(float u, float v)
 
 /* if command is still a valid pointer,
    if stroke is long enough to be kept,
-   clone the AddStrokeCommand and push the cloned instance to stack
+   clone the fur::AddStrokeCommand and push the cloned instance to stack
    set the shared pointer to zero and return*/
 void entity::UserScene::strokeFinish(QUndoStack* stack)
 {
@@ -1045,7 +1045,7 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
     if (this->strokeValid()){
         if (stroke->isLengthy()){
             entity::Stroke* stroke_clone = new entity::Stroke(*stroke, osg::CopyOp::DEEP_COPY_ALL);
-            AddStrokeCommand* cmd = new AddStrokeCommand(this, stroke_clone);
+            fur::AddStrokeCommand* cmd = new fur::AddStrokeCommand(this, stroke_clone);
             stack->push(cmd);
         }
     }
@@ -1095,7 +1095,7 @@ void entity::UserScene::entitiesMoveFinish(QUndoStack *stack)
     /* move things back so that to perform this operation in undo/redo FW */
     m_canvasCurrent->moveEntitiesSelected(-m_du, -m_dv);
 
-    EditEntitiesMoveCommand* cmd = new EditEntitiesMoveCommand(this,
+    fur::EditEntitiesMoveCommand* cmd = new fur::EditEntitiesMoveCommand(this,
                                                              m_canvasCurrent->getEntitiesSelected(),
                                                              m_canvasCurrent.get(),
                                                              m_du, m_dv);
@@ -1156,8 +1156,8 @@ void entity::UserScene::entitiesScaleFinish(QUndoStack *stack)
 {
     m_canvasCurrent->scaleEntitiesSelected(1/m_scaleX, 1/m_scaleX);
 
-    EditEntitiesScaleCommand* cmd =
-            new EditEntitiesScaleCommand(this,
+    fur::EditEntitiesScaleCommand* cmd =
+            new fur::EditEntitiesScaleCommand(this,
                                          m_canvasCurrent->getEntitiesSelected(),
                                          m_canvasCurrent.get(),
                                          m_scaleX, m_scaleX,
@@ -1247,7 +1247,7 @@ void entity::UserScene::entitiesRotateFinish(QUndoStack *stack)
 {
     m_canvasCurrent->rotateEntitiesSelected(-m_rotate);
 
-    EditEntitiesRotateCommand* cmd = new EditEntitiesRotateCommand(this,
+    fur::EditEntitiesRotateCommand* cmd = new fur::EditEntitiesRotateCommand(this,
                                                                  m_canvasCurrent->getEntitiesSelected(),
                                                                  m_canvasCurrent.get(),
                                                                  m_rotate,
@@ -1323,7 +1323,7 @@ void entity::UserScene::canvasOffsetFinish(QUndoStack *stack)
     }
     m_canvasCurrent->setModeEdit(false);
     m_canvasCurrent->translate(osg::Matrix::translate(-m_deltaT.x(), -m_deltaT.y(), -m_deltaT.z()));
-    EditCanvasOffsetCommand* cmd = new EditCanvasOffsetCommand(this, m_deltaT);
+    fur::EditCanvasOffsetCommand* cmd = new fur::EditCanvasOffsetCommand(this, m_deltaT);
     stack->push(cmd);
     m_deltaT = osg::Vec3f(0.f,0.f,0.f);
 }
@@ -1384,7 +1384,7 @@ void entity::UserScene::canvasCloneFinish(QUndoStack *stack)
 
     this->setCanvasCurrent(m_canvasPrevious.get());
 
-    AddCanvasCommand* cmd = new AddCanvasCommand(this, *(m_canvasClone.get()));
+    fur::AddCanvasCommand* cmd = new fur::AddCanvasCommand(this, *(m_canvasClone.get()));
     m_groupCanvases->removeChild(m_canvasClone.get());
     m_canvasClone = 0;
     if (!cmd){
@@ -1451,7 +1451,7 @@ void entity::UserScene::canvasSeparateFinish(QUndoStack *stack)
 
     this->setCanvasCurrent(m_canvasPrevious.get());
 
-    AddCanvasSeparationCommand* cmd = new AddCanvasSeparationCommand(this, m_canvasCurrent.get(),
+    fur::AddCanvasSeparationCommand* cmd = new fur::AddCanvasSeparationCommand(this, m_canvasCurrent.get(),
                                                                      m_canvasClone.get());
 
     m_groupCanvases->removeChild(m_canvasClone.get());
@@ -1506,7 +1506,7 @@ void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
     }
     m_canvasCurrent->setModeEdit(false);
     m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()), m_canvasCurrent->getBoundingBoxCenter3D());
-    EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(this, m_deltaR);
+    fur::EditCanvasRotateCommand* cmd = new fur::EditCanvasRotateCommand(this, m_deltaR);
     stack->push(cmd);
     m_deltaR = osg::Quat(0,0,0,1);
 }

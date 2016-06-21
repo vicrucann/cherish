@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-EditCanvasOffsetCommand::EditCanvasOffsetCommand(entity::UserScene *scene, const osg::Vec3f &translate, QUndoCommand *parent)
+fur::EditCanvasOffsetCommand::EditCanvasOffsetCommand(entity::UserScene *scene, const osg::Vec3f &translate, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(scene->getCanvasCurrent())
@@ -12,25 +12,21 @@ EditCanvasOffsetCommand::EditCanvasOffsetCommand(entity::UserScene *scene, const
                   .arg(QString(m_canvas->getName().c_str())));
 }
 
-EditCanvasOffsetCommand::~EditCanvasOffsetCommand()
-{
-}
-
-void EditCanvasOffsetCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditCanvasOffsetCommand::undo()
 {
     m_canvas->translate(osg::Matrix::translate(-m_translate.x(), -m_translate.y(), -m_translate.z()));
     m_scene->updateWidgets();
 }
 
-void EditCanvasOffsetCommand::redo()
+void fur::EditCanvasOffsetCommand::redo()
 {
     m_canvas->translate(osg::Matrix::translate(m_translate.x(), m_translate.y(), m_translate.z()));
     m_scene->updateWidgets();
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-/* =====================*/
-
-EditCanvasRotateCommand::EditCanvasRotateCommand(entity::UserScene *scene, const osg::Quat &rotate, QUndoCommand *parent)
+fur::EditCanvasRotateCommand::EditCanvasRotateCommand(entity::UserScene *scene, const osg::Quat &rotate, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(scene->getCanvasCurrent())
@@ -41,12 +37,8 @@ EditCanvasRotateCommand::EditCanvasRotateCommand(entity::UserScene *scene, const
                   .arg(QString(m_canvas->getName().c_str())));
 }
 
-EditCanvasRotateCommand::~EditCanvasRotateCommand()
-{
-
-}
-
-void EditCanvasRotateCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditCanvasRotateCommand::undo()
 {
     double angle;
     osg::Vec3d axis;
@@ -56,15 +48,16 @@ void EditCanvasRotateCommand::undo()
     m_scene->updateWidgets();
 }
 
-void EditCanvasRotateCommand::redo()
+void fur::EditCanvasRotateCommand::redo()
 {
     m_canvas->rotate(osg::Matrix::rotate(m_rotate), m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 /* only works for strokes, any photos remain unchanged */
-EditStrokesPushCommand::EditStrokesPushCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities,
+fur::EditStrokesPushCommand::EditStrokesPushCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities,
                                                entity::Canvas *current, entity::Canvas *target,
                                                const osg::Vec3f &eye,
                                                QUndoCommand *parent)
@@ -82,17 +75,19 @@ EditStrokesPushCommand::EditStrokesPushCommand(entity::UserScene *scene, const s
                        QString(m_canvasTarget->getName().c_str())));
 }
 
-void EditStrokesPushCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditStrokesPushCommand::undo()
 {
     this->doPushStrokes(*(m_canvasTarget.get()), *(m_canvasCurrent.get()));
 }
 
-void EditStrokesPushCommand::redo()
+void fur::EditStrokesPushCommand::redo()
 {
     this->doPushStrokes(*(m_canvasCurrent.get()), *(m_canvasTarget.get()));
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-void EditStrokesPushCommand::doPushStrokes(entity::Canvas& source, entity::Canvas& target)
+void fur::EditStrokesPushCommand::doPushStrokes(entity::Canvas& source, entity::Canvas& target)
 {
     osg::Matrix M = source.getTransform()->getMatrix();
     osg::Matrix invM = osg::Matrix::inverse(target.getTransform()->getMatrix());
@@ -122,7 +117,7 @@ void EditStrokesPushCommand::doPushStrokes(entity::Canvas& source, entity::Canva
     target.updateFrame();
 }
 
-EditCanvasDeleteCommand::EditCanvasDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, QUndoCommand *parent)
+fur::EditCanvasDeleteCommand::EditCanvasDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(canvas)
@@ -132,19 +127,21 @@ this->setText(QObject::tr("Delete %1")
               .arg(QString(m_canvas->getName().c_str())));
 }
 
-void EditCanvasDeleteCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditCanvasDeleteCommand::undo()
 {
     if (!m_scene->addCanvas(m_canvas.get()))
         qFatal("EditCanvasDelete::undo() - failed adding canvas to scene graph");
 }
 
-void EditCanvasDeleteCommand::redo()
+void fur::EditCanvasDeleteCommand::redo()
 {
     if (!m_scene->removeCanvas(m_canvas.get()))
         qFatal("EditCanvasDelete::redo() - failed removing canvas from scene graph");
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-EditStrokeDeleteCommand::EditStrokeDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, entity::Stroke *stroke, QUndoCommand *parent)
+fur::EditStrokeDeleteCommand::EditStrokeDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, entity::Stroke *stroke, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(canvas)
@@ -154,17 +151,19 @@ EditStrokeDeleteCommand::EditStrokeDeleteCommand(entity::UserScene *scene, entit
                   .arg(QString(m_canvas->getName().c_str())));
 }
 
-void EditStrokeDeleteCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditStrokeDeleteCommand::undo()
 {
     m_scene->addEntity(m_canvas.get(), m_stroke.get());
 }
 
-void EditStrokeDeleteCommand::redo()
+void fur::EditStrokeDeleteCommand::redo()
 {
     m_scene->removeEntity(m_canvas.get(), m_stroke.get());
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-EditPhotoDeleteCommand::EditPhotoDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, entity::Photo *photo, QUndoCommand *parent)
+fur::EditPhotoDeleteCommand::EditPhotoDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, entity::Photo *photo, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(canvas)
@@ -175,19 +174,21 @@ this->setText(QObject::tr("Delete photo from %1")
               .arg(QString(m_canvas->getName().c_str())));
 }
 
-void EditPhotoDeleteCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditPhotoDeleteCommand::undo()
 {
     if (!m_scene->addEntity(m_canvas.get(), m_photo.get()))
         qFatal("EditPhotoDeleteCommand:: undo() failed");
 }
 
-void EditPhotoDeleteCommand::redo()
+void fur::EditPhotoDeleteCommand::redo()
 {
     if (!m_scene->removeEntity(m_canvas.get(), m_photo.get()))
         qFatal("EditPhotoDeleteCommand:: redo() failed");
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-EditEntitiesMoveCommand::EditEntitiesMoveCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double du, double dv, QUndoCommand *parent)
+fur::EditEntitiesMoveCommand::EditEntitiesMoveCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double du, double dv, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_entities(entities)
@@ -199,21 +200,23 @@ EditEntitiesMoveCommand::EditEntitiesMoveCommand(entity::UserScene *scene, const
                   .arg(QString(m_canvas->getName().c_str())));
 }
 
-void EditEntitiesMoveCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditEntitiesMoveCommand::undo()
 {
     m_canvas->moveEntities(m_entities, -m_du, -m_dv);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-void EditEntitiesMoveCommand::redo()
+void fur::EditEntitiesMoveCommand::redo()
 {
     m_canvas->moveEntities(m_entities, m_du, m_dv);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-EditEntitiesScaleCommand::EditEntitiesScaleCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double scaleX, double scaleY, osg::Vec3f center, QUndoCommand *parent)
+fur::EditEntitiesScaleCommand::EditEntitiesScaleCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double scaleX, double scaleY, osg::Vec3f center, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_entities(entities)
@@ -226,21 +229,23 @@ EditEntitiesScaleCommand::EditEntitiesScaleCommand(entity::UserScene *scene, con
                   .arg(QString(m_canvas->getName().c_str())));
 }
 
-void EditEntitiesScaleCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditEntitiesScaleCommand::undo()
 {
     m_canvas->scaleEntities(m_entities, 1/m_scaleX, 1/m_scaleY, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-void EditEntitiesScaleCommand::redo()
+void fur::EditEntitiesScaleCommand::redo()
 {
     m_canvas->scaleEntities(m_entities, m_scaleX, m_scaleY, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-EditEntitiesRotateCommand::EditEntitiesRotateCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double theta, osg::Vec3f center, QUndoCommand *parent)
+fur::EditEntitiesRotateCommand::EditEntitiesRotateCommand(entity::UserScene *scene, const std::vector<entity::Entity2D *> &entities, entity::Canvas *canvas, double theta, osg::Vec3f center, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_entities(entities)
@@ -252,21 +257,23 @@ EditEntitiesRotateCommand::EditEntitiesRotateCommand(entity::UserScene *scene, c
                   .arg(QString(m_canvas->getName().c_str())));
 }
 
-void EditEntitiesRotateCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditEntitiesRotateCommand::undo()
 {
     m_canvas->rotateEntities(m_entities, -m_theta, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
-void EditEntitiesRotateCommand::redo()
+void fur::EditEntitiesRotateCommand::redo()
 {
     m_canvas->rotateEntities(m_entities, m_theta, m_center);
     m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas *target, const std::vector<osg::ref_ptr<entity::Entity2D> > &buffer, QUndoCommand *parent)
+fur::EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas *target, const std::vector<osg::ref_ptr<entity::Entity2D> > &buffer, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_canvas(target)
@@ -282,7 +289,8 @@ EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas *tar
                   .arg(QString(m_canvas->getName().c_str())));
 }
 
-void EditPasteCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditPasteCommand::undo()
 {
     m_canvas->unselectEntities();
     for (size_t i=0; i<m_entities.size();++i){
@@ -292,7 +300,7 @@ void EditPasteCommand::undo()
     }
 }
 
-void EditPasteCommand::redo()
+void fur::EditPasteCommand::redo()
 {
     m_canvas->unselectEntities();
     for (size_t i=0; i<m_entities.size(); ++i){
@@ -303,8 +311,9 @@ void EditPasteCommand::redo()
         m_canvas->addEntitySelected(entity);
     }
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-EditCutCommand::EditCutCommand(entity::UserScene* scene, entity::Canvas*  canvas,
+fur::EditCutCommand::EditCutCommand(entity::UserScene* scene, entity::Canvas*  canvas,
                                const std::vector<entity::Entity2D *> &selected,
                                std::vector<osg::ref_ptr<entity::Entity2D> > &buffer, QUndoCommand* parent)
     : QUndoCommand(parent)
@@ -317,7 +326,8 @@ EditCutCommand::EditCutCommand(entity::UserScene* scene, entity::Canvas*  canvas
                   .arg(QString(m_canvas->getName().c_str())));
 }
 
-void EditCutCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditCutCommand::undo()
 {
     m_scene->setCanvasCurrent(m_canvas.get());
     for (size_t i=0; i<m_buffer.size(); ++i){
@@ -330,7 +340,7 @@ void EditCutCommand::undo()
     m_scene->updateWidgets();
 }
 
-void EditCutCommand::redo()
+void fur::EditCutCommand::redo()
 {
     for (size_t i=0; i<m_selected.size(); ++i){
         entity::Stroke* stroke = dynamic_cast<entity::Stroke*> ( m_selected.at(i));
@@ -342,8 +352,9 @@ void EditCutCommand::redo()
         m_scene->removeEntity(m_canvas.get(), m_buffer.at(i));
     }
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-EditPhotoPushCommand::EditPhotoPushCommand(entity::UserScene *scene, entity::Canvas *source, entity::Canvas *destination, entity::Photo *photo, QUndoCommand *parent)
+fur::EditPhotoPushCommand::EditPhotoPushCommand(entity::UserScene *scene, entity::Canvas *source, entity::Canvas *destination, entity::Photo *photo, QUndoCommand *parent)
     : QUndoCommand(parent)
     , m_scene(scene)
     , m_source(source)
@@ -356,15 +367,17 @@ EditPhotoPushCommand::EditPhotoPushCommand(entity::UserScene *scene, entity::Can
                        QString(m_destination->getName().c_str()) ));
 }
 
-void EditPhotoPushCommand::undo()
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::EditPhotoPushCommand::undo()
 {
     m_scene->addEntity(m_source.get(), m_photo.get());
     m_scene->removeEntity(m_destination.get(), m_photo.get());
 }
 
-void EditPhotoPushCommand::redo()
+void fur::EditPhotoPushCommand::redo()
 {
     m_photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
     m_scene->addEntity(m_destination.get(), m_photo.get());
     m_scene->addEntity(m_source.get(), m_photo.get());
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */

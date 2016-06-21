@@ -475,7 +475,7 @@ void RootScene::cutToBuffer()
     const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getEntitiesSelected();
     if (selected.size()==0) return;
 
-    EditCutCommand* cmd = new EditCutCommand(m_userScene.get(), this->getCanvasCurrent(),
+    fur::EditCutCommand* cmd = new fur::EditCutCommand(m_userScene.get(), this->getCanvasCurrent(),
                                              this->getCanvasCurrent()->getEntitiesSelected(),
                                              m_buffer);
     if (!cmd) return;
@@ -486,7 +486,7 @@ void RootScene::pasteFromBuffer()
 {
     if (m_buffer.size()==0) return;
 
-    EditPasteCommand* cmd = new EditPasteCommand(m_userScene.get(), this->getCanvasCurrent(), m_buffer);
+    fur::EditPasteCommand* cmd = new fur::EditPasteCommand(m_userScene.get(), this->getCanvasCurrent(), m_buffer);
     if (!cmd) return;
     m_undoStack->push(cmd);
     m_saved = false;

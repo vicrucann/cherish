@@ -3,6 +3,8 @@
 
 #include <osg/Group>
 
+/*! \namespace osg
+ * \brief An extentsion to OpenSceneGraph classes used within Cherish. */
 namespace osg{
 
 /*! \class ProtectedGroup
@@ -13,6 +15,7 @@ class ProtectedGroup : public osg::Group
 {
 public:
     ProtectedGroup() : osg::Group() {}
+    /*! \param group is the copy group, \param copyop is the copy method, e.g., deep or shallow (default). */
     ProtectedGroup(const ProtectedGroup& group, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY)
         : osg::Group(group, copyop) {}
 

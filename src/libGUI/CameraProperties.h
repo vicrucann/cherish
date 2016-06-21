@@ -11,21 +11,27 @@ class CameraProperties;
 }
 
 /*! \class CameraProperties
- * Class description
-*/
+ * \brief Widget that contains camera aperture properties. */
 class CameraProperties : public QDialog
 {
     Q_OBJECT
 public:
+    /*! Constructor */
     explicit CameraProperties(double fov=60.f, QWidget *parent = 0);
     ~CameraProperties();
 
 signals:
+    /*! Signal emitter when user changes FOV by using a slider. */
     void fovChangedBySlider(double);
+
+    /*! Signal emitted when user cheks "ortho" property. */
     void orthoChecked(bool);
 
 public slots:
+    /*! Slot to be called when "ortho" property is checked. */
     void onOrthoChecked(bool val);
+
+    /*! Slot to be called when FOV value was changed, e.g. by when setting up a bookmark.  */
     void onFOVSet(double fov);
 
 private slots:

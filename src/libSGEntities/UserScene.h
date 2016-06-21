@@ -26,7 +26,9 @@
 namespace entity {
 class Bookmarks;
 }
+
 class BookmarkWidget;
+namespace fur {
 class AddCanvasCommand;
 class AddPhotoCommand;
 class EditCanvasDeleteCommand;
@@ -38,6 +40,7 @@ class EditStrokeDeleteCommand;
 class EditPasteCommand;
 class EditCutCommand;
 class EditPhotoPushCommand;
+}
 
 /*! \namespace entity
  * \brief Scene graph entities
@@ -119,14 +122,14 @@ public:
 
     /*! Creates and adds a Canvas as a child to the UserScene through undo/redo framework by assigning
      * it an automatic name.
-     * \param stack is the undo/redo stack where the AddCanvasCommand will be pushed to
+     * \param stack is the undo/redo stack where the fur::AddCanvasCommand will be pushed to
      * \param R is the rotation matrix of the new canvas
      * \param T is the transtaltion matrix of the new canvas */
     void addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T);
 
     /*! Creates and adds a Canvas as a child to the UserScene through undo/redo framework by asigning
      * it an automatic name.
-     * \param stack is the undo/redo stack where the AddCanvasCommand will be pushed to
+     * \param stack is the undo/redo stack where the fur::AddCanvasCommand will be pushed to
      * \param normal is the normal of the new canvas
      * \param center is the center location of the new canvas */
     void addCanvas(QUndoStack* stack, const osg::Vec3f& normal, const osg::Vec3f& center);
@@ -134,7 +137,7 @@ public:
     /*! Creates and adds a Canvas as a child to the UserScene through undo/redo framework.
      * This method is normally called by UserScene::addCanvas(QUndoStack*, const osg::Matrix&, const osg::Matrix&).
      *
-     * \param stack is the undo/redo stack where the AddCanvasCommand will be pushed to
+     * \param stack is the undo/redo stack where the fur::AddCanvasCommand will be pushed to
      * \param R is the rotation matrix of the new canvas
      * \param T is the transtaltion matrix of the new canvas
      * \param name is the canvas name */
@@ -143,7 +146,7 @@ public:
 
     /*! Adds a point to a current stroke of the current canvas through undo/redo framework.
      * If there is no current stroke exists, it creates it.
-     * \param stack  is the undo/redo stack where the AddStrokeCommand will be pushed to
+     * \param stack  is the undo/redo stack where the fur::AddStrokeCommand will be pushed to
      * \param u is the local canvas U-coordinate of the stroke point [u, v] to append to Canvas::m_strokeCurrent
      * \param v is the local canvas V-coordinate of the stroke point [u, v] to append to Canvas::m_strokeCurrent
      * \param event is the current mouse state: click, drag or release */
@@ -151,7 +154,7 @@ public:
 
     /*! Creates and adds a photo to  a current canvas through undo/redo framework by
      * asigning to it an automatic name.
-     * \param stack is the undo/redo stack where the AddPhotoCommand will be pushed to
+     * \param stack is the undo/redo stack where the fur::AddPhotoCommand will be pushed to
      * \param fname is the photo file path from where it is loaded */
     void addPhoto(QUndoStack* stack, const std::string& fname);
 
@@ -249,9 +252,9 @@ public:
     /*! Sets given Canvas as a current. This sets the variable UserScene::m_canvasCurrent
      * to pointer of given Canvas. The current status also means change of Canvas
      * frame color. When the frame color changes, the function emits a signal which
-     * is connected to CanvasWidget to mark the corresponding Canvas as selected in
+     * is connected to CanvasPhotoWidget to mark the corresponding Canvas as selected in
      * widget UI.
-     * Most of the time this method is called by either CanvasWidget, EventHandler
+     * Most of the time this method is called by either CanvasPhotoWidget, EventHandler
      * methods or undo/redo framework classes (e.g. Add*Command and Edit*Command).
      * \param cnv is the Canvas to set as current
      * \return The bool parameter which indicates the success of current status change (also checks for validity of
@@ -261,10 +264,10 @@ public:
     /*! Sets given Canvas as previous. This sets the variable UserScene::m_canvasPrevious
      * to pointer of given Canvas. The previous status also means change of Canvas
      * frame color. When the frame color changes, the function emits a signal which
-     * is connected to CanvasWidget to mark the corresponding Canvas as selected in
+     * is connected to CanvasPhotoWidget to mark the corresponding Canvas as selected in
      * widget UI.
      * Most of the time this method will be called automatically by UserScene::setCanvasCurrent(),
-     * although there are few cases when it is called by other means, e.g., from CanvasWidget
+     * although there are few cases when it is called by other means, e.g., from CanvasPhotoWidget
      * when user sets previous status by right mouse click.
      * \param cnv is the Canvas to set as previous
      * \return The bool parameter which indicates the success of current status change (also checks for validity of
@@ -301,27 +304,27 @@ public:
     /*! A method to return a sequential index of Canvas pointer. Normally, the index is aligned with
      * child index of UserScene, however, it is not always the case since one of the children is
      * Bookmarks group. The method is frequently used when we need to obtain the index number to deal with
-     * CanvasWidget entries. Example of methods that use it are: setting canvas as current / previous;
+     * CanvasPhotoWidget entries. Example of methods that use it are: setting canvas as current / previous;
      * model resetting, adding new canvas and photo addition and removal.
      * \param canvas is the pointer on Canvas
-     * \return index of the Canvas as is in CanvasWidget
+     * \return index of the Canvas as is in CanvasPhotoWidget
      * \sa getCanvasFromIndex() */
     int getCanvasIndex(entity::Canvas* canvas) const;
 
     /*! Similar to getCanvasIndex(), the method is to return a sequential index of a photo as it is in
-     * CanvasWidget. It iterates through all the children of Canvas and compares them to the Photo pointer.
+     * CanvasPhotoWidget. It iterates through all the children of Canvas and compares them to the Photo pointer.
      * Whenever the child is of type Photo, the index value increases. When the pointers match, the result
      * index is returned.
      * \param photo is a Photo of which index we want to obtain
      * \param canvas is a Canvas that contains the photo
-     * \return index of the given Photo within the given Canvas as is in CanvasWidget.
+     * \return index of the given Photo within the given Canvas as is in CanvasPhotoWidget.
      * \sa getPhoto() */
     int getPhotoIndex(entity::Photo* photo, entity::Canvas* canvas) const;
 
-    /*! A method to return a Canvas pointer given sequential index within CanvasWidget.
+    /*! A method to return a Canvas pointer given sequential index within CanvasPhotoWidget.
      * Returns a child of UserScene as a Canvas with given sequential index, taking Bookmarks group
      * into consideration.
-     * \param row is the sequential index as is in CanvasWidget
+     * \param row is the sequential index as is in CanvasPhotoWidget
      * \return Canvas pointer of the index.
      * \sa getCanvasIndex() */
     entity::Canvas* getCanvasFromIndex(int row);
@@ -329,7 +332,7 @@ public:
     /*! A method to return a Photo pointer given sequential index within a Canvas.
      * Returns a child of Canvas with given sequential index.
      * \param canvas is the Canvas which is a parent of requested Photo
-     * \param row is the sequential index as is in CanvasWidget
+     * \param row is the sequential index as is in CanvasPhotoWidget
      * \return Photo pointer of the index.
      * \sa getPhotoIndex() */
     entity::Photo* getPhoto(entity::Canvas* canvas, int row);
@@ -404,7 +407,7 @@ public:
     void editPhotoDelete(QUndoStack* stack, entity::Photo* photo, entity::Canvas* canvas);
 
     /*! The method is to transfer a photo from one canvas to another. As of v0.4.0 it is in development and advised not to be used
-     * for time being; have to fix the syncronization with CanvasWidget
+     * for time being; have to fix the syncronization with CanvasPhotoWidget
      * \param stack  is the command stack for undo/redo framework
      * \param photo is the photo to move
      * \param source is the canvas from where the photo will be removed
@@ -479,7 +482,7 @@ public:
     void resetModel(CanvasPhotoWidget* widget);
 
 signals:
-    /*! A signal which is connected with MainWindow::recievedRequestUpdate() to request for GLWidget update. */
+    /*! A signal which is connected with MainWindow::onRequestUpdate() to request for GLWidget update. */
     void sendRequestUpdate();
 
     /*! A signal which is connected with  CanvasPhotoWidget::onCanvasAdded() to request to add a canvas item to the widget */
@@ -525,9 +528,6 @@ public slots:
     void onRightClicked(const QModelIndex& index);
 
 protected:
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
     std::string getCanvasName();
     std::string getPhotoName();
     std::string getBookmarkName();
@@ -574,25 +574,23 @@ protected:
     void canvasRotateAppend(const osg::Quat& r, const osg::Vec3f& center3d);
     void canvasRotateFinish(QUndoStack* stack);
 
-    friend class ::AddCanvasCommand;
-    friend class ::AddPhotoCommand;
-    friend class ::EditCanvasDeleteCommand;
-    friend class ::AddCanvasSeparationCommand;
-    friend class ::EditPhotoDeleteCommand;
-    friend class ::AddStrokeCommand;
-    friend class ::EditStrokesPushCommand;
-    friend class ::EditStrokeDeleteCommand;
-    friend class ::EditPasteCommand;
-    friend class ::EditCutCommand;
-    friend class ::EditPhotoPushCommand;
+    friend class ::fur::AddCanvasCommand;
+    friend class ::fur::AddPhotoCommand;
+    friend class ::fur::EditCanvasDeleteCommand;
+    friend class ::fur::AddCanvasSeparationCommand;
+    friend class ::fur::EditPhotoDeleteCommand;
+    friend class ::fur::AddStrokeCommand;
+    friend class ::fur::EditStrokesPushCommand;
+    friend class ::fur::EditStrokeDeleteCommand;
+    friend class ::fur::EditPasteCommand;
+    friend class ::fur::EditCutCommand;
+    friend class ::fur::EditPhotoPushCommand;
 
     bool addCanvas(entity::Canvas* canvas);
     bool removeCanvas(entity::Canvas* canvas);
 
     bool addEntity(entity::Canvas* canvas, entity::Entity2D* entity);
     bool removeEntity(entity::Canvas* canvas, entity::Entity2D* entity);
-
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 private:
     osg::ref_ptr<osg::Group> m_groupCanvases; /*!< Group that contains all the bookmarks. */

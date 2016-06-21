@@ -29,7 +29,9 @@
 #include <QUndoStack>
 #include <QModelIndex>
 
+namespace fur{
 class AddStrokeCommand;
+}
 namespace entity{
 class SceneState;
 class UserScene;

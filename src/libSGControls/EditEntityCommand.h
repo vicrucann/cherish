@@ -19,17 +19,21 @@ class UserScene;
 class Bookmarks;
 }
 
+namespace fur{
+
 /*! \class EditCanvasOffsetCommand
- * Class description
+ * \brief QUndoCommand that performs offset of a canvas.
 */
 class EditCanvasOffsetCommand : public QUndoCommand
 {
 public:
+    /*! \param scene is the scene graph to edit, \param translate is 3D translation vector, \param parent is normally 0. */
     EditCanvasOffsetCommand(entity::UserScene* scene, const osg::Vec3f& translate, QUndoCommand* parent = 0);
-    ~EditCanvasOffsetCommand();
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -38,16 +42,18 @@ protected:
 };
 
 /*! \class EditCanvasRotateCommand
- * Class description
+  * \brief QUndoCommand that performs rotation of a canvas.
 */
 class EditCanvasRotateCommand : public QUndoCommand
 {
 public:
+    /*! \param scene is the scene graph to edit, \param rotate is 3D rotation quad, \param parent is normally 0. */
     EditCanvasRotateCommand(entity::UserScene* scene, const osg::Quat& rotate, QUndoCommand* parent = 0);
-    ~EditCanvasRotateCommand();
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -57,16 +63,18 @@ protected:
 };
 
 /*! \class EditCanvasDeleteCommand
- * Class description
+  * \brief QUndoCommand that performs deletion of a canvas.
 */
 class EditCanvasDeleteCommand : public QUndoCommand
 {
 public:
+    /*! \param scene is the scene graph to edit, \param canvas is a canvas to delete, \param parent is normally 0. */
     EditCanvasDeleteCommand(entity::UserScene* scene, entity::Canvas* canvas, QUndoCommand* parent = 0);
-    ~EditCanvasDeleteCommand() {}
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -75,16 +83,18 @@ protected:
 };
 
 /*! \class EditPhotoDeleteCommand
- * Class description
+ * \brief QUndoCommand that performs deletion of a photo.
 */
 class EditPhotoDeleteCommand : public QUndoCommand
 {
 public:
+    /*! \param scene is the scene graph to edit, \param canvas is a canvas to delete from, \param photo is a photo to delete, \param parent is normally 0. */
     EditPhotoDeleteCommand(entity::UserScene* scene, entity::Canvas* canvas, entity::Photo* photo, QUndoCommand* parent = 0);
-    ~EditPhotoDeleteCommand() {}
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -94,20 +104,23 @@ protected:
 };
 
 /*! \class EditStrokesPushCommand
- * Class description
+ * \brief QUndoCommand that performs push operation of a set of strokes.
 */
 class EditStrokesPushCommand : public QUndoCommand
 {
 public:
+    /*! \param scene is the scene graph to edit, \param entities is the vector of pointers on strokes to edit,
+     * \param current is the source canvas which contains the strokes, \param target is the destination canvas where strokes will be pushed to,
+     * \param eye is the camera eye position when the push strokes is performed, \param parent is normally 0. */
     EditStrokesPushCommand(entity::UserScene* scene, const std::vector<entity::Entity2D*>& entities, entity::Canvas* current, entity::Canvas* target,
                            const osg::Vec3f& eye, QUndoCommand* parent = 0);
-    ~EditStrokesPushCommand() {}
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
-
     void doPushStrokes(entity::Canvas& source, entity::Canvas& target);
 
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -127,8 +140,10 @@ public:
                            double du, double dv, QUndoCommand* parent = 0);
     ~EditEntitiesMoveCommand() {}
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -151,8 +166,10 @@ public:
                              QUndoCommand* parent = 0);
     ~EditEntitiesScaleCommand() {}
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -172,8 +189,10 @@ public:
                              double theta, osg::Vec3f center, QUndoCommand* parent = 0);
     ~EditEntitiesRotateCommand() {}
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -190,10 +209,11 @@ class EditStrokeDeleteCommand : public QUndoCommand
 {
 public:
     EditStrokeDeleteCommand(entity::UserScene* scene, entity::Canvas* canvas, entity::Stroke* stroke, QUndoCommand* parent = 0);
-    ~EditStrokeDeleteCommand() {}
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
@@ -208,10 +228,11 @@ class EditPasteCommand : public QUndoCommand
 public:
     EditPasteCommand(entity::UserScene* scene, entity::Canvas* target,
                      const std::vector< osg::ref_ptr<entity::Entity2D> >& buffer, QUndoCommand* parent=0);
-    ~EditPasteCommand() {}
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -230,8 +251,10 @@ public:
                    std::vector< osg::ref_ptr<entity::Entity2D> >& buffer, QUndoCommand* parent=0);
     ~EditCutCommand() {}
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -250,8 +273,10 @@ public:
                          entity::Photo* photo, QUndoCommand* parent=0);
     ~EditPhotoPushCommand() {}
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -259,5 +284,7 @@ protected:
     osg::observer_ptr<entity::Canvas> m_destination;
     osg::observer_ptr<entity::Photo> m_photo;
 };
+
+} // namespace fur
 
 #endif // EDITENTITYCOMMAND_H
