@@ -52,8 +52,6 @@ const osg::Vec4 cyan = osg::Vec4(float(42)/255.0f, float(161)/255.0f, float(152)
 const osg::Vec4 green = osg::Vec4(float(133)/255.0f, float(153)/255.0f, float(0)/255.0f, 1.0f);
 } // solarized
 
-// TODO: settings must be initialized based on screen resolution
-
 namespace cher{
 
 const double PI = 3.14159265359;

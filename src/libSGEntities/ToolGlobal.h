@@ -41,6 +41,7 @@ public:
 
 protected:
     void updateGeometry();
+    void updateGeometry(osg::Geometry* geom);
 
     osg::Switch* m_switch;
     osg::Geode* m_geodeWire;
@@ -120,7 +121,6 @@ protected:
     void setLineGeometry(osg::Geometry* geom, const osg::Vec3f& P1, const osg::Vec3f& P2);
 
     void setColorGeometry(osg::Geometry* geom, const osg::Vec4f& color);
-    void updateGeometry(osg::Geometry* geom);
 
     void moveDeltaWireGeometry(osg::Geometry*geometry, double du, double dv);
     void scaleWireGeometry(osg::Geometry* geometry, double scaleX, double scaleY, osg::Vec3f center);

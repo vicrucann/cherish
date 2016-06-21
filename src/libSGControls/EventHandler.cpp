@@ -298,8 +298,6 @@ void EventHandler::doEditCanvasOffset(const osgGA::GUIEventAdapter &ea, osgGA::G
     }
 }
 
-// TODO: pass rotaxis based on the mode
-// FIXME: rotation need to track canvas frame not normal
 void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, osg::Vec3f alongAxis, osg::Vec3f rotAxis)
 {
     entity::Canvas* canvas = m_scene->getCanvasCurrent();

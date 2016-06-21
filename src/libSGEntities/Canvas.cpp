@@ -755,16 +755,6 @@ unsigned int entity::Canvas::getNumPhotos() const
     return m_geodePhotos->getNumChildren();
 }
 
-/* returns row's consequitive photo from scene graph;
- * it will skip all other data counts (e.g. strokes);
- * used to modify photo from canvas tree widget
- * TODO : re-design geodeData scene graph so that each type (photos, strokes, point cloud)
- * would have their own pointer like so:
- * geodeData -> photos -> ...
- *          \-> strokes -> ...
- *          \-> pointClouds -> ...
- * It will allow to skip looping through all the elements in the below function.
-*/
 entity::Photo *entity::Canvas::getPhoto(int row) const
 {
     if (row<0 || row>=(int)m_geodePhotos->getNumChildren()) return NULL;

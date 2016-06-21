@@ -276,7 +276,6 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
                     return true;
                 }
 
-            // TODO: should the transparency be included in undo/redo FW?
             QRect rPlus = this->getButtonPlusRect(r);
             if( clickX > rPlus.x() && clickX < rPlus.x() + rPlus.width() )
                 if( clickY > rPlus.y() && clickY < rPlus.y() + rPlus.height() )

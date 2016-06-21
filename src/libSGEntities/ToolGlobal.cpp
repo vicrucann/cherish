@@ -94,6 +94,12 @@ void entity::ToolGlobal::updateGeometry()
     m_geomWire->dirtyBound();
 }
 
+void entity::ToolGlobal::updateGeometry(osg::Geometry *geom)
+{
+    geom->dirtyDisplayList();
+    geom->dirtyBound();
+}
+
 entity::BookmarkTool::BookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
     : ToolGlobal(12, osg::Array::BIND_OVERALL,
            new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,0,12))
@@ -473,8 +479,7 @@ void entity::FrameTool::setIntersection(const osg::Vec3f &P1, const osg::Vec3f &
     (*verts)[2] = P3;
     (*verts)[3] = P4;
 
-    m_geomIntersect->dirtyDisplayList();
-    m_geomIntersect->dirtyBound();
+    this->updateGeometry(m_geomIntersect);
 }
 
 void entity::FrameTool::setColorIntersection(const osg::Vec4f &colorIntersect)
@@ -482,8 +487,7 @@ void entity::FrameTool::setColorIntersection(const osg::Vec4f &colorIntersect)
     osg::Vec4Array* colorInter = static_cast<osg::Vec4Array*>(m_geomIntersect->getColorArray());
     assert(colorInter->size() > 0);
     (*colorInter)[0] = colorIntersect;
-    m_geomIntersect->dirtyDisplayList();
-    m_geomIntersect->dirtyBound();
+    this->updateGeometry(m_geomIntersect);
 }
 
 void entity::FrameTool::setEditable(bool editable)
@@ -553,7 +557,6 @@ void entity::FrameTool::rotate(double theta, osg::Vec3f center)
     this->rotateWireGeometry(m_geomScaleUV4, theta, center);
 }
 
-// TODO: put all quad and wire functions into abstract class
 void entity::FrameTool::initQuadGeometry(osg::Geometry *geom, const std::string &name)
 {
     geom->setVertexArray(new osg::Vec3Array(4));
@@ -625,13 +628,6 @@ void entity::FrameTool::setColorGeometry(osg::Geometry *geom, const osg::Vec4f &
     this->updateGeometry(geom);
 }
 
-// TODO: put it into abstract class
-void entity::FrameTool::updateGeometry(osg::Geometry *geom)
-{
-    geom->dirtyDisplayList();
-    geom->dirtyBound();
-}
-
 void entity::FrameTool::moveDeltaWireGeometry(osg::Geometry * geometry, double du, double dv)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
@@ -640,8 +636,7 @@ void entity::FrameTool::moveDeltaWireGeometry(osg::Geometry * geometry, double d
         (*verts)[i] = osg::Vec3f(du+vi.x(), dv+vi.y(), 0);
     }
     verts->dirty();
-    geometry->dirtyBound();
-    geometry->dirtyDisplayList();
+    this->updateGeometry(geometry);
 }
 
 void entity::FrameTool::scaleWireGeometry(osg::Geometry *geometry, double scaleX, double scaleY, osg::Vec3f center)
@@ -652,8 +647,7 @@ void entity::FrameTool::scaleWireGeometry(osg::Geometry *geometry, double scaleX
         (*verts)[i] = center + osg::Vec3f(scaleX*vi.x(), scaleY*vi.y(), 0);
     }
     verts->dirty();
-    geometry->dirtyBound();
-    geometry->dirtyDisplayList();
+    this->updateGeometry(geometry);
 }
 
 void entity::FrameTool::scaleWireGeometry(osg::Geometry *geometry, double scale, osg::Vec3f center)
@@ -664,8 +658,7 @@ void entity::FrameTool::scaleWireGeometry(osg::Geometry *geometry, double scale,
         (*verts)[i] = center + osg::Vec3f(scale*vi.x(), scale*vi.y(), 0);
     }
     verts->dirty();
-    geometry->dirtyBound();
-    geometry->dirtyDisplayList();
+    this->updateGeometry(geometry);
 }
 
 void entity::FrameTool::rotateWireGeometry(osg::Geometry *geometry, double theta, osg::Vec3f center)
@@ -677,6 +670,5 @@ void entity::FrameTool::rotateWireGeometry(osg::Geometry *geometry, double theta
                                           vi.x() * std::sin(theta) + vi.y() * std::cos(theta), 0);
     }
     verts->dirty();
-    geometry->dirtyBound();
-    geometry->dirtyDisplayList();
+    this->updateGeometry(geometry);
 }

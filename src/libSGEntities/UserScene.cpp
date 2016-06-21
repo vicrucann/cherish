@@ -671,8 +671,10 @@ void entity::UserScene::editPhotoPush(QUndoStack *stack, entity::Photo *photo, C
 void entity::UserScene::editPhotoTransparency(entity::Photo *photo, entity::Canvas *canvas, float t)
 {
     if (!photo || !canvas) return;
-    // TODO:
-    // if (canvas->containsPhoto(photo))
+    if (!canvas->containsEntity(photo)) {
+        qWarning("editPhotoTransparency: canvas does not contains the photo");
+        return;
+    }
     photo->setTransparency(t);
     int index = this->getPhotoIndex(photo, canvas);
     for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
