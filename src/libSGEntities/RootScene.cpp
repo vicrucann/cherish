@@ -7,6 +7,7 @@
 
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
+#include <osgDB/ReaderWriter>
 #include <osgDB/Registry>
 
 #include "RootScene.h"

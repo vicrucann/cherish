@@ -373,7 +373,7 @@ void MainWindow::onFileSaveAs()
 
 void MainWindow::onFileExport()
 {
-    QString fname = QFileDialog::getSaveFileName(this, tr("Exporting file"), QString(), tr("Raw OSGT format (*.osgt)"));
+    QString fname = QFileDialog::getSaveFileName(this, tr("Exporting file"), QString(), tr("File formats (*.osgt *.obj *.3ds)"));
     if (fname.isEmpty()){
         QMessageBox::warning(this, tr("Chosing filename"), tr("No file name is chosen. File was not exported."));
         this->statusBar()->showMessage(tr("Scene was not exported."));
