@@ -44,14 +44,12 @@ void fur::EditCanvasRotateCommand::undo()
     osg::Vec3d axis;
     m_rotate.getRotate(angle, axis);
     m_canvas->rotate(osg::Matrix::rotate(-angle, axis), m_center);
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 
 void fur::EditCanvasRotateCommand::redo()
 {
     m_canvas->rotate(osg::Matrix::rotate(m_rotate), m_center);
-    m_canvas->updateFrame(m_scene->getCanvasPrevious());
     m_scene->updateWidgets();
 }
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
