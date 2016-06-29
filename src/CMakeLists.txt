@@ -3,12 +3,45 @@ project(cherish)
 cmake_minimum_required(VERSION 2.8.11)
 
 
+## Project version
+if (NOT cherish_VERSION)
+    find_package(Git QUIET)
+    if (EXISTS ${GIT_EXECUTABLE})
+        execute_process( COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=1
+            RESULT_VARIABLE GIT_RESULT
+            OUTPUT_VARIABLE cherish_VERSION
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_STRIP_TRAILING_WHITESPACE )
+        if (NOT GIT_RESULT EQUAL 0)
+            message(FATAL_ERROR "Cannot get 'git describe' version.")
+        endif()
+    endif()
+endif()
+
+string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.(.*)$" cherish_VERSION "${cherish_VERSION}")
+set(cherish_VERSION_MAJOR "${CMAKE_MATCH_1}")
+set(cherish_VERSION_MINOR "${CMAKE_MATCH_2}")
+set(cherish_VERSION_PATCH "${CMAKE_MATCH_3}")
+set(cherish_VERSION_COUNT 3)
+
+if (NOT ( DEFINED cherish_VERSION_MAJOR AND DEFINED cherish_VERSION_MINOR AND DEFINED cherish_VERSION_PATCH ))
+    message(FATAL_ERROR "No Git executable or valid cherish version argument found.\n"
+        "Please pass a version to CMake e.g. cmake -Dcherish_VERSION=1.0.0")
+endif()
+
+## Do not allow in-source builds
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+    message(FATAL_ERROR "In-source builds are not allowed")
+endif()
+
+
 ## Build options
-option(cheris_BUILD_DOC "Build cherish documentation" ON)
+option(cherish_BUILD_TESTS "Build cherish tests" ON)
+option(cheris_BUILD_DOC "Build cherish documentation (requires Doxygen installed)" OFF)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
-message(STATUS "Building in ${CMAKE_BUILD_TYPE} mode")
+message( STATUS "Building cherish ${cherish_VERSION} in ${CMAKE_BUILD_TYPE} mode" )
 
 
 ## Compiler settings
@@ -59,7 +92,9 @@ include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 
 ## Other build packages
-if (CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
+#if (cheris_BUILD_DOC)
+if(cheris_BUILD_DOC)
+    message("Trying to build documentation")
     find_package(Doxygen)
     if (DOXYGEN_FOUND)
         set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/../docs/Doxyfile.in)
@@ -74,15 +109,17 @@ if (CMAKE_BUILD_TYPE MATCHES "^[Rr]elease")
     else (DOXYGEN_FOUND)
       message("Doxygen need to be installed to generate the doxygen documentation")
     endif (DOXYGEN_FOUND)
-endif()
+endif(cheris_BUILD_DOC)
 
 
 ## Test settings
-find_package(Qt5Test 5.4 REQUIRED)
-enable_testing()
-set(QT_QTTEST_LIBRARY
-    ${Qt5Test_LIBRARIES}
-)
+if (cherish_BUILD_TESTS)
+    find_package(Qt5Test 5.4 REQUIRED)
+    enable_testing()
+    set(QT_QTTEST_LIBRARY
+        ${Qt5Test_LIBRARIES}
+        )
+endif()
 
 
 ## Icons directory setting
@@ -96,7 +133,9 @@ add_subdirectory(cherish)
 add_subdirectory(libGUI)
 add_subdirectory(libSGEntities)
 add_subdirectory(libSGControls)
-add_subdirectory(tests)
+if (cherish_BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
 
 
 ## Installer settings (CPack) will be located here

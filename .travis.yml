@@ -1,0 +1,42 @@
+#
+# https://travis-ci.org configuration file for cherish
+#
+
+language: cpp
+
+compiler: 
+  - gcc
+
+sudo: false
+
+addons:
+  apt:
+    sources: 
+      - ubuntu-toolchain-r-test
+    packages:
+      - cmake
+      - g++-4.8
+
+env:
+  - CHERISH_SRC=${TRAVIS_BUILD_DIR}/src
+  - CHERISH_BUILD=${TRAVIS_BUILD_DIR}/build
+
+before_script:
+  - export CXX="g++4.8"
+    # create build forlder
+  - mkdir $CHERISH_BUILD
+  - cd $CHERISH_BUILD
+    # classic release build
+  - cmake -DCMAKE_BUILD_TYPE=Release -DCherish_BUILD_TEST=ON . $CHERISH_SOURCE
+
+script:
+  # limit GCC builds to a reduced number of thread for the virtual machine
+  - make -j 2
+
+branches:
+  only:
+    - develop
+
+after_success:
+
+
