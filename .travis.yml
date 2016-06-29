@@ -30,11 +30,10 @@ env:
 
 before_install:
   - sudo apt-add-repository --yes ppa:beineri/opt-qt551-trusty
-  - sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get -qq update
 
 install:
-  - sudo apt-get install g++-4.8 qt55base qt55imageformats qt55svg 
+  - sudo apt-get --yes install g++-4.8 qt55base qt55imageformats qt55svg 
   - export CXX="g++-4.8"
   - export CC="gcc-4.8"
   #  - sudo apt-get -y install qt55[QPACKAGE]
