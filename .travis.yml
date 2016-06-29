@@ -1,7 +1,3 @@
-#
-ISHttps://travis-ch.org configuration file for cherish
-#
-
 language: cpp
 
 os:
