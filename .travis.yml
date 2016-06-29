@@ -18,6 +18,12 @@ addons:
       - cmake
       - g++-4.8
 
+branches:
+  only:
+    - master
+    - develop
+
+
 env:
   - CHERISH_SRC=${TRAVIS_BUILD_DIR}/src
   - CHERISH_BUILD=${TRAVIS_BUILD_DIR}/build
@@ -48,11 +54,6 @@ before_script:
 script:
   - make -j 3
 
-branches:
-  only:
-    - develop
-
-after_success:
 
 notifications:
   email:
