@@ -1,15 +1,15 @@
 ## Project settings
-project(cherish)
+project(Cherish)
 cmake_minimum_required(VERSION 2.8.11)
 
 
 ## Project version
-if (NOT cherish_VERSION)
+if (NOT Cherish_VERSION)
     find_package(Git QUIET)
     if (EXISTS ${GIT_EXECUTABLE})
         execute_process( COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=1
             RESULT_VARIABLE GIT_RESULT
-            OUTPUT_VARIABLE cherish_VERSION
+            OUTPUT_VARIABLE Cherish_VERSION
             WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
             OUTPUT_STRIP_TRAILING_WHITESPACE )
         if (NOT GIT_RESULT EQUAL 0)
@@ -18,15 +18,15 @@ if (NOT cherish_VERSION)
     endif()
 endif()
 
-string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.(.*)$" cherish_VERSION "${cherish_VERSION}")
-set(cherish_VERSION_MAJOR "${CMAKE_MATCH_1}")
-set(cherish_VERSION_MINOR "${CMAKE_MATCH_2}")
-set(cherish_VERSION_PATCH "${CMAKE_MATCH_3}")
-set(cherish_VERSION_COUNT 3)
+string(REGEX MATCH "^([0-9]+)\\.([0-9]+)\\.(.*)$" Cherish_VERSION "${Cherish_VERSION}")
+set(Cherish_VERSION_MAJOR "${CMAKE_MATCH_1}")
+set(Cherish_VERSION_MINOR "${CMAKE_MATCH_2}")
+set(Cherish_VERSION_PATCH "${CMAKE_MATCH_3}")
+set(Cherish_VERSION_COUNT 3)
 
-if (NOT ( DEFINED cherish_VERSION_MAJOR AND DEFINED cherish_VERSION_MINOR AND DEFINED cherish_VERSION_PATCH ))
-    message(FATAL_ERROR "No Git executable or valid cherish version argument found.\n"
-        "Please pass a version to CMake e.g. cmake -Dcherish_VERSION=1.0.0")
+if (NOT ( DEFINED Cherish_VERSION_MAJOR AND DEFINED Cherish_VERSION_MINOR AND DEFINED Cherish_VERSION_PATCH ))
+    message(FATAL_ERROR "No Git executable or valid Cherish version argument found.\n"
+        "Please pass a version to CMake e.g. cmake -DCherish_VERSION=1.0.0")
 endif()
 
 ## Do not allow in-source builds
@@ -36,12 +36,12 @@ endif()
 
 
 ## Build options
-option(cherish_BUILD_TESTS "Build cherish tests" ON)
-option(cheris_BUILD_DOC "Build cherish documentation (requires Doxygen installed)" OFF)
+option(Cherish_BUILD_TESTS "Build Cherish tests" ON)
+option(cheris_BUILD_DOC "Build Cherish documentation (requires Doxygen installed)" OFF)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
-message( STATUS "Building cherish ${cherish_VERSION} in ${CMAKE_BUILD_TYPE} mode" )
+message( STATUS "Building Cherish ${Cherish_VERSION} in ${CMAKE_BUILD_TYPE} mode" )
 
 
 ## Compiler settings
@@ -113,7 +113,7 @@ endif(cheris_BUILD_DOC)
 
 
 ## Test settings
-if (cherish_BUILD_TESTS)
+if (Cherish_BUILD_TESTS)
     find_package(Qt5Test 5.4 REQUIRED)
     enable_testing()
     set(QT_QTTEST_LIBRARY
@@ -133,7 +133,7 @@ add_subdirectory(cherish)
 add_subdirectory(libGUI)
 add_subdirectory(libSGEntities)
 add_subdirectory(libSGControls)
-if (cherish_BUILD_TESTS)
+if (Cherish_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
 
