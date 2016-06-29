@@ -4,10 +4,11 @@
 
 language: cpp
 
+os:
+  - linux
+
 compiler: 
   - gcc
-
-sudo: false
 
 addons:
   apt:
@@ -21,17 +22,31 @@ env:
   - CHERISH_SRC=${TRAVIS_BUILD_DIR}/src
   - CHERISH_BUILD=${TRAVIS_BUILD_DIR}/build
 
+install:
+  # qt libs
+  wget http://www.cmake.org/files/v3.2/cmake-3.2.3-Linux-i386.tar.gz
+  && tar -xzf cmake-3.2.3-Linux-i386.tar.gz
+  && sudo cp -fR cmake-3.2.3-Linux-i386/* /usr
+  && sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
+  && sudo apt-add-repository -y ppa:beineri/opt-qt541
+  && sudo apt-get -qq update
+  && sudo apt-get -qq install g++-4.8 libc6-i386 qt54svg qt54opengl qt54xml qt54widgets qt54gui qt54core
+  && export CXX="g++-4.8"
+  && export CC="gcc-4.8"
+  ;
+
+  # OpenSceneGraph libs
+
+
 before_script:
-  - export CXX="g++4.8"
     # create build forlder
   - mkdir $CHERISH_BUILD
   - cd $CHERISH_BUILD
     # classic release build
-  - cmake -DCMAKE_BUILD_TYPE=Release -DCherish_BUILD_TEST=ON . $CHERISH_SOURCE
+  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt54/lib/cmake -DCherish_BUILD_TEST=ON . $CHERISH_SOURCE
 
 script:
-  # limit GCC builds to a reduced number of thread for the virtual machine
-  - make -j 2
+  - make -j 3
 
 branches:
   only:
@@ -39,4 +54,7 @@ branches:
 
 after_success:
 
+notifications:
+  email:
+    - vicrucann@gmail.com
 
