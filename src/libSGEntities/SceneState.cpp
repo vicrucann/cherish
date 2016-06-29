@@ -81,8 +81,8 @@ void entity::SceneState::stripDataFrom(RootScene *scene)
         if (!cnv) continue;
         m_canvasDataFlags[i] = cnv->getVisibilityAll();
         m_canvasToolFlags[i] = cnv->getVisibilityFrameInternal();
-        for (int j=0; j < cnv->getNumPhotos(); ++j){
-            entity::Photo* photo = cnv->getPhotoFromIndex(j);
+        for (size_t j=0; j < cnv->getNumPhotos(); ++j){
+            entity::Photo* photo = cnv->getPhoto(j);
             if (!photo) continue;
             float t = photo->getTransparency();
             m_photoTransparencies.push_back(t);
@@ -188,9 +188,9 @@ void entity::SceneState::insertTransparency(int index, float t)
 
 void entity::SceneState::eraseTransparency(int start, int number)
 {
-    if (start<0 || start>=(int)m_canvasDataFlags.size() ||
-            number<0 || number>(int)m_canvasDataFlags.size() ||
-            start+number>(int)m_canvasDataFlags.size() ){
+    if (start<0 || start>=(int)m_photoTransparencies.size() ||
+            number<0 || number>(int)m_photoTransparencies.size() ||
+            start+number>(int)m_photoTransparencies.size() ){
         qFatal("eraseTransparency called: index is out of range. "
                "No erase will be performed. Scene state data is out of sync.");
         return;

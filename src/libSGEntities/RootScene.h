@@ -4,24 +4,6 @@
 /* RootScene
  * It contains all the entities that will appear on the scene.
  * It includes both user scene and utility entities (axis).
- * The user scene has the following structure (tree branch example):
- * [Root] -> <Transform1> -> (Canvas11) -> `Stroke111`
- *        -> <Transform2> -> (Canvas21)
- *                        -> (Canvas22) -> `Stroke221`
- *                                      -> `Stroke222`
- * ...
- *       -> {Switch} -> {Axes}
- *
- * Where we denote:
- * [] - an osg::Group inherited
- * <> - osg::MatrixTransform inherited
- * () - osg::Geode inherited
- * `` - osg::Drawable inherited
- * {} - other osg inherited types such as camera or switch nodes
- *
- * When performing addCanvas() or deleteCanvas(), this RootScene
- * tries to delete the canvases directly from m_userScene through the
- * API methods.
  */
 
 #include <iostream>
@@ -30,7 +12,9 @@
 
 #include <osg/ref_ptr>
 #include <osg/AutoTransform>
+#include <osg/Node>
 
+#include "ProtectedGroup.h"
 #include "Settings.h"
 #include "../libGUI/hudcamera.h"
 #include "UserScene.h"
@@ -45,7 +29,9 @@
 #include <QUndoStack>
 #include <QModelIndex>
 
+namespace fur{
 class AddStrokeCommand;
+}
 namespace entity{
 class SceneState;
 class UserScene;
@@ -55,7 +41,7 @@ class Bookmarks;
 /*! \class RootScene
  * Class description
 */
-class RootScene : public osg::Group {
+class RootScene : public osg::ProtectedGroup {
 public:
     RootScene(QUndoStack* undoStack);
 
@@ -86,7 +72,7 @@ public:
     void addCanvas(const osg::Vec3f& normal, const osg::Vec3f& center);
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
     void addStroke(float u, float v, cher::EVENT event);
-    void selectAllStrokes();
+    void selectAllEntities();
     void addPhoto(const std::string& fname);
     void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov);
     void addBookmarkTool(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);

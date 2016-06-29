@@ -18,49 +18,56 @@ class UserScene;
 class Bookmarks;
 }
 
+/*! \namespace fur
+ * \brief Contains QUndoCommand - based classes that are defined within undo/redo framework. */
+namespace fur {
+
+
 /*! \class AddCanvasCommand
- * Class description
+ * \brief QUndoCommand that performs addition of a canvas to entity::UserScene.
 */
 class AddCanvasCommand : public QUndoCommand
 {
 public:
+    /*! \param scene is the scene graph to add to, \param R is the rotation matrix of the canvas, \param T is translation matrix of the canvas,
+     * \param name is the Canvas name, \param parent is normally 0. */
     AddCanvasCommand(entity::UserScene* scene, const osg::Matrix& R, const osg::Matrix& T,
                      const std::string& name, QUndoCommand* parent = 0);
+
+    /*! \param scene is the scene graph to add to, \param copy is Canvas to copy from, \param parent is normally 0.  */
     AddCanvasCommand(entity::UserScene* scene, const entity::Canvas& copy,
                      QUndoCommand* parent = 0);
+
+    /*! \param scene is the scene graph to add to, \param normal is a 3D normal of the canvas to create, \param center is the 3D center point of canvas to create,
+     * \param name is the canvas name, \param parent is normally 0. */
     AddCanvasCommand(entity::UserScene* scene, const osg::Vec3f& normal, const osg::Vec3f& center,
                      const std::string& name, QUndoCommand* parent = 0);
 
-    /*! \fn undo
-     * Performs an undo of the command */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
-
-    /*! \fn redo
-     * Performs a redo of the command */
     void redo() Q_DECL_OVERRIDE;
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 private:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::ref_ptr<entity::Canvas> m_canvas;
     osg::observer_ptr<entity::Bookmarks> m_bookmarks;
-};
+}; // class AddCanvasCommand
 
 /*! \class AddCanvasSeparationCommand
- * Class to perform canvas separate within undo/redo framework
+ * \brief QUndoCommand that performs separation of a canvas and addition of it to entity::UserScene.
 */
 class AddCanvasSeparationCommand : public QUndoCommand
 {
 public:
+    /*! \param scene is the scene graph to add to, \param source is the canvas source from which separation will occur, \param copy is the destination canvas parameters, \param parent is normally 0. */
     AddCanvasSeparationCommand(entity::UserScene* scene, entity::Canvas* source, entity::Canvas* copy,
                                QUndoCommand* parent = 0);
 
-    /*! \fn undo
-     * Performs an undo of the command */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
-
-    /*! \fn redo
-     * Performs a redo of the command */
     void redo() Q_DECL_OVERRIDE;
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 private:
     void moveEntities(entity::Canvas* from, entity::Canvas* to);
@@ -73,21 +80,19 @@ private:
 };
 
 /*! \class AddPhotoCommand
- * Class description
+ * \brief QUndoCommand that performs addition of a photo to entity::UserScene.
 */
 class AddPhotoCommand : public QUndoCommand
 {
 public:
+    /*! \param scene is the scene graph to add to, \param fname is path of where the photo is located, \param ename is the photo name within the scene graph, \param parent is normally 0. */
     AddPhotoCommand(entity::UserScene* scene, const std::string& fname, const std::string& ename,
                     QUndoCommand* parent = 0);
 
-    /*! \fn undo
-     * Performs an undo of the command */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
-
-    /*! \fn redo
-     * Performs a redo of the command */
     void redo() Q_DECL_OVERRIDE;
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 private:
     osg::observer_ptr<entity::UserScene> m_scene;
@@ -97,26 +102,25 @@ private:
 };
 
 /*! \class AddStrokeCommand
- * Class description
+ * \brief QUndoCommand that performs addition of a stroke to UserScene.
 */
 class AddStrokeCommand : public QUndoCommand
 {
 public:
+    /*! \param scene is the scene graph to add to, \param stroke is the Stroke to be added to entity::UserScene, \param parent is normally 0. */
     AddStrokeCommand(entity::UserScene* scene, entity::Stroke* stroke, QUndoCommand *parent = 0);
-    ~AddStrokeCommand();
 
-    /*! \fn undo
-     * Performs an undo of the command */
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void undo() Q_DECL_OVERRIDE;
-
-    /*! \fn redo
-     * Performs a redo of the command */
     void redo() Q_DECL_OVERRIDE;
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 private:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::ref_ptr<entity::Stroke> m_stroke;
 };
+
+} // namespace fur
 
 #endif // ADDENTITYCOMMAND_H

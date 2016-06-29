@@ -55,20 +55,14 @@ void SceneStateTest::testBasicApi()
 
     QVERIFY(m_canvas0.get());
     QCOMPARE(m_canvas0->getVisibilityAll(), false);
-    QCOMPARE(m_canvas0->getVisibilityData(), false);
-    QCOMPARE(m_canvas0->getVisibilityFrame(), false);
     QCOMPARE(m_canvas0->getVisibilityFrameInternal(), true);
 
     QVERIFY(m_canvas1.get());
     QCOMPARE(m_canvas1->getVisibilityAll(), false);
-    QCOMPARE(m_canvas1->getVisibilityData(), false);
-    QCOMPARE(m_canvas1->getVisibilityFrame(), false);
     QCOMPARE(m_canvas1->getVisibilityFrameInternal(), false);
 
     QVERIFY(m_canvas2.get());
     QCOMPARE(m_canvas2->getVisibilityAll(), true);
-    QCOMPARE(m_canvas2->getVisibilityData(), true);
-    QCOMPARE(m_canvas2->getVisibilityFrame(), true);
     QCOMPARE(m_canvas2->getVisibilityFrameInternal(), false);
 
     /* add a photo and check photo transparency is saved to the state */
@@ -77,10 +71,10 @@ void SceneStateTest::testBasicApi()
     QString fname1 = "../../samples/ds-32.bmp";
     m_rootScene->addPhoto(fname1.toStdString());
     QCOMPARE((int)m_rootScene->getCanvasCurrent()->getNumChildren(), 1);
-    QCOMPARE(m_rootScene->getCanvasCurrent()->getNumPhotos(), 1);
+    QCOMPARE((int)m_rootScene->getCanvasCurrent()->getNumPhotos(), 1);
     state_stripped->stripDataFrom(m_rootScene);
     QVERIFY(!state_stripped->isEmpty());
-    QCOMPARE(m_rootScene->getUserScene()->getPhotoFromIndex(m_rootScene->getCanvasCurrent(), 0)->getTransparency(), state_stripped->getPhotoTransparencies()[0]);
+    QCOMPARE(m_rootScene->getUserScene()->getPhoto(m_rootScene->getCanvasCurrent(), 0)->getTransparency(), state_stripped->getPhotoTransparencies()[0]);
 
     /* add another photo, change its transparency and check if it's saved successfully within scene state */
     m_rootScene->setCanvasCurrent(m_canvas1.get());
@@ -88,7 +82,7 @@ void SceneStateTest::testBasicApi()
     QString fname2 = "../../samples/test.bmp";
     m_rootScene->addPhoto(fname2.toStdString());
     QCOMPARE((int)m_rootScene->getCanvasCurrent()->getNumChildren(), 1);
-    QCOMPARE(m_rootScene->getCanvasCurrent()->getNumPhotos(), 1);
+    QCOMPARE((int)m_rootScene->getCanvasCurrent()->getNumPhotos(), 1);
     /* imitate mouse click within CanvasPhotoWidget delegate to trigger clickedTransparencyMinus signal */
     QSignalSpy spy1(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedTransparencyMinus(QModelIndex)));
     QTreeWidgetItem* itemCa = m_canvasWidget->topLevelItem(m_rootScene->getUserScene()->getCanvasIndex(m_rootScene->getCanvasCurrent()));
@@ -104,7 +98,7 @@ void SceneStateTest::testBasicApi()
     QCOMPARE(spy1.count(), 1);
     QList<QVariant> args1 = spy1.takeFirst();
     QVERIFY(args1.at(0).type() == QVariant::ModelIndex);
-    entity::Photo* photo = m_rootScene->getCanvasCurrent()->getPhotoFromIndex(0);
+    entity::Photo* photo = m_rootScene->getCanvasCurrent()->getPhoto(0);
     QVERIFY(photo);
     QCOMPARE(photo->getTransparency(), 1-cher::PHOTO_TRANSPARECY_DELTA);
     state_stripped->stripDataFrom(m_rootScene);
@@ -279,7 +273,7 @@ void SceneStateTest::testReadWrite()
     m_rootScene->setFilePath(filename.toStdString());
     QVERIFY(m_rootScene->isSetFilePath());
     QVERIFY(this->loadSceneFromFile());
-    QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 3);
+    QCOMPARE((int)m_rootScene->getUserScene()->getNumCanvases(), 3);
     QVERIFY(m_rootScene->getUserScene()->getCanvas(index));
     QVERIFY(!m_rootScene->getUserScene()->getCanvas(index)->getVisibilityAll());
 
@@ -297,7 +291,7 @@ void SceneStateTest::testReadWrite()
 
 void SceneStateTest::testAddCanvas()
 {
-    QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 3);
+    QCOMPARE((int)m_rootScene->getUserScene()->getNumCanvases(), 3);
     /* set 0-th canvas as invisible */
     int index = 0;
     this->onVisibilitySetCanvas(index);
@@ -314,7 +308,7 @@ void SceneStateTest::testAddCanvas()
 
     /* add new canvas to the scene */
     m_rootScene->addCanvas(osg::Vec3f(1,0,0), osg::Vec3f(1,1,1));
-    QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 4);
+    QCOMPARE((int)m_rootScene->getUserScene()->getNumCanvases(), 4);
     QCOMPARE((int)state->getCanvasDataFlags().size(), 4);
     QCOMPARE((int)state->getCanvasToolFlags().size(), 4);
     QCOMPARE(state->getCanvasDataFlags()[0], false);
@@ -324,7 +318,7 @@ void SceneStateTest::testAddCanvas()
 
     /* do undo */
     m_undoStack->undo();
-    QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 3);
+    QCOMPARE((int)m_rootScene->getUserScene()->getNumCanvases(), 3);
     QCOMPARE((int)state->getCanvasDataFlags().size(), 3);
     QCOMPARE((int)state->getCanvasToolFlags().size(), 3);
     QCOMPARE(state->getCanvasDataFlags()[0], false);
@@ -332,7 +326,7 @@ void SceneStateTest::testAddCanvas()
 
     /* do redo */
     m_undoStack->redo();
-    QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 4);
+    QCOMPARE((int)m_rootScene->getUserScene()->getNumCanvases(), 4);
     QCOMPARE((int)state->getCanvasDataFlags().size(), 4);
     QCOMPARE((int)state->getCanvasToolFlags().size(), 4);
     QCOMPARE(state->getCanvasDataFlags()[0], false);
@@ -346,7 +340,7 @@ void SceneStateTest::testAddCanvas()
 
 void SceneStateTest::testAddPhoto()
 {
-    QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 3);
+    QCOMPARE((int)m_rootScene->getUserScene()->getNumCanvases(), 3);
     /* set 0-th canvas as invisible */
     int index = 0;
     this->onVisibilitySetCanvas(index);
@@ -365,7 +359,7 @@ void SceneStateTest::testAddPhoto()
     QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas1.get());
     QString filename1 = "../../samples/ds-32.bmp";
     m_rootScene->addPhoto(filename1.toStdString());
-    QCOMPARE(m_canvas1->getNumPhotos(), 1);
+    QCOMPARE((int)m_canvas1->getNumPhotos(), 1);
 
     /* make sure the transparency is a part of scene states */
     QCOMPARE((int)state->getPhotoTransparencies().size(), 1);
@@ -376,7 +370,7 @@ void SceneStateTest::testAddPhoto()
     QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas2.get());
     QString filename2 = "../../samples/test.bmp";
     m_rootScene->addPhoto(filename2.toStdString());
-    QCOMPARE(m_canvas2->getNumPhotos(), 1);
+    QCOMPARE((int)m_canvas2->getNumPhotos(), 1);
 
     /* make sure the transparency is a part of scene states */
     QCOMPARE((int)state->getPhotoTransparencies().size(), 2);
@@ -412,7 +406,7 @@ void SceneStateTest::testDeleteCanvas()
     QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas0.get());
     QString filename0 = "../../samples/ds-32.bmp";
     m_rootScene->addPhoto(filename0.toStdString());
-    QCOMPARE(m_canvas0->getNumPhotos(), 1);
+    QCOMPARE((int)m_canvas0->getNumPhotos(), 1);
 
     /* take a bookmark */
     this->onBookmark();
@@ -428,18 +422,18 @@ void SceneStateTest::testDeleteCanvas()
     QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas0.get());
     QString filename1 = "../../samples/test.bmp";
     m_rootScene->addPhoto(filename1.toStdString());
-    QCOMPARE(m_canvas0->getNumPhotos(), 2);
+    QCOMPARE((int)m_canvas0->getNumPhotos(), 2);
     QCOMPARE((int)state->getPhotoTransparencies().size(), 2);
     /* check setting scene state does not fail */
     QVERIFY(m_rootScene->setSceneState(state));
 
     /* delete 0th canvas from scene */
     m_rootScene->editCanvasDelete(m_canvas0.get());
-    QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 2);
+    QCOMPARE((int)m_rootScene->getUserScene()->getNumCanvases(), 2);
     QCOMPARE((int)state->getCanvasDataFlags().size(), 2);
     QCOMPARE((int) state->getCanvasToolFlags().size(), 2);
     QCOMPARE((int)state->getPhotoTransparencies().size(), 0);
-    QCOMPARE(m_rootScene->getUserScene()->getNumPhotos(), 0);
+    QCOMPARE((int)m_rootScene->getUserScene()->getNumPhotos(), 0);
     /* check setting scene state does not fail */
     QVERIFY(m_rootScene->setSceneState(state));
 
@@ -453,7 +447,7 @@ void SceneStateTest::testDeleteCanvas()
 
     /* perform redo */
     m_undoStack->redo();
-    QCOMPARE(m_rootScene->getUserScene()->getNumCanvases(), 2);
+    QCOMPARE((int)m_rootScene->getUserScene()->getNumCanvases(), 2);
     QCOMPARE((int)state->getCanvasDataFlags().size(), 2);
     QCOMPARE((int) state->getCanvasToolFlags().size(), 2);
     QCOMPARE((int)state->getPhotoTransparencies().size(), 0);
@@ -470,7 +464,7 @@ void SceneStateTest::testDeletePhoto()
     QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas0.get());
     QString filename0 = "../../samples/ds-32.bmp";
     m_rootScene->addPhoto(filename0.toStdString());
-    QCOMPARE(m_canvas0->getNumPhotos(), 1);
+    QCOMPARE((int)m_canvas0->getNumPhotos(), 1);
 
     /* take a bookmark */
     this->onBookmark();
@@ -486,7 +480,7 @@ void SceneStateTest::testDeletePhoto()
     QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas0.get());
     QString filename1 = "../../samples/test.bmp";
     m_rootScene->addPhoto(filename1.toStdString());
-    QCOMPARE(m_canvas0->getNumPhotos(), 2);
+    QCOMPARE((int)m_canvas0->getNumPhotos(), 2);
     QCOMPARE((int)state->getPhotoTransparencies().size(), 2);
     /* check setting scene state does not fail */
     QVERIFY(m_rootScene->setSceneState(state));
@@ -509,11 +503,11 @@ void SceneStateTest::testDeletePhoto()
     QVERIFY(args.at(0).type() == QVariant::ModelIndex);
 
     QCOMPARE((int)state->getPhotoTransparencies().size(), 2);
-    entity::Photo* photo0 = m_canvas0->getPhotoFromIndex(0);
+    entity::Photo* photo0 = m_canvas0->getPhoto(0);
     QVERIFY(photo0);
     QCOMPARE(photo0->getTransparency(), 1.);
     QCOMPARE(photo0->getTransparency(), state->getPhotoTransparencies()[0]);
-    entity::Photo* photo1 = m_canvas0->getPhotoFromIndex(1);
+    entity::Photo* photo1 = m_canvas0->getPhoto(1);
     QVERIFY(photo1);
     QCOMPARE(photo1->getTransparency(), 1-cher::PHOTO_TRANSPARECY_DELTA);
     QCOMPARE(photo1->getTransparency(), state->getPhotoTransparencies()[1]);
@@ -538,8 +532,8 @@ void SceneStateTest::testDeletePhoto()
 
     /* perform undo (return 1st photo with name test.bmp) */
     m_undoStack->undo();
-    QCOMPARE(m_rootScene->getUserScene()->getNumPhotos(), 1);
-    photo1 = m_rootScene->getUserScene()->getPhotoFromIndex(m_canvas0.get(), 0);
+    QCOMPARE((int)m_scene->getNumPhotos(), 1);
+    photo1 = m_scene->getPhoto(m_canvas0.get(), 0);
     QVERIFY(photo1);
     QCOMPARE(photo1->getName().c_str(), "Photo1");
     QCOMPARE(photo1->getTransparency(), 1-cher::PHOTO_TRANSPARECY_DELTA);

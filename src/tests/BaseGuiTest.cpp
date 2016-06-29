@@ -32,7 +32,7 @@ void BaseGuiTest::init()
 
 void BaseGuiTest::cleanup()
 {
-    this->getRootScene()->setSavedToFile(true);
+    m_rootScene->setSavedToFile(true);
     this->onFileNew();
     QVERIFY(m_rootScene.get());
     QVERIFY(m_rootScene->getUserScene());

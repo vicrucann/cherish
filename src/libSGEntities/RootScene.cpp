@@ -3,8 +3,11 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include <QtGlobal>
+
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
+#include <osgDB/ReaderWriter>
 #include <osgDB/Registry>
 
 #include "RootScene.h"
@@ -12,7 +15,7 @@
 #include "EditEntityCommand.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
-    : osg::Group()
+    : osg::ProtectedGroup()
     , m_userScene(new entity::UserScene)
     , m_axisTool(new entity::AxisGlobalTool)
     , m_bookmarkTools(new osg::Group)
@@ -112,10 +115,38 @@ bool RootScene::getCanvasVisibilityAll(entity::Canvas *canvas) const
 
 bool RootScene::writeScenetoFile()
 {
+    bool result = true;
     if (m_userScene->getFilePath() == "") return false;
-    if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) return false;
-    m_saved = true;
-    return true;
+
+    /* save current scene state */
+    osg::ref_ptr<entity::SceneState> state = new entity::SceneState;
+    state->stripDataFrom(this);
+    Q_ASSERT(!state->isEmpty());
+
+    /* for each canvas, detach its tools */
+    for (int i=0; i<m_userScene->getNumCanvases(); ++i){
+        entity::Canvas* canvas = m_userScene->getCanvas(i);
+        if (!canvas) continue;
+        canvas->detachFrame();
+    }
+
+    if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) result = false;
+
+    /* for each canvas, attach its tools back */
+    for (int i=0; i<m_userScene->getNumCanvases(); ++i){
+        entity::Canvas* canvas = m_userScene->getCanvas(i);
+        if (!canvas) continue;
+        if (!canvas->attachFrame()){
+            qCritical("RootScene::writeSceneToFile: could not attach the tools back");
+            result = false;
+        }
+    }
+
+    /* re-apply the saved scene state */
+    Q_ASSERT(this->setSceneState(state));
+
+    m_saved = result;
+    return result;
 }
 
 bool RootScene::exportSceneToFile(const std::string &name)
@@ -164,8 +195,8 @@ bool RootScene::loadSceneFromFile()
         cnv->initializeStateMachine();
 
         /* photo textures */
-        for (size_t i=0; i<cnv->getGeodeData()->getNumChildren(); ++i){
-            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGeodeData()->getChild(i));
+        for (size_t i=0; i<cnv->getNumPhotos(); ++i){
+            entity::Photo* photo = cnv->getPhoto(i);
             if (!photo) continue;
             photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTextureAsAttribute());
         }
@@ -223,10 +254,10 @@ void RootScene::addStroke(float u, float v, cher::EVENT event)
     m_saved = false;
 }
 
-void RootScene::selectAllStrokes()
+void RootScene::selectAllEntities()
 {
     if (this->getCanvasCurrent())
-        this->getCanvasCurrent()->selectAllStrokes();
+        this->getCanvasCurrent()->selectAllEntities();
 }
 
 void RootScene::addPhoto(const std::string& fname)
@@ -426,7 +457,7 @@ void RootScene::copyToBuffer()
     m_buffer.clear();
     if (!m_userScene->getCanvasCurrent()) return;
 
-    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
+    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getEntitiesSelected();
     if (selected.size()==0) return;
 
     for (size_t i=0; i<selected.size(); ++i){
@@ -442,11 +473,11 @@ void RootScene::cutToBuffer()
 {
     m_buffer.clear();
     if (!m_userScene->getCanvasCurrent()) return;
-    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getStrokesSelected();
+    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getEntitiesSelected();
     if (selected.size()==0) return;
 
-    EditCutCommand* cmd = new EditCutCommand(m_userScene.get(), this->getCanvasCurrent(),
-                                             this->getCanvasCurrent()->getStrokesSelected(),
+    fur::EditCutCommand* cmd = new fur::EditCutCommand(m_userScene.get(), this->getCanvasCurrent(),
+                                             this->getCanvasCurrent()->getEntitiesSelected(),
                                              m_buffer);
     if (!cmd) return;
     m_undoStack->push(cmd);
@@ -456,7 +487,7 @@ void RootScene::pasteFromBuffer()
 {
     if (m_buffer.size()==0) return;
 
-    EditPasteCommand* cmd = new EditPasteCommand(m_userScene.get(), this->getCanvasCurrent(), m_buffer);
+    fur::EditPasteCommand* cmd = new fur::EditPasteCommand(m_userScene.get(), this->getCanvasCurrent(), m_buffer);
     if (!cmd) return;
     m_undoStack->push(cmd);
     m_saved = false;
@@ -475,10 +506,10 @@ entity::SceneState *RootScene::createSceneState() const
     for (size_t i=0; i<sz; ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv) continue;
-        state->pushDataFlag(cnv->getVisibilityData());
+        state->pushDataFlag(cnv->getVisibilityAll());
         state->pushToolFlag(cnv->getVisibilityFrameInternal());
-        for (int j=0; j<cnv->getNumPhotos(); ++j){
-            entity::Photo* photo = cnv->getPhotoFromIndex(j);
+        for (size_t j=0; j<cnv->getNumPhotos(); ++j){
+            entity::Photo* photo = cnv->getPhoto(j);
             if (!photo) continue;
             state->pushTransparency(photo->getTransparency());
         }
@@ -511,8 +542,8 @@ bool RootScene::setSceneState(const entity::SceneState *state)
         cnv->setVisibilityAll(cdf[i]);
         emit m_userScene->canvasVisibilitySet(m_userScene->getCanvasIndex(cnv) , cdf[i]);
         cnv->setVisibilityFrameInternal(ctf[i]);
-        for (int j=0; j<cnv->getNumPhotos(); ++j){
-            entity::Photo* photo = cnv->getPhotoFromIndex(j);
+        for (size_t j=0; j<cnv->getNumPhotos(); ++j){
+            entity::Photo* photo = cnv->getPhoto(j);
             if (!photo) continue;
             photo->setTransparency(pt[idx]);
             idx++;

@@ -11,6 +11,7 @@ class CherishApplication : public QApplication {
     Q_OBJECT
 
 public:
+    /*! Constructor. */
     CherishApplication(int& argv, char** argc);
 
 signals:
@@ -20,11 +21,11 @@ signals:
      * http://stackoverflow.com/questions/31172532/mousepressevent-of-qwidget-gets-called-even-though-qtabletevent-was-accepted/33525420#33525420
      * \param active is a boolean variable that denotes whether Wacom pen enters (true) or
      * leaves (false) the tablet proximity. */
-    void sendTabletActivity(bool active);
+    void setTabletActivity(bool active);
 
 protected:
     /*! A redefined event method which captures Wacom pen's activities (enters or leaves tablet
-     * proximity). This method emits sendTabletActivity().
+     * proximity). This method emits setTabletActivity().
      * \param event is the event that enters the application. */
     bool event(QEvent* event) Q_DECL_OVERRIDE;
 

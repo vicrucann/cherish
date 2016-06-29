@@ -23,30 +23,52 @@
 class EventHandler;
 
 /*! \class GLWidget
- * Class description
+ * \brief A proxy class connecting QOpenGLWidget with the content of RootScene; and also to transmit events.
 */
 class GLWidget : public QOpenGLWidget {
     Q_OBJECT
 public:
+    /*! Construtor. */
     GLWidget(RootScene* root, QUndoStack* stack, QWidget* parent=0, Qt::WindowFlags f = 0);
     virtual ~GLWidget();
 
+    /*! \return a non-const pointer on osg::Camera that is current for the GLWidget. */
     osg::Camera* getCamera() const;
+
+protected:
     void setCameraView();
+public:
+    /*! Method to set up the manipulator to specified camera paramenters. */
     void setCameraView(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov);
+
+    /*! Method to return manipulator's camera parameters. */
     void getCameraView(osg::Vec3d& eye, osg::Vec3d& center, osg::Vec3d& up, double& fov) const;
 
+    /*! \param mode is the mouse mode to set up for the GLWidget. */
     void setMouseMode(const cher::MOUSE_MODE& mode);
 
 signals:
-    void sendAutoSwitchMode(cher::MOUSE_MODE mode);
-    void signalMouseModeSet(cher::MOUSE_MODE mode);
-    void signalFOVSet(double fov);
+    /*! Signal is emitted on double click to automatically switch the mouse mode. */
+    void autoSwitchMode(cher::MOUSE_MODE mode);
+
+    /*! Signal is emitted when mouse mode was set. */
+    void mouseModeSet(cher::MOUSE_MODE mode);
+
+    /*! Signal is emitted when FOV was changed. */
+    void FOVSet(double fov);
+
+public:
+    /*! Method to set tablet proximity flag. */
+    void setTabletActivity(bool active);
 
 public slots:
-    void getTabletActivity(bool active);
+    /*! Slot to obtain a scene graph screenshot by given canera position.  */
     void onRequestScreenshot(QPixmap& pmap, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+
+    /*! \param fov is the new  FOV (to change manipulator's camera) */
     void onFOVChangedSlider(double fov);
+
+    /*! \param ortho - true of "ortho" mode is set, false - otherwise. */
     void onOrthoSet(bool ortho);
 
 protected:

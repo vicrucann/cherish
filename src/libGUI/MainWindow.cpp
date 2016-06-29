@@ -79,21 +79,21 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     this->onSketch();
 }
 
-RootScene *MainWindow::getRootScene() const
+const RootScene *MainWindow::getRootScene() const
 {
     return m_rootScene.get();
 }
 
-void MainWindow::getTabletActivity(bool active){
-    m_glWidget->getTabletActivity(active);
+void MainWindow::onSetTabletActivity(bool active){
+    m_glWidget->setTabletActivity(active);
 }
 
-void MainWindow::recievedRequestUpdate()
+void MainWindow::onRequestUpdate()
 {
     m_glWidget->update();
 }
 
-void MainWindow::recieveAutoSwitchMode(cher::MOUSE_MODE mode)
+void MainWindow::onAutoSwitchMode(cher::MOUSE_MODE mode)
 {
     switch (mode){
     case cher::SELECT_ENTITY:
@@ -173,7 +173,7 @@ void MainWindow::onDeletePhoto(const QModelIndex &index)
     entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
     if (!cnv) return;
 
-    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhoto(cnv, index.row());
     if (!photo) return;
 
     QMessageBox::StandardButton reply = QMessageBox::question(this,
@@ -192,7 +192,7 @@ void MainWindow::onVisibilitySetCanvas(int index)
         return;
     }
     m_rootScene->setCanvasVisibilityAll(cnv, !cnv->getVisibilityAll());
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onMoveBookmark(const QModelIndex &index)
@@ -223,13 +223,13 @@ void MainWindow::onBookmarkRemovedFromWidget(const QModelIndex &, int first, int
     m_rootScene->deleteBookmarkTool(first, last);
 }
 
-void MainWindow::slotMouseModeSet(cher::MOUSE_MODE mode)
+void MainWindow::onMouseModeSet(cher::MOUSE_MODE mode)
 {
     QCursor cur = Utilities::getCursorFromMode(mode);
     if (cur.shape() != Qt::ArrowCursor) m_mdiArea->setCursor(cur);
 }
 
-void MainWindow::slotPhotoTransparencyPlus(const QModelIndex &index)
+void MainWindow::onPhotoTransparencyPlus(const QModelIndex &index)
 {
     const QModelIndex parent = index.parent();
     if (!parent.isValid()){
@@ -239,14 +239,14 @@ void MainWindow::slotPhotoTransparencyPlus(const QModelIndex &index)
     entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
     if (!cnv) return;
 
-    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhoto(cnv, index.row());
     if (!photo) return;
 
     m_rootScene->getUserScene()->editPhotoTransparency(photo, cnv, photo->getTransparency()+cher::PHOTO_TRANSPARECY_DELTA);
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
-void MainWindow::slotPhotoTransparencyMinus(const QModelIndex &index)
+void MainWindow::onPhotoTransparencyMinus(const QModelIndex &index)
 {
     const QModelIndex parent = index.parent();
     if (!parent.isValid()){
@@ -256,14 +256,14 @@ void MainWindow::slotPhotoTransparencyMinus(const QModelIndex &index)
     entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
     if (!cnv) return;
 
-    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(cnv, index.row());
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhoto(cnv, index.row());
     if (!photo) return;
 
     m_rootScene->getUserScene()->editPhotoTransparency(photo, cnv, photo->getTransparency()-cher::PHOTO_TRANSPARECY_DELTA);
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
-void MainWindow::slotPhotoPushed(int parent, int start, int, int destination, int)
+void MainWindow::onPhotoPushed(int parent, int start, int, int destination, int)
 {
     entity::Canvas* canvas_old = m_rootScene->getUserScene()->getCanvasFromIndex(parent);
     if (!canvas_old) return;
@@ -271,7 +271,7 @@ void MainWindow::slotPhotoPushed(int parent, int start, int, int destination, in
     entity::Canvas* canvas_new = m_rootScene->getUserScene()->getCanvasFromIndex(destination);
     if (!canvas_new) return;
 
-    entity::Photo* photo = m_rootScene->getUserScene()->getPhotoFromIndex(canvas_old, start);
+    entity::Photo* photo = m_rootScene->getUserScene()->getPhoto(canvas_old, start);
     if (!photo) return;
 
     m_rootScene->editPhotoPush(photo, canvas_old, canvas_new);
@@ -308,7 +308,7 @@ void MainWindow::onFileNew()
     outLogMsg("onFileNew called");
     this->onFileClose();
 
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
     this->statusBar()->showMessage(tr("Scene is cleared."));
 }
 
@@ -373,7 +373,7 @@ void MainWindow::onFileSaveAs()
 
 void MainWindow::onFileExport()
 {
-    QString fname = QFileDialog::getSaveFileName(this, tr("Exporting file"), QString(), tr("Raw OSGT format (*.osgt)"));
+    QString fname = QFileDialog::getSaveFileName(this, tr("Exporting file"), QString(), tr("File formats (*.osgt *.obj *.3ds)"));
     if (fname.isEmpty()){
         QMessageBox::warning(this, tr("Chosing filename"), tr("No file name is chosen. File was not exported."));
         this->statusBar()->showMessage(tr("Scene was not exported."));
@@ -458,7 +458,7 @@ void MainWindow::onTools()
 {
     qDebug() << "Tools: change status called to " << m_actionTools->isChecked();
     m_rootScene->setToolsVisibility(m_actionTools->isChecked()? true : false);
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onCameraOrbit(){
@@ -482,31 +482,31 @@ void MainWindow::onCameraAperture()
 
 void MainWindow::onSelect(){
     m_glWidget->setMouseMode(cher::SELECT_ENTITY);
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onErase()
 {
     m_glWidget->setMouseMode(cher::PEN_ERASE);
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onDelete()
 {
     m_glWidget->setMouseMode(cher::PEN_DELETE);
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onSketch()
 {
     m_glWidget->setMouseMode(cher::PEN_SKETCH);
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasClone()
 {
     m_glWidget->setMouseMode(cher::CREATE_CANVASCLONE);
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasXY()
@@ -514,7 +514,7 @@ void MainWindow::onNewCanvasXY()
     m_rootScene->addCanvas(osg::Matrix::identity(), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasYZ()
@@ -522,7 +522,7 @@ void MainWindow::onNewCanvasYZ()
     m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasXZ()
@@ -530,26 +530,26 @@ void MainWindow::onNewCanvasXZ()
     m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 1, 0, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasOrtho()
 {
     entity::Canvas* canvas = m_rootScene->getCanvasCurrent();
     if (!canvas) return;
-    osg::Vec3f center_glo = canvas->getStrokesSelectedCenter();
+    osg::Vec3f center_glo = canvas->getEntitiesSelectedCenter3D();
     osg::Vec3f normal = canvas->getGlobalAxisV();
     m_rootScene->addCanvas(normal, center_glo);
 
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas perpendicular to previous was created"));
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasSeparate()
 {
     m_glWidget->setMouseMode(cher::CREATE_CANVASSEPARATE);
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasStandard()
@@ -562,7 +562,7 @@ void MainWindow::onNewCanvasStandard()
                            osg::Matrix::translate(0.f, 0.f, 0.f));
     this->onSketch();
     this->statusBar()->showMessage(tr("Set of canvases created."));
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasCoaxial()
@@ -583,7 +583,7 @@ void MainWindow::onNewCanvasRing()
 void MainWindow::onCanvasEdit()
 {
     m_glWidget->setMouseMode(cher::MOUSE_CANVAS);
-    this->recievedRequestUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onImageMove()
@@ -962,17 +962,17 @@ void MainWindow::initializeToolbars()
 void MainWindow::initializeCallbacks()
 {
     /* connect MainWindow with GLWidget */
-    QObject::connect(m_glWidget, SIGNAL(signalMouseModeSet(cher::MOUSE_MODE)),
-                     this, SLOT(slotMouseModeSet(cher::MOUSE_MODE)),
+    QObject::connect(m_glWidget, SIGNAL(mouseModeSet(cher::MOUSE_MODE)),
+                     this, SLOT(onMouseModeSet(cher::MOUSE_MODE)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_glWidget, SIGNAL(sendAutoSwitchMode(cher::MOUSE_MODE)),
-                     this, SLOT(recieveAutoSwitchMode(cher::MOUSE_MODE)),
+    QObject::connect(m_glWidget, SIGNAL(autoSwitchMode(cher::MOUSE_MODE)),
+                     this, SLOT(onAutoSwitchMode(cher::MOUSE_MODE)),
                      Qt::UniqueConnection);
 
     /* connect MainWindow with UserScene */
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(sendRequestUpdate()),
-                     this, SLOT(recievedRequestUpdate()),
+                     this, SLOT(onRequestUpdate()),
                      Qt::UniqueConnection);
 
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestSceneToolStatus(bool&)),
@@ -1083,15 +1083,15 @@ void MainWindow::initializeCallbacks()
                      Qt::UniqueConnection);
 
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedTransparencyPlus(QModelIndex)),
-                     this, SLOT(slotPhotoTransparencyPlus(QModelIndex)),
+                     this, SLOT(onPhotoTransparencyPlus(QModelIndex)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedTransparencyMinus(QModelIndex)),
-                     this, SLOT(slotPhotoTransparencyMinus(QModelIndex)),
+                     this, SLOT(onPhotoTransparencyMinus(QModelIndex)),
                      Qt::UniqueConnection);
 
 //    QObject::connect(m_canvasWidget, SIGNAL(photoDraggedAndDropped(int,int,int,int,int)),
-//                     this, SLOT(slotPhotoPushed(int,int,int,int,int)),
+//                     this, SLOT(onPhotoPushed(int,int,int,int,int)),
 //                     Qt::UniqueConnection);
 
 
@@ -1105,7 +1105,7 @@ void MainWindow::initializeCallbacks()
                      m_glWidget, SLOT(onOrthoSet(bool)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_glWidget, SIGNAL(signalFOVSet(double)),
+    QObject::connect(m_glWidget, SIGNAL(FOVSet(double)),
                      m_cameraProperties, SLOT(onFOVSet(double)),
                      Qt::UniqueConnection);
 

@@ -49,7 +49,7 @@ int main(int argc, char** argv)
     cherish_app.setWindowIcon(Data::appIcon());
     MainWindow mwin;
     mwin.setWindowState(Qt::WindowMaximized);
-    QObject::connect(&cherish_app, SIGNAL(sendTabletActivity(bool)), &mwin, SLOT(getTabletActivity(bool)));
+    QObject::connect(&cherish_app, SIGNAL(setTabletActivity(bool)), &mwin, SLOT(onSetTabletActivity(bool)));
     mwin.show();
 
     return cherish_app.exec();

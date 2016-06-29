@@ -1,6 +1,6 @@
-#include "assert.h"
-
 #include "UserScene.h"
+
+#include <QtGlobal>
 
 #include "Settings.h"
 #include "Utilities.h"
@@ -12,7 +12,7 @@
 #include <osgDB/ReadFile>
 
 entity::UserScene::UserScene()
-    : osg::Group()
+    : osg::ProtectedGroup()
     , m_groupCanvases(new osg::Group)
     , m_groupBookmarks(new entity::Bookmarks)
     , m_canvasCurrent(NULL)
@@ -39,7 +39,7 @@ entity::UserScene::UserScene()
 }
 
 entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& copyop)
-    : osg::Group(scene, copyop)
+    : osg::ProtectedGroup(scene, copyop)
     , m_groupCanvases(scene.m_groupCanvases)
     , m_groupBookmarks(scene.m_groupBookmarks)
     , m_canvasCurrent(scene.m_canvasCurrent)
@@ -62,6 +62,7 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
 {
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 void entity::UserScene::initializeSG()
 {
     this->addChild(m_groupBookmarks);
@@ -132,6 +133,7 @@ const std::string &entity::UserScene::getFilePath() const
 {
     return m_filePath;
 }
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 bool entity::UserScene::isSetFilePath() const
 {
@@ -150,7 +152,7 @@ void entity::UserScene::addCanvas(QUndoStack *stack, const osg::Vec3f &normal, c
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
-    AddCanvasCommand* cmd = new AddCanvasCommand(this, normal, center,
+    fur::AddCanvasCommand* cmd = new fur::AddCanvasCommand(this, normal, center,
                                                  getEntityName(cher::NAME_CANVAS, m_idCanvas++));
     if (!cmd){
         outErrMsg("addCanvas: cmd is NULL");
@@ -166,7 +168,7 @@ void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
-    AddCanvasCommand* cmd = new AddCanvasCommand(this, R, T, name);
+    fur::AddCanvasCommand* cmd = new fur::AddCanvasCommand(this, R, T, name);
     if (!cmd){
         outErrMsg("addCanvas: cmd is NULL");
         return;
@@ -218,9 +220,9 @@ void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
-    AddPhotoCommand* cmd = new AddPhotoCommand(this, fname, this->getPhotoName());
+    fur::AddPhotoCommand* cmd = new fur::AddPhotoCommand(this, fname, this->getPhotoName());
     if (!cmd){
-        outErrMsg("addPhoto(): could not allocate AddPhotoCommand.");
+        outErrMsg("addPhoto(): could not allocate fur::AddPhotoCommand.");
         return;
     }
     stack->push(cmd);
@@ -427,10 +429,9 @@ int entity::UserScene::getCanvasIndex(entity::Canvas *canvas) const
 int entity::UserScene::getPhotoIndex(entity::Photo *photo, Canvas *canvas) const
 {
     int idx = -1;
-    if (!canvas->getGeodeData()) return idx;
-    for (int i=0; i< canvas->getNumPhotos(); ++i){
-        entity::Photo* pi = canvas->getPhotoFromIndex(i);
-        if (!pi) qFatal("UserScene::getPhotoFromIndex() failed");
+    for (size_t i=0; i< canvas->getNumPhotos(); ++i){
+        entity::Photo* pi = canvas->getPhoto(i);
+        if (!pi) qFatal("UserScene::getPhotoIndex() failed");
         idx++;
         if (pi == photo) break;
     }
@@ -444,10 +445,10 @@ entity::Canvas *entity::UserScene::getCanvasFromIndex(int row)
     return dynamic_cast<entity::Canvas*>(m_groupCanvases->getChild(row));
 }
 
-entity::Photo *entity::UserScene::getPhotoFromIndex(Canvas *canvas, int row)
+entity::Photo *entity::UserScene::getPhoto(Canvas *canvas, int row)
 {
     if (!canvas) return NULL;
-    return canvas->getPhotoFromIndex(row);
+    return canvas->getPhoto(row);
 }
 
 int entity::UserScene::getNumCanvases() const
@@ -615,7 +616,7 @@ void entity::UserScene::editCanvasDelete(QUndoStack *stack, entity::Canvas *canv
         return;
     }
 
-    EditCanvasDeleteCommand* cmd = new EditCanvasDeleteCommand(this, canvas);
+    fur::EditCanvasDeleteCommand* cmd = new fur::EditCanvasDeleteCommand(this, canvas);
     if (!cmd){
         qCritical("editCanvasDelete: could not allocate DeleteCommand");
         return;
@@ -631,13 +632,13 @@ void entity::UserScene::editPhotoDelete(QUndoStack *stack, entity::Photo *photo,
         return;
     }
 
-    if (!canvas->getGeodeData()->containsDrawable(photo)){
+    if (!canvas->containsEntity(photo)){
         qCritical("editPhotoDelete: current canvas does not contain that photo."
                   "Deletion is not possible.");
         return;
     }
 
-    EditPhotoDeleteCommand* cmd = new EditPhotoDeleteCommand(this, canvas, photo);
+    fur::EditPhotoDeleteCommand* cmd = new fur::EditPhotoDeleteCommand(this, canvas, photo);
     if (!cmd){
         qCritical("editPhotoDelete: undo/redo command is NULL");
         return;
@@ -654,13 +655,13 @@ void entity::UserScene::editPhotoPush(QUndoStack *stack, entity::Photo *photo, C
     }
 
 
-    if (!source->getGeodeData()->containsDrawable(photo)){
+    if (!source->containsEntity(photo)){
         qCritical("editPhotoDelete: source canvas does not contain that photo."
                           "Scene movement is not possible.");
                 return;
     }
 
-    EditPhotoPushCommand* cmd = new EditPhotoPushCommand(this, source, destination, photo);
+    fur::EditPhotoPushCommand* cmd = new fur::EditPhotoPushCommand(this, source, destination, photo);
     if (!cmd){
         qCritical("editPhotoPush: undo/redo command is NULL");
         return;}
@@ -670,8 +671,10 @@ void entity::UserScene::editPhotoPush(QUndoStack *stack, entity::Photo *photo, C
 void entity::UserScene::editPhotoTransparency(entity::Photo *photo, entity::Canvas *canvas, float t)
 {
     if (!photo || !canvas) return;
-    // TODO:
-    // if (canvas->containsPhoto(photo))
+    if (!canvas->containsEntity(photo)) {
+        qWarning("editPhotoTransparency: canvas does not contains the photo");
+        return;
+    }
     photo->setTransparency(t);
     int index = this->getPhotoIndex(photo, canvas);
     for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
@@ -699,7 +702,7 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
         return;
     }
 
-    const std::vector<entity::Entity2D*>& strokes = m_canvasCurrent->getStrokesSelected();
+    const std::vector<entity::Entity2D*>& strokes = m_canvasCurrent->getEntitiesSelected();
 
     if (strokes.size() == 0) return;
 
@@ -708,7 +711,7 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
 //        return;
 //    }
 
-    EditStrokesPushCommand* cmd = new EditStrokesPushCommand(this, strokes,
+    fur::EditStrokesPushCommand* cmd = new fur::EditStrokesPushCommand(this, strokes,
                                                              m_canvasCurrent.get(),
                                                              m_canvasPrevious.get(),
                                                              eye);
@@ -823,12 +826,12 @@ void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stro
         qCritical("editStrokeDelete: stroke is NULL");
         return;
     }
-    if (!this->getCanvasCurrent()->getGeodeData()->containsDrawable(stroke)){
+    if (!m_canvasCurrent->containsEntity(stroke)){
         qWarning("editStrokeDelete: current canvas does not contain that stroke."
                   "Deletion is not possible.");
         return;
     }
-    EditStrokeDeleteCommand* cmd = new EditStrokeDeleteCommand(this, m_canvasCurrent.get(), stroke);
+    fur::EditStrokeDeleteCommand* cmd = new fur::EditStrokeDeleteCommand(this, m_canvasCurrent.get(), stroke);
     if (!cmd){
         qCritical("editStrokeDelete: undo/redo command is NULL");
         return;
@@ -859,13 +862,10 @@ bool entity::UserScene::printScene()
         qDebug() << "Canvas name " << cnv->getName().c_str();
 
         osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(cnv->getChild(0));
-        assert(t == cnv->getTransform());
+        Q_ASSERT(t == cnv->getTransform());
 
         osg::Switch* sw = dynamic_cast<osg::Switch*>(t->getChild(0));
-        assert(sw == cnv->getSwitch());
-
-//        osg::Geode* data = dynamic_cast<osg::Geode*>(sw->getChild(1));
-//        assert(data == cnv->getGeodeData());
+        Q_ASSERT(sw == cnv->getSwitch());
     }
 
     return true;
@@ -892,15 +892,14 @@ void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
             emit this->canvasSelectedColor(this->getCanvasIndex(cnv),0);
 
         /* if canvas has any photos, reset photowidget */
-        if (!cnv->getGeodeData()) continue;
-        for (size_t j=0; j<cnv->getGeodeData()->getNumChildren(); ++j){
-            entity::Photo* photo = dynamic_cast<entity::Photo*>(cnv->getGeodeData()->getChild(j));
+        for (size_t j=0; j<cnv->getNumPhotos(); ++j){
+            entity::Photo* photo = cnv->getPhoto(j);
             if (!photo) continue;
             emit this->photoAdded(photo->getName(), this->getCanvasIndex(cnv));
         }
 
         /* set canvas visibility on scene and on GUI */
-        if (!cnv->getVisibilityData()){
+        if (!cnv->getVisibilityAll()){
             cnv->setVisibilityAll(false);
             int row = this->getCanvasIndex(cnv);
             outLogVal("Trying to set up canvas visibility scene and GUI", row);
@@ -934,7 +933,7 @@ void entity::UserScene::onItemChanged(QTreeWidgetItem *item, int column)
         int row = parent->indexOfChild(item);
         if (row >= this->getNumPhotos(canvas) || row < 0) return;
 
-        entity::Photo* photo = this->getPhotoFromIndex(canvas, row);
+        entity::Photo* photo = this->getPhoto(canvas, row);
         if (!photo) qFatal("UserScene::onItemChanged() - photo is NULL");
         photo->setName(item->text(column).toStdString());
         qDebug("photo name changed");
@@ -980,6 +979,8 @@ void entity::UserScene::onRightClicked(const QModelIndex &index)
     }
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 std::string entity::UserScene::getCanvasName()
 {
     return this->getEntityName(cher::NAME_CANVAS, m_idCanvas++);
@@ -1012,7 +1013,7 @@ void entity::UserScene::strokeStart()
 {
     m_canvasCurrent->unselectEntities();
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
     outLogMsg("strokeStart()");
     if (this->strokeValid()){
@@ -1021,7 +1022,7 @@ void entity::UserScene::strokeStart()
     }
     entity::Stroke* stroke = new entity::Stroke();
     m_canvasCurrent->setStrokeCurrent(stroke);
-    m_canvasCurrent->getGeodeData()->addDrawable(stroke);
+    m_canvasCurrent->addEntity(stroke);
 }
 
 void entity::UserScene::strokeAppend(float u, float v)
@@ -1037,7 +1038,7 @@ void entity::UserScene::strokeAppend(float u, float v)
 
 /* if command is still a valid pointer,
    if stroke is long enough to be kept,
-   clone the AddStrokeCommand and push the cloned instance to stack
+   clone the fur::AddStrokeCommand and push the cloned instance to stack
    set the shared pointer to zero and return*/
 void entity::UserScene::strokeFinish(QUndoStack* stack)
 {
@@ -1046,7 +1047,7 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
     if (this->strokeValid()){
         if (stroke->isLengthy()){
             entity::Stroke* stroke_clone = new entity::Stroke(*stroke, osg::CopyOp::DEEP_COPY_ALL);
-            AddStrokeCommand* cmd = new AddStrokeCommand(this, stroke_clone);
+            fur::AddStrokeCommand* cmd = new fur::AddStrokeCommand(this, stroke_clone);
             stack->push(cmd);
         }
     }
@@ -1054,7 +1055,7 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
         outErrMsg("strokeFinish(): stroke pointer is NULL, impossible to finish the stroke");
         return;
     }
-    m_canvasCurrent->getGeodeData()->removeChild(stroke); // remove the "current" copy
+    m_canvasCurrent->removeEntity(stroke); // remove the "current" copy
     m_canvasCurrent->setStrokeCurrent(false);
     outLogMsg("strokeFinish()");
 }
@@ -1067,7 +1068,7 @@ bool entity::UserScene::strokeValid() const
 void entity::UserScene::entitiesMoveStart(double u, double v)
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
     m_u = u;
     m_v = v;
@@ -1096,8 +1097,8 @@ void entity::UserScene::entitiesMoveFinish(QUndoStack *stack)
     /* move things back so that to perform this operation in undo/redo FW */
     m_canvasCurrent->moveEntitiesSelected(-m_du, -m_dv);
 
-    EditEntitiesMoveCommand* cmd = new EditEntitiesMoveCommand(this,
-                                                             m_canvasCurrent->getStrokesSelected(),
+    fur::EditEntitiesMoveCommand* cmd = new fur::EditEntitiesMoveCommand(this,
+                                                             m_canvasCurrent->getEntitiesSelected(),
                                                              m_canvasCurrent.get(),
                                                              m_du, m_dv);
     if (!cmd){
@@ -1114,16 +1115,16 @@ void entity::UserScene::entitiesMoveFinish(QUndoStack *stack)
 
 bool entity::UserScene::entitiesSelectedValid() const
 {
-    return ((m_canvasCurrent->getStrokesSelectedSize() > 0? true : false) && m_inits);
+    return ((m_canvasCurrent->getEntitiesSelectedSize() > 0? true : false) && m_inits);
 }
 
 void entity::UserScene::entitiesScaleStart(double u, double v)
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
-    osg::Vec3f center = m_canvasCurrent->getGeodeData()->getBoundingBox().center();
+    osg::Vec3f center = m_canvasCurrent->getBoundingBoxCenter2D();
     m_u = center.x();
     m_v = center.y();
 
@@ -1157,12 +1158,12 @@ void entity::UserScene::entitiesScaleFinish(QUndoStack *stack)
 {
     m_canvasCurrent->scaleEntitiesSelected(1/m_scaleX, 1/m_scaleX);
 
-    EditEntitiesScaleCommand* cmd =
-            new EditEntitiesScaleCommand(this,
-                                         m_canvasCurrent->getStrokesSelected(),
+    fur::EditEntitiesScaleCommand* cmd =
+            new fur::EditEntitiesScaleCommand(this,
+                                         m_canvasCurrent->getEntitiesSelected(),
                                          m_canvasCurrent.get(),
                                          m_scaleX, m_scaleX,
-                                         m_canvasCurrent->getSelectedEntitiesCenter2D() );
+                                         m_canvasCurrent->getEntitiesSelectedCenter2D() );
     m_du = m_u = 0;
     m_dv = m_v = 0;
     m_inits = false;
@@ -1178,10 +1179,10 @@ void entity::UserScene::entitiesScaleFinish(QUndoStack *stack)
 void entity::UserScene::entitiesRotateStart(double u, double v)
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
-    osg::Vec3f center = m_canvasCurrent->getGeodeData()->getBoundingBox().center();
+    osg::Vec3f center = m_canvasCurrent->getBoundingBoxCenter2D();
     if (center.z() > cher::EPSILON){
         outLogVec("center", center.x(), center.y(), center.z());
         outErrMsg("entitiesRotateStart: z coordiante is not close to zero");
@@ -1248,11 +1249,11 @@ void entity::UserScene::entitiesRotateFinish(QUndoStack *stack)
 {
     m_canvasCurrent->rotateEntitiesSelected(-m_rotate);
 
-    EditEntitiesRotateCommand* cmd = new EditEntitiesRotateCommand(this,
-                                                                 m_canvasCurrent->getStrokesSelected(),
+    fur::EditEntitiesRotateCommand* cmd = new fur::EditEntitiesRotateCommand(this,
+                                                                 m_canvasCurrent->getEntitiesSelected(),
                                                                  m_canvasCurrent.get(),
                                                                  m_rotate,
-                                                                   m_canvasCurrent->getSelectedEntitiesCenter2D());
+                                                                   m_canvasCurrent->getEntitiesSelectedCenter2D());
     m_u = m_v = 0;
     m_du = m_dv = 0;
     m_rotate = 0;
@@ -1268,7 +1269,7 @@ void entity::UserScene::entitiesRotateFinish(QUndoStack *stack)
 void entity::UserScene::eraseStart(entity::Stroke *stroke, osg::Vec3d &hit)
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 }
 
@@ -1294,7 +1295,7 @@ bool entity::UserScene::eraseValid(Stroke *stroke) const
 void entity::UserScene::canvasOffsetStart()
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
     if (this->canvasEditValid()){
@@ -1324,7 +1325,7 @@ void entity::UserScene::canvasOffsetFinish(QUndoStack *stack)
     }
     m_canvasCurrent->setModeEdit(false);
     m_canvasCurrent->translate(osg::Matrix::translate(-m_deltaT.x(), -m_deltaT.y(), -m_deltaT.z()));
-    EditCanvasOffsetCommand* cmd = new EditCanvasOffsetCommand(this, m_deltaT);
+    fur::EditCanvasOffsetCommand* cmd = new fur::EditCanvasOffsetCommand(this, m_deltaT);
     stack->push(cmd);
     m_deltaT = osg::Vec3f(0.f,0.f,0.f);
 }
@@ -1337,7 +1338,7 @@ bool entity::UserScene::canvasEditValid() const
 void entity::UserScene::canvasCloneStart()
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
     m_canvasCurrent->unselectAll();
@@ -1385,7 +1386,7 @@ void entity::UserScene::canvasCloneFinish(QUndoStack *stack)
 
     this->setCanvasCurrent(m_canvasPrevious.get());
 
-    AddCanvasCommand* cmd = new AddCanvasCommand(this, *(m_canvasClone.get()));
+    fur::AddCanvasCommand* cmd = new fur::AddCanvasCommand(this, *(m_canvasClone.get()));
     m_groupCanvases->removeChild(m_canvasClone.get());
     m_canvasClone = 0;
     if (!cmd){
@@ -1403,7 +1404,7 @@ bool entity::UserScene::canvasCloneValid() const
 void entity::UserScene::canvasSeparateStart()
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
     entity::Canvas* cnv = m_canvasCurrent->separate();
@@ -1452,7 +1453,7 @@ void entity::UserScene::canvasSeparateFinish(QUndoStack *stack)
 
     this->setCanvasCurrent(m_canvasPrevious.get());
 
-    AddCanvasSeparationCommand* cmd = new AddCanvasSeparationCommand(this, m_canvasCurrent.get(),
+    fur::AddCanvasSeparationCommand* cmd = new fur::AddCanvasSeparationCommand(this, m_canvasCurrent.get(),
                                                                      m_canvasClone.get());
 
     m_groupCanvases->removeChild(m_canvasClone.get());
@@ -1467,7 +1468,7 @@ void entity::UserScene::canvasSeparateFinish(QUndoStack *stack)
 void entity::UserScene::canvasRotateStart()
 {
     /* if the canvas is hidden, show it all so that user could see where they sketch */
-    if (!m_canvasCurrent->getVisibilityData())
+    if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
 
     if (this->canvasEditValid()){
@@ -1506,8 +1507,8 @@ void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
         return;
     }
     m_canvasCurrent->setModeEdit(false);
-    m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()), m_canvasCurrent->getCenterMean());
-    EditCanvasRotateCommand* cmd = new EditCanvasRotateCommand(this, m_deltaR);
+    m_canvasCurrent->rotate(osg::Matrix::rotate(m_deltaR.inverse()), m_canvasCurrent->getBoundingBoxCenter3D());
+    fur::EditCanvasRotateCommand* cmd = new fur::EditCanvasRotateCommand(this, m_deltaR);
     stack->push(cmd);
     m_deltaR = osg::Quat(0,0,0,1);
 }
@@ -1515,13 +1516,12 @@ void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
 bool entity::UserScene::addCanvas(entity::Canvas *canvas)
 {
     if (!canvas) qFatal("UserScene::addCanvas(Canvas*): canvas is NULL");
-    if (!canvas->getGeodeData()) qFatal("UserScene::addCanvas() - geodeData is null");
 
     // gui elements
     emit canvasAdded(canvas->getName());
     //see if any canvas contains any photos, they will be added to canvas widget
-    for (int i=0; i<canvas->getNumPhotos(); ++i){
-        entity::Photo* photo = canvas->getPhotoFromIndex(i);
+    for (size_t i=0; i<canvas->getNumPhotos(); ++i){
+        entity::Photo* photo = canvas->getPhoto(i);
         if (!photo) qFatal("UserScene::addCanvas() - photo is null");
         emit this->photoAdded(photo->getName(), this->getCanvasIndex(canvas));
     }
@@ -1541,8 +1541,8 @@ bool entity::UserScene::addCanvas(entity::Canvas *canvas)
         state->insertToolFlag(index, canvas->getVisibilityFrameInternal());
 
         // if canvas contains any photos, insert photo transparencies too
-        for (int j=0; j<canvas->getNumPhotos(); ++j){
-            entity::Photo* photo = canvas->getPhotoFromIndex(j);
+        for (size_t j=0; j<canvas->getNumPhotos(); ++j){
+            entity::Photo* photo = canvas->getPhoto(j);
             if (!photo) qFatal("UserScene::addCanvas(): photo is NULL");
             state->insertTransparency(idx++, photo->getTransparency());
         }
@@ -1561,7 +1561,6 @@ bool entity::UserScene::addCanvas(entity::Canvas *canvas)
 bool entity::UserScene::removeCanvas(entity::Canvas *canvas)
 {
     if (!canvas) qFatal("UserScene::removeCanvas(Canvas*): canvas is NULL");
-    if (!canvas->getGeodeData()) qFatal("UserScene::removeCanvas() - geodeData is null");
 
     int index = this->getCanvasIndex(canvas);
     // for each bookmark's state, remove data of the canvas
@@ -1575,8 +1574,8 @@ bool entity::UserScene::removeCanvas(entity::Canvas *canvas)
 
         // if canvas contains any photos, erase data of photo transparencies too
         if (canvas->getNumPhotos() > 0){
-            if (canvas->getPhotoFromIndex(0)){
-                int start = this->getPhotoIndex(canvas->getPhotoFromIndex(0), canvas);
+            if (canvas->getPhoto(0)){
+                int start = this->getPhotoIndex(canvas->getPhoto(0), canvas);
                 state->eraseTransparency(start, canvas->getNumPhotos());
             }
         }
@@ -1614,60 +1613,88 @@ bool entity::UserScene::removeCanvas(entity::Canvas *canvas)
     return result;
 }
 
-bool entity::UserScene::addPhoto(Canvas *canvas, entity::Photo *photo)
+bool entity::UserScene::addEntity(entity::Canvas *canvas, Entity2D *entity)
 {
-    if (!canvas) qFatal("UserScene::addPhoto() - canvas is null");
-    if (!canvas->getGeodeData()) qFatal("UserScene::addPhoto() - geodeData is null");
-    if (!photo) qFatal("UserScene::addPhoto() - photo is null");
+    bool result = false;
+    if (!canvas || !entity) return result;
 
-    // add photo transparecy to each bookmark's scene state
-    int idx = this->getNumPhotosTill(canvas);
-    for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
-        entity::SceneState* state = m_groupBookmarks->getSceneState(i);
-        if (!state) qFatal("UserScene::addPhoto(): could not obtain a scene state");
-        state->insertTransparency(idx, photo->getTransparency());
+    /* scene state update, if needed */
+    switch(entity->getEntityType()){
+    case cher::ENTITY_PHOTO:{
+        /* add photo transparencies to each bookmark scene state */
+        int idx = this->getNumPhotosTill(canvas);
+        entity::Photo* photo = dynamic_cast<entity::Photo*>(entity);
+        if (!photo) return result;
+        for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
+            entity::SceneState* state = m_groupBookmarks->getSceneState(i);
+            if (!state) return result;
+            state->insertTransparency(idx, photo->getTransparency());
+        }
+        break;
+    }
+    default:
+        break;
     }
 
-    // add photo to scene graph
-    bool result = canvas->getGeodeData()->addDrawable(photo);
+    /* add entity to scene graph */
+    result = canvas->addEntity(entity);
 
-    // gui elements
-    emit this->photoAdded(photo->getName(), this->getCanvasIndex(canvas));
+    /* gui elements, if needed */
+    if (result){
+        switch(entity->getEntityType()){
+        case cher::ENTITY_PHOTO:
+            emit this->photoAdded(entity->getName(), this->getCanvasIndex(canvas));
+            break;
+        default:
+            break;
+        }
+    }
 
-    // updates
+    /* update frame and widget */
+    canvas->updateFrame(m_canvasPrevious.get());
+    this->updateWidgets();
+    return result;
+}
+
+bool entity::UserScene::removeEntity(entity::Canvas *canvas, Entity2D *entity)
+{
+    bool result = false;
+    if (!canvas || !entity) return result;
+
+    /* scene state update, if needed */
+    /* and remove from gui elements, if needed */
+    switch(entity->getEntityType()){
+    case cher::ENTITY_PHOTO:{
+        /* add photo transparencies to each bookmark scene state */
+        int idx = this->getNumPhotosTill(canvas);
+        entity::Photo* photo = dynamic_cast<entity::Photo*>(entity);
+        if (!photo) return result;
+        for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
+            entity::SceneState* state = m_groupBookmarks->getSceneState(i);
+            if (!state) return result;
+            state->eraseTransparency(idx, 1);
+        }
+        emit this->photoRemoved(this->getCanvasIndex(canvas), this->getPhotoIndex(photo, canvas));
+        break;
+    }
+    default:
+        break;
+    }
+
+    /* remove entity from scene graph */
+    result = canvas->removeEntity(entity);
+
+    /* make sure it is not a part of selected group, or it will stay within the scene graph */
+    canvas->removeEntitySelected(entity);
+
+    /* update frame and widget */
     canvas->updateFrame(m_canvasPrevious.get());
     this->updateWidgets();
 
     return result;
 }
 
-bool entity::UserScene::removePhoto(entity::Canvas *canvas, entity::Photo *photo)
-{
-    if (!canvas) qFatal("UserScene::removePhoto() - canvas is null");
-    if (!canvas->getGeodeData()) qFatal("UserScene::removePhoto() - geodeData is null");
-    if (!photo) qFatal("UserScene::removePhoto() - photo is null");
-
-    // remove photo transparencies from each bookmark's scene state
-    int idx = this->getNumPhotosTill(canvas);
-    for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
-        entity::SceneState* state = m_groupBookmarks->getSceneState(i);
-        if (!state) qFatal("UserScene::removePhoto(): could not obtain a scene state");
-        state->eraseTransparency(idx, 1);
-    }
-
-    // remove from gui elements (order is important)
-    emit this->photoRemoved(this->getCanvasIndex(canvas), this->getPhotoIndex(photo, canvas));
-
-    // remove from scene graph
-    bool result = canvas->getGeodeData()->removeDrawable(photo);
-
-    // make sure it is not a part of selected group, or it will stay within the scene graph
-    canvas->removeEntitySelected(photo);
-    canvas->updateFrame(m_canvasPrevious.get());
-    this->updateWidgets();
-
-    return result;
-}
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 REGISTER_OBJECT_WRAPPER(UserScene_Wrapper
                         , new entity::UserScene

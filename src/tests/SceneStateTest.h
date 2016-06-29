@@ -26,16 +26,16 @@ private slots:
     /*! Battery of tests to check reading and writing of bookmakrs and their corresponding scene states to file */
     void testReadWrite();
 
-    /*! Battery of tests to check: addition of canvas - AddCanvasCommand */
+    /*! Battery of tests to check: addition of canvas - fur::AddCanvasCommand */
     void testAddCanvas();
 
-    /*! Battery of tests to check: addition of photo - AddPhotoCommand */
+    /*! Battery of tests to check: addition of photo - fur::AddPhotoCommand */
     void testAddPhoto();
 
-    /*! Battery of tests to check: deletion of canvas - EditCanvasDeleteCommand */
+    /*! Battery of tests to check: deletion of canvas - fur::EditCanvasDeleteCommand */
     void testDeleteCanvas();
 
-    /*! Battery of tests to check: deletion of photo - EditPhotoDeleteCommand */
+    /*! Battery of tests to check: deletion of photo - fur::EditPhotoDeleteCommand */
     void testDeletePhoto();
 
 };

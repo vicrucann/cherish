@@ -120,7 +120,7 @@ void GLWidget::setCameraView(const osg::Vec3d &eye, const osg::Vec3d &center, co
     if (camera){
         float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());
         camera->setProjectionMatrixAsPerspective(fov*0.5, ratio, 1.f, 1000.f);
-        emit this->signalFOVSet(fov);
+        emit this->FOVSet(fov);
     }
 
     /* for stack of camera views */
@@ -144,10 +144,10 @@ void GLWidget::setMouseMode(const cher::MOUSE_MODE &mode)
     m_mouseMode = mode;
     m_manipulator->setMode(m_mouseMode);
     m_EH->setMode(m_mouseMode);
-    emit this->signalMouseModeSet(m_mouseMode);
+    emit this->mouseModeSet(m_mouseMode);
 }
 
-void GLWidget::getTabletActivity(bool active)
+void GLWidget::setTabletActivity(bool active)
 {
     m_DeviceActive = active;
 }
@@ -245,7 +245,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         return;
     case Qt::Key_A:
         if ((event->modifiers() & Qt::ControlModifier))
-            m_RootScene->selectAllStrokes();
+            m_RootScene->selectAllEntities();
         return;
     default:
         break;
@@ -308,7 +308,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 void GLWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     outLogMsg("double click detected");
-    emit this->sendAutoSwitchMode(m_mouseMode);
+    emit this->autoSwitchMode(m_mouseMode);
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)

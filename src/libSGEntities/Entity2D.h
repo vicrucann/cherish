@@ -25,7 +25,16 @@ public:
     virtual cher::ENTITY_TYPE getEntityType() const = 0;
 
 protected:
-    ~Entity2D() {}
+    using osg::Geometry::addPrimitiveSet;
+    using osg::Geometry::addUpdateCallback;
+    using osg::Geometry::asCamera;
+    using osg::Geometry::asDrawable;
+    using osg::Geometry::asGeode;
+    using osg::Geometry::asGeometry;
+    using osg::Geometry::asGroup;
+    using osg::Geometry::asNode;
+    using osg::Geometry::asSwitch;
+    using osg::Geometry::asTransform;
 };
 }
 

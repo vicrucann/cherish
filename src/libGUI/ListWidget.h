@@ -13,58 +13,16 @@
 #include "ListDelegate.h"
 
 /*! \class BookmarkWidget
- * Class description
+ * \brief Re-defined QListWidget that contains a method to obtain the corresponding delegate.
 */
 class BookmarkWidget : public QListWidget
 {
- //   Q_OBJECT
 public:
+    /*! Constructor. */
     BookmarkWidget(QWidget* parent = 0);
 
+    /*! \return a non-const pointer to the BookmarkDelegate. */
     BookmarkDelegate* getBookmarkDelegate() const;
-};
-
-/*! \class CanvasWidget
- * Class description
-*/
-class CanvasWidget : public QListWidget
-{
-    Q_OBJECT
-public:
-    CanvasWidget(QWidget* parent = 0);
-
-    CanvasDelegate* getCanvasDelegate() const;
-
-signals:
-    void rightClicked(const QModelIndex& index);
-
-public slots:
-    void onCanvasAdded(const std::string& name);
-    void onCanvasRemoved(int row);
-    void onCanvasSelectedColor(int row, int color);
-
-protected:
-    virtual void mousePressEvent(QMouseEvent* event);
-};
-
-/*! \class PhotoWidget
- * Class description
-*/
-class PhotoWidget : public QListWidget
-{
-    Q_OBJECT
-public:
-    PhotoWidget(QWidget* parent = 0);
-
-    PhotoDelegate* getPhotoDelegate() const;
-
-signals:
-
-public slots:
-    void onPhotoAdded(const std::string& name);
-    void onPhotoRemoved(int row);
-
-protected:
 };
 
 #endif // LISTWIDGET_H

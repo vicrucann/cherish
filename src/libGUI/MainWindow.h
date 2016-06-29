@@ -24,41 +24,75 @@
 #include "Data.h"
 
 /*! \class MainWindow
- * Class description
+ * \brief Re-defined QMainWindow that contains all the GUI elements such as GLWidget, menu bars, tool bars and other widgets.
 */
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
+    /*! Constructor. */
     explicit MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
-    RootScene* getRootScene() const;
+
+    /*! \return const pointer to RootScene. */
+    const RootScene* getRootScene() const;
 
 public slots:
-    void getTabletActivity(bool active);
-    void recievedRequestUpdate();
-    void recieveAutoSwitchMode(cher::MOUSE_MODE mode);
+    /*! Slot called whenver CherishApplication catches change of tablet proximity. */
+    void onSetTabletActivity(bool active);
+
+    /*! Slot called whenver we need to update GLWidget, e.g., when scene graph is changed. */
+    void onRequestUpdate();
+
+    /*! Slot called when user performs switch of mouse mode automatically, e.g. by doing double-click. */
+    void onAutoSwitchMode(cher::MOUSE_MODE mode);
+
+    /*! Slot called when a bookmark was added to scene graph. */
     void onRequestBookmarkSet(int row);
+
+    /*! Slot called when user requested to delete bookmark from the BookmarkWidget. */
     void onDeleteBookmark(const QModelIndex &index);
+
+    /*! Slot called when user requested to delete canvas from CanvasPhotoWidget. */
     void onDeleteCanvas(const QModelIndex& index);
+
+    /*! Slot called when user requested to delete photo from CanvasPhotoWidget. */
     void onDeletePhoto(const QModelIndex& index);
+
+    /*! Slot called when user requested to set canvas visibility by using controls of CanvasPhotoWidget. */
     void onVisibilitySetCanvas(int index);
+
+    /*! Slot called when user changed order of bookmarks within BookmarkWidget. */
     void onMoveBookmark(const QModelIndex &index);
+
+    /*! Slot called when BookmarkWidget content had changed, i.e., new row was inserted. */
     void onBookmarkAddedToWidget(const QModelIndex &, int first, int last);
+
+    /*! Slot called when BookmarkWidget content had changed, i.e., a row was removed. */
     void onBookmarkRemovedFromWidget(const QModelIndex &, int first, int last);
-    void slotMouseModeSet(cher::MOUSE_MODE mode);
-    void slotPhotoTransparencyPlus(const QModelIndex& index);
-    void slotPhotoTransparencyMinus(const QModelIndex& index);
-    void slotPhotoPushed(int parent, int start, int, int destination, int);
+
+    /*! Slot called when mouse mode is changed. */
+    void onMouseModeSet(cher::MOUSE_MODE mode);
+
+    /*! Slot called when photo's transparency was changed by user from CanvasPhotoWidget. */
+    void onPhotoTransparencyPlus(const QModelIndex& index);
+
+    /*! Slot called when photo's transparency was changed by user from CanvasPhotoWidget. */
+    void onPhotoTransparencyMinus(const QModelIndex& index);
+
+    /*! Slot called when push photo is performed. */
+    void onPhotoPushed(int parent, int start, int, int destination, int);
+
+    /*! Slot called so that to request a data of SceneState, e.g. when setting up a bookmark. */
     void onRequestSceneData(entity::SceneState* state);
+
+    /*! Slot called when scene state change was requested, e.g. when setting up a bookmark. */
     void onRequestSceneStateSet(entity::SceneState* state);
+
+    /*! Slot called to obtain status of global tools visibilities. */
     void onRequestSceneToolStatus(bool& visibility);
 
-signals:
-    void signalTabletActivity(bool active);
-    void signalMouseMode(cher::MOUSE_MODE mode);
-
 protected slots:
-    /* NOTE: there should be no private slots, they are reserved for unit tests solely */
+    /* NOTE: there should be no private slots, since all are used for unit tests */
     void onFileNew();
     void onFileOpen();
     void onFileSave();

@@ -95,10 +95,10 @@ public:
      * a screenshot of the bookmark from GLWidget, and SceneState to add as a child to the bookmakr
      * which strips its data from the current state of RootScene.
      * \param widget is the BookmarkWidget to which a name is added
-     * \eye is the camera eye vector
-     * \center is the camera center vector
-     * \up is the camera up vector
-     * \fov is the camera FOV value */
+     * \param eye is the camera eye vector
+     * \param center is the camera center vector
+     * \param up is the camera up vector
+     * \param fov is the camera FOV value */
     void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const std::string& name, const double& fov);
 
     /*! This method might be obsolete in the future */
@@ -108,7 +108,7 @@ public:
      * erase elements from internal vector data structures since they are handled by the corresponding
      * slot onRowsRemoved() (same for the SceneState children).
      * \param widget is the widget from where the item is removed
-     * \index is the item's index */
+     * \param index is the item's index */
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
 
     /*! This method is called only when a scene is loaded from file. It resets the widget's content,
@@ -133,9 +133,9 @@ signals:
 
     /*! A signal to request bookmark's icon to be updated with correspondance of what GLWidget sees.
      * \param pixmap is the result icon
-     * \eye is the camera eye vector
-     * \center is the camera center vector
-     * \up is the camera up vector */
+     * \param eye is the camera eye vector
+     * \param center is the camera center vector
+     * \param up is the camera up vector */
     void requestScreenshot(QPixmap& pixmap, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
 
     /*! A singal to request bookmarks scene state to be updated.
