@@ -1,6 +1,6 @@
 [submodule "src/cherish/Images/FA"]
 	path = src/cherish/Images/FA
-	url = git@github.com:vicrucann/Font-Awesome-SVG-PNG.git
+	url = https://github.com/vicrucann/Font-Awesome-SVG-PNG.git
 [submodule "src/cherish/Images/OI"]
 	path = src/cherish/Images/OI
-	url = git@github.com:vicrucann/open-iconic.git
+	url = https://github.com/vicrucann/open-iconic.git
