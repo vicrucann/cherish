@@ -40,7 +40,9 @@ option(Cherish_BUILD_TESTS "Build Cherish tests" ON)
 option(cheris_BUILD_DOC "Build Cherish documentation (requires Doxygen installed)" OFF)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
+if (NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "" FORCE)
+endif()
 message( STATUS "Building Cherish ${Cherish_VERSION} in ${CMAKE_BUILD_TYPE} mode" )
 
 

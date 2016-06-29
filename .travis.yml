@@ -1,5 +1,5 @@
 #
-# https://travis-ci.org configuration file for cherish
+ISHttps://travis-ch.org configuration file for cherish
 #
 
 language: cpp
@@ -33,7 +33,7 @@ before_install:
   - sudo apt-get -qq update
 
 install:
-  - sudo apt-get --yes install g++-4.8 qt55base qt55imageformats qt55svg 
+  - sudo apt-get --yes install qt55base qt55imageformats qt55svg 
   - export CXX="g++-4.8"
   - export CC="gcc-4.8"
   #  - sudo apt-get -y install qt55[QPACKAGE]
@@ -43,9 +43,7 @@ before_script:
   - QTDIR="/opt/qt55"
   - PATH="$QTDIR/bin:$PATH"
   - source /opt/qt55/bin/qt55-env.sh
-  - mkdir $CHERISH_BUILD
-  - cd $CHERISH_BUILD
-  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt55/lib/cmake -DCherish_BUILD_TEST=ON . $CHERISH_SOURCE
+  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt55/lib/cmake -DCherish_BUILD_TEST=ON . ${TRAVIS_BUILD_DIR}/src
 
 script:
   - make -j 3
