@@ -10,10 +10,11 @@ os:
 compiler: 
   - gcc
 
+sudo: required
+dist: trusty
+
 addons:
   apt:
-    sources: 
-      - ubuntu-toolchain-r-test
     packages:
       - cmake
       - g++-4.8
@@ -23,39 +24,35 @@ branches:
     - master
     - develop
 
-
 env:
   - CHERISH_SRC=${TRAVIS_BUILD_DIR}/src
   - CHERISH_BUILD=${TRAVIS_BUILD_DIR}/build
 
-install:
-  # qt libs
-  wget http://www.cmake.org/files/v3.2/cmake-3.2.3-Linux-i386.tar.gz
-  && tar -xzf cmake-3.2.3-Linux-i386.tar.gz
-  && sudo cp -fR cmake-3.2.3-Linux-i386/* /usr
-  && sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
-  && sudo apt-add-repository -y ppa:beineri/opt-qt541
-  && sudo apt-get -qq update
-  && sudo apt-get -qq install g++-4.8 libc6-i386 qt54svg qt54opengl qt54xml qt54widgets qt54gui qt54core
-  && export CXX="g++-4.8"
-  && export CC="gcc-4.8"
-  ;
+before_install:
+  - sudo apt-add-repository --yes ppa:beineri/opt-qt551-trusty
+  - sudo apt-add-repository -y ppa:ubuntu-toolchain-r/test
+  - sudo apt-get -qq update
 
-  # OpenSceneGraph libs
+install:
+  - sudo apt-get install g++-4.8 qt55base qt55imageformats qt55svg 
+  - export CXX="g++-4.8"
+  - export CC="gcc-4.8"
+  #  - sudo apt-get -y install qt55[QPACKAGE]
 
 
 before_script:
-    # create build forlder
+  - QTDIR="/opt/qt55"
+  - PATH="$QTDIR/bin:$PATH"
+  - source /opt/qt55/bin/qt55-env.sh
   - mkdir $CHERISH_BUILD
   - cd $CHERISH_BUILD
-    # classic release build
-  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt54/lib/cmake -DCherish_BUILD_TEST=ON . $CHERISH_SOURCE
+  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt55/lib/cmake -DCherish_BUILD_TEST=ON . $CHERISH_SOURCE
 
 script:
   - make -j 3
 
 
-notifications:
-  email:
-    - vicrucann@gmail.com
+#notifications:
+#  email:
+#    - vicrucann@gmail.com
 
