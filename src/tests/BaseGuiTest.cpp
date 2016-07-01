@@ -2,9 +2,6 @@
 #include "RootScene.h"
 #include "GLWidget.h"
 #include "RootScene.h"
-#include "ViewerCommand.h"
-#include "Manipulator.h"
-#include "EventHandler.h"
 
 BaseGuiTest::BaseGuiTest(QWidget *parent)
     : MainWindow(parent)

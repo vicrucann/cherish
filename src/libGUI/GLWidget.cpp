@@ -16,9 +16,6 @@
 #include <osgGA/TrackballManipulator>
 
 #include "SceneState.h"
-#include "ViewerCommand.h"
-#include "Manipulator.h"
-#include "EventHandler.h"
 
 GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::WindowFlags f)
     : QOpenGLWidget(parent, f)

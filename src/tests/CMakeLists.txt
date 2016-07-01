@@ -34,6 +34,12 @@ set(CHERISH_SRC
     ${CMAKE_SOURCE_DIR}/cherish/Utilities.h
     ${CMAKE_SOURCE_DIR}/cherish/Utilities.cpp
     ${CMAKE_SOURCE_DIR}/cherish/Settings.h
+    ${CMAKE_SOURCE_DIR}/libSGControls/ViewerCommand.h
+    ${CMAKE_SOURCE_DIR}/libSGControls/ViewerCommand.cpp
+    ${CMAKE_SOURCE_DIR}/libSGControls/Manipulator.h
+    ${CMAKE_SOURCE_DIR}/libSGControls/Manipulator.cpp
+    ${CMAKE_SOURCE_DIR}/libSGControls/EventHandler.h
+    ${CMAKE_SOURCE_DIR}/libSGControls/EventHandler.cpp
     )
 
 ## base GUI test to inherit, which inherits MainWindow
