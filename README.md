@@ -1,125 +1,37 @@
-# Dura-Europos In Situ - (dureu3d) 
+# Cherish - Tool for Cultural HERitage data representation by using Image manipulation and Sketching
 
-The **dureu3d** (name is subject to change) software is a heterogeneous framework for the modeling, design and representation of historical structures and archaeological sites in 3D. It is designed so that to unify the currently disparate data types available (e.g. 2D images, 3D strokes entered by user, text annotations attached to 3D locations, mesh representations of buildings) and to use the strength of each to support the others. 
+[![Build Status](https://travis-ci.org/vicrucann/cherish.svg?branch=master)](https://travis-ci.org/vicrucann/cherish)
 
-For the data processing, rather than relying on either purely automatic approaches or human input, the framework supports speculation and reasoning in the form of both. As a result, the software is capable to take as input various raw heterogeneous data source and produce a labeled, corresponded and augmented data source that can be used in variety of applications.
+[![Coverity Status](https://scan.coverity.com/projects/9322/badge.svg)](https://scan.coverity.com/projects/vicrucann-cherish)
 
-###### Development status
+**Cherish** is a tool that aids archaeologists and designers to represent historial, urban and archaeologocal structures and sites in 3D by means of image manipulation and sketching. Given a problem of disparate data types such as photographs, diagrams, text annotations, point cloud representation, etc., the main idea is to combine all the data within the same 3D space. 
 
-Currently converting the prototype version into alpha version, very active development. **The current state of the project is not usable yet** (first official relseases are planned on end of spring - beginning of summer). Planned features:
- 
-* Near-future steps
-    * Functional / technical specification - [manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/manual.md) file
-    * Installation procedure steps
-    * Unit testing, GUI testing, improved GUI design (from user feedback)
-    * Documentation for user (monolithic): software set up, overview of how it works, guides to doing common tasks
-    * Project site so that to publish announcements and status updates
-* Far-future steps
-    * Developer guideline
-    * FAQ section or file
-    * Demos, screen shots, videos, example outputs
+For the data processing, rather than relying on either purely automatic approaches or human input, the framework supports speculation and reasoning in the form of both. As a result, the software is capable to take as input various raw data sources and produce a labeled, corresponded and augmented data source that can be used in variety of applications.
 
-Implementation steps:
-* (done) Make QT5.5 and OSG-3.4.0 to work together (**October 2015**)
-    * (done) On demand rendering
-    * (done) Read / display a 3D demo scene
-    * (done) Mouse navigation: cathing Qt events and passing them to OSG for processing
-    * (done) Stylus navigation
-    * (done) Stylus buttons programmation: cathing tablet events in QT and passing them to OSG
-* Basic entities - display (**Nov 2015**)
-    * (done) Canvas
-    * (done) Strokes - entered by Stylus
-    * 2D geometric forms: polylines, rectangles, circles 
-    * (done) Photos = textured quads (Drawables)
-* (done) Camera navigation: zoom, pan, rotate and different mouse modes (**Nov 2015**)
-* Building and manipulation of a scene graph (**Nov 2015**)
-    * (done)Add / delete a canvas
-    * (done) Switch to another canvas
-    * (done) Add / delete a stroke to a current canvas
-    * Add / delete a geometric shape to a current canvas
-    * (done) Select a canvas and all it contains
-    * Select two or more canvases and their contents
-    * Select number of entities within one canvas
-    * (done) Select number of strokes within one canvas
-* Advanced entity manipulation (**Dec 2015**)
-    * (done) Create a new canvas as a copy of current
-    * (done) Push strokes from one canvas to another
-    * Move a photo from one canvas to another
-* (done) Save and load of a scene graph to disk (**Dec 2015**)
-* Viewer entities (**Dec 2015**)
-    * (done) Model views: built-in, second screen, detached menu, viewer splitters, viewer views setup (front, top, iso)
-    * (done) Bookmarks
-* (done) GUI integration (**Jan 2016**)
-* (in process) First user tests and feedback (**Jan 2016**)
-* Unit tests (**Jan 2016**)
-* Memory leaks detection, performance measurements, optimization (threading), other improvements (**Feb 2016**)
-* (in process) Bug fixing, user feedback, tuning, refactoring (**March 2016**)
-* (in process) Prepare first official `beta` release (**March 2016**)
-* (in process) Develop virtual touring methods (**March 2016**)
-* (in process) Installers and tarballs (**April 2016**)
-* (in process) User documentation (**Jan-April 2016**)
+For more details, examples and other user-oriented information, refer to the [Cherish site](http://vicrucann.github.io/cherish/).
 
-![Alt text](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/gui-orig.png "Prototype GUI screenshot")  
-The initial prototype screen shot.
+## Binary download
 
-## Content
-[Motivation](https://github.com/vicrucann/dura-europos-insitu/#motivation)  
-[Features](https://github.com/vicrucann/dura-europos-insitu/#features)  
-[Requirements](https://github.com/vicrucann/dura-europos-insitu/#requirements)  
-[Installation](https://github.com/vicrucann/dura-europos-insitu/#installation)  
-[Quick start](https://github.com/vicrucann/dura-europos-insitu/#quick-start)  
-[Development and contribution](https://github.com/vicrucann/dura-europos-insitu/#development-and-contribution)  
-[License](https://github.com/vicrucann/dura-europos-insitu/#license)  
-[Contact and authors info](https://github.com/vicrucann/dura-europos-insitu/#contact-and-authors-info)  
-[References](https://github.com/vicrucann/dura-europos-insitu/#references)  
+If you are using Windows machine (version>=7), the fastest way is to download the pre-compiled binary and start testing the software right away. For that, go to the [release section](https://github.com/vicrucann/cherish/releases) and download the latest version. The download link will have the form of `cherish-qtX.Y-msvcYEAR.zip`.
 
-## Motivation
+## Building from source
 
-Modeling historical sites is important in many fields, including cultural heritage preservation, architectural design, urban planning, etc. For any given site, there may exist many different representations such as photos, drawings, maps, laser scans, 3D renderings. Yet it remains challenging to exploit the full range of the data types, especially when given data source is sparse and incomplete.
+**Cherish** can be built on a range of platforms, e.g., Windows, Linux, Mac. This is the list of libaraies and tools that are used for the system compillation and build:
 
-The presented **dureu3d** software creates a heterogeneous 3D representation of archaeological sites that improve our understanding of the past while supporting novel applications in the present. It is capable of annotation the collected site and artifacts with evidence (e.g., geo-location, scan data accuracy) and confidence estimation (e.g., for text annotations), and use this information to inform the reconstruction process. In the future, it is possible to expand the types of applications for which such data can be used.
+* [CMake](https://cmake.org/) (>=2.8.11)
+* [Qt](http://www.qt.io/) (>=5.4; in case if you are planning to use Wacom tablem, the recommended Qt version is 5.4 or 5.5 due to a [tablet bug](https://bugreports.qt.io/browse/QTBUG-53628) in the stable versions older than 5.5.1)
+* [OpenSceneGraph](http://www.openscenegraph.org/) (>=3.4.0)
+* [Doxygen](www.doxygen.org/) (not mandatory; only used for documentation build)
 
-## Features
+All tools, but OpenSceneGraph (OSG), have binaries and are easy to install. There are no official binaries for OSG library and it is recommended to install it from source. Use the [official guide](http://trac.openscenegraph.org/projects/osg//wiki/Support/GettingStarted) for detailed steps. Note: the used version of OSG only requires OpenGL and CMake; there is no need to install additional plugins; the minimal install is enough.
 
-* **3D modeling**: manipulation of images in 3D space, sketch-based human input, labelling and alignment of sparse multi-scale data sources
-* **Virtual touring**
-* (far-future?) **Machine learning**: improvements of digital computation algorithms and reductions of the dependency on human computation. E.g., usage of semi-supervised learning and active learning to reduce uncertainty in the data.
+Once all the dependencies are installed, you can compile **cherish** on your machine. CMake is used for build and compilation, i.e., you can either perform the build from command line by using `cmake` and `make` commands, or you can conviniently use the [Qt Creator tool](https://www.qt.io/ide/) which normally comes with the Qt library. 
 
-## Requirements
+The list of build parameters:
 
-The software is written on Windows 7, with QT-5.4 and OpenSceneGraph-3.4.0 libraries using minimal CMake-2.8.11. It is compatible with Linux platform. More precise requirements will be described later.
-
-## Installation
-
-Binaries and/or installers are going to be provided. It is also possible to download and compile from source. When compiling from source, you need to install the following tools and libraries:
-
-1. CMake, version 2.8.11 or higher
-2. Qt, version 5.4 or higher
-3. OpenSceneGraph, version 3.4.0 or higher
-
-Refer to each tool's official guide on how to install it. While there are binaries exist for Qt and CMake, it will, probably, be necessary to compile the OpenSceneGraph from source.
-
-To build *dureu3d*, you can either use CMake commands: `cmake` and then `make`, or you can compile using CMake GUI tool, or you can compile using Qt Designer framework. We tested compilation on Windows 7 and Ubuntu 14.04. It is unknown how it behaves on Mac machines. 
-
-## Quick start
-
-The following sections will be added (each section will be a link inside a separate file): 
-* User interface: window anatomy, toolbars, viewing axes, dialogue boxes
-* Using the Wacom pen
-* Using the mouse 
-* Sketching in 3D
-* View a model in 3D space
-* Creating geometry with push strokes tool
-* Draw 2D and 3D shapes
-* Import and work with photographs
-* Import and trace the diagrams
-* Other features: importing meshed 3D data, incorporation of geo data, navigation and data manipulation, annotations. 
-
-For many more details on the software features, check [User Manual](https://github.com/vicrucann/dura-europos-insitu/blob/master/doc/manual.md).
-
-## Development and contribution 
-
-This is far-future section. It will be filled as need arises.
+* Build mode: `Debug` by default. Example: `-DCMAKE_BUILD_TYPE=Release`.
+* Build unit tests: `OFF` by deafult. Example: `-DCherish_BUILD_TEST=ON`
+* Build development documentation (requires Doxygen): `OFF` by default. Example: `-DCherish_BUILD_DOC=ON`
 
 ## Contact and authors info
 
@@ -129,13 +41,12 @@ For any questions and requests, feel free to contact Victoria Rudakova - victori
 
 Other contributors:
 
+* Goze Akoglu: user testing and feedback
+* Eleni Kotoula: user testing and feedback
 * Wendy Chen: user testing and feedback 
-* Natallia Trayan: icons designer
+* Natallia Trayan: icon design
 * Yumo Rong: user interface functionality
 
 ## References
 
-Here represented the publications that led to the **dureu3d** software:  
-
-1. An integrated image and sketching environment for archaeological sites - Xuejin Chen, Yann Morvan, Yu He, Julie Dorsey, Holly Rushmeier  
-2. The Mental Canvas: a tool for conceptual architectural design and analysis - Julie Dorsey, Songhua Xu, Gabe Smedresman, Holly Rushmeier, Leonard McMillan
+The list of references will be placed here.
