@@ -45,10 +45,11 @@ before_script:
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt54/lib/cmake -DCherish_BUILD_TEST=ON src/
 
 script:
+  # compile everything
   - make
 
-
-#notifications:
-#  email:
-#    - vicrucann@gmail.com
+after_success:
+  - ./tests/test_MainWindow
+  - ./tests/test_SceneState
+  - ./tests/test_UserScene
 
