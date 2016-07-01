@@ -15,21 +15,23 @@
 
 void SceneStateTest::testBasicApi()
 {
+    qInfo("Test scene state strip");
     osg::ref_ptr<entity::SceneState> state_stripped = new entity::SceneState;
     state_stripped->stripDataFrom(m_rootScene);
     QVERIFY(!state_stripped->isEmpty());
 
+    qInfo("Test scene state initialization");
     osg::ref_ptr<entity::SceneState> state_scened = m_rootScene->createSceneState();
     QVERIFY(!state_scened->isEmpty());
 
-    /* check both method return the same state scenes */
+    qInfo("Check both method return the same state scenes");
     QCOMPARE(state_stripped->getAxisFlag(), state_scened->getAxisFlag());
     QCOMPARE(state_stripped->getBookmarksFlag(), state_scened->getBookmarksFlag());
     QCOMPARE(state_stripped->getCanvasDataFlags(), state_scened->getCanvasDataFlags());
     QCOMPARE(state_stripped->getCanvasToolFlags(), state_scened->getCanvasToolFlags());
     QCOMPARE(state_stripped->getPhotoTransparencies(), state_scened->getPhotoTransparencies());
 
-    /* set some flags of scene state and apply it to Root scene */
+    qInfo("Set some flags of scene state and apply it to Root scene");
     state_stripped->setAxisFlag(false);
     state_stripped->setBookmarksFlag(false);
     state_stripped->popBackDataFlag();
@@ -65,7 +67,7 @@ void SceneStateTest::testBasicApi()
     QCOMPARE(m_canvas2->getVisibilityAll(), true);
     QCOMPARE(m_canvas2->getVisibilityFrameInternal(), false);
 
-    /* add a photo and check photo transparency is saved to the state */
+    qInfo("Add a photo and check photo transparency is saved to the state");
     m_rootScene->setCanvasCurrent(m_canvas0.get());
     QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas0.get());
     QString fname1 = "../../samples/ds-32.bmp";
@@ -76,14 +78,14 @@ void SceneStateTest::testBasicApi()
     QVERIFY(!state_stripped->isEmpty());
     QCOMPARE(m_rootScene->getUserScene()->getPhoto(m_rootScene->getCanvasCurrent(), 0)->getTransparency(), state_stripped->getPhotoTransparencies()[0]);
 
-    /* add another photo, change its transparency and check if it's saved successfully within scene state */
+    qInfo("Add another photo, change its transparency and check if it's saved successfully within scene state");
     m_rootScene->setCanvasCurrent(m_canvas1.get());
     QCOMPARE(m_rootScene->getCanvasCurrent(), m_canvas1.get());
     QString fname2 = "../../samples/test.bmp";
     m_rootScene->addPhoto(fname2.toStdString());
     QCOMPARE((int)m_rootScene->getCanvasCurrent()->getNumChildren(), 1);
     QCOMPARE((int)m_rootScene->getCanvasCurrent()->getNumPhotos(), 1);
-    /* imitate mouse click within CanvasPhotoWidget delegate to trigger clickedTransparencyMinus signal */
+    qInfo("Imitate mouse click within CanvasPhotoWidget delegate to trigger clickedTransparencyMinus signal");
     QSignalSpy spy1(m_canvasWidget->getCanvasDelegate(), SIGNAL(clickedTransparencyMinus(QModelIndex)));
     QTreeWidgetItem* itemCa = m_canvasWidget->topLevelItem(m_rootScene->getUserScene()->getCanvasIndex(m_rootScene->getCanvasCurrent()));
     QVERIFY(itemCa);
@@ -109,28 +111,28 @@ void SceneStateTest::testBasicApi()
 
 void SceneStateTest::testBookmarkTaken()
 {
-    /* set 0-th canvas as invisible */
+    qInfo("Set 0-th canvas as invisible");
     int index = 0;
     QVERIFY(m_canvas0.get());
     QTreeWidgetItem* item = m_canvasWidget->topLevelItem(index);
     QVERIFY(item);
 
-    /* check it is visible in scene graph */
+    qInfo("Check it is visible in scene graph");
     QVERIFY(m_canvas0->getVisibilityAll() == true);
-    /* check GUI icon corresponds to visibility */
+    qInfo("Check GUI icon corresponds to visibility");
     QVERIFY(item->data(0, cher::DelegateVisibilityRole).toBool() == false);
 
-    /* swap the visibility to the opposite */
+    qInfo("swap the visibility to the opposite");
     this->onVisibilitySetCanvas(index);
-    /* check it is invisible in scene graph */
+    qInfo("check it is invisible in scene graph");
     QVERIFY(m_canvas0->getVisibilityAll() == false);
-    /* check GUI icon corresponds to invisibility */
+    qInfo("check GUI icon corresponds to invisibility");
     QVERIFY(item->data(0, cher::DelegateVisibilityRole).toBool() == true);
-    /* intial scene graph settings */
+    qInfo("intial scene graph settings");
     QVERIFY(m_rootScene->getAxesVisibility() == true);
     QVERIFY(m_rootScene->getBookmarkToolVisibility() == true);
 
-    /* get current scene state */
+    qInfo("get current scene state");
     osg::ref_ptr<entity::SceneState> state_old = m_rootScene->createSceneState();
     QVERIFY(state_old.get());
     QVERIFY(!state_old->isEmpty());
@@ -143,17 +145,16 @@ void SceneStateTest::testBookmarkTaken()
     QVERIFY(state_old->getCanvasToolFlags()[1] == true);
     QVERIFY(state_old->getCanvasToolFlags()[2] == true);
 
-    /* spy on emitted signals */
+    qInfo("spy on emitted signals");
     QSignalSpy spy1(m_rootScene->getUserScene()->getBookmarks(), SIGNAL(requestSceneData(entity::SceneState*)));
 
-    /* take a bookmark */
+    qInfo("take a bookmark");
     this->onBookmark();
 
-    /* check if signal was emitted correctly */
+    qInfo("check if signal was emitted correctly");
     QCOMPARE(spy1.count(), 1);
 
-    /* check if bookmark was added successfully */
-    /* within the scene graph */
+    qInfo("check if bookmark was added successfully within the scene graph");
     const entity::Bookmarks* bookmarks = m_rootScene->getUserScene()->getBookmarks();
     QVERIFY(bookmarks != NULL);
     QVERIFY(bookmarks->getNumChildren() == 1);
@@ -162,10 +163,10 @@ void SceneStateTest::testBookmarkTaken()
     QVERIFY(bookmarks->getUps().size() == 1);
     QVERIFY(bookmarks->getNames().size() == 1);
     QVERIFY(bookmarks->getFovs().size() == 1);
-    /* within gui */
+    qInfo("within gui");
     QVERIFY(m_bookmarkWidget->count() == 1);
 
-    /* make sure scene state was reset correctly */
+    qInfo("make sure scene state was reset correctly");
     osg::ref_ptr<entity::SceneState> state_new = m_rootScene->createSceneState();
     QVERIFY(m_rootScene->getAxesVisibility() == true);
     QVERIFY(m_rootScene->getBookmarkToolVisibility() == true);

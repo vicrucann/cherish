@@ -5,7 +5,7 @@
 
 void MainWindowTest::testToolsOnOff()
 {
-    /* change current scene state: make canvas0 and canvas2 invisible */
+    qInfo("Change current scene state: make canvas0 and canvas2 invisible");
     this->onVisibilitySetCanvas(0);
     this->onVisibilitySetCanvas(2);
     QCOMPARE(m_canvasWidget->topLevelItemCount(), 3);
@@ -33,7 +33,7 @@ void MainWindowTest::testToolsOnOff()
     QCOMPARE(m_actionTools->isChecked(), true);
 
 
-    /* imitate tools off */
+    qInfo("Imitate tools off");
     QSignalSpy spy_tools(m_actionTools, SIGNAL(toggled(bool)));
     m_actionTools->setChecked(false);
     QCOMPARE(spy_tools.count(), 1);
@@ -57,14 +57,14 @@ void MainWindowTest::testToolsOnOff()
     QCOMPARE(m_actionTools->isChecked(), false);
 
 
-    /* turn visibility back for canvas0 while tools are off */
+    qInfo("Turn visibility back for canvas0 while tools are off");
     this->onVisibilitySetCanvas(0);
     QCOMPARE(m_canvas0->getVisibilityAll(), true);
     QCOMPARE(m_canvas0->getVisibilityFrameInternal(), false);
     QCOMPARE(item0->data(0, cher::DelegateVisibilityRole).toBool(), false);
 
 
-    /* add another canvas */
+    qInfo("Add another canvas");
     QSignalSpy spy_canvas(m_scene.get(), SIGNAL(requestSceneToolStatus(bool&)));
     this->onNewCanvasXY();
     QCOMPARE(spy_canvas.count(), 1);
@@ -78,7 +78,7 @@ void MainWindowTest::testToolsOnOff()
     QCOMPARE(item3->data(0, cher::DelegateVisibilityRole).toBool(), false);
 
 
-    /* imitate tools on */
+    qInfo("Imitate tools on");
     m_actionTools->setChecked(true);
 
     QCOMPARE(m_canvas0->getVisibilityAll(), true);

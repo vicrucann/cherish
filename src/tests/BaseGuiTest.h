@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTest>
 #include <QtGlobal>
+#include <QDebug>
 
 #include <osg/observer_ptr>
 

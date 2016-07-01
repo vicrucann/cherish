@@ -51,8 +51,7 @@ before_script:
 script:
   # compile everything
   - make
-
-after_success:
+  # run unit tests
   - ./tests/test_MainWindow
   - ./tests/test_SceneState
   - ./tests/test_UserScene
