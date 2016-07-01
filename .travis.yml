@@ -15,6 +15,11 @@ branches:
     - master
     - develop
 
+env:
+  global:
+    - CHERISH_SOURCE=${TRAVIS_BUILD_DIR}/src/
+    - CHERISH_BUILD=${TRAVIS_BUILD_DIR}/build/
+
 before_install:
   - sudo apt-add-repository --yes ppa:beineri/opt-qt551-trusty
   - sudo apt-get -qq update
@@ -45,8 +50,11 @@ before_script:
   - export OPENTHREADS_INC_DIR="/usr/local/include"
   - export OPENTHREADS_LIB_DIR="/usr/local/lib64:/usr/local/lib"
   - export PATH="$OPENTHREADS_LIB_DIR:$PATH"
+  # create build folder
+  - mkdir $CHERISH_BUILD
+  - cd $CHERISH_BUILD 
   # cmake command
-  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt54/lib/cmake -DCherish_BUILD_TEST=ON src/
+  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt54/lib/cmake -DCherish_BUILD_TEST=ON $CHERISH_SOURCE
 
 script:
   # compile everything
