@@ -60,7 +60,8 @@ script:
   # compile everything
   - make
   # run unit tests
-  - ./tests/test_MainWindow
-  - ./tests/test_SceneState
-  - ./tests/test_UserScene
+  - cd tests/
+  - ./test_MainWindow
+  - ./test_SceneState
+  - ./test_UserScene
 
