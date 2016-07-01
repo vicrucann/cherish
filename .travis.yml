@@ -9,6 +9,13 @@ addons:
     packages:
       - cmake
       - g++-4.8
+  coverity_scan:
+    project:
+      name: "vicrucann/cherish"
+      description: "Build submitted via Travis CI"
+    notification_email: vicrucann@gmail.com
+    build_command:   "make -j2 VERBOSE=1"
+    branch_pattern: coverity_scan
 
 branches:
   only:
@@ -19,6 +26,9 @@ env:
   global:
     - CHERISH_SOURCE=${TRAVIS_BUILD_DIR}/src/
     - CHERISH_BUILD=${TRAVIS_BUILD_DIR}/build/
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "iWzeGhXtnQ0QgZ/iyhC7DTdm2ppbSaGPZGcxB7VDoi09bIsn2Q8MWsaU4uv6ofwfzIK3l7FZPyXKPKyyXVH463cSxk+LcfJW8Oqj6d8RxotHkzF9ysRPtI5wFcvaIN2vktux+9ufTj5Ay9fl+xDjLCXk/qaGZ6makEYbUHOzAYThXvMMjwC4gvwNyELDttCN0bV/OOAAmkCWbHic+oe/xhHbwxPxJg/en0Zlz1cIHT3KKSqoq+aOyOfK/9yiGAMZVDuZhCbZmmlL7jOh1xDghTKtwl47wI6rjTAY+yGfuvtQnhuJI0C/VZI+m6ucihyr1cOhv899Fct62QETQPhZSOp71UOIU22p8dvHdzdbB9J/K/v6uppfqZ/uOTDUDElqyh11uWkFVp4ouZGGV/pJunzVdb+AttH9XwbJRuM0zM2B9ZBwzzv9GdhXifxpLOKHUGI8XFvJGZW6PhrjTUipSVpBQS9qCp8lf+KmQfMb2molZljyc82R4SDn/k4uImOJh6thWTjBJOsI/7pn+Jtqgj3rXC0kJ8D1DRNJ8E9igfWmB4A814w6z8EdljCDb+wveCd/alL/tREyZfCMgRCdcr/MUWJjYTrVCsdlCh5WVC1y0NBO2AacQPAhZC1XmFPHyTJUWKvXXkb1uBHYqGdh9WEDkzfKtBW55u4TNp0nh4Q="
 
 before_install:
   - sudo apt-add-repository --yes ppa:beineri/opt-qt551-trusty
@@ -57,11 +67,19 @@ before_script:
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt54/lib/cmake -DCherish_BUILD_TEST=ON $CHERISH_SOURCE
 
 script:
+  - if [[ "${COVERITY_SCAN_BRANCH}" == 1 ]];
+    then
+      echo "Don't build on coverty_scan branch.";
+      exit 0;
+    fi
   # compile everything
-  - make
+  - make -j2
   # run unit tests
   - cd tests/
   - ./test_MainWindow
   - ./test_SceneState
   - ./test_UserScene
+  - cd ..
+
+
 
