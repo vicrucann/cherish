@@ -1,8 +1,6 @@
 # Cherish - Tool for Cultural HERitage data representation by using Image manipulation and Sketching
 
-[![Build Status](https://travis-ci.org/vicrucann/cherish.svg?branch=master)](https://travis-ci.org/vicrucann/cherish)
-
-[![Coverity Status](https://scan.coverity.com/projects/9322/badge.svg)](https://scan.coverity.com/projects/vicrucann-cherish)
+## Introduction
 
 **Cherish** is a tool that aids archaeologists and designers to represent historial, urban and archaeologocal structures and sites in 3D by means of image manipulation and sketching. Given a problem of disparate data types such as photographs, diagrams, text annotations, point cloud representation, etc., the main idea is to combine all the data within the same 3D space. 
 
@@ -16,22 +14,68 @@ If you are using Windows machine (version>=7), the fastest way is to download th
 
 ## Building from source
 
+Continious integration:
+
+* Linux 64 bits/GCC (build + tests running): 
+[![Build Status](https://travis-ci.org/vicrucann/cherish.svg?branch=master)](https://travis-ci.org/vicrucann/cherish)
+* Coverity scan for defect detection: 
+[![Coverity Status](https://scan.coverity.com/projects/9322/badge.svg)](https://scan.coverity.com/projects/vicrucann-cherish)
+
 **Cherish** can be built on a range of platforms, e.g., Windows, Linux, Mac. This is the list of libaraies and tools that are used for the system compillation and build:
 
 * [CMake](https://cmake.org/) (>=2.8.11)
 * [Qt](http://www.qt.io/) (>=5.4; in case if you are planning to use Wacom tablem, the recommended Qt version is 5.4 or 5.5 due to a [tablet bug](https://bugreports.qt.io/browse/QTBUG-53628) in the stable versions older than 5.5.1)
 * [OpenSceneGraph](http://www.openscenegraph.org/) (>=3.4.0)
 * [Doxygen](www.doxygen.org/) (not mandatory; only used for documentation build)
+* [Git](https://git-scm.com/) (not mandatory; only used for development)
+* C/C++ compiler, e.g., `gcc` or Visual Studio, or `clang`
+* Graphics card supporting OpenGL (>= 1.3)
 
 All tools, but OpenSceneGraph (OSG), have binaries and are easy to install. There are no official binaries for OSG library and it is recommended to install it from source. Use the [official guide](http://trac.openscenegraph.org/projects/osg//wiki/Support/GettingStarted) for detailed steps. Note: the used version of OSG only requires OpenGL and CMake; there is no need to install additional plugins; the minimal install is enough.
 
-Once all the dependencies are installed, you can compile **cherish** on your machine. CMake is used for build and compilation, i.e., you can either perform the build from command line by using `cmake` and `make` commands, or you can conviniently use the [Qt Creator tool](https://www.qt.io/ide/) which normally comes with the Qt library. 
+### Getting the sources
 
-The list of build parameters:
+You can download the latest version as an archive from [releases](https://github.com/vicrucann/cherish/releases) or use git to clone the repository:
 
-* Build mode: `Debug` by default. Example: `-DCMAKE_BUILD_TYPE=Release`.
-* Build unit tests: `OFF` by deafult. Example: `-DCherish_BUILD_TEST=ON`
-* Build development documentation (requires Doxygen): `OFF` by default. Example: `-DCherish_BUILD_DOC=ON`
+```
+$ git clone --recursive https://github.com/vicrucann/cherish.git
+$ cd cherish
+$ git submodule init
+$ git submodule update
+```
+
+It is recommended to use compiler with support of C++11 (for any potential future support), i.e:
+
+* Visual Studio >= 2013
+* GCC >= 4.7
+
+### General information for cmake options
+
+* Build type is defined by `-DCMAKE_BUILD_TYPE` flag: `Debug` (default) or `Release`.
+* Building of unit tests is defined by `-DCherish_BUILD_TEST` flag: `OFF` (default) or `ON`.
+* Build the development documentation (requires doxygen) is defined by flag `-DCherish_BUILD_DOC`: `OFF` by default or `ON`.
+
+### Command line compilation
+
+After getting the source and all the submodules:
+
+```
+cherish/ $ mkdir cherish_build
+cherish/ $ cd cherish_build
+build/ $ cmake -DCMAKE_BUILD_TYPE=Release ../src/
+
+build/ $ make
+```
+
+### Compilation using Qt Creator
+
+Assuming the project is checked out from git repository, use Qt Creator to open the project by opening the file `cherish/src/CMakeLists.txt`.
+
+Follow the steps of Qt Creator to finish the build using CMake. After the build is complete, compile the project by running `<Ctrl>+B`, or run from the menu: "Build" -> "Build All".
+
+## License
+
+See the corresponding [LICENSE](https://github.com/vicrucann/cherish/blob/master/LICENSE) file.
 
 ## Contact and authors info
 
@@ -46,6 +90,10 @@ Other contributors:
 * Wendy Chen: user testing and feedback 
 * Natallia Trayan: icon design
 * Yumo Rong: user interface functionality
+
+## Acknowledgements
+
+Grant info will be placed here.
 
 ## References
 

@@ -210,7 +210,6 @@ bool RootScene::loadSceneFromFile()
         m_userScene->setCanvasCurrent(cnv);
     }
     newscene = 0;
-    this->printScene();
     m_saved = true;
     return true;
 }
@@ -552,22 +551,6 @@ bool RootScene::setSceneState(const entity::SceneState *state)
 
     return true;
 }
-
-RootScene::~RootScene()
-{
-
-}
-
-void RootScene::printScene()
-{
-    outLogVal("RootScene #children", this->getNumChildren());
-    for (unsigned int i=0; i<this->getNumChildren(); ++i){
-        outLogVal("Child", this->getChild(i)->getName().c_str());
-    }
-    outLogMsg("For each canvas");
-    m_userScene->printScene();
-}
-
 
 
 

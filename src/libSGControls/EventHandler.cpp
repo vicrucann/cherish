@@ -227,21 +227,21 @@ void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
 
     if (ea.getEventType()==osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON){
         outLogMsg("searching for photo to delete");
-        osgUtil::LineSegmentIntersector::Intersection* result_photo = new osgUtil::LineSegmentIntersector::Intersection;
-        bool inter_photo = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
-                (ea,aa,cher::MASK_CANVAS_IN, *result_photo);
+        osgUtil::LineSegmentIntersector::Intersection result_photo;
+        bool inter_photo = this->getIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
+                (ea,aa,cher::MASK_CANVAS_IN, result_photo);
         if (!inter_photo) return;
-        entity::Photo* photo = this->getPhoto(*result_photo);
+        entity::Photo* photo = this->getPhoto(result_photo);
         if (!photo) return;
         m_scene->editPhotoDelete(photo, m_scene->getCanvasCurrent());
     }
     else{
         /* see if there is a stroke */
-        StrokeIntersector::Intersection* result_stroke = new StrokeIntersector::Intersection;
-        bool inter_stroke = this->getLineIntersection<StrokeIntersector::Intersection, StrokeIntersector>
-                (ea,aa,cher::MASK_CANVAS_IN, *result_stroke);
+        StrokeIntersector::Intersection result_stroke;
+        bool inter_stroke = this->getIntersection<StrokeIntersector::Intersection, StrokeIntersector>
+                (ea,aa,cher::MASK_CANVAS_IN, result_stroke);
         if (!inter_stroke) return;
-        entity::Stroke* stroke = this->getStroke(*result_stroke);
+        entity::Stroke* stroke = this->getStroke(result_stroke);
         if (!stroke) return;
         m_scene->editStrokeDelete(stroke);
     }
@@ -587,8 +587,10 @@ entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::I
 {
 
     entity::Canvas* canvas = dynamic_cast<entity::Canvas*>(result.nodePath.at(m_scene->getCanvasLevel()));
-    if (result.drawable.get() != canvas->getGeometryPickable())
-        return NULL;
+    if (canvas){
+        if (result.drawable.get() != canvas->getGeometryPickable())
+            return NULL;
+    }
     return canvas;
 }
 
@@ -622,33 +624,6 @@ cher::MOUSE_MODE EventHandler::getMouseMode(const T &result, cher::MOUSE_MODE mo
     else if (name == "RotateY2")
         return cher::CANVAS_ROTATE_UMINUS;
     return mode_default;
-}
-
-template <typename T1, typename T2>
-bool EventHandler::getLineIntersection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa,
-                                       unsigned int mask,
-                                        T1& result)
-{
-    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
-    if (!viewer){
-        outErrMsg("getLineIntersection(): could not retrieve viewer");
-        return false;
-    }
-    osg::ref_ptr<T2> intersector = new T2(osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
-
-    osgUtil::IntersectionVisitor iv(intersector);
-    iv.setTraversalMask(mask);
-    osg::Camera* cam = viewer->getCamera();
-    if (!cam){
-        std::cerr << "getLineIntersection(): could not read camera" << std::endl;
-        return false;
-    }
-    cam->accept(iv);
-    if (!intersector->containsIntersections()){
-        return false;
-    }
-    result = *(intersector->getIntersections().begin());
-    return true;
 }
 
 /* Algorithm:
@@ -754,12 +729,12 @@ bool EventHandler::setSubMouseMode(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
     if (ea.getEventType() == osgGA::GUIEventAdapter::MOVE){
         if (!m_glWidget) return result;
         if (selected){
-            TResult* result_drawable = new TResult;
-            bool inter_occured = this->getLineIntersection<TResult, TIntersector>(ea,aa, cher::MASK_CANVASFRAME_IN, *result_drawable);
+            TResult result_drawable;
+            bool inter_occured = this->getIntersection<TResult, TIntersector>(ea,aa, cher::MASK_CANVASFRAME_IN, result_drawable);
 
             /* if mouse is hovering over certain drawable, set the corresponding mode */
             if (inter_occured){
-                cher::MOUSE_MODE mode = this->getMouseMode<TResult>(*result_drawable, modeDefault);
+                cher::MOUSE_MODE mode = this->getMouseMode<TResult>(result_drawable, modeDefault);
                 result = mode == m_mode;
                 m_glWidget->setMouseMode(mode);
             }
@@ -768,7 +743,7 @@ bool EventHandler::setSubMouseMode(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
                 result = m_mode == modeDefault;
                 m_glWidget->setMouseMode(modeDefault);
             }
-            this->setDrawableColorFromMode(result_drawable->drawable.get());
+            this->setDrawableColorFromMode(result_drawable.drawable.get());
         }
     }
     return result;
@@ -862,19 +837,19 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH)
             canvas->unselectEntities();
 
-        osgUtil::LineSegmentIntersector::Intersection* result_photo = new osgUtil::LineSegmentIntersector::Intersection;
-        bool inter_photo = this->getLineIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
-                (ea,aa, cher::MASK_CANVAS_IN, *result_photo);
+        osgUtil::LineSegmentIntersector::Intersection result_photo;
+        bool inter_photo = this->getIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
+                (ea,aa, cher::MASK_CANVAS_IN, result_photo);
         if (inter_photo){
-            entity::Photo* photo = this->getPhoto(*result_photo);
+            entity::Photo* photo = this->getPhoto(result_photo);
             if (photo) canvas->addEntitySelected(photo);
         }
 
-        StrokeIntersector::Intersection* result_stroke = new StrokeIntersector::Intersection;
-        bool inter_stroke = this->getLineIntersection<StrokeIntersector::Intersection, StrokeIntersector>
-                (ea,aa, cher::MASK_CANVAS_IN, *result_stroke);
+        StrokeIntersector::Intersection result_stroke;
+        bool inter_stroke = this->getIntersection<StrokeIntersector::Intersection, StrokeIntersector>
+                (ea,aa, cher::MASK_CANVAS_IN, result_stroke);
         if (inter_stroke) {
-            entity::Stroke* stroke = this->getStroke(*result_stroke);
+            entity::Stroke* stroke = this->getStroke(result_stroke);
             if (stroke) canvas->addEntitySelected(stroke);
         }
 
@@ -900,10 +875,10 @@ void EventHandler::doEditPhotoPush(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
     if (!( ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON ))
         return;
 
-    T1* result = new T1;
-    bool intersects = this->getLineIntersection<T1, T2>(ea,aa, cher::MASK_CANVAS_IN, *result);
+    T1 result;
+    bool intersects = this->getIntersection<T1, T2>(ea,aa, cher::MASK_CANVAS_IN, result);
     if (!intersects) return;
-    entity::Photo* photo = this->getPhoto(*result);
+    entity::Photo* photo = this->getPhoto(result);
     if (!photo) return;
 //    m_scene->editPhotoPush(photo);
 }
@@ -914,10 +889,10 @@ void EventHandler::doSelectCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
     if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
         return;
 
-    T1* result = new T1;
-    bool intersected = this->getLineIntersection<T1, T2>(ea,aa, cher::MASK_CANVAS_IN, *result);
+    T1 resultIntersection;
+    bool intersected = this->getIntersection<T1, T2>(ea, aa, cher::MASK_CANVAS_IN, resultIntersection);
     if (intersected){
-        entity::Canvas* cnv = this->getCanvas(*result);
+        entity::Canvas* cnv = this->getCanvas(resultIntersection);
         if (cnv){
             std::cout << "doPickCanvas(): assumed canvas with name: " << cnv->getName() << std::endl;
             m_scene->setCanvasCurrent(cnv);
@@ -925,4 +900,29 @@ void EventHandler::doSelectCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         else
             std::cerr << "doPickCanvas(): could not dynamic_cast<Canvas*>" << std::endl;
     }
+}
+
+template <typename TypeIntersection, typename TypeIntersector>
+bool EventHandler::getIntersection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, unsigned int mask, TypeIntersection &resultIntersection)
+{
+    osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
+    if (!viewer){
+        outErrMsg("getIntersection(): could not retrieve viewer");
+        return false;
+    }
+    osg::ref_ptr<TypeIntersector> intersector = new TypeIntersector(osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
+    osgUtil::IntersectionVisitor iv(intersector);
+    iv.setTraversalMask(mask);
+    osg::Camera* cam = viewer->getCamera();
+    if (!cam){
+        std::cerr << "getIntersection(): could not read camera" << std::endl;
+        return false;
+    }
+    cam->accept(iv);
+    if (!intersector->containsIntersections()){
+        return false;
+    }
+
+    resultIntersection = intersector->getFirstIntersection();
+    return true;
 }

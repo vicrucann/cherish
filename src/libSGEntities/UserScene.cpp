@@ -853,24 +853,6 @@ bool entity::UserScene::clearUserData()
     return m_groupCanvases->removeChildren(0, this->getNumCanvases());
 }
 
-bool entity::UserScene::printScene()
-{
-    for (int i = 0; i < this->getNumCanvases(); ++i){
-        Canvas* cnv = this->getCanvas(i);
-        if (!cnv) qFatal("printScene canvas is NULL");
-
-        qDebug() << "Canvas name " << cnv->getName().c_str();
-
-        osg::MatrixTransform* t = dynamic_cast<osg::MatrixTransform*>(cnv->getChild(0));
-        Q_ASSERT(t == cnv->getTransform());
-
-        osg::Switch* sw = dynamic_cast<osg::Switch*>(t->getChild(0));
-        Q_ASSERT(sw == cnv->getSwitch());
-    }
-
-    return true;
-}
-
 void entity::UserScene::updateWidgets()
 {
     emit sendRequestUpdate();
@@ -1344,11 +1326,11 @@ void entity::UserScene::canvasCloneStart()
     m_canvasCurrent->unselectAll();
 
     entity::Canvas* cnv = m_canvasCurrent->clone();
-    cnv->setName(this->getCanvasName());
     if (!cnv){
         outErrMsg("canvasCloneStart: could not clone the canvas, ptr is NULL");
         return;
     }
+    cnv->setName(this->getCanvasName());
     m_canvasClone = cnv;
 
     if (!m_groupCanvases->addChild(m_canvasClone.get())){
@@ -1408,11 +1390,11 @@ void entity::UserScene::canvasSeparateStart()
         m_canvasCurrent->setVisibilityAll(true);
 
     entity::Canvas* cnv = m_canvasCurrent->separate();
-    cnv->setName(this->getCanvasName());
     if (!cnv){
         outErrMsg("canvasCloneStart: could not clone the canvas, ptr is NULL");
         return;
     }
+    cnv->setName(this->getCanvasName());
     m_canvasClone = cnv;
 
     // now clone contains all the strokes needed

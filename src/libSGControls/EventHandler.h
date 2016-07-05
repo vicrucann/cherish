@@ -70,8 +70,9 @@ protected:
     template <typename T>
     cher::MOUSE_MODE getMouseMode(const T& result, cher::MOUSE_MODE mode_default) const;
 
-    template <typename T1, typename T2>
-    bool getLineIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, unsigned int mask, T1& result);
+    template <typename TypeIntersection, typename TypeIntersector>
+    bool getIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, unsigned int mask,
+                         TypeIntersection& resultIntersection);
 
     bool getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                                  double& u, double& v);

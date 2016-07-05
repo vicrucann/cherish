@@ -763,14 +763,14 @@ entity::Photo *entity::Canvas::getPhoto(int row) const
 
 entity::Entity2D *entity::Canvas::getEntity(unsigned int i) const
 {
-    if (i<0 || i>=this->getNumEntities()) return NULL;
+    if (i>=this->getNumEntities()) return NULL;
 
     /* requested entity is a stroke */
     if (i<m_geodeStrokes->getNumChildren())
         return dynamic_cast<entity::Entity2D*> (m_geodeStrokes->getDrawable(i));
     /* requested entity is a photo */
     else{
-        Q_ASSERT(i-m_geodeStrokes->getNumChildren()>=0 && i-m_geodeStrokes->getNumChildren()<m_geodeStrokes->getNumChildren());
+        Q_ASSERT((int)i-(int)m_geodeStrokes->getNumChildren()>=0 && i-m_geodeStrokes->getNumChildren()<m_geodeStrokes->getNumChildren());
         return dynamic_cast<entity::Entity2D*>(m_geodePhotos->getDrawable(i-m_geodeStrokes->getNumChildren()));
     }
 }
