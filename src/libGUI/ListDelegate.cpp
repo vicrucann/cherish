@@ -8,6 +8,8 @@
 #include <QListWidget>
 #include <QPushButton>
 #include <QStylePainter>
+#include <QDebug>
+#include <QtGlobal>
 
 #include "Data.h"
 #include "Settings.h"
@@ -63,7 +65,7 @@ bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, con
                 if (event->type() == QEvent::MouseButtonPress)
                     return true;
                 else{
-                    outLogMsg("delegate: clicked delete");
+                    qDebug("delegate: clicked delete");
                     emit this->clickedDelete(index);
                 }
                 return true;
@@ -74,7 +76,7 @@ bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, con
                 if (event->type() == QEvent::MouseButtonPress)
                     return true;
                 else{
-                    outLogMsg("delegate: clicked apply scene state");
+                    qDebug("delegate: clicked apply scene state");
                     emit this->clickedApplyState(index);
                 }
                 return true;
@@ -235,7 +237,7 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
                     if (event->type() == QEvent::MouseButtonPress)
                         return true;
                     else{
-                        outLogMsg("canvas delegate: clicked delete");
+                        qDebug("canvas delegate: clicked delete");
                         emit this->clickedDelete(index);
                     }
                     return true;
@@ -245,7 +247,7 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
                 if( clickY > bv.y() && clickY < bv.y() + bv.height() )
                 {
                     if (event->type() == QEvent::MouseButtonPress){
-                        outLogMsg("canvas delegate: clicked visibility");
+                        qDebug("canvas delegate: clicked visibility");
                         emit this->clickedVisibilitySet(index.row());
 
 //                        bool value = index.data(cher::DelegateVisibilityRole).toBool();
@@ -270,7 +272,7 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
                     if (event->type() == QEvent::MouseButtonPress)
                         return true;
                     else{
-                        outLogMsg("canvas delegate: clicked delete photo");
+                        qDebug("canvas delegate: clicked delete photo");
                         emit this->clickedDeletePhoto(index);
                     }
                     return true;
@@ -282,7 +284,7 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
                 {
                     if (event->type() == QEvent::MouseButtonPress)
                         return true;
-                    outLogMsg("canvas delegate: photo transparency plus");
+                    qDebug("canvas delegate: photo transparency plus");
                     emit this->clickedTransparencyPlus(index);
                     return true;
                 }
@@ -293,7 +295,7 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
                 {
                     if (event->type() == QEvent::MouseButtonPress)
                         return true;
-                    outLogMsg("canvas delegate: photo transparency minus");
+                    qDebug("canvas delegate: photo transparency minus");
                     emit this->clickedTransparencyMinus(index);
                     return true;
                 }

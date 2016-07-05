@@ -21,7 +21,7 @@ CherishApplication::CherishApplication(int &argv, char **argc):
 bool CherishApplication::event(QEvent* event){
     if (event->type() == QEvent::TabletEnterProximity || event->type() == QEvent::TabletLeaveProximity) {
             bool active = event->type() == QEvent::TabletEnterProximity? 1 : 0;
-            outLogVal("tablet activity: ", active);
+            qDebug() << "tablet activity: " << active;
             emit setTabletActivity(active);
             return true;
         }

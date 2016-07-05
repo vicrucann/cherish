@@ -299,7 +299,7 @@ const osg::Geometry *entity::Canvas::getGeometryPickable() const
 void entity::Canvas::translate(const osg::Matrix& mt)
 {
     if (mt.isNaN()){
-        outErrMsg("canvas-translate: translate matrix is NAN");
+        qWarning("canvas-translate: translate matrix is NAN");
         return;
     }
     m_mT = m_mT * mt;
@@ -309,25 +309,25 @@ void entity::Canvas::translate(const osg::Matrix& mt)
 void entity::Canvas::rotate(const osg::Matrix& mr, const osg::Vec3f &c3d_new)
 {
     if (mr.isNaN()){
-        outErrMsg("canvas-rotate: matrix is NAN");
+        qWarning("canvas-rotate: matrix is NAN");
         return;
     }
     /* first perform transform so that rotation would be perform around the center */
     osg::Matrix M = m_transform->getMatrix();
     osg::Matrix invM;
     if (!invM.invert(M)){
-        outErrMsg("canvas rotate: could not invert matrix");
+        qWarning("canvas rotate: could not invert matrix");
         return;
     }
     osg::Vec3f c2d_new = c3d_new * invM;
     osg::Vec3f c2d_old = m_center * invM;
     if (m_center != c3d_new){
         if (std::fabs(c2d_old.z()) > cher::EPSILON){
-            outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
+            qWarning("Warning: updateFrame(): local central point z-coord is not close to zero");
             return;
         }
         if (std::fabs(c2d_new.z()) > cher::EPSILON){
-            outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
+            qWarning("Warning: updateFrame(): local central point z-coord is not close to zero");
             return;
         }
         /* move every child back in local delta translation (diff between old and new centers) */
@@ -335,7 +335,7 @@ void entity::Canvas::rotate(const osg::Matrix& mr, const osg::Vec3f &c3d_new)
         for (size_t i=0; i<this->getNumEntities(); ++i){
             entity::Entity2D* entity = this->getEntity(i);
             if (!entity){
-                outErrMsg("rotate canvas: could not dynamic_cast to Entity2D*");
+                qWarning("rotate canvas: could not dynamic_cast to Entity2D*");
                 return;
             }
             entity->moveDelta(delta2d.x(), delta2d.y());
@@ -551,7 +551,7 @@ void entity::Canvas::updateFrame(entity::Canvas* against)
                 /* new 2d local center */
                 osg::Vec3f c2d_new = bb.center();
                 if (std::fabs(c2d_new.z()) > cher::EPSILON){
-                    outErrMsg("Warning: updateFrame(): local central point z-coord is not close to zero");
+                    qWarning("Warning: updateFrame(): local central point z-coord is not close to zero");
                     return;
                 }
 
@@ -620,11 +620,11 @@ entity::Canvas *entity::Canvas::clone() const
             if (stroke){
                 entity::Stroke* si = new entity::Stroke(*stroke, osg::CopyOp::DEEP_COPY_ALL);
                 if (si){
-                    if (!clone->addEntity(si)) outErrMsg("canvas clone: could not add stroke as drawable");
+                    if (!clone->addEntity(si)) qWarning("canvas clone: could not add stroke as drawable");
                 }
-                else outErrMsg("canvas clone: coult not clone the stroke");
+                else qWarning("canvas clone: coult not clone the stroke");
             }
-            else outErrMsg("canvas clone: could not dynamic_cast<Stroke>");
+            else qWarning("canvas clone: could not dynamic_cast<Stroke>");
             break;
         }
         case cher::ENTITY_PHOTO:
@@ -656,7 +656,7 @@ entity::Canvas *entity::Canvas::separate()
             entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(entcopy);
             if (stroke){
                 if (!clone->addEntity(stroke))
-                    outErrMsg("canvas separate: could not copy stroke");
+                    qWarning("canvas separate: could not copy stroke");
             }
             break;
         }
@@ -687,7 +687,7 @@ void entity::Canvas::updateTransforms()
     plane.transform(M);
     m_normal = plane.getNormal();
     if (!plane.valid()){
-        outErrMsg("updateTransforms: Error while transforming internal canvas data. Virtual plane is not valid."
+        qWarning("updateTransforms: Error while transforming internal canvas data. Virtual plane is not valid."
                   "Resetting plane parameters.");
         outLogVec("normal", plane.getNormal().x(), plane.getNormal().y(), plane.getNormal().z());
         this->resetTransforms();
@@ -709,7 +709,7 @@ void entity::Canvas::resetTransforms()
     plane.transform(m_mR * m_mT);
     m_normal = plane.getNormal();
     if (!plane.valid()){
-        outErrMsg("resetTrandforms: failed. Exiting application");
+        qWarning("resetTrandforms: failed. Exiting application");
         exit(1);
     }
 }

@@ -21,10 +21,7 @@
 
 /* Debug macros */
 
-#define outLogMsg(msg) qDebug() << msg;
-#define outLogVal(msg, a) qDebug() << msg << ": " << a;
 #define outLogVec(msg, x, y, z) qDebug() << msg << ": " << x << " " << y << " " << z;
-#define outErrMsg(msg) qCritical() << msg;
 
 /* The color scheme settings are based on
  * colorscehem solarized

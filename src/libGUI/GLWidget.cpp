@@ -6,6 +6,7 @@
 
 #include <QKeyEvent>
 #include <QWheelEvent>
+#include <QDebug>
 
 #include <osg/StateSet>
 #include <osg/Material>
@@ -77,13 +78,13 @@ GLWidget::~GLWidget()
 osg::Camera *GLWidget::getCamera() const
 {
     if (!m_Viewer.get()){
-        std::cerr << "GLWindget getCamera: could not obtain viewer" << std::endl;
+        qWarning( "GLWindget getCamera: could not obtain viewer" );
         return NULL;
     }
 
     if (!m_Viewer->getView(0))
     {
-        std::cerr << "GLWindget getCamera: could not obtain view" << std::endl;
+        qWarning( "GLWindget getCamera: could not obtain view" );
         return NULL;
     }
     return m_Viewer->getView(0)->getCamera();
@@ -187,7 +188,7 @@ void GLWidget::onFOVChangedSlider(double fov)
 {
     osg::Camera* camera = this->getCamera();
     if (!camera){
-        outErrMsg("onFOVChangedSlider: could not obtain camera ptr");
+        qWarning("onFOVChangedSlider: could not obtain camera ptr");
         return;
     }
     float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());
@@ -200,14 +201,14 @@ void GLWidget::onOrthoSet(bool ortho)
 {
     osg::Camera* camera = this->getCamera();
     if (!camera){
-        outErrMsg("onFOVChanged: could not obtain camera ptr");
+        qWarning("onFOVChanged: could not obtain camera ptr");
         return;
     }
     float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());
     if (!ortho)
         camera->setProjectionMatrixAsPerspective(60, ratio, 1.f, 1000.f);
     else{
-        outLogMsg("setting camera to ortho");
+        qDebug("setting camera to ortho");
         camera->setProjectionMatrixAsOrtho(-1,1,-1,1,-1,1);
     }
     camera->dirtyBound();
@@ -253,7 +254,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     if (event->modifiers() & Qt::ControlModifier){
         if (cher::maskMouse & cher::MOUSE_SELECT)
             this->setMouseMode(cher::SELECT_CANVAS);
-        std::cout << "Qt ctrl ON" << std::endl;
+        qDebug("Qt ctrl ON");
         this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KEY_Control_L);
     }
 
@@ -266,7 +267,7 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_Control){
         if (cher::maskMouse & cher::MOUSE_SELECT)
             this->setMouseMode(cher::SELECT_ENTITY);
-        std::cout << "Qt ctrl OFF" << std::endl;
+        qDebug("Qt ctrl OFF");
         this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KEY_Control_L);
     }
 
@@ -307,7 +308,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    outLogMsg("double click detected");
+    qDebug("double click detected");
     emit this->autoSwitchMode(m_mouseMode);
 }
 
@@ -438,9 +439,9 @@ void GLWidget::onResize(int w, int h)
     std::vector<osg::Camera*> cameras;
     this->m_Viewer->getCameras(cameras);
     if (cameras.size() != static_cast<unsigned int>(this->m_ModeView)) {
-        outErrMsg("onResize(): the cameras number does not correspond to view mode");
-        outLogVal("Camera size", cameras.size());
-        outLogVal("View mode", this->m_ModeView);
+        qWarning("onResize(): the cameras number does not correspond to view mode");
+        qDebug()<< "Camera size: " << cameras.size();
+        qDebug() << "View mode: " << this->m_ModeView;
         return;
     }
     if (this->m_ModeView == 1)
@@ -455,8 +456,8 @@ void GLWidget::onResize(int w, int h)
         cameras[2]->setViewport( this->width() * 2 / 3, 0, this->width()/ 3, this->height() );
     }
     else{
-        outErrMsg("onResize(): unsupported view mode");
-        outLogVal("Cameras number", cameras.size());
+        qWarning("onResize(): unsupported view mode");
+        qDebug() << "Cameras number: " << cameras.size();
         return;
     }
 }

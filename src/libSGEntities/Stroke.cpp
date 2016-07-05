@@ -2,6 +2,9 @@
 
 #include <assert.h>
 
+#include <QDebug>
+#include <QtGlobal>
+
 #include <osg/Program>
 #include <osg/LineWidth>
 #include <osg/StateSet>
@@ -60,7 +63,7 @@ entity::Stroke::Stroke()
     this->setUseVertexBufferObjects(true);
     this->setName("Stroke");
 
-    outLogMsg("New stroke ctor complete");
+    qDebug("New stroke ctor complete");
 }
 
 entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
@@ -69,7 +72,7 @@ entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
     , m_program(copy.m_program)
     , m_color(copy.m_color)
 {
-    outLogMsg("stroke copy ctor done");
+    qDebug("stroke copy ctor done");
 }
 
 void entity::Stroke::setLines(osg::DrawArrays* lines)
@@ -123,7 +126,7 @@ void entity::Stroke::removePoints(unsigned int index_start, unsigned int index_e
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
 
     if (index_start > verts->size()-1 || index_end > verts->size()-1){
-        outErrMsg("Stroke remove edge: indices to remove are out of range");
+        qWarning("Stroke remove edge: indices to remove are out of range");
         return;
     }
     if (index_end == verts->size()-1){
@@ -155,9 +158,9 @@ float entity::Stroke::getLength() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
     if (std::fabs(bb.zMax()-bb.zMin()) > cher::EPSILON ){
-        outErrMsg("Stroke->getLength(): z coordinates of a stroke are unexpected values");
-        outLogVal("zMax", bb.zMax());
-        outLogVal("zMin", bb.zMin());
+        qWarning("Stroke->getLength(): z coordinates of a stroke are unexpected values");
+        qDebug() << "zMax " << bb.zMax();
+        qDebug() << "zMin " << bb.zMin();
         return 0;
     }
     return std::max(bb.xMax() - bb.xMin(), bb.yMax() - bb.yMin());

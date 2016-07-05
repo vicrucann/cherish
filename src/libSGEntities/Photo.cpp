@@ -1,6 +1,9 @@
 #include "Photo.h"
 #include "Settings.h"
 
+#include <QDebug>
+#include <QtGlobal>
+
 #include <osg/Texture2D>
 #include <osgDB/ReadFile>
 #include <osg/Image>
@@ -17,7 +20,7 @@ entity::Photo::Photo()
     , m_height(0)
     , m_angle(0)
 {
-    outLogMsg("New Photo ctor complete");
+    qDebug("New Photo ctor complete");
     this->setName("Photo");
     this->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
     this->getOrCreateStateSet()->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
@@ -32,7 +35,7 @@ entity::Photo::Photo(const entity::Photo& photo, const osg::CopyOp& copyop)
     , m_height(photo.m_height)
     , m_angle(photo.m_angle)
 {
-    outLogMsg("New Photo ctor by copy complete");
+    qDebug("New Photo ctor by copy complete");
 }
 
 void entity::Photo::setTexture(osg::Texture2D* texture)
@@ -168,7 +171,7 @@ void entity::Photo::flipH()
 {
     osg::Vec2Array* texcoords = static_cast<osg::Vec2Array*>(this->getTexCoordArray(0));
     if (!texcoords){
-        outErrMsg("Could not extract texcoords of Photo");
+        qWarning("Could not extract texcoords of Photo");
         return;
     }
     std::swap((*texcoords)[0], (*texcoords)[1]);
@@ -181,7 +184,7 @@ void entity::Photo::flipV()
 {
     osg::Vec2Array* texcoords = static_cast<osg::Vec2Array*>(this->getTexCoordArray(0));
     if (!texcoords){
-        outErrMsg("Could not extract texcoords of Photo");
+        qWarning("Could not extract texcoords of Photo");
         return;
     }
     std::swap((*texcoords)[0], (*texcoords)[3]);
@@ -217,7 +220,7 @@ void entity::Photo::scale(double scaleX, double scaleY, osg::Vec3f center)
 
 void entity::Photo::setColor(const osg::Vec4f &color)
 {
-    outLogMsg("photo color resetting");
+    qDebug("photo color resetting");
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
     if (color != cher::STROKE_CLR_NORMAL)
         (*colors)[0] = color;
@@ -248,7 +251,7 @@ float entity::Photo::getTransparency() const
 {
     const osg::Vec4Array* colors = static_cast<const osg::Vec4Array*>(this->getColorArray());
     if (colors->size() == 0) {
-        outErrMsg("photo: color array is not set");
+        qWarning("photo: color array is not set");
         return 1.f;
     }
     return ((*colors)[0]).a();
@@ -269,7 +272,7 @@ void entity::Photo::updateVertices()
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
     if (!verts){
-        outErrMsg("Could not extract vertices of Photo");
+        qWarning("Could not extract vertices of Photo");
         return;
     }
 

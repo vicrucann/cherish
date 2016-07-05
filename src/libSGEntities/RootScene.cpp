@@ -4,6 +4,7 @@
 #include <assert.h>
 
 #include <QtGlobal>
+#include <QDebug>
 
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
@@ -26,12 +27,12 @@ RootScene::RootScene(QUndoStack *undoStack)
     // child #0
     m_userScene->initializeSG();
     if (!this->addChild(m_userScene.get())){
-        outErrMsg("RootScene(): could not add user scene as a child");
+        qWarning("RootScene(): could not add user scene as a child");
     }
 
     // child #1
     if (!this->addChild(m_axisTool)){
-        outErrMsg("RootScene(): could not add axes as a child");
+        qWarning("RootScene(): could not add axes as a child");
     }
 
     /* child #2 */
@@ -157,7 +158,7 @@ bool RootScene::exportSceneToFile(const std::string &name)
 bool RootScene::loadSceneFromFile()
 {
     if (!m_undoStack){
-        outErrMsg("loadSceneFromFile(): undo stack is NULL. "
+        qWarning("loadSceneFromFile(): undo stack is NULL. "
                  "Restart the program to ensure undo stack initialization.");
         return false;
     }
@@ -165,14 +166,14 @@ bool RootScene::loadSceneFromFile()
         return false;
     osg::Node* node = osgDB::readNodeFile(m_userScene->getFilePath());
     if (!node){
-        outErrMsg("loadSceneFromFile: node is NULL");
+        qWarning("loadSceneFromFile: node is NULL");
         return false;
     }
     qDebug() << "Loaded node, number of children: " << node->asGroup()->getNumChildren();
 
     osg::ref_ptr<entity::UserScene> newscene = dynamic_cast<entity::UserScene*>(node);
     if (!newscene.get()){
-        outErrMsg("loadSceneFromFile: could not load from file, or could not perform the dynamic_cast<osg::Group*>");
+        qWarning("loadSceneFromFile: could not load from file, or could not perform the dynamic_cast<osg::Group*>");
         return false;
     }
     qDebug() << "Loaded scene, number of children: " << newscene->getNumChildren();
@@ -180,7 +181,7 @@ bool RootScene::loadSceneFromFile()
 
     /* replace the original */
     if (!this->replaceChild(m_userScene.get(), newscene.get())){
-        outErrMsg("loadSceneFromFile: could not replace the original child");
+        qWarning("loadSceneFromFile: could not replace the original child");
         return false;
     }
 
@@ -273,13 +274,13 @@ void RootScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const
 void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     if (!m_bookmarkTools) {
-        outLogMsg("addBookmarkTool: none will be added, ptr is null");
+        qDebug("addBookmarkTool: none will be added, ptr is null");
         return;
     }
     entity::BookmarkTool* bt = new entity::BookmarkTool(eye, center, up);
     if (!bt) return;
     if (!m_bookmarkTools->addChild(bt))
-        outLogMsg("addBookmarkTool: could not add as child");
+        qDebug("addBookmarkTool: could not add as child");
     bt->setVisibility(m_visibilityBookmarkTool);
 
 }
@@ -298,14 +299,14 @@ void RootScene::deleteBookmarkTool(int first, int last)
 {
     if (first>=int(m_bookmarkTools->getNumChildren()) || last>=int(m_bookmarkTools->getNumChildren())) return;
     m_bookmarkTools->removeChild(first, std::abs(last-first+1));
-    outLogMsg("bookmarkTool deleted");
+    qDebug("bookmarkTool deleted");
 }
 
 void RootScene::resetBookmarks(BookmarkWidget *widget)
 {
     entity::Bookmarks* bms = this->getBookmarksModel();
     if (!bms){
-        outErrMsg("resetBookmarkTools: could not obtain bookmarks data");
+        qWarning("resetBookmarkTools: could not obtain bookmarks data");
         return;
     }
     bms->resetModel(widget);
@@ -335,7 +336,7 @@ bool RootScene::getBookmarkToolVisibility() const
         entity::BookmarkTool* bt = dynamic_cast<entity::BookmarkTool*>(m_bookmarkTools->getChild(i));
         if (bt){
             if (bt->getVisibility() != m_visibilityBookmarkTool){
-                outErrMsg("Re-setting bookmark tool visibility");
+                qWarning("Re-setting bookmark tool visibility");
                 bt->setVisibility(m_visibilityBookmarkTool);
             }
         }
