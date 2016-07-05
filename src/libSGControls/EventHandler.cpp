@@ -587,8 +587,10 @@ entity::Canvas *EventHandler::getCanvas(const osgUtil::LineSegmentIntersector::I
 {
 
     entity::Canvas* canvas = dynamic_cast<entity::Canvas*>(result.nodePath.at(m_scene->getCanvasLevel()));
-    if (result.drawable.get() != canvas->getGeometryPickable())
-        return NULL;
+    if (canvas){
+        if (result.drawable.get() != canvas->getGeometryPickable())
+            return NULL;
+    }
     return canvas;
 }
 

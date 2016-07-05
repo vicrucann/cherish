@@ -128,8 +128,6 @@ public:
     bool setSceneState(const entity::SceneState* state);
 
 protected:
-    ~RootScene();
-    void printScene();
 
 private:
     osg::ref_ptr<entity::UserScene> m_userScene;

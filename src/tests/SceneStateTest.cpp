@@ -75,7 +75,9 @@ void SceneStateTest::testBasicApi()
     QCOMPARE((int)m_rootScene->getCanvasCurrent()->getNumChildren(), 1);
     QCOMPARE((int)m_rootScene->getCanvasCurrent()->getNumPhotos(), 1);
     state_stripped->stripDataFrom(m_rootScene);
+    QVERIFY(state_stripped.get());
     QVERIFY(!state_stripped->isEmpty());
+    QVERIFY( m_scene->getPhoto(m_scene->getCanvasCurrent(), 0) );
     QCOMPARE(m_rootScene->getUserScene()->getPhoto(m_rootScene->getCanvasCurrent(), 0)->getTransparency(), state_stripped->getPhotoTransparencies()[0]);
 
     qInfo("Add another photo, change its transparency and check if it's saved successfully within scene state");

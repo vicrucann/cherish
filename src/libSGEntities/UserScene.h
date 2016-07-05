@@ -467,10 +467,6 @@ public:
      * \return Whether the operation was successfull (true) or not (false). */
     bool clearUserData();
 
-    /*! A tester method which is run when a scene is loaded from file.
-     * \return Whether the test was successfull (true) or not (false). */
-    bool printScene();
-
     /*! A method which connects UserScene with MainWindow (and/or GLWidget). Its main purpose is to request for
      * GLWidget::update() method to renew the viewport. */
     void updateWidgets();
