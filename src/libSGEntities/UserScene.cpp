@@ -1344,11 +1344,11 @@ void entity::UserScene::canvasCloneStart()
     m_canvasCurrent->unselectAll();
 
     entity::Canvas* cnv = m_canvasCurrent->clone();
-    cnv->setName(this->getCanvasName());
     if (!cnv){
         outErrMsg("canvasCloneStart: could not clone the canvas, ptr is NULL");
         return;
     }
+    cnv->setName(this->getCanvasName());
     m_canvasClone = cnv;
 
     if (!m_groupCanvases->addChild(m_canvasClone.get())){
@@ -1408,11 +1408,11 @@ void entity::UserScene::canvasSeparateStart()
         m_canvasCurrent->setVisibilityAll(true);
 
     entity::Canvas* cnv = m_canvasCurrent->separate();
-    cnv->setName(this->getCanvasName());
     if (!cnv){
         outErrMsg("canvasCloneStart: could not clone the canvas, ptr is NULL");
         return;
     }
+    cnv->setName(this->getCanvasName());
     m_canvasClone = cnv;
 
     // now clone contains all the strokes needed
