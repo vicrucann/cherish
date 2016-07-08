@@ -12,6 +12,12 @@ void CanvasTest::testBasicApi()
     QVERIFY(differenceWithinThreshold(canvas->getNormal(), cher::NORMAL));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(1,0,0)));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(0,1,0)));
+    float dotUN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisU());
+    float dotVN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisV());
+    float dotUV = std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV());
+    QVERIFY(dotUN<cher::EPSILON);
+    QVERIFY(dotVN<cher::EPSILON);
+    QVERIFY(dotUV<cher::EPSILON);
 
     qInfo("Test canvas default nodes and their values");
     canvas->initializeSG();
@@ -90,19 +96,27 @@ void CanvasTest::testBasicApi()
     QVERIFY(differenceWithinThreshold(canvas->getNormal(), osg::Vec3f(len,0,len)));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(len,0,-len)));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(0,1,0)));
+    dotUN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisU());
+    dotVN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisV());
+    dotUV = std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV());
+    QVERIFY(dotUN<cher::EPSILON);
+    QVERIFY(dotVN<cher::EPSILON);
+    QVERIFY(dotUV<cher::EPSILON);
 
     qInfo("translation along normal");
     osg::Matrix tMat = osg::Matrix::translate(1, 0, 1);
     canvas->translate(tMat);
     QVERIFY(differenceWithinThreshold(canvas->getNormal(), osg::Vec3f(len,0,len)));
-    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(len+1, 0, -len+1)));
-    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(1,1,1)));
+    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(len,0,-len)));
+    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(0,1,0)));
 
-    qInfo("+45 degree rotation alont x axis");
-    osg::Matrix rotMat2 = osg::Matrix::rotate(cher::PI/4, osg::Vec3f(1,0,0));
-    canvas->rotate(rotMat2, canvas->getBoundingBoxCenter3D());
-
-
+    qInfo("Test for orthogonality between normal and axis UV");
+    dotUN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisU());
+    dotVN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisV());
+    dotUV = std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV());
+    QVERIFY(dotUN<cher::EPSILON);
+    QVERIFY(dotVN<cher::EPSILON);
+    QVERIFY(dotUV<cher::EPSILON);
 }
 
 void CanvasTest::testNewXY()
@@ -202,13 +216,51 @@ void CanvasTest::testCloneOrtho()
     QCOMPARE(m_scene->getCanvasCurrent(), canvas);
     QVERIFY(differenceWithinThreshold( canvas->getCenter(), cher::CENTER));
     QVERIFY(differenceWithinThreshold( canvas->getNormal(), cher::NORMAL));
-    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(1.f, 0, 0)));
-    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(0.f,1.f,0.f)));
+    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(1, 0, 0)));
+    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(0, 1, 0)));
 
-    qInfo("Rotate and translate the canvas and test its parameters");
+    qInfo("Rotate the canvas +45 degrees around Y axis");
     osg::Matrix rotMat = osg::Matrix::rotate(cher::PI/4, osg::Vec3f(0,1,0));
     canvas->rotate(rotMat, cher::CENTER);
+    float len = 1.f * std::cos(cher::PI/4);
+    QVERIFY(differenceWithinThreshold(canvas->getNormal(), osg::Vec3f(len,0,len)));
+    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(len,0,-len)));
+    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(0,1,0)));
+    qInfo("Translate canvas along its normal");
+    osg::Matrix tMat = osg::Matrix::translate(1,0,1);
+    canvas->translate(tMat);
+    qInfo("Rotate the canvas +30 degrees around X axis");
+    osg::Matrix rotMat2 = osg::Matrix::rotate(cher::PI/6, osg::Vec3f(1,0,0));
+    canvas->rotate(rotMat2, cher::CENTER);
+    QVERIFY(std::fabs(canvas->getNormal() * canvas->getGlobalAxisU())<cher::EPSILON);
+    QVERIFY(std::fabs(canvas->getNormal() * canvas->getGlobalAxisV())<cher::EPSILON);
+    QVERIFY(std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV())<cher::EPSILON);
+    QCOMPARE(m_scene->getCanvasCurrent(), canvas);
 
+    qInfo("Test for orthogonality between normal and axis UV");
+    float dotUN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisU());
+    float dotVN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisV());
+    float dotUV = std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV());
+    QVERIFY(dotUN<cher::EPSILON);
+    QVERIFY(dotVN<cher::EPSILON);
+    QVERIFY(dotUV<cher::EPSILON);
+
+    qInfo("Create new canvas orthogonal to the current one");
+    this->onNewCanvasOrtho();
+    QCOMPARE((int)m_scene->getNumCanvases(), 5);
+    entity::Canvas* canvas2 = m_scene->getCanvas(4);
+    QVERIFY(canvas2);
+
+    QVERIFY(differenceWithinThreshold(canvas2->getCenter(), osg::Vec3f(1,0,1)));
+    QVERIFY(differenceWithinThreshold(canvas2->getNormal(), canvas->getGlobalAxisV()));
+
+    qInfo("Test for orthogonality of the cloned canvas");
+    dotUN = std::fabs(canvas2->getNormal() * canvas2->getGlobalAxisU());
+    dotVN = std::fabs(canvas2->getNormal() * canvas2->getGlobalAxisV());
+    dotUV = std::fabs(canvas2->getGlobalAxisU() * canvas2->getGlobalAxisV());
+    QVERIFY(dotUN<cher::EPSILON);
+    QVERIFY(dotVN<cher::EPSILON);
+    QVERIFY(dotUV<cher::EPSILON);
 }
 
 bool CanvasTest::differenceWithinThreshold(const osg::Vec3f &X, const osg::Vec3f &Y)

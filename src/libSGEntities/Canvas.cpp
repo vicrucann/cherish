@@ -279,16 +279,18 @@ void entity::Canvas::setVisibilityData(bool vis)
 osg::Vec3f entity::Canvas::getGlobalAxisU() const
 {
     osg::Vec3f P = cher::CENTER;
-    bool success = Utilities::getGlobalFromLocal(osg::Vec3f(1,0,0), m_transform->getMatrix(), P);
+    bool success = Utilities::getGlobalFromLocal(osg::Vec3f(1,0,0), m_mR, P);
     Q_ASSERT(success);
+    P.normalize();
     return P;
 }
 
 osg::Vec3f entity::Canvas::getGlobalAxisV() const
 {
     osg::Vec3f P = cher::CENTER;
-    bool success = Utilities::getGlobalFromLocal(osg::Vec3f(0,1,0), m_transform->getMatrix(), P);
+    bool success = Utilities::getGlobalFromLocal(osg::Vec3f(0,1,0), m_mR, P);
     Q_ASSERT(success);
+    P.normalize();
     return P;
 }
 
@@ -325,11 +327,11 @@ void entity::Canvas::rotate(const osg::Matrix& mr, const osg::Vec3f &c3d_new)
     osg::Vec3f c2d_old = m_center * invM;
     if (m_center != c3d_new){
         if (std::fabs(c2d_old.z()) > cher::EPSILON){
-            qWarning("Warning: updateFrame(): local central point z-coord is not close to zero");
+            qCritical("Warning: updateFrame(): local central point z-coord is not close to zero");
             return;
         }
         if (std::fabs(c2d_new.z()) > cher::EPSILON){
-            qWarning("Warning: updateFrame(): local central point z-coord is not close to zero");
+            qCritical("Warning: updateFrame(): local central point z-coord is not close to zero");
             return;
         }
         /* move every child back in local delta translation (diff between old and new centers) */
@@ -337,7 +339,7 @@ void entity::Canvas::rotate(const osg::Matrix& mr, const osg::Vec3f &c3d_new)
         for (size_t i=0; i<this->getNumEntities(); ++i){
             entity::Entity2D* entity = this->getEntity(i);
             if (!entity){
-                qWarning("rotate canvas: could not dynamic_cast to Entity2D*");
+                qCritical("rotate canvas: could not dynamic_cast to Entity2D*");
                 return;
             }
             entity->moveDelta(delta2d.x(), delta2d.y());
@@ -557,7 +559,7 @@ void entity::Canvas::updateFrame(entity::Canvas* against)
                 /* new 2d local center */
                 osg::Vec3f c2d_new = bb.center();
                 if (std::fabs(c2d_new.z()) > cher::EPSILON){
-                    qWarning("Warning: updateFrame(): local central point z-coord is not close to zero");
+                    qCritical("Warning: updateFrame(): local central point z-coord is not close to zero");
                     return;
                 }
 
