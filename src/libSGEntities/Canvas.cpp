@@ -274,20 +274,22 @@ void entity::Canvas::setVisibilityData(bool vis)
 {
     m_switch->setChildValue(m_groupData, vis);
 }
-#endif
+#endif // DOXYGEN_SHOULD_SKIP_THIS
 
-const osg::Vec3f &entity::Canvas::getGlobalAxisU() const
+osg::Vec3f entity::Canvas::getGlobalAxisU() const
 {
-    osg::Vec3f u_loc = osg::Vec3f(1,0,0);
-    osg::Matrix M = m_transform->getMatrix();
-    return M * u_loc;
+    osg::Vec3f P = cher::CENTER;
+    bool success = Utilities::getGlobalFromLocal(osg::Vec3f(1,0,0), m_transform->getMatrix(), P);
+    Q_ASSERT(success);
+    return P;
 }
 
-const osg::Vec3f &entity::Canvas::getGlobalAxisV() const
+osg::Vec3f entity::Canvas::getGlobalAxisV() const
 {
-    osg::Vec3f v_loc = osg::Vec3f(0,1,0);
-    osg::Matrix M = m_transform->getMatrix();
-    return M * v_loc;
+    osg::Vec3f P = cher::CENTER;
+    bool success = Utilities::getGlobalFromLocal(osg::Vec3f(0,1,0), m_transform->getMatrix(), P);
+    Q_ASSERT(success);
+    return P;
 }
 
 const osg::Geometry *entity::Canvas::getGeometryPickable() const
@@ -447,9 +449,13 @@ const osg::Vec3f &entity::Canvas::getEntitiesSelectedCenter2D() const
     return m_selectedGroup.getCenter2DCustom();
 }
 
-const osg::Vec3f &entity::Canvas::getCenter2D() const
+osg::Vec3f entity::Canvas::getCenter2D() const
 {
-    return m_center * m_transform->getMatrix();
+    osg::Matrix M = m_transform->getMatrix();
+    osg::Matrix invM;
+    bool invertable = invM.invert(M);
+    Q_ASSERT(invertable);
+    return invertable? m_center * invM : cher::CENTER;
 }
 
 const osg::Vec3f &entity::Canvas::getBoundingBoxCenter3D() const
@@ -462,7 +468,7 @@ const osg::Vec3f &entity::Canvas::getBoundingBoxCenter3D() const
 const osg::Vec3f &entity::Canvas::getBoundingBoxCenter2D() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
-    if (!bb.valid()) return m_center;
+    if (!bb.valid()) return this->getCenter2D();
     return bb.center();
 }
 
@@ -671,7 +677,6 @@ entity::Canvas *entity::Canvas::separate()
     return clone.release();
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 // updates internals from m_r and m_t
 void entity::Canvas::updateTransforms()
 {
@@ -681,7 +686,7 @@ void entity::Canvas::updateTransforms()
 
     /* update plane parameters */
     m_normal = cher::NORMAL;
-    m_center = osg::Vec3(0,0,0);
+    m_center = cher::CENTER;
     osg::Plane plane(m_normal, m_center);
     m_center = m_center * M;
     plane.transform(M);
@@ -703,14 +708,13 @@ void entity::Canvas::resetTransforms()
 
     /* reset plane params */
     m_normal = cher::NORMAL;
-    m_center = osg::Vec3(0,0,0);
+    m_center = cher::CENTER;
     osg::Plane plane(m_normal, m_center);
     m_center = m_center * m_mR * m_mT;
     plane.transform(m_mR * m_mT);
     m_normal = plane.getNormal();
     if (!plane.valid()){
-        qWarning("resetTrandforms: failed. Exiting application");
-        exit(1);
+        qFatal("resetTrandforms: failed.");
     }
 }
 
@@ -737,7 +741,6 @@ void entity::Canvas::setIntersection(entity::Canvas *against)
     }
     m_toolFrame->setIntersection(P1,P2,P3,P4);
 }
-#endif
 
 const entity::FrameTool *entity::Canvas::getToolFrame() const
 {
