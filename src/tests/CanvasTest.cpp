@@ -12,80 +12,17 @@ void CanvasTest::testBasicApi()
     QVERIFY(differenceWithinThreshold(canvas->getNormal(), cher::NORMAL));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(1,0,0)));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(0,1,0)));
-    float dotUN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisU());
-    float dotVN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisV());
-    float dotUV = std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV());
-    QVERIFY(dotUN<cher::EPSILON);
-    QVERIFY(dotVN<cher::EPSILON);
-    QVERIFY(dotUV<cher::EPSILON);
+    this->testOrthogonality(canvas);
 
     qInfo("Test canvas default nodes and their values");
     canvas->initializeSG();
-    QCOMPARE(int(canvas->getNodeMask()), int(cher::MASK_CANVAS_IN));
-
-    qInfo("Test matrix transform");
-    const osg::MatrixTransform* mt = canvas->getTransform();
-    QVERIFY(mt);
-    QCOMPARE(mt->getName().c_str(), "Transform");
-    QCOMPARE((int)canvas->getNumChildren(), 1);
-    QCOMPARE(canvas->getChild(0), mt);
-
-    qInfo("Test switch");
-    const osg::Switch* switchC = canvas->getSwitch();
-    QVERIFY(switchC);
-    QCOMPARE(switchC->getName().c_str(), "Switch");
-    QCOMPARE(mt->getChild(0), switchC);
-    QCOMPARE((int)switchC->getNumChildren(), 2);
-
-    qInfo("Test group data");
-    const osg::Group* groupData = canvas->getGroupData();
-    QVERIFY(groupData);
-    QCOMPARE(int(groupData->getNodeMask()), int(cher::MASK_CANVASDATA_IN));
-    QCOMPARE(switchC->getChild(0), groupData);
-    QCOMPARE((int)groupData->getNumChildren(), 2);
-    QVERIFY(switchC->getChildValue(groupData));
-
-    qInfo("Test frame tools");
-    QCOMPARE(canvas->getColor(), cher::CANVAS_CLR_REST);
-    const entity::FrameTool* frameTool = canvas->getToolFrame();
-    QVERIFY(frameTool);
-    QCOMPARE(switchC->getChild(1), frameTool);
-    QVERIFY(switchC->getChildValue(frameTool));
-
-    qInfo("Test group data content");
-    const osg::Geode* geodeStrokes = canvas->getGeodeStrokes();
-    QVERIFY(geodeStrokes);
-    QCOMPARE(groupData->getChild(0), geodeStrokes);
-    const osg::Geode* geodePhotos = canvas->getGeodePhotos();
-    QVERIFY(geodePhotos);
-    QCOMPARE(groupData->getChild(1), geodePhotos);
+    this->testStructure(canvas);
 
     qInfo("Test color setting of frame tool");
     canvas->setColor(cher::CANVAS_CLR_CURRENT);
     QCOMPARE(canvas->getColor(), cher::CANVAS_CLR_CURRENT);
-    QCOMPARE(frameTool->getColor(), cher::CANVAS_CLR_CURRENT);
-
-    qInfo("Test visibility setting for frame tool");
-    canvas->setVisibilityFrameInternal(false);
-    QCOMPARE(frameTool->getVisibility(), false );
-    QCOMPARE(canvas->getVisibilityFrameInternal(), false);
-    QVERIFY(switchC->getChildValue(groupData));
-    QVERIFY(switchC->getChildValue(frameTool));
-    canvas->setVisibilityFrameInternal(true);
-    QCOMPARE(frameTool->getVisibility(), true);
-    QCOMPARE(canvas->getVisibilityFrameInternal(), true);
-
-    qInfo("Test visibility setting for all the canvas content");
-    canvas->setVisibilityAll(false);
-    QCOMPARE(switchC->getChildValue(groupData), false);
-    QCOMPARE(switchC->getChildValue(frameTool), false);
-    QCOMPARE(canvas->getVisibilityAll(), false);
-    QVERIFY(frameTool->getVisibility());
-    canvas->setVisibilityAll(true);
-    QCOMPARE(switchC->getChildValue(groupData), true);
-    QCOMPARE(switchC->getChildValue(frameTool), true);
-    QCOMPARE(canvas->getVisibilityAll(), true);
-    QVERIFY(frameTool->getVisibility());
+    QVERIFY(canvas->getToolFrame());
+    QCOMPARE(canvas->getToolFrame()->getColor(), cher::CANVAS_CLR_CURRENT);
 
     qInfo("Test rotation and translation procedures");
 
@@ -96,12 +33,7 @@ void CanvasTest::testBasicApi()
     QVERIFY(differenceWithinThreshold(canvas->getNormal(), osg::Vec3f(len,0,len)));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(len,0,-len)));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(0,1,0)));
-    dotUN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisU());
-    dotVN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisV());
-    dotUV = std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV());
-    QVERIFY(dotUN<cher::EPSILON);
-    QVERIFY(dotVN<cher::EPSILON);
-    QVERIFY(dotUV<cher::EPSILON);
+    this->testOrthogonality(canvas);
 
     qInfo("translation along normal");
     osg::Matrix tMat = osg::Matrix::translate(1, 0, 1);
@@ -111,12 +43,43 @@ void CanvasTest::testBasicApi()
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(0,1,0)));
 
     qInfo("Test for orthogonality between normal and axis UV");
-    dotUN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisU());
-    dotVN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisV());
-    dotUV = std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV());
-    QVERIFY(dotUN<cher::EPSILON);
-    QVERIFY(dotVN<cher::EPSILON);
-    QVERIFY(dotUV<cher::EPSILON);
+    this->testOrthogonality(canvas);
+}
+
+void CanvasTest::testReadWrite()
+{
+    qInfo("Tests for read and write functionality");
+    qInfo("Test initial structure");
+    QCOMPARE((int)m_scene->getNumCanvases(), 3);
+    QCOMPARE(m_canvas0.get(), m_scene->getCanvas(0));
+    QCOMPARE(m_canvas1.get(), m_scene->getCanvas(1));
+    QCOMPARE(m_canvas2.get(), m_scene->getCanvas(2));
+    QCOMPARE(m_canvasWidget->topLevelItemCount(), 3);
+    this->testStructure(m_canvas0.get());
+
+    qInfo("Write scene to file");
+    QString fname_canvas = QString("RW_CanvasTest.osgt");
+    m_rootScene->setFilePath(fname_canvas.toStdString());
+    QVERIFY(m_rootScene->writeScenetoFile());
+    QVERIFY(m_rootScene->isSavedToFile());
+
+    qInfo("Clear scene");
+    this->onFileClose();
+    QVERIFY(m_rootScene->isEmptyScene());
+
+    qInfo("Re-open the saved file");
+    m_rootScene->setFilePath(fname_canvas.toStdString());
+    QVERIFY(m_rootScene->isSetFilePath());
+    QVERIFY(this->loadSceneFromFile());
+    m_scene = m_rootScene->getUserScene();
+    QVERIFY(m_scene.get());
+
+    qInfo("Test an arbitrary canvas structure");
+    QCOMPARE(m_scene->getNumCanvases(), 3);
+    m_canvas0 = m_scene->getCanvas(0);
+    QVERIFY(m_canvas0.get());
+    QCOMPARE(m_canvasWidget->topLevelItemCount(), 3);
+    this->testStructure(m_canvas0.get());
 }
 
 void CanvasTest::testNewXY()
@@ -231,19 +194,14 @@ void CanvasTest::testCloneOrtho()
     canvas->translate(tMat);
     qInfo("Rotate the canvas +30 degrees around X axis");
     osg::Matrix rotMat2 = osg::Matrix::rotate(cher::PI/6, osg::Vec3f(1,0,0));
-    canvas->rotate(rotMat2, cher::CENTER);
+    canvas->rotate(rotMat2, canvas->getBoundingBoxCenter3D());
     QVERIFY(std::fabs(canvas->getNormal() * canvas->getGlobalAxisU())<cher::EPSILON);
     QVERIFY(std::fabs(canvas->getNormal() * canvas->getGlobalAxisV())<cher::EPSILON);
     QVERIFY(std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV())<cher::EPSILON);
     QCOMPARE(m_scene->getCanvasCurrent(), canvas);
 
     qInfo("Test for orthogonality between normal and axis UV");
-    float dotUN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisU());
-    float dotVN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisV());
-    float dotUV = std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV());
-    QVERIFY(dotUN<cher::EPSILON);
-    QVERIFY(dotVN<cher::EPSILON);
-    QVERIFY(dotUV<cher::EPSILON);
+    this->testOrthogonality(canvas);
 
     qInfo("Create new canvas orthogonal to the current one");
     this->onNewCanvasOrtho();
@@ -251,16 +209,12 @@ void CanvasTest::testCloneOrtho()
     entity::Canvas* canvas2 = m_scene->getCanvas(4);
     QVERIFY(canvas2);
 
+    std::cout << canvas2->getCenter().x() << " " << canvas2->getCenter().y() << " " << canvas2->getCenter().z() << std::endl;
     QVERIFY(differenceWithinThreshold(canvas2->getCenter(), osg::Vec3f(1,0,1)));
     QVERIFY(differenceWithinThreshold(canvas2->getNormal(), canvas->getGlobalAxisV()));
 
     qInfo("Test for orthogonality of the cloned canvas");
-    dotUN = std::fabs(canvas2->getNormal() * canvas2->getGlobalAxisU());
-    dotVN = std::fabs(canvas2->getNormal() * canvas2->getGlobalAxisV());
-    dotUV = std::fabs(canvas2->getGlobalAxisU() * canvas2->getGlobalAxisV());
-    QVERIFY(dotUN<cher::EPSILON);
-    QVERIFY(dotVN<cher::EPSILON);
-    QVERIFY(dotUV<cher::EPSILON);
+    this->testOrthogonality(canvas2);
 }
 
 bool CanvasTest::differenceWithinThreshold(const osg::Vec3f &X, const osg::Vec3f &Y)
@@ -269,6 +223,83 @@ bool CanvasTest::differenceWithinThreshold(const osg::Vec3f &X, const osg::Vec3f
     return (std::fabs(diff.x())<=cher::EPSILON &&
             std::fabs(diff.y())<=cher::EPSILON &&
             std::fabs(diff.z())<cher::EPSILON );
+}
+
+void CanvasTest::testOrthogonality(entity::Canvas *canvas)
+{
+    QVERIFY(canvas);
+    qInfo("Test canvas local axis and normal are orthogonal");
+    float dotUN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisU());
+    float dotVN = std::fabs(canvas->getNormal() * canvas->getGlobalAxisV());
+    float dotUV = std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV());
+    QVERIFY(dotUN<cher::EPSILON);
+    QVERIFY(dotVN<cher::EPSILON);
+    QVERIFY(dotUV<cher::EPSILON);
+}
+
+void CanvasTest::testStructure(entity::Canvas *canvas)
+{
+    QVERIFY(canvas);
+    QCOMPARE(int(canvas->getNodeMask()), int(cher::MASK_CANVAS_IN));
+
+    qInfo("Test matrix transform");
+    const osg::MatrixTransform* mt = canvas->getTransform();
+    QVERIFY(mt);
+    QCOMPARE(mt->getName().c_str(), "Transform");
+    QCOMPARE((int)canvas->getNumChildren(), 1);
+    QCOMPARE(canvas->getChild(0), mt);
+
+    qInfo("Test switch");
+    const osg::Switch* switchC = canvas->getSwitch();
+    QVERIFY(switchC);
+    QCOMPARE(switchC->getName().c_str(), "Switch");
+    QCOMPARE(mt->getChild(0), switchC);
+    QCOMPARE((int)switchC->getNumChildren(), 2);
+
+    qInfo("Test group data");
+    const osg::Group* groupData = canvas->getGroupData();
+    QVERIFY(groupData);
+    QCOMPARE(int(groupData->getNodeMask()), int(cher::MASK_CANVASDATA_IN));
+    QCOMPARE(switchC->getChild(0), groupData);
+    QCOMPARE((int)groupData->getNumChildren(), 2);
+    QVERIFY(switchC->getChildValue(groupData));
+
+    qInfo("Test frame tools");
+    QCOMPARE(canvas->getColor(), cher::CANVAS_CLR_REST);
+    const entity::FrameTool* frameTool = canvas->getToolFrame();
+    QVERIFY(frameTool);
+    QCOMPARE(switchC->getChild(1), frameTool);
+    QVERIFY(switchC->getChildValue(frameTool));
+
+    qInfo("Test group data content");
+    const osg::Geode* geodeStrokes = canvas->getGeodeStrokes();
+    QVERIFY(geodeStrokes);
+    QCOMPARE(groupData->getChild(0), geodeStrokes);
+    const osg::Geode* geodePhotos = canvas->getGeodePhotos();
+    QVERIFY(geodePhotos);
+    QCOMPARE(groupData->getChild(1), geodePhotos);
+
+    qInfo("Test visibility setting for frame tool");
+    canvas->setVisibilityFrameInternal(false);
+    QCOMPARE(frameTool->getVisibility(), false );
+    QCOMPARE(canvas->getVisibilityFrameInternal(), false);
+    QVERIFY(switchC->getChildValue(groupData));
+    QVERIFY(switchC->getChildValue(frameTool));
+    canvas->setVisibilityFrameInternal(true);
+    QCOMPARE(frameTool->getVisibility(), true);
+    QCOMPARE(canvas->getVisibilityFrameInternal(), true);
+
+    qInfo("Test visibility setting for all the canvas content");
+    canvas->setVisibilityAll(false);
+    QCOMPARE(switchC->getChildValue(groupData), false);
+    QCOMPARE(switchC->getChildValue(frameTool), false);
+    QCOMPARE(canvas->getVisibilityAll(), false);
+    QVERIFY(frameTool->getVisibility());
+    canvas->setVisibilityAll(true);
+    QCOMPARE(switchC->getChildValue(groupData), true);
+    QCOMPARE(switchC->getChildValue(frameTool), true);
+    QCOMPARE(canvas->getVisibilityAll(), true);
+    QVERIFY(frameTool->getVisibility());
 }
 
 QTEST_MAIN(CanvasTest)

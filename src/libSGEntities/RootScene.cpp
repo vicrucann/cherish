@@ -169,7 +169,6 @@ bool RootScene::loadSceneFromFile()
         qWarning("loadSceneFromFile: node is NULL");
         return false;
     }
-    qDebug() << "Loaded node, number of children: " << node->asGroup()->getNumChildren();
 
     osg::ref_ptr<entity::UserScene> newscene = dynamic_cast<entity::UserScene*>(node);
     if (!newscene.get()){
@@ -194,6 +193,7 @@ bool RootScene::loadSceneFromFile()
         if (!cnv) qFatal("RootScene::loadSceneFromFile() canvas is NULL");
         cnv->initializeTools();
         cnv->initializeStateMachine();
+        cnv->initializeMasks();
 
         /* photo textures */
         for (size_t i=0; i<cnv->getNumPhotos(); ++i){

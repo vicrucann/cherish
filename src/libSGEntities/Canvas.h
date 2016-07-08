@@ -40,6 +40,9 @@ public:
     /*! Method is called automatically from initializeSG() to initialize OpenGL state machine or when reading scene from file. */
     virtual void initializeStateMachine();
 
+    /*! Method is called automatically from initializeSG(), or must be called when reading scene from file. */
+    virtual void initializeMasks();
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 public:
     META_Node(entity, Canvas)

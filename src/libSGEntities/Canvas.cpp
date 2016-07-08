@@ -64,7 +64,6 @@ void entity::Canvas::initializeTools()
 {
     m_toolFrame = new entity::FrameTool();
     if (!m_toolFrame) qFatal("Canvas::initializeTools() - pointers are NULL");
-    m_toolFrame->setNodeMask(cher::MASK_CANVASFRAME_IN);
 
     if (!m_switch.get()) qFatal("Canvas::initializeTools() - pointers are NULL");
 
@@ -81,10 +80,6 @@ void entity::Canvas::initializeSG()
     /* OpenGL settings */
     this->initializeStateMachine();
 
-    /*  set traversal masks for intersectors (to be used from EventHandler) */
-    this->setNodeMask(cher::MASK_CANVAS_IN);
-    m_groupData->setNodeMask(cher::MASK_CANVASDATA_IN);
-
     /* scene graph elements */
     this->addChild(m_transform.get());
     m_transform->setName("Transform");
@@ -99,6 +94,9 @@ void entity::Canvas::initializeSG()
     this->updateTransforms();
     this->setColor(cher::CANVAS_CLR_REST);
     this->setVertices(m_center, cher::CANVAS_MINW, cher::CANVAS_MINH, cher::CANVAS_CORNER, cher::CANVAS_AXIS);
+
+    /* traversal masks */
+    this->initializeMasks();
 }
 
 void entity::Canvas::initializeStateMachine()
@@ -115,6 +113,16 @@ void entity::Canvas::initializeStateMachine()
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     this->setStateSet(stateset);
+}
+
+void entity::Canvas::initializeMasks()
+{
+    /*  set traversal masks for intersectors (to be used from EventHandler) */
+    this->setNodeMask(cher::MASK_CANVAS_IN);
+    if (m_groupData.get())
+        m_groupData->setNodeMask(cher::MASK_CANVASDATA_IN);
+    if (m_toolFrame.get())
+        m_toolFrame->setNodeMask(cher::MASK_CANVASFRAME_IN);
 }
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
