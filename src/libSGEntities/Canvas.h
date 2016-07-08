@@ -176,7 +176,7 @@ public:
     bool isEntitiesSelected() const;
 
     /*! \return global 3D center of SelectedGroup. If the group is empty, returns global 3D canvas center. */
-    const osg::Vec3f& getEntitiesSelectedCenter3D() const;
+    osg::Vec3f getEntitiesSelectedCenter3D() const;
 
     /*! \return local 2D center of SelectedGroup. */
     const osg::Vec3f& getEntitiesSelectedCenter2D() const;

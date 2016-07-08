@@ -449,9 +449,9 @@ bool entity::Canvas::isEntitiesSelected() const
     return m_toolFrame->isSelected();
 }
 
-const osg::Vec3f &entity::Canvas::getEntitiesSelectedCenter3D() const
+osg::Vec3f entity::Canvas::getEntitiesSelectedCenter3D() const
 {
-    return m_selectedGroup.getCenter3D(m_transform->getMatrix());
+    return (m_selectedGroup.isEmpty() ? this->getCenter() : m_selectedGroup.getCenter3D(m_transform->getMatrix()) );
 }
 
 const osg::Vec3f &entity::Canvas::getEntitiesSelectedCenter2D() const

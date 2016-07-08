@@ -185,23 +185,31 @@ void CanvasTest::testCloneOrtho()
     qInfo("Rotate the canvas +45 degrees around Y axis");
     osg::Matrix rotMat = osg::Matrix::rotate(cher::PI/4, osg::Vec3f(0,1,0));
     canvas->rotate(rotMat, cher::CENTER);
+    this->testOrthogonality(canvas);
     float len = 1.f * std::cos(cher::PI/4);
+    std::cout << canvas->getCenter().x() << " " << canvas->getCenter().y() << " " << canvas->getCenter().z() << std::endl;
+    QVERIFY(differenceWithinThreshold(canvas->getCenter(), cher::CENTER));
     QVERIFY(differenceWithinThreshold(canvas->getNormal(), osg::Vec3f(len,0,len)));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(len,0,-len)));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(0,1,0)));
+
     qInfo("Translate canvas along its normal");
     osg::Matrix tMat = osg::Matrix::translate(1,0,1);
     canvas->translate(tMat);
+    this->testOrthogonality(canvas);
+    std::cout << canvas->getCenter().x() << " " << canvas->getCenter().y() << " " << canvas->getCenter().z() << std::endl;
+    QVERIFY(differenceWithinThreshold(canvas->getCenter(), osg::Vec3f(1,0,1)));
+    QVERIFY(differenceWithinThreshold(canvas->getNormal(), osg::Vec3f(len,0,len)));
+    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(len,0,-len)));
+    QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisV(), osg::Vec3f(0,1,0)));
+
     qInfo("Rotate the canvas +30 degrees around X axis");
     osg::Matrix rotMat2 = osg::Matrix::rotate(cher::PI/6, osg::Vec3f(1,0,0));
-    canvas->rotate(rotMat2, canvas->getBoundingBoxCenter3D());
-    QVERIFY(std::fabs(canvas->getNormal() * canvas->getGlobalAxisU())<cher::EPSILON);
-    QVERIFY(std::fabs(canvas->getNormal() * canvas->getGlobalAxisV())<cher::EPSILON);
-    QVERIFY(std::fabs(canvas->getGlobalAxisU() * canvas->getGlobalAxisV())<cher::EPSILON);
-    QCOMPARE(m_scene->getCanvasCurrent(), canvas);
-
-    qInfo("Test for orthogonality between normal and axis UV");
+    canvas->rotate(rotMat2, canvas->getCenter());
     this->testOrthogonality(canvas);
+    std::cout << canvas->getCenter().x() << " " << canvas->getCenter().y() << " " << canvas->getCenter().z() << std::endl;
+    QVERIFY(differenceWithinThreshold(canvas->getCenter(), osg::Vec3f(1,0,1)));
+    QCOMPARE(m_scene->getCanvasCurrent(), canvas);
 
     qInfo("Create new canvas orthogonal to the current one");
     this->onNewCanvasOrtho();
