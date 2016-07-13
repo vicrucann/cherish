@@ -3,6 +3,8 @@
 #include "ui_CameraProperties.h"
 
 #include <math.h>
+#include <QDebug>
+#include <QtGlobal>
 
 #include "Settings.h"
 
@@ -32,7 +34,7 @@ CameraProperties::~CameraProperties()
 
 void CameraProperties::onOrthoChecked(bool val)
 {
-    outLogMsg("CameraProperties: onOrthoChecked");
+    qDebug("CameraProperties: onOrthoChecked");
     emit this->orthoChecked(val);
 }
 

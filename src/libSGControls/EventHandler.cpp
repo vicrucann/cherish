@@ -8,6 +8,8 @@
 #include <osgUtil/IntersectionVisitor>
 #include <osg/Viewport>
 
+#include <QDebug>
+
 #include "Utilities.h"
 #include "LineIntersector.h"
 
@@ -176,7 +178,7 @@ void EventHandler::doEraseStroke(entity::Stroke* stroke, int first, int last, ch
 {
     /* THIS IS A DEBUG VERSION !!!!!!*/
     if (!stroke){
-        outErrMsg("doEraseStroke: could not obtain stroke");
+        qWarning("doEraseStroke: could not obtain stroke");
         return;
     }
     m_scene->eraseStroke(stroke, first, last, event);
@@ -226,7 +228,7 @@ void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         return;
 
     if (ea.getEventType()==osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON){
-        outLogMsg("searching for photo to delete");
+        qDebug("searching for photo to delete");
         osgUtil::LineSegmentIntersector::Intersection result_photo;
         bool inter_photo = this->getIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
                 (ea,aa,cher::MASK_CANVAS_IN, result_photo);
@@ -339,7 +341,7 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
 
     /*check for domain errors */
     if (theta < 0 || theta > cher::PI){
-        outErrMsg("doEditCanvasRotate: rotation angle domain error. Fixing.");
+        qWarning("doEditCanvasRotate: rotation angle domain error. Fixing.");
         theta = 0;
     }
 
@@ -349,7 +351,7 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     double sign = r * alongAxis;
     theta *= (sign<0? -1 : 1);
     if (std::fabs(theta) > cher::PI){
-        outErrMsg("doEditCanvasRotate: theta is out of range. Fixing.");
+        qWarning("doEditCanvasRotate: theta is out of range. Fixing.");
         theta = 0;
     }
 
@@ -358,12 +360,12 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         outLogVec("canvas-rotate pressed, quat", rot.x(), rot.y(), rot.z());
-        outLogVal("canvas-rotate pressed, quat.w", rot.w());
+        qDebug() << "canvas-rotate pressed, quat.w " << rot.w();
         m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getBoundingBoxCenter3D(), cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         outLogVec("canvas-rotate released, quat", rot.x(), rot.y(), rot.z());
-        outLogVal("canvas-rotate released, quat.w", rot.w());
+        qDebug() << "canvas-rotate released, quat.w " << rot.w();
         m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getBoundingBoxCenter3D(), cher::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::DRAG:
@@ -450,7 +452,7 @@ void EventHandler::doEditEntitiesMove(const osgGA::GUIEventAdapter &ea, osgGA::G
 
     /* if there are no strokes in canvas, return*/
     if (m_scene->getCanvasCurrent()->getEntitiesSelectedSize() == 0){
-        outErrMsg("doEditEntitiesMove: there are no strokes to move");
+        qWarning("doEditEntitiesMove: there are no strokes to move");
         return;
     }
 
@@ -465,11 +467,11 @@ void EventHandler::doEditEntitiesMove(const osgGA::GUIEventAdapter &ea, osgGA::G
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
-        std::cout << "edit strokes move: push button" << std::endl;
+        qDebug("edit strokes move: push button");
         m_scene->editStrokesMove(u, v, cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
-        std::cout << "edit strokes move: release button" << std::endl;
+        qDebug("edit strokes move: release button");
         m_scene->editStrokesMove(u, v, cher::EVENT_RELEASED);
         this->finishAll();
         break;
@@ -498,7 +500,7 @@ void EventHandler::doEditEntitiesScale(const osgGA::GUIEventAdapter &ea, osgGA::
 
     /* if there are no strokes in canvas, return*/
     if (m_scene->getCanvasCurrent()->getEntitiesSelectedSize() == 0){
-        outErrMsg("doEditEntitiesMove: there are no strokes to move");
+        qWarning("doEditEntitiesMove: there are no strokes to move");
         return;
     }
 
@@ -513,11 +515,11 @@ void EventHandler::doEditEntitiesScale(const osgGA::GUIEventAdapter &ea, osgGA::
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
-        std::cout << "edit strokes scale: push button" << std::endl;
+        qDebug("edit strokes scale: push button");
         m_scene->editStrokesScale(u, v, cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
-        std::cout << "edit strokes scale: release button" << std::endl;
+        qDebug("edit strokes scale: release button");
         m_scene->editStrokesScale(u, v, cher::EVENT_RELEASED);
         this->finishAll();
         break;
@@ -547,7 +549,7 @@ void EventHandler::doEditEntitiesRotate(const osgGA::GUIEventAdapter &ea, osgGA:
 
     /* if there are no strokes in canvas, return*/
     if (m_scene->getCanvasCurrent()->getEntitiesSelectedSize() == 0){
-        outErrMsg("doEditEntitiesMove: there are no strokes to move");
+        qWarning("doEditEntitiesMove: there are no strokes to move");
         return;
     }
 
@@ -562,11 +564,11 @@ void EventHandler::doEditEntitiesRotate(const osgGA::GUIEventAdapter &ea, osgGA:
 
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
-        std::cout << "edit strokes rotate: push button" << std::endl;
+        qDebug("edit strokes rotate: push button");
         m_scene->editStrokesRotate(u, v, cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
-        std::cout << "edit strokes rotate: release button" << std::endl;
+        qDebug("edit strokes rotate: release button");
         m_scene->editStrokesRotate(u, v, cher::EVENT_RELEASED);
         this->finishAll();
         break;
@@ -894,11 +896,11 @@ void EventHandler::doSelectCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
     if (intersected){
         entity::Canvas* cnv = this->getCanvas(resultIntersection);
         if (cnv){
-            std::cout << "doPickCanvas(): assumed canvas with name: " << cnv->getName() << std::endl;
+            qDebug() << "doPickCanvas(): assumed canvas with name: " << QString(cnv->getName().c_str());
             m_scene->setCanvasCurrent(cnv);
         }
         else
-            std::cerr << "doPickCanvas(): could not dynamic_cast<Canvas*>" << std::endl;
+            qWarning( "doPickCanvas(): could not dynamic_cast<Canvas*>");
     }
 }
 
@@ -907,7 +909,7 @@ bool EventHandler::getIntersection(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
 {
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (!viewer){
-        outErrMsg("getIntersection(): could not retrieve viewer");
+        qWarning("getIntersection(): could not retrieve viewer");
         return false;
     }
     osg::ref_ptr<TypeIntersector> intersector = new TypeIntersector(osgUtil::Intersector::WINDOW, ea.getX(), ea.getY());
@@ -915,7 +917,7 @@ bool EventHandler::getIntersection(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
     iv.setTraversalMask(mask);
     osg::Camera* cam = viewer->getCamera();
     if (!cam){
-        std::cerr << "getIntersection(): could not read camera" << std::endl;
+        qWarning( "getIntersection(): could not read camera" );
         return false;
     }
     cam->accept(iv);

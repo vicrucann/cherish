@@ -113,7 +113,7 @@ void MainWindow::onAutoSwitchMode(cher::MOUSE_MODE mode)
 
 void MainWindow::onRequestBookmarkSet(int row)
 {
-    outLogMsg("bookmark recieved at MainWindow");
+    qDebug("bookmark recieved at MainWindow");
     entity::Bookmarks* bms = m_rootScene->getBookmarksModel();
     osg::Vec3d eye, center, up;
     double fov;
@@ -124,7 +124,7 @@ void MainWindow::onRequestBookmarkSet(int row)
 
     const entity::SceneState* state = bms->getSceneState(row);
     if (!state){
-        outErrMsg("onRequestBookmarkSet: state is NULL");
+        qWarning("onRequestBookmarkSet: state is NULL");
         return;
     }
     m_rootScene->setSceneState(state);
@@ -167,7 +167,7 @@ void MainWindow::onDeletePhoto(const QModelIndex &index)
 {
     const QModelIndex parent = index.parent();
     if (!parent.isValid()){
-        outErrMsg("onDeletePhoto: cannot find parent canvas");
+        qWarning("onDeletePhoto: cannot find parent canvas");
         return;
     }
     entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
@@ -197,13 +197,13 @@ void MainWindow::onVisibilitySetCanvas(int index)
 
 void MainWindow::onMoveBookmark(const QModelIndex &index)
 {
-    outLogMsg("onMoveBookmark: resetting current index");
+    qDebug("onMoveBookmark: resetting current index");
     m_bookmarkWidget->setCurrentIndex(index);
 }
 
 void MainWindow::onBookmarkAddedToWidget(const QModelIndex &, int first, int last)
 {
-    outLogMsg("onBookmarkAddedToWidget");
+    qDebug("onBookmarkAddedToWidget");
     const std::vector<osg::Vec3d>& centers =    m_rootScene->getUserScene()->getBookmarks()->getCenters();
     const std::vector<osg::Vec3d>& eyes =       m_rootScene->getUserScene()->getBookmarks()->getEyes();
     const std::vector<osg::Vec3d>& ups =        m_rootScene->getUserScene()->getBookmarks()->getUps();
@@ -233,7 +233,7 @@ void MainWindow::onPhotoTransparencyPlus(const QModelIndex &index)
 {
     const QModelIndex parent = index.parent();
     if (!parent.isValid()){
-        outErrMsg("onPhotoTransparency+: cannot find parent canvas");
+        qWarning("onPhotoTransparency+: cannot find parent canvas");
         return;
     }
     entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
@@ -250,7 +250,7 @@ void MainWindow::onPhotoTransparencyMinus(const QModelIndex &index)
 {
     const QModelIndex parent = index.parent();
     if (!parent.isValid()){
-        outErrMsg("onPhotoTransparency-: cannot find parent canvas");
+        qWarning("onPhotoTransparency-: cannot find parent canvas");
         return;
     }
     entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvasFromIndex(parent.row());
@@ -280,13 +280,13 @@ void MainWindow::onPhotoPushed(int parent, int start, int, int destination, int)
 void MainWindow::onRequestSceneData(entity::SceneState *state)
 {
     if (!state){
-        outErrMsg("onRequestSceneData: state is NULL");
+        qWarning("onRequestSceneData: state is NULL");
         return;
     }
     else
         state->stripDataFrom(m_rootScene.get());
     if (state->isEmpty())
-        outLogMsg("MainWindow: failed to strip data to scene state");
+        qDebug("MainWindow: failed to strip data to scene state");
 }
 
 void MainWindow::onRequestSceneStateSet(entity::SceneState *state)
@@ -305,7 +305,7 @@ void MainWindow::onRequestSceneToolStatus(bool &visibility)
 */
 void MainWindow::onFileNew()
 {
-    outLogMsg("onFileNew called");
+    qDebug("onFileNew called");
     this->onFileClose();
 
     this->onRequestUpdate();
@@ -407,7 +407,7 @@ void MainWindow::onFileImage()
 
 void MainWindow::onFileClose()
 {
-    outLogMsg("onFileClose() called");
+    qDebug("onFileClose() called");
     if (!m_rootScene->isSavedToFile() && !m_rootScene->isEmptyScene()){
         QMessageBox::StandardButton reply = QMessageBox::question(this,
                                                                   tr("Closing the current project"),
@@ -431,7 +431,7 @@ void MainWindow::onFileClose()
 
 void MainWindow::onFileExit()
 {
-    outLogMsg("onFileExit() called");
+    qDebug("onFileExit() called");
     this->onFileClose();
     this->close();
 }
@@ -519,7 +519,7 @@ void MainWindow::onNewCanvasXY()
 
 void MainWindow::onNewCanvasYZ()
 {
-    m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 0, -1, 0), osg::Matrix::translate(0,0,0));
+    m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 0, 1, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
     this->onRequestUpdate();
@@ -616,7 +616,7 @@ void MainWindow::onStrokesPush()
     osg::Camera* camera = m_glWidget->getCamera();
     if (!camera)
     {
-        std::cerr << "could not obtain camera" << std::endl;
+        qWarning( "could not obtain camera");
         return;
     }
     m_rootScene->editStrokesPush(camera);

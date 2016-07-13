@@ -1,5 +1,6 @@
 #include "UserScene.h"
 
+#include <QDebug>
 #include <QtGlobal>
 
 #include "Settings.h"
@@ -148,14 +149,14 @@ void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const
 void entity::UserScene::addCanvas(QUndoStack *stack, const osg::Vec3f &normal, const osg::Vec3f &center)
 {
     if (!stack){
-        outErrMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
+        qWarning("addCanvas(): undo stack is NULL, Canvas will not be added. "
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
     fur::AddCanvasCommand* cmd = new fur::AddCanvasCommand(this, normal, center,
                                                  getEntityName(cher::NAME_CANVAS, m_idCanvas++));
     if (!cmd){
-        outErrMsg("addCanvas: cmd is NULL");
+        qWarning("addCanvas: cmd is NULL");
         return;
     }
     stack->push(cmd);
@@ -164,13 +165,13 @@ void entity::UserScene::addCanvas(QUndoStack *stack, const osg::Vec3f &normal, c
 void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const osg::Matrix& T, const std::string& name)
 {
     if (!stack){
-        outErrMsg("addCanvas(): undo stack is NULL, Canvas will not be added. "
+        qWarning("addCanvas(): undo stack is NULL, Canvas will not be added. "
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
     fur::AddCanvasCommand* cmd = new fur::AddCanvasCommand(this, R, T, name);
     if (!cmd){
-        outErrMsg("addCanvas: cmd is NULL");
+        qWarning("addCanvas: cmd is NULL");
         return;
     }
     stack->push(cmd);
@@ -180,18 +181,18 @@ void entity::UserScene::addCanvas(QUndoStack* stack, const osg::Matrix& R, const
 void entity::UserScene::addStroke(QUndoStack* stack, float u, float v, cher::EVENT event)
 {
     if (!stack){
-        outErrMsg("addStroke(): undo stack is NULL, it is not initialized. "
+        qWarning("addStroke(): undo stack is NULL, it is not initialized. "
                  "Sketching is not possible. "
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
     switch (event){
     case cher::EVENT_OFF:
-        outLogMsg("EVENT_OFF");
+        qDebug("EVENT_OFF");
         this->strokeFinish(stack);
         break;
     case cher::EVENT_PRESSED:
-        outLogMsg("EVENT_PRESSED");
+        qDebug("EVENT_PRESSED");
         this->strokeStart();
         this->strokeAppend(u, v);
         break;
@@ -201,7 +202,7 @@ void entity::UserScene::addStroke(QUndoStack* stack, float u, float v, cher::EVE
         this->strokeAppend(u, v);
         break;
     case cher::EVENT_RELEASED:
-        outLogMsg("EVENT_RELEASED");
+        qDebug("EVENT_RELEASED");
         if (!this->strokeValid())
             break;
         this->strokeAppend(u, v);
@@ -214,15 +215,15 @@ void entity::UserScene::addStroke(QUndoStack* stack, float u, float v, cher::EVE
 
 void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
 {
-    outLogMsg("loadPhotoFromFile()");
+    qDebug("loadPhotoFromFile()");
     if (!stack){
-        outErrMsg("addPhoto(): undo stack is NULL, Canvas will not be added. "
+        qWarning("addPhoto(): undo stack is NULL, Canvas will not be added. "
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
     fur::AddPhotoCommand* cmd = new fur::AddPhotoCommand(this, fname, this->getPhotoName());
     if (!cmd){
-        outErrMsg("addPhoto(): could not allocate fur::AddPhotoCommand.");
+        qWarning("addPhoto(): could not allocate fur::AddPhotoCommand.");
         return;
     }
     stack->push(cmd);
@@ -255,25 +256,25 @@ void entity::UserScene::deleteBookmark(BookmarkWidget *widget, const QModelIndex
 void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, int first, int last, cher::EVENT event)
 {
     if (!stack){
-        outErrMsg("eraseStroke(): undo stack is NULL, it is not initialized. "
+        qWarning("eraseStroke(): undo stack is NULL, it is not initialized. "
                  "Erase is not possible. "
                  "Restart the program to ensure undo stack initialization.");
         return;
     }
 
-    stroke->removePoints(first, last);
+//    stroke->removePoints(first, last);
 
     switch (event){
     case cher::EVENT_OFF:
-        outLogMsg("EVENT_OFF");
+        qDebug("EVENT_OFF");
         break;
     case cher::EVENT_PRESSED:
-        outLogMsg("EVENT_PRESSED");
+        qDebug("EVENT_PRESSED");
         break;
     case cher::EVENT_DRAGGED:
         break;
     case cher::EVENT_RELEASED:
-        outLogMsg("EVENT_RELEASED");
+        qDebug("EVENT_RELEASED");
         break;
     default:
         break;
@@ -340,7 +341,7 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
         m_canvasCurrent = NULL;
     }
     if (!cnv){
-        std::cerr << "setCanvasCurrent(): The input canvas pointer is NULL, no current canvas is assigned" << std::endl;
+        qWarning( "setCanvasCurrent(): The input canvas pointer is NULL, no current canvas is assigned" );
         return false;
     }
     m_canvasCurrent = cnv;
@@ -525,11 +526,11 @@ void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rot
 
     switch (event){
     case cher::EVENT_OFF:
-        outLogMsg("editCanvasRotate: OFF");
+        qDebug("editCanvasRotate: OFF");
         this->canvasRotateFinish(stack);
         break;
     case cher::EVENT_PRESSED:
-        outLogMsg("editCanvasRotate: pressed");
+        qDebug("editCanvasRotate: pressed");
         this->canvasRotateStart();
         this->canvasRotateAppend(rotation, center3d);
         break;
@@ -539,10 +540,10 @@ void entity::UserScene::editCanvasRotate(QUndoStack* stack, const osg::Quat& rot
         this->canvasRotateAppend(rotation, center3d);
         break;
     case cher::EVENT_RELEASED:
-        outLogMsg("editCanvasRotate: release");
+        qDebug("editCanvasRotate: release");
         if (!this->canvasEditValid())
             break;
-        outLogMsg("editCanvasRotate: released");
+        qDebug("editCanvasRotate: released");
         this->canvasRotateAppend(rotation, center3d);
         this->canvasRotateFinish(stack);
         break;
@@ -707,7 +708,7 @@ void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
     if (strokes.size() == 0) return;
 
 //    if (!Utilities::areStrokesProjectable(strokes, m_canvasCurrent.get(), m_canvasPrevious.get(), camera)){
-//        outErrMsg("Strokes are not pushable under this point of view. Try to change camera position.");
+//        qWarning("Strokes are not pushable under this point of view. Try to change camera position.");
 //        return;
 //    }
 
@@ -884,7 +885,7 @@ void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
         if (!cnv->getVisibilityAll()){
             cnv->setVisibilityAll(false);
             int row = this->getCanvasIndex(cnv);
-            outLogVal("Trying to set up canvas visibility scene and GUI", row);
+            qDebug() << "Trying to set up canvas visibility scene and GUI " << row;
             emit canvasVisibilitySet(row, false);
         }
     }
@@ -997,9 +998,9 @@ void entity::UserScene::strokeStart()
     /* if the canvas is hidden, show it all so that user could see where they sketch */
     if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
-    outLogMsg("strokeStart()");
+    qDebug("strokeStart()");
     if (this->strokeValid()){
-        outErrMsg("strokeStart(): Cannot start new stroke since the pointer is not NULL");
+        qWarning("strokeStart(): Cannot start new stroke since the pointer is not NULL");
         return;
     }
     entity::Stroke* stroke = new entity::Stroke();
@@ -1015,7 +1016,7 @@ void entity::UserScene::strokeAppend(float u, float v)
         this->updateWidgets();
     }
     else
-        outErrMsg("strokeAppend: pointer is NULL");
+        qWarning("strokeAppend: pointer is NULL");
 }
 
 /* if command is still a valid pointer,
@@ -1034,12 +1035,12 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
         }
     }
     else{
-        outErrMsg("strokeFinish(): stroke pointer is NULL, impossible to finish the stroke");
+        qWarning("strokeFinish(): stroke pointer is NULL, impossible to finish the stroke");
         return;
     }
     m_canvasCurrent->removeEntity(stroke); // remove the "current" copy
     m_canvasCurrent->setStrokeCurrent(false);
-    outLogMsg("strokeFinish()");
+    qDebug("strokeFinish()");
 }
 
 bool entity::UserScene::strokeValid() const
@@ -1084,7 +1085,7 @@ void entity::UserScene::entitiesMoveFinish(QUndoStack *stack)
                                                              m_canvasCurrent.get(),
                                                              m_du, m_dv);
     if (!cmd){
-        outErrMsg("strokeMoveFinish: Could not allocate command");
+        qWarning("strokeMoveFinish: Could not allocate command");
         return;
     }
     stack->push(cmd);
@@ -1152,7 +1153,7 @@ void entity::UserScene::entitiesScaleFinish(QUndoStack *stack)
     m_scaleX = m_scaleY = 1;
 
     if (!cmd){
-        outErrMsg("strokeScaleFinish: Could not allocate command");
+        qWarning("strokeScaleFinish: Could not allocate command");
         return;
     }
     stack->push(cmd);
@@ -1167,7 +1168,7 @@ void entity::UserScene::entitiesRotateStart(double u, double v)
     osg::Vec3f center = m_canvasCurrent->getBoundingBoxCenter2D();
     if (center.z() > cher::EPSILON){
         outLogVec("center", center.x(), center.y(), center.z());
-        outErrMsg("entitiesRotateStart: z coordiante is not close to zero");
+        qWarning("entitiesRotateStart: z coordiante is not close to zero");
     }
 
     m_u = u;
@@ -1214,7 +1215,7 @@ void entity::UserScene::entitiesRotateAppend(double u, double v)
     if (theta < -cher::PI || theta > cher::PI)
         theta = 0;
 
-    outLogVal("theta", theta);
+    qDebug() << "theta " << theta;
 
     /* now rotate stroke on theta around center of coords [m_du m_dv] */
     m_canvasCurrent->rotateEntitiesSelected(theta);
@@ -1242,7 +1243,7 @@ void entity::UserScene::entitiesRotateFinish(QUndoStack *stack)
     m_inits = false;
 
     if (!cmd){
-        outErrMsg("entitiesRotateFinish: Could not allocate command");
+        qWarning("entitiesRotateFinish: Could not allocate command");
         return;
     }
     stack->push(cmd);
@@ -1263,7 +1264,7 @@ void entity::UserScene::eraseAppend(entity::Stroke *stroke, osg::Vec3d &hit)
 void entity::UserScene::eraseFinish(QUndoStack *stack, entity::Stroke *stroke)
 {
     if (!this->eraseValid(stroke)){
-        outErrMsg("eraseFinish: stroke ptr is NULL, impossible to finish erase");
+        qWarning("eraseFinish: stroke ptr is NULL, impossible to finish erase");
         return;
     }
 
@@ -1281,7 +1282,7 @@ void entity::UserScene::canvasOffsetStart()
         m_canvasCurrent->setVisibilityAll(true);
 
     if (this->canvasEditValid()){
-        outErrMsg("CanvasOffsetStart: cannot start editing since the canvas is already in edit mode");
+        qWarning("CanvasOffsetStart: cannot start editing since the canvas is already in edit mode");
         return;
     }
     m_canvasCurrent->setModeEdit(true);
@@ -1291,7 +1292,7 @@ void entity::UserScene::canvasOffsetStart()
 void entity::UserScene::canvasOffsetAppend(const osg::Vec3f &t)
 {
     if (!this->canvasEditValid()){
-        outErrMsg("canvasOffsetAppend: canvas edit mode is not valid");
+        qWarning("canvasOffsetAppend: canvas edit mode is not valid");
         return;
     }
     m_canvasCurrent->translate(osg::Matrix::translate(t.x(), t.y(), t.z()));
@@ -1302,7 +1303,7 @@ void entity::UserScene::canvasOffsetAppend(const osg::Vec3f &t)
 void entity::UserScene::canvasOffsetFinish(QUndoStack *stack)
 {
     if (!this->canvasEditValid()){
-        outErrMsg("canvasOffsetFinish: no canvas in edit mode, impossible to finish offset mode");
+        qWarning("canvasOffsetFinish: no canvas in edit mode, impossible to finish offset mode");
         return;
     }
     m_canvasCurrent->setModeEdit(false);
@@ -1327,20 +1328,20 @@ void entity::UserScene::canvasCloneStart()
 
     entity::Canvas* cnv = m_canvasCurrent->clone();
     if (!cnv){
-        outErrMsg("canvasCloneStart: could not clone the canvas, ptr is NULL");
+        qWarning("canvasCloneStart: could not clone the canvas, ptr is NULL");
         return;
     }
     cnv->setName(this->getCanvasName());
     m_canvasClone = cnv;
 
     if (!m_groupCanvases->addChild(m_canvasClone.get())){
-        outErrMsg("canvasCloneStart: could not add clone as a child");
+        qWarning("canvasCloneStart: could not add clone as a child");
         return;
     }
 
     /* have to set the clone as current so that to calculate offset correctly */
     if (!this->setCanvasCurrent(m_canvasClone.get())){
-        outErrMsg("canvasCloneStart: could not set clone as current");
+        qWarning("canvasCloneStart: could not set clone as current");
         m_groupCanvases->removeChild(m_canvasClone.get());
         m_canvasClone = 0;
         return;
@@ -1350,7 +1351,7 @@ void entity::UserScene::canvasCloneStart()
 void entity::UserScene::canvasCloneAppend(const osg::Vec3f &t)
 {
     if (!this->canvasCloneValid()){
-        outErrMsg("canvasCloneAppend: clone is not valid");
+        qWarning("canvasCloneAppend: clone is not valid");
         return;
     }
 
@@ -1362,7 +1363,7 @@ void entity::UserScene::canvasCloneAppend(const osg::Vec3f &t)
 void entity::UserScene::canvasCloneFinish(QUndoStack *stack)
 {
     if (!this->canvasCloneValid()){
-        outErrMsg("canvasCloneFinish: clone is not valid");
+        qWarning("canvasCloneFinish: clone is not valid");
         return;
     }
 
@@ -1372,7 +1373,7 @@ void entity::UserScene::canvasCloneFinish(QUndoStack *stack)
     m_groupCanvases->removeChild(m_canvasClone.get());
     m_canvasClone = 0;
     if (!cmd){
-        outErrMsg("canvasCloneFinish: could not allocated AddCanvasCommand");
+        qWarning("canvasCloneFinish: could not allocated AddCanvasCommand");
         return;
     }
     stack->push(cmd);
@@ -1391,7 +1392,7 @@ void entity::UserScene::canvasSeparateStart()
 
     entity::Canvas* cnv = m_canvasCurrent->separate();
     if (!cnv){
-        outErrMsg("canvasCloneStart: could not clone the canvas, ptr is NULL");
+        qWarning("canvasCloneStart: could not clone the canvas, ptr is NULL");
         return;
     }
     cnv->setName(this->getCanvasName());
@@ -1401,13 +1402,13 @@ void entity::UserScene::canvasSeparateStart()
     m_canvasCurrent->unselectAll();
 
     if (!m_groupCanvases->addChild(m_canvasClone.get())){
-        outErrMsg("canvasCloneStart: could not add clone as a child");
+        qWarning("canvasCloneStart: could not add clone as a child");
         return;
     }
 
     /* have to set the clone as current so that to calculate offset correctly */
     if (!this->setCanvasCurrent(m_canvasClone.get())){
-        outErrMsg("canvasCloneStart: could not set clone as current");
+        qWarning("canvasCloneStart: could not set clone as current");
         m_groupCanvases->removeChild(m_canvasClone.get());
         m_canvasClone = 0;
         return;
@@ -1417,7 +1418,7 @@ void entity::UserScene::canvasSeparateStart()
 void entity::UserScene::canvasSeparateAppend(const osg::Vec3f &t)
 {
     if (!this->canvasCloneValid()){
-        outErrMsg("canvasCloneAppend: clone is not valid");
+        qWarning("canvasCloneAppend: clone is not valid");
         return;
     }
 
@@ -1429,7 +1430,7 @@ void entity::UserScene::canvasSeparateAppend(const osg::Vec3f &t)
 void entity::UserScene::canvasSeparateFinish(QUndoStack *stack)
 {
     if (!this->canvasCloneValid()){
-        outErrMsg("canvasCloneFinish: clone is not valid");
+        qWarning("canvasCloneFinish: clone is not valid");
         return;
     }
 
@@ -1441,7 +1442,7 @@ void entity::UserScene::canvasSeparateFinish(QUndoStack *stack)
     m_groupCanvases->removeChild(m_canvasClone.get());
     m_canvasClone = 0;
     if (!cmd){
-        outErrMsg("canvasCloneFinish: could not allocated AddCanvasCommand");
+        qWarning("canvasCloneFinish: could not allocated AddCanvasCommand");
         return;
     }
     stack->push(cmd);
@@ -1454,11 +1455,11 @@ void entity::UserScene::canvasRotateStart()
         m_canvasCurrent->setVisibilityAll(true);
 
     if (this->canvasEditValid()){
-        outErrMsg("CanvasRotateStart: cannot start editing since the canvas is already in edit mode");
+        qWarning("CanvasRotateStart: cannot start editing since the canvas is already in edit mode");
         return;
     }
     if (!m_canvasCurrent.get()){
-        outErrMsg("canvasRotateStart: current canvas is NULL");
+        qWarning("canvasRotateStart: current canvas is NULL");
         return;
     }
     m_canvasCurrent->setModeEdit(true);
@@ -1468,11 +1469,11 @@ void entity::UserScene::canvasRotateStart()
 void entity::UserScene::canvasRotateAppend(const osg::Quat &r, const osg::Vec3f &center3d)
 {
     if (!this->canvasEditValid()){
-        outErrMsg("canvasRotateAppend: canvas edit mode is not valid");
+        qWarning("canvasRotateAppend: canvas edit mode is not valid");
         return;
     }
     if (!m_canvasCurrent.get()){
-        outErrMsg("canvasRotateAppend: canvas is NULL");
+        qWarning("canvasRotateAppend: canvas is NULL");
         return;
     }
 
@@ -1485,7 +1486,7 @@ void entity::UserScene::canvasRotateAppend(const osg::Quat &r, const osg::Vec3f 
 void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
 {
     if (!this->canvasEditValid()){
-        outErrMsg("canvasRotateFinish: no canvas in edit mode, impossible to finish offset mode");
+        qWarning("canvasRotateFinish: no canvas in edit mode, impossible to finish offset mode");
         return;
     }
     m_canvasCurrent->setModeEdit(false);

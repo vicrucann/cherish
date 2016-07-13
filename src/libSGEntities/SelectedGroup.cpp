@@ -20,11 +20,11 @@ entity::SelectedGroup::SelectedGroup(const osg::Vec3f &canvasCenter)
 void entity::SelectedGroup::addEntity(entity::Entity2D *entity, osg::Geode *geodeData)
 {
     if (!entity){
-        outErrMsg("addEntity: ptr is NULL");
+        qWarning("addEntity: ptr is NULL");
         return;
     }
     if (!geodeData->containsDrawable(entity)){
-        outErrMsg("The entity does not belong to Canvas, selection is impossible");
+        qWarning("The entity does not belong to Canvas, selection is impossible");
         return;
     }
 
@@ -60,11 +60,11 @@ void entity::SelectedGroup::resetAll()
     while (m_group.size() > 0){
         entity::Entity2D* entity = m_group.at(m_group.size()-1);
         if (!entity) {
-            outErrMsg("resetEntitiesSelected: entity is NULL");
+            qWarning("resetEntitiesSelected: entity is NULL");
             return;
         }
         if (!this->removeEntity(entity)){
-            outErrMsg("SelectedGroup::resetAll: canot remove entity");
+            qWarning("SelectedGroup::resetAll: canot remove entity");
             return;
         }
     }
@@ -118,7 +118,7 @@ osg::Vec3f entity::SelectedGroup::getCenter2D() const
     {
         entity::Entity2D* entity = m_group.at(i);
         if (!entity){
-            outErrMsg("getStrokesSelecterCenter: one of entities ptr is NULL");
+            qWarning("getStrokesSelecterCenter: one of entities ptr is NULL");
             break;
         }
         osg::BoundingBox bb = entity->getBoundingBox();
@@ -163,7 +163,7 @@ osg::BoundingBox entity::SelectedGroup::getBoundingBox() const
     for (size_t i=0; i<m_group.size(); ++i){
         entity::Entity2D* entity = m_group.at(i);
         if (!entity){
-            outErrMsg("getStrokesSelecterCenter: one of entities ptr is NULL");
+            qWarning("getStrokesSelecterCenter: one of entities ptr is NULL");
             break;
         }
         osg::BoundingBox bbi = entity->getBoundingBox();
@@ -193,7 +193,7 @@ void entity::SelectedGroup::move(std::vector<entity::Entity2D *> &entities, doub
     for (size_t i=0; i<entities.size(); ++i){
         entity::Entity2D* entity = entities.at(i);
         if (!entity){
-            outErrMsg("moveEntities: one of entity ptr is NULL");
+            qWarning("moveEntities: one of entity ptr is NULL");
             break;
         }
         entity->moveDelta(du, dv);
@@ -211,7 +211,7 @@ void entity::SelectedGroup::scale(std::vector<entity::Entity2D *> &entities, dou
     for (size_t i=0; i<entities.size(); ++i){
         entity::Entity2D* entity = entities.at(i);
         if (!entity){
-            outErrMsg("scaleEntities: one of strokes ptr is NULL");
+            qWarning("scaleEntities: one of strokes ptr is NULL");
             break;
         }
         entity->scale(sx, sy, center);
@@ -228,7 +228,7 @@ void entity::SelectedGroup::rotate(std::vector<entity::Entity2D *> &entities, do
     for (size_t i=0; i<entities.size(); ++i){
         entity::Entity2D* entity = entities.at(i);
         if (!entity){
-            outErrMsg("rotateEntities: one of entities ptr is NULL");
+            qWarning("rotateEntities: one of entities ptr is NULL");
             break;
         }
         entity->rotate(theta, center);

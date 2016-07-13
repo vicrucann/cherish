@@ -1,5 +1,8 @@
 #include "Utilities.h"
 
+#include <QDebug>
+#include <QtGlobal>
+
 #include "Settings.h"
 #include "Data.h"
 
@@ -11,14 +14,14 @@ QColor Utilities::getQColor(const osg::Vec4f &color)
 bool Utilities::areStrokesProjectable(const std::vector<entity::Stroke *> &strokes, entity::Canvas *source, entity::Canvas *target, osg::Camera *camera)
 {
     if (!target || !source || strokes.empty() || !camera) {
-        std::cerr << "push strokes: one of the pointers is NULL " << std::endl;
+        qWarning( "push strokes: one of the pointers is NULL " );
         return false;
     }
     osg::Matrix M = source->getTransform()->getMatrix();
     osg::Matrix m = target->getTransform()->getMatrix();
     osg::Matrix invM;
     if (!invM.invert(m)){
-        std::cerr << "push strokes: could not invert model matrix" << std::endl;
+        qWarning( "push strokes: could not invert model matrix" );
         return false;
     }
     const osg::Plane plane = target->getPlane();
@@ -30,7 +33,7 @@ bool Utilities::areStrokesProjectable(const std::vector<entity::Stroke *> &strok
     osg::Matrix VPW = camera->getViewMatrix() * camera->getProjectionMatrix() * camera->getViewport()->computeWindowMatrix();
     osg::Matrix invVPW;
     if (!invVPW.invert(VPW)){
-        std::cerr << "areStrokesProjectable(): could not invert View-projection-world matrix for ray casting" << std::endl;
+        qWarning( "areStrokesProjectable(): could not invert View-projection-world matrix for ray casting" );
         return false;
     }
 
@@ -50,33 +53,33 @@ bool Utilities::areStrokesProjectable(const std::vector<entity::Stroke *> &strok
             ray[1] = farPoint;
 
             if (plane.intersect(ray)){
-                outErrMsg("push strokes: some point projections do not intersect the target canvas plane."
+                qWarning("push strokes: some point projections do not intersect the target canvas plane."
                           "To resolve, change the camera view");
                 return false;
             }
 
             if (! plane.dotProductNormal(dir)){ // denominator
-                std::cerr << "push strokes: one of the points of projected stroke forms parallel projection to the canvas plane."
-                             "To resolve, change camera view." << std::endl;
+                qWarning( "push strokes: one of the points of projected stroke forms parallel projection to the canvas plane."
+                             "To resolve, change camera view.");
                 return false;
             }
             if (! plane.dotProductNormal(center-P)){
-                std::cerr << "push strokes: plane contains the projected stroke or its part, so no single intersection can be defined."
-                             "To resolve, change camera view." << std::endl;
+                qWarning( "push strokes: plane contains the projected stroke or its part, so no single intersection can be defined."
+                             "To resolve, change camera view.");
                 return false;
             }
             double len = plane.dotProductNormal(center-P) / plane.dotProductNormal(dir);
             osg::Vec3 P_ = dir * len + P;
             osg::Vec3 p_ = P_ * invM;
             if (std::fabs(p_.z())>cher::EPSILON){
-                std::cerr << "push strokes: error while projecting point from global 3D to local 3D, z-coordinate is not zero." << std::endl;
+                qWarning( "push strokes: error while projecting point from global 3D to local 3D, z-coordinate is not zero.");
                 outLogVec("P_", P_.x(), P_.y(), P_.z());
                 outLogVec("p_", p_.x(), p_.y(), p_.z());
                 return false;
             }
         }
     }
-    outLogMsg("strokes are projectable");
+    qDebug("strokes are projectable");
     return true;
 }
 
@@ -84,18 +87,18 @@ bool Utilities::getViewProjectionWorld(const osgGA::GUIEventAdapter &ea, osgGA::
 {
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (!viewer){
-        outErrMsg("getVPW: could not dynamic_cast to View*");
+        qWarning("getVPW: could not dynamic_cast to View*");
         return false;
     }
 
     osg::Camera* camera = viewer->getCamera();
     if (!camera){
-        outErrMsg("getVPW: could not obtain camera");
+        qWarning("getVPW: could not obtain camera");
         return false;
     }
 
     if (!camera->getViewport()){
-        outErrMsg("getVPW: could not obtain viewport");
+        qWarning("getVPW: could not obtain viewport");
         return false;
     }
 
@@ -104,7 +107,7 @@ bool Utilities::getViewProjectionWorld(const osgGA::GUIEventAdapter &ea, osgGA::
             * camera->getViewport()->computeWindowMatrix();
 
     if (!invVPW.invert(VPW)){
-        outErrMsg("getVPW: could not invert VPW matrix");
+        qWarning("getVPW: could not invert VPW matrix");
         return false;
     }
 
@@ -120,7 +123,7 @@ void Utilities::getFarNear(double x, double y, const osg::Matrix &invVPW, osg::V
 bool Utilities::getRayPlaneIntersection(const osg::Plane &plane, const osg::Vec3f &center, const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, osg::Vec3f &P)
 {
     if (!plane.valid()){
-        outErrMsg("rayPlaneIntersection: plane is not valid");
+        qWarning("rayPlaneIntersection: plane is not valid");
         return false;
     }
 
@@ -128,19 +131,19 @@ bool Utilities::getRayPlaneIntersection(const osg::Plane &plane, const osg::Vec3
     ray[0] = nearPoint;
     ray[1] = farPoint;
     if (plane.intersect(ray)) { // 1 or -1 means no intersection
-        outErrMsg("rayPlaneIntersection: not intersection with ray");
+        qWarning("rayPlaneIntersection: not intersection with ray");
         return false;
     }
 
     osg::Vec3f dir = farPoint-nearPoint;
     if (!plane.dotProductNormal(dir)){
-        outErrMsg("rayPlaneIntersection: projected ray is almost parallel to plane. "
+        qWarning("rayPlaneIntersection: projected ray is almost parallel to plane. "
                   "Change view point.");
         return false;
     }
 
     if (! plane.dotProductNormal(center-nearPoint)){
-        outErrMsg("rayPlaneIntersection: plane contains the line. "
+        qWarning("rayPlaneIntersection: plane contains the line. "
                   "Change view point");
         return false;
     }
@@ -154,14 +157,14 @@ bool Utilities::getRayPlaneIntersection(const osg::Plane &plane, const osg::Vec3
 bool Utilities::getModel(entity::Canvas *canvas, osg::Matrix &M, osg::Matrix &invM)
 {
     if (!canvas){
-        outErrMsg("getModel: canvas is NULL");
+        qWarning("getModel: canvas is NULL");
         return false;
     }
 
     M = canvas->getTransform()->getMatrix();
 
     if (!invM.invert(M)){
-        outErrMsg("getModel: could not invert M");
+        qWarning("getModel: could not invert M");
         return false;
     }
 
@@ -172,7 +175,7 @@ bool Utilities::getLocalFromGlobal(const osg::Vec3f &P, const osg::Matrix &invM,
 {
     p = P * invM;
     if (std::fabs(p.z())>cher::EPSILON){
-        outErrMsg("getLocalFromGlobal: local point's z-coordinate is not zero");
+        qWarning("getLocalFromGlobal: local point's z-coordinate is not zero");
         return false;
     }
 
@@ -182,7 +185,7 @@ bool Utilities::getLocalFromGlobal(const osg::Vec3f &P, const osg::Matrix &invM,
 bool Utilities::getGlobalFromLocal(const osg::Vec3f &p, const osg::Matrix &M, osg::Vec3f &P)
 {
     if (std::fabs(p.z())>cher::EPSILON){
-        outErrMsg("getGlobalFromLocal: local point's z-coord is not close to zero");
+        qWarning("getGlobalFromLocal: local point's z-coord is not close to zero");
         return false;
     }
     P = p * M;
@@ -201,7 +204,7 @@ bool Utilities::getSkewLinesProjection(const osg::Vec3f &center, const osg::Vec3
     osg::Vec3f u3 = u1^u2;
 
     if (std::fabs(u3.x())<=cher::EPSILON && std::fabs(u3.y())<=cher::EPSILON && std::fabs(u3.z())<=cher::EPSILON){
-        outErrMsg("getSkewLinesProjection: cast ray and normal are almost parallel."
+        qWarning("getSkewLinesProjection: cast ray and normal are almost parallel."
                   "Switch view point.");
         return false;
     }
@@ -213,11 +216,11 @@ bool Utilities::getSkewLinesProjection(const osg::Vec3f &center, const osg::Vec3
     float a1 = u1*u1, b1 = u1*u2, c1 = u1*d;
     float a2 = u1*u2, b2 = u2*u2, c2 = u2*d;
     if (!(std::fabs(b1) > cher::EPSILON)){
-        outErrMsg("getSkewLinesProjection: denominator is zero");
+        qWarning("getSkewLinesProjection: denominator is zero");
         return false;
     }
     if (!(a2!=-1 && a2!=1)){
-        outErrMsg("getSkewLinesProjection: lines are parallel");
+        qWarning("getSkewLinesProjection: lines are parallel");
         return false;
     }
 

@@ -2,6 +2,9 @@
 
 #include <assert.h>
 
+#include <QDebug>
+#include <QtGlobal>
+
 #include <osg/Program>
 #include <osg/LineWidth>
 #include <osg/StateSet>
@@ -60,7 +63,7 @@ entity::Stroke::Stroke()
     this->setUseVertexBufferObjects(true);
     this->setName("Stroke");
 
-    outLogMsg("New stroke ctor complete");
+    qDebug("New stroke ctor complete");
 }
 
 entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
@@ -69,8 +72,10 @@ entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
     , m_program(copy.m_program)
     , m_color(copy.m_color)
 {
-    outLogMsg("stroke copy ctor done");
+    qDebug("stroke copy ctor done");
 }
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 void entity::Stroke::setLines(osg::DrawArrays* lines)
 {
@@ -98,6 +103,8 @@ const osg::Vec4f&entity::Stroke::getColor() const
     return m_color;
 }
 
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
 void entity::Stroke::appendPoint(const float u, const float v)
 {
     //osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
@@ -117,47 +124,13 @@ void entity::Stroke::appendPoint(const float u, const float v)
     // read more: http://forum.openscenegraph.org/viewtopic.php?t=2190&postdays=0&postorder=asc&start=15
 }
 
-void entity::Stroke::removePoints(unsigned int index_start, unsigned int index_end)
-{
-    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
-
-    if (index_start > verts->size()-1 || index_end > verts->size()-1){
-        outErrMsg("Stroke remove edge: indices to remove are out of range");
-        return;
-    }
-    if (index_end == verts->size()-1){
-        for (unsigned int i = index_start; i<=index_end; ++i)
-            verts->pop_back();
-    }
-    else if (index_start == 0){
-        //verts->erase(verts->begin(), verts->begin()+index_end);
-        for (unsigned int i = index_start; i<=index_end; ++i){
-            verts->pop_back();
-            colors->pop_back();
-        }
-
-    }
-    else{ // to define later - what to do when it is erased in the middle
-        return;
-    }
-
-    unsigned int sz = verts->size();
-    m_lines->setFirst(0);
-    m_lines->setCount(sz);
-
-    verts->dirty();
-    colors->dirty();
-    this->dirtyBound();
-}
-
 float entity::Stroke::getLength() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
     if (std::fabs(bb.zMax()-bb.zMin()) > cher::EPSILON ){
-        outErrMsg("Stroke->getLength(): z coordinates of a stroke are unexpected values");
-        outLogVal("zMax", bb.zMax());
-        outLogVal("zMin", bb.zMin());
+        qWarning("Stroke->getLength(): z coordinates of a stroke are unexpected values");
+        qDebug() << "zMax " << bb.zMax();
+        qDebug() << "zMin " << bb.zMin();
         return 0;
     }
     return std::max(bb.xMax() - bb.xMin(), bb.yMax() - bb.yMin());

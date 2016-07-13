@@ -40,6 +40,9 @@ public:
     /*! Method is called automatically from initializeSG() to initialize OpenGL state machine or when reading scene from file. */
     virtual void initializeStateMachine();
 
+    /*! Method is called automatically from initializeSG(), or must be called when reading scene from file. */
+    virtual void initializeMasks();
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 public:
     META_Node(entity, Canvas)
@@ -89,10 +92,18 @@ protected:
     bool getVisibilityFrame() const;
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 public:
+    /*! A method to set up tool frame visibility. \param vis is true for visible and false for invisible */
     void setVisibilityFrameInternal(bool vis);
+
+    /*! \return tool frame visibility. \sa setVisibilityFrameInternal(). */
     bool getVisibilityFrameInternal() const;
+
+    /*! \return canvas content visibility flag. \sa setVisibilityAll(). */
     bool getVisibilityAll() const;
+
+    /*! A method to set up canvas content visibility (groupData and frameTool). \param vis is true for visible and false for invisible. */
     void setVisibilityAll(bool vis);
+
 protected:
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
     bool getVisibilityData() const;
@@ -109,7 +120,7 @@ public:
      *
      * \return direction of U axis in global space.
      * \sa getGlobalAxisV() */
-    const osg::Vec3f& getGlobalAxisU() const;
+    osg::Vec3f getGlobalAxisU() const;
 
     /*!
      *  V
@@ -120,7 +131,7 @@ public:
      *
      * \return direction of V axis in global space.
      * \sa getGlobalAxisU() */
-    const osg::Vec3f& getGlobalAxisV() const;
+    osg::Vec3f getGlobalAxisV() const;
 
     /*! \return a pointer on a pickage geometry, to be used from EventHandler. */
     const osg::Geometry* getGeometryPickable() const;
@@ -165,13 +176,13 @@ public:
     bool isEntitiesSelected() const;
 
     /*! \return global 3D center of SelectedGroup. If the group is empty, returns global 3D canvas center. */
-    const osg::Vec3f& getEntitiesSelectedCenter3D() const;
+    osg::Vec3f getEntitiesSelectedCenter3D() const;
 
     /*! \return local 2D center of SelectedGroup. */
     const osg::Vec3f& getEntitiesSelectedCenter2D() const;
 
     /*! \return local 2D center of canvas. \sa getCenter() */
-    const osg::Vec3f& getCenter2D() const;
+    osg::Vec3f getCenter2D() const;
 
     /*! \return global 3D mean center of canvas; used as a default rotation point when rotating the canvas. */
     const osg::Vec3f& getBoundingBoxCenter3D() const;
@@ -268,13 +279,11 @@ public:
     bool containsEntity(entity::Entity2D* entity) const;
 
 protected:
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
     void updateTransforms();
     void resetTransforms();
     void setVertices(const osg::Vec3f& center, float szX, float szY, float szCr, float szAx);
     void setVerticesDefault(const osg::Vec3f& center);
     void setIntersection(entity::Canvas* against = 0);
-#endif // DOXYGEN_SHOULD_SKIP_THIS
 
 private:
     osg::Matrix m_mR; /* part of m_transform */

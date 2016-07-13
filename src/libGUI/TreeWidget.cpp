@@ -4,6 +4,8 @@
 #include <QHeaderView>
 #include <QPalette>
 #include <QFile>
+#include <QDebug>
+#include <QtGlobal>
 
 #include "Settings.h"
 #include "Utilities.h"
@@ -37,10 +39,10 @@ void CanvasPhotoWidget::onPhotoAdded(const std::string &name, int rowParent)
 {
     if (rowParent < 0 || rowParent >= this->topLevelItemCount())
     {
-        outErrMsg("onPhotoAdded: canvas index is out of range, "
+        qWarning("onPhotoAdded: canvas index is out of range, "
                   "addition will not be performed");
-        outLogVal("row", rowParent);
-        outLogVal("count", this->topLevelItemCount());
+        qDebug() << "row " <<  rowParent;
+        qDebug() << "count " << this->topLevelItemCount();
         return;
     }
     QTreeWidgetItem* parent = this->topLevelItem(rowParent);
@@ -56,10 +58,10 @@ void CanvasPhotoWidget::onPhotoAdded(const std::string &name, int rowParent)
 void CanvasPhotoWidget::onCanvasRemoved(int row)
 {
     if (row >= this->topLevelItemCount() || row < 0){
-        outErrMsg("onCanvasRemoved: canvas index is out of range, "
+        qWarning("onCanvasRemoved: canvas index is out of range, "
                   "removed will not be performed");
-        outLogVal("row", row);
-        outLogVal("count", this->topLevelItemCount());
+        qDebug() << "row " << row;
+        qDebug() << "count " << this->topLevelItemCount();
         return;
     }
     QTreeWidgetItem* item = this->takeTopLevelItem(row);
@@ -71,10 +73,10 @@ void CanvasPhotoWidget::onCanvasRemoved(int row)
 void CanvasPhotoWidget::onPhotoRemoved(int rowP, int row)
 {
     if (rowP >= this->topLevelItemCount() || rowP < 0){
-        outErrMsg("onPhotoRemoved: canvas index is out of range, "
+        qWarning("onPhotoRemoved: canvas index is out of range, "
                   "removed will not be performed");
-        outLogVal("rowP", rowP);
-        outLogVal("count", this->topLevelItemCount());
+        qDebug() << "rowP " << rowP;
+        qDebug() << "count " << this->topLevelItemCount();
         return;
     }
     QTreeWidgetItem* parent = this->topLevelItem(rowP);
@@ -89,10 +91,10 @@ void CanvasPhotoWidget::onPhotoRemoved(int rowP, int row)
 void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
 {
     if (row >= this->topLevelItemCount() || row < 0){
-        outLogMsg("onCanvasSelectedColor: canvas index is out of range, "
+        qDebug("onCanvasSelectedColor: canvas index is out of range, "
                   "selection on widget will not be performed");
-        outLogVal("row", row);
-        outLogVal("count", this->topLevelItemCount());
+        qDebug() << "row " << row;
+        qDebug() << "count " << this->topLevelItemCount();
         return;
     }
 
@@ -120,20 +122,20 @@ void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
 void CanvasPhotoWidget::onCanvasVisibilitySet(int row, bool visibility)
 {
     if (row >= this->topLevelItemCount() || row < 0){
-        outLogMsg("onCanvasSelectedColor: canvas index is out of range, "
+        qDebug("onCanvasSelectedColor: canvas index is out of range, "
                   "selection on widget will not be performed");
-        outLogVal("row", row);
-        outLogVal("count", this->topLevelItemCount());
+        qDebug() << "row " << row;
+        qDebug() << "count " << this->topLevelItemCount();
         return;
     }
     QTreeWidgetItem* item = this->topLevelItem(row);
     if (!item) {
-        outErrMsg("Could not exatrac item pointer");
+        qWarning("Could not exatrac item pointer");
         return;
     }
 
 //    bool value = item->data(0, cher::DelegateVisibilityRole).toBool();
-    outLogVal("Requested visibility", visibility);
+    qDebug() << "Requested visibility " << visibility;
     item->setData(0, cher::DelegateVisibilityRole, !visibility );
 }
 
@@ -145,7 +147,7 @@ void CanvasPhotoWidget::mousePressEvent(QMouseEvent *event)
         if (index.isValid())
             emit this->rightClicked(index);
         else
-            outErrMsg("mouse right: no item was chosen for selection");
+            qWarning("mouse right: no item was chosen for selection");
     }
     QTreeWidget::mousePressEvent(event);
 }
@@ -175,9 +177,9 @@ void CanvasPhotoWidget::mousePressEvent(QMouseEvent *event)
 
 //    QTreeWidgetItem* child = destination->child(row);
 //    destination->removeChild(child);
-//    outLogVal("inserting to end", destination->childCount());
+//    qDebug() << "inserting to end", destination->childCount());
 //    destination->insertChild(destination->childCount(), child);
-//    outLogVal("inserted", destination->childCount());
+//    qDebug() << "inserted", destination->childCount());
 
 //    /* emit signal about the move */
 //    emit this->photoDraggedAndDropped(this->indexOfTopLevelItem(parent), start, end, this->indexOfTopLevelItem(destination), row);

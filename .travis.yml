@@ -74,6 +74,7 @@ script:
   - ./test_MainWindow
   - ./test_SceneState
   - ./test_UserScene
+  - ./test_Canvas
   - cd ..
 
 

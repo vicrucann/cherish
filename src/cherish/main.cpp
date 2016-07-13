@@ -7,6 +7,7 @@
 
 #include <QObject>
 #include <QDesktopWidget>
+#include <QtGlobal>
 
 #include "CherishApplication.h"
 #include "MainWindow.h"
@@ -28,7 +29,7 @@
 
 int main(int argc, char** argv)
 {
-    outLogMsg("Starting cherish: 3d representation of historical sites...");
+    qInfo("Starting cherish: 3d representation of historical sites...");
 
 #ifdef Q_OS_WIN
     /* use automatic scaling */

@@ -52,6 +52,13 @@ add_executable(${SCENESTATE_NAME} ${SCENESTATE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} 
 target_link_libraries(${SCENESTATE_NAME} ${TEST_LIBRARIES})
 add_test(${SCENESTATE_NAME} ${SCENESTATE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
 
+# Canvas tests
+set(CANVAS_SRC CanvasTest.h CanvasTest.cpp ${BASEGUITEST_SRC})
+set(CANVAS_NAME test_Canvas)
+add_executable(${CANVAS_NAME} ${CANVAS_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
+target_link_libraries(${CANVAS_NAME} ${TEST_LIBRARIES})
+add_test(${CANVAS_NAME} ${CANVAS_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
+
 # UserScene tests
 set(USERSCENE_SRC UserSceneTest.h UserSceneTest.cpp ${BASEGUITEST_SRC})
 set(USERSCENE_NAME test_UserScene)
