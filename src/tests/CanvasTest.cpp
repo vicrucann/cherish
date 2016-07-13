@@ -187,7 +187,6 @@ void CanvasTest::testCloneOrtho()
     canvas->rotate(rotMat, cher::CENTER);
     this->testOrthogonality(canvas);
     float len = 1.f * std::cos(cher::PI/4);
-    std::cout << canvas->getCenter().x() << " " << canvas->getCenter().y() << " " << canvas->getCenter().z() << std::endl;
     QVERIFY(differenceWithinThreshold(canvas->getCenter(), cher::CENTER));
     QVERIFY(differenceWithinThreshold(canvas->getNormal(), osg::Vec3f(len,0,len)));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(len,0,-len)));
@@ -197,7 +196,6 @@ void CanvasTest::testCloneOrtho()
     osg::Matrix tMat = osg::Matrix::translate(1,0,1);
     canvas->translate(tMat);
     this->testOrthogonality(canvas);
-    std::cout << canvas->getCenter().x() << " " << canvas->getCenter().y() << " " << canvas->getCenter().z() << std::endl;
     QVERIFY(differenceWithinThreshold(canvas->getCenter(), osg::Vec3f(1,0,1)));
     QVERIFY(differenceWithinThreshold(canvas->getNormal(), osg::Vec3f(len,0,len)));
     QVERIFY(differenceWithinThreshold(canvas->getGlobalAxisU(), osg::Vec3f(len,0,-len)));
@@ -207,7 +205,6 @@ void CanvasTest::testCloneOrtho()
     osg::Matrix rotMat2 = osg::Matrix::rotate(cher::PI/6, osg::Vec3f(1,0,0));
     canvas->rotate(rotMat2, canvas->getCenter());
     this->testOrthogonality(canvas);
-    std::cout << canvas->getCenter().x() << " " << canvas->getCenter().y() << " " << canvas->getCenter().z() << std::endl;
     QVERIFY(differenceWithinThreshold(canvas->getCenter(), osg::Vec3f(1,0,1)));
     QCOMPARE(m_scene->getCanvasCurrent(), canvas);
 
@@ -217,7 +214,6 @@ void CanvasTest::testCloneOrtho()
     entity::Canvas* canvas2 = m_scene->getCanvas(4);
     QVERIFY(canvas2);
 
-    std::cout << canvas2->getCenter().x() << " " << canvas2->getCenter().y() << " " << canvas2->getCenter().z() << std::endl;
     QVERIFY(differenceWithinThreshold(canvas2->getCenter(), osg::Vec3f(1,0,1)));
     QVERIFY(differenceWithinThreshold(canvas2->getNormal(), canvas->getGlobalAxisV()));
 

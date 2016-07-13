@@ -262,7 +262,7 @@ void entity::UserScene::eraseStroke(QUndoStack *stack, entity::Stroke *stroke, i
         return;
     }
 
-    stroke->removePoints(first, last);
+//    stroke->removePoints(first, last);
 
     switch (event){
     case cher::EVENT_OFF:
