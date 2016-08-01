@@ -21,7 +21,7 @@ const QIcon &Data::fileNewSceneIcon()
 
 const QIcon &Data::fileCloseIcon()
 {
-    Q_ASSERT_X(!QPixmap(":file-close-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    Q_ASSERT_X(!QPixmap(":/file-close-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(":/file-close-24px.svg");
     return icon;
 }
