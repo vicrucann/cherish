@@ -73,6 +73,19 @@ Assuming the project is checked out from git repository, use Qt Creator to open 
 
 Follow the steps of Qt Creator to finish the build using CMake. After the build is complete, compile the project by running `<Ctrl>+B`, or run from the menu: "Build" -> "Build All".
 
+### Compilation using Visual Studio
+
+Here we will only mention some specifics to know when performing the compilation using Visual Studio tools. 
+
+Generally speaking, the compilation process can be split into two main parts: 
+
+* CMake generation (for simplicity use CMake-gui)
+* Compilation itself using Visual Studio of the generated project
+
+It is recommended to use Visual Studio 2013 and its corresponding compiler. 
+
+When doind the second step, make sure to include the necessary Qt directories to the `PATH` environmental variable. Also, make sure to include certain Qt plugin folder: `plugins/imageformats`, otherwise the icons will not be displayed within the application.
+
 ## License
 
 See the corresponding [LICENSE](https://github.com/vicrucann/cherish/blob/master/LICENSE) file.
