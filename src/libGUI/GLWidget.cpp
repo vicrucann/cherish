@@ -7,6 +7,8 @@
 #include <QKeyEvent>
 #include <QWheelEvent>
 #include <QDebug>
+#include <QMimeData>
+#include <QtGlobal>
 
 #include <osg/StateSet>
 #include <osg/Material>
@@ -69,6 +71,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     // widget settings
     this->setFocusPolicy(Qt::StrongFocus);
     this->setMouseTracking(true);
+    this->setAcceptDrops(true); // do drag photos from PhotoWidget
 }
 
 GLWidget::~GLWidget()
@@ -419,6 +422,50 @@ bool GLWidget::event(QEvent *event)
         break;
     }
     return handled;
+}
+
+void GLWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    // accept event if it is photo import from PhotoWidget
+    if (event->mimeData()->hasFormat(cher::MIME_PHOTO))
+        event->accept();
+    else
+        event->ignore();
+}
+
+void GLWidget::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    // on drag finish, do the image import
+
+    // accept event
+    event->accept();
+}
+
+void GLWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+    if (event->mimeData()->hasFormat(cher::MIME_PHOTO)){
+        event->setDropAction(Qt::CopyAction);
+        event->accept();
+    }
+    else
+        event->ignore();
+}
+
+void GLWidget::dropEvent(QDropEvent *event)
+{
+    if (event->mimeData()->hasFormat(cher::MIME_PHOTO)){
+        QByteArray imageData = event->mimeData()->data(cher::MIME_PHOTO);
+        QDataStream dataStream(&imageData, QIODevice::ReadOnly);
+        QString fileName;
+        dataStream >> fileName;
+
+        qInfo() << "GLWidget accepted filename " << fileName;
+
+        event->setDropAction(Qt::CopyAction);
+        event->accept();
+    }
+    else
+        event->ignore();
 }
 
 void GLWidget::onHome()

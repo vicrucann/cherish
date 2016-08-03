@@ -28,6 +28,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_tabWidget(new QTabWidget())
     , m_bookmarkWidget(new BookmarkWidget())
     , m_canvasWidget(new CanvasPhotoWidget())
+    , m_photoWidget(new PhotoWidget())
+    , m_photoModel(new PhotoModel)
 
     , m_undoStack(new QUndoStack(this))
 
@@ -59,6 +61,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     m_tabWidget->setTabPosition(QTabWidget::West);
     m_tabWidget->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
     m_tabWidget->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
+    m_tabWidget->addTab(m_photoWidget, Data::controlImagesIcon(), QString(""));
+
     m_bookmarkWidget->setItemDelegate(new BookmarkDelegate(this));
     m_canvasWidget->setItemDelegate(new CanvasDelegate(this));
 
@@ -405,6 +409,24 @@ void MainWindow::onFileImage()
     }
 }
 
+void MainWindow::onFilePhotoBase()
+{
+    QString directory = QFileDialog::getExistingDirectory(this, tr("Chose photo base directory"), QString(),
+                                                        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (directory.isEmpty()){
+        QMessageBox::information(this, tr("Photo base directory"), tr("No directory was chosen"));
+        return;
+    }
+
+    m_photoModel->setRootPath(directory);
+    m_photoWidget->setModel(m_photoModel);
+//    m_photoWidget->setRootIndex(m_photoModel->index(directory));
+
+    m_tabWidget->setCurrentWidget(m_photoWidget);
+
+    this->statusBar()->showMessage(tr("Start dragging photos one-by-one to the current canvas to perfrom a photo import to the scene."));
+}
+
 void MainWindow::onFileClose()
 {
     qDebug("onFileClose() called");
@@ -666,6 +688,9 @@ void MainWindow::initializeActions()
     m_actionExportAs = new QAction(Data::fileExportIcon(), tr("Export as..."), this);
     this->connect(m_actionExportAs, SIGNAL(triggered(bool)), this, SLOT(onFileExport()));
 
+    m_actionPhotoBase = new QAction(Data::controlImagesIcon(), tr("Chose folder with photo base..."), this);
+    this->connect(m_actionPhotoBase, SIGNAL(triggered(bool)), this, SLOT(onFilePhotoBase()));
+
     // EDIT
 
     m_actionUndo = m_undoStack->createUndoAction(this, tr("&Undo"));
@@ -803,6 +828,7 @@ void MainWindow::initializeMenus()
     menuFile->addAction(m_actionExportAs);
     menuFile->addSeparator();
     menuFile->addAction(m_actionImportImage);
+    menuFile->addAction(m_actionPhotoBase);
     menuFile->addSeparator();
     menuFile->addAction(m_actionClose);
     menuFile->addAction(m_actionExit);
@@ -873,6 +899,7 @@ void MainWindow::initializeToolbars()
     tbFile->addAction(m_actionOpenFile);
     tbFile->addAction(m_actionSaveFile);
     tbFile->addAction(m_actionImportImage);
+    tbFile->addAction(m_actionPhotoBase);
 
     // Edit
     QToolBar* tbEdit = this->addToolBar(tr("Edit"));

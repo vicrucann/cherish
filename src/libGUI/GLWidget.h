@@ -7,6 +7,10 @@
 #include <QStack>
 #include <QPixmap>
 #include <QScopedPointer>
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
 
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
@@ -88,6 +92,13 @@ protected:
     virtual void tabletEvent(QTabletEvent* event);
 
     virtual bool event(QEvent* event);
+
+protected:
+    // Drag and drop related (from PhotoWidget)
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dragLeaveEvent(QDragLeaveEvent* event);
+    void dragMoveEvent(QDragMoveEvent* event);
+    void dropEvent(QDropEvent* event);
 
 private:
     virtual void onHome();

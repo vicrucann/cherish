@@ -195,7 +195,10 @@ const size_t APP_WIDGET_BUTTON = 16;
 const size_t APP_WIDGET_LINEWIDTH = 4;
 const size_t APP_WIDGET_GAP = 6;
 const size_t APP_WIDGET_WIDTH = APP_SCREENSHOT_HEIGHT*1.5+APP_WIDGET_BUTTON*4;
+const size_t APP_WIDGET_ICONSIZE = 100;
 //const size_t APP_MAINWINDOW_ICONSIZE = 24;
+
+const QString MIME_PHOTO = "image/cherish";
 
 const int DelegateVisibilityRole = Qt::UserRole + 1;
 const int DelegateChildRole = Qt::UserRole + 2;
