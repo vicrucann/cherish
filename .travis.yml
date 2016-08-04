@@ -64,7 +64,7 @@ before_script:
   - mkdir $CHERISH_BUILD
   - cd $CHERISH_BUILD 
   # cmake command
-  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt54/lib/cmake -DCherish_BUILD_TEST=ON $CHERISH_SOURCE
+  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/opt/qt54/lib/cmake -DCherish_BUILD_TEST=ON -DCherish_VERSION=0.0.0 $CHERISH_SOURCE
 
 script:
   - if [[ "${COVERITY_SCAN_BRANCH}" == 1 ]];
