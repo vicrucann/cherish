@@ -61,6 +61,9 @@ signals:
     /*! Signal is emitted when FOV was changed. */
     void FOVSet(double fov);
 
+    /*! Signal is emitted when user performs drag-and-drop from PhotoWidget to GLWidget. */
+    void importPhoto(const QString& path, const QString& fileName);
+
 public:
     /*! Method to set tablet proximity flag. */
     void setTabletActivity(bool active);

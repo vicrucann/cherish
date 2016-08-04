@@ -19,10 +19,9 @@ public:
 
 protected:
     // drag and drop functionality between the PhotoWidget and GLWidget
-//    void dragEnterEvent(QDragEnterEvent* event);
+    void dragEnterEvent(QDragEnterEvent* event);
     void dragMoveEvent(QDragMoveEvent* event);
     void dropEvent(QDropEvent *event);
-    void startDrag(Qt::DropAction);
 };
 
 #endif // PHOTOWIDGET_H

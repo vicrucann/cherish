@@ -94,6 +94,9 @@ public slots:
     /*! Slot called to obtain status of global tools visibilities. */
     void onRequestSceneToolStatus(bool& visibility);
 
+    /*! Slot called when user performed drag-and-drop from PhotoWidget to GLWidget of a entity::Photo. */
+    void onImportPhoto(const QString& path, const QString& fileName);
+
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */
     void onFileNew();
@@ -152,6 +155,8 @@ protected:
     void        initializeToolbars();
     void        initializeCallbacks(); // for ctor
     bool        loadSceneFromFile();
+
+    bool        importPhoto(QString& fileName);
 
     QMdiArea*       m_mdiArea;
 

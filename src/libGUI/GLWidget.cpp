@@ -456,13 +456,17 @@ void GLWidget::dropEvent(QDropEvent *event)
     if (event->mimeData()->hasFormat(cher::MIME_PHOTO)){
         QByteArray imageData = event->mimeData()->data(cher::MIME_PHOTO);
         QDataStream dataStream(&imageData, QIODevice::ReadOnly);
-        QString fileName;
-        dataStream >> fileName;
+        QString fileName, directory;
+        dataStream >> fileName >> directory;
 
         qInfo() << "GLWidget accepted filename " << fileName;
+        qInfo() << "GLWidget accepted path " << directory;
 
         event->setDropAction(Qt::CopyAction);
         event->accept();
+
+        // emit signal to let know image should be imported
+        emit this->importPhoto(directory, fileName);
     }
     else
         event->ignore();
