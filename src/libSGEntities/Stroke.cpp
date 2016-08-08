@@ -124,6 +124,25 @@ void entity::Stroke::appendPoint(const float u, const float v)
     // read more: http://forum.openscenegraph.org/viewtopic.php?t=2190&postdays=0&postorder=asc&start=15
 }
 
+// read more on why: http://stackoverflow.com/questions/36655888/opengl-thick-and-smooth-non-broken-lines-in-3d
+bool entity::Stroke::redefineToShader()
+{
+    // The used shader requires that each line segment is represented as GL_LINES_AJACENCY_EXT
+    // This required adding padding points for each line segment
+    // Same goes for color, if it's not uniform
+
+    osg::ref_ptr<osg::Vec3Array> originPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    if (!originPts) return false;
+
+    // For number of original points, the total number for the shader will be:
+    // (#points-1)*4
+    int numSh = (originPts->size()-1)*4;
+    osg::ref_ptr<osg::Vec3Array> shaderPts = new osg::Vec3Array(numSh);
+    if (!shaderPts) return false;
+
+    return true;
+}
+
 float entity::Stroke::getLength() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
