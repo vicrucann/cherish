@@ -1,348 +1,136 @@
-#version 150
-#extension GL_EXT_geometry_shader4 : enable
+#version 330
 
+uniform float Thickness;
+uniform vec2 Viewport;
+uniform float MiterLimit;
 
 layout(lines_adjacency) in;
-layout(triangle_strip, max_vertices = 32) out;
+layout(triangle_strip, max_vertices = 7) out;
 
-in vec4 gsColor[];
-flat out vec4 fsColor;
+in VertexData{
+    vec4 mColor;
+} VertexIn[4];
 
-uniform mat4 MVPW; // model-view-projection-window
-uniform float BaseWidth;
-uniform float WidthAmplitude;
+out VertexData{
+    vec2 mTexCoord;
+    vec4 mColor;
+} VertexOut;
 
-const float pi = 3.14159265;
-const float epsilon = 0.0001;
-
-
-void ClipLineSegmentToNearPlane(
-    mat4 MVPW,
-    vec4 modelP_before,
-    vec4 modelP0,
-    vec4 modelP1,
-    vec4 modelP_after,
-    out vec4 clipP_before,
-    out vec4 clipP0,
-    out vec4 clipP1,
-    out vec4 clipP_after,
-    out bool culledByNearPlane)
+vec2 toScreenSpace(vec4 vertex)
 {
-    const float nearPlaneDistance = 0.5;
-    clipP0 = MVPW * modelP0;
-    clipP1 = MVPW * modelP1;
-    culledByNearPlane = false;
-
-    float distanceToP0 = clipP0.z + nearPlaneDistance;
-    float distanceToP1 = clipP1.z + nearPlaneDistance;
-
-    if ((distanceToP0 * distanceToP1) < 0.0) {
-        float t = distanceToP0 / (distanceToP0 - distanceToP1);
-        vec3 modelV = vec3(modelP0) + t * (vec3(modelP1) - vec3(modelP0));
-        vec4 clipV = MVPW * vec4(modelV, 1);
-
-        if (distanceToP0 < 0.0)
-        {
-            clipP0 = clipV;
-            clipP_before = clipP0;
-            clipP_after = MVPW * modelP_after;
-        }
-        else
-        {
-            clipP1 = clipV;
-            clipP_after = clipP1;
-            clipP_before = MVPW * modelP_before;
-        }
-    }
-    else if (distanceToP0 < 0.0) {
-        culledByNearPlane = true;
-    }
-    else {
-        clipP_before = MVPW * modelP_before;
-        clipP_after = MVPW * modelP_after;
-    }
-}
-
-void halfDiscStrip(vec2 dir, float sign, vec3 center, float radius, vec4 color)
-{
-    const int divs = 8;
-    const int nps = divs+1;
-    vec2 ps[nps];
-    float da = sign*pi/divs;
-    vec2 rot_x = vec2(cos(da), -sin(da));
-    vec2 rot_y = vec2(sin(da), cos(da));
-
-    int i;
-    ps[0] = dir;
-    for(i=1; i<nps; ++i)
-    {
-        ps[i] = vec2(dot(ps[i-1], rot_x), dot(ps[i-1], rot_y));
-    }
-
-    int j;
-    for(i=0, j=(nps-1); i<(nps/2); ++i, --j)
-    {
-        vec2 this_pos = ps[i];
-        this_pos *= radius;
-        this_pos += center.xy;
-        gl_Position = vec4( this_pos, center.z, 1.0);
-        fsColor = color;
-        EmitVertex();
-
-        this_pos = ps[j];
-        this_pos *= radius;
-        this_pos += center.xy;
-        gl_Position = vec4(this_pos, center.z, 1.0);
-        fsColor = color;
-        EmitVertex();
-
-    }
-    if(nps % 2 == 1)
-    {
-        vec2 this_pos = ps[nps/2];
-        this_pos *= radius;
-        this_pos += center.xy;
-        gl_Position = vec4(this_pos, center.z, 1.0);
-        fsColor = color;
-        EmitVertex();
-    }
-
+return vec2( vertex.xy / vertex.w ) * Viewport;
 }
 
 void main(void)
 {
+    // 4 points
+    vec4 P0 = gl_in[0].gl_Position;
+    vec4 P1 = gl_in[1].gl_Position;
+    vec4 P2 = gl_in[2].gl_Position;
+    vec4 P3 = gl_in[3].gl_Position;
 
-    //increment variable
-    int i;
+    // get the four vertices passed to the shader:
+    vec2 p0 = toScreenSpace( P0 );	// start of previous segment
+    vec2 p1 = toScreenSpace( P1 );	// end of previous segment, start of current segment
+    vec2 p2 = toScreenSpace( P2 );	// end of current segment, start of next segment
+    vec2 p3 = toScreenSpace( P3 ); // end of next segment
 
-    vec4 windowP_before;
-    vec4 windowP0;
-    vec4 windowP1;
-    vec4 windowP_after;
+    // perform naive culling
+    vec2 area = Viewport * 1.8;
+    if( p1.x < -area.x || p1.x > area.x ) return;
+    if( p1.y < -area.y || p1.y > area.y ) return;
+    if( p2.x < -area.x || p2.x > area.x ) return;
+    if( p2.y < -area.y || p2.y > area.y ) return;
 
-    bool culledByNearPlane;
+    // determine the direction of each of the 3 segments (previous, current, next)
+    vec2 v0 = normalize( p1 - p0 );
+    vec2 v1 = normalize( p2 - p1 );
+    vec2 v2 = normalize( p3 - p2 );
 
-    ClipLineSegmentToNearPlane(MVPW, gl_in[0].gl_Position, gl_in[1].gl_Position,
-            gl_in[2].gl_Position, gl_in[3].gl_Position,
-            windowP_before, windowP0, windowP1, windowP_after, culledByNearPlane);
+    // determine the normal of each of the 3 segments (previous, current, next)
+    vec2 n0 = vec2( -v0.y, v0.x );
+    vec2 n1 = vec2( -v1.y, v1.x );
+    vec2 n2 = vec2( -v2.y, v2.x );
 
-    if (culledByNearPlane) return;
+    // determine miter lines by averaging the normals of the 2 segments
+    vec2 miter_a = normalize( n0 + n1 );	// miter at start of current segment
+    vec2 miter_b = normalize( n1 + n2 ); // miter at end of current segment
 
-    windowP_before.xyz /= windowP_before.w;
-    windowP0.xyz /= windowP0.w;
-    windowP1.xyz /= windowP1.w;
-    windowP_after.xyz /= windowP_after.w;
+    // determine the length of the miter by projecting it onto normal and then inverse it
+    float an1 = dot(miter_a, n1);
+    float bn1 = dot(miter_b, n2);
+    if (an1==0) an1 = 1;
+    if (bn1==0) bn1 = 1;
+    float length_a = Thickness / an1;
+    float length_b = Thickness / bn1;
 
-    const float min_stroke_width = 0.08;
+    // prevent excessively long miters at sharp corners
+    if( dot( v0, v1 ) < -MiterLimit ) {
+        miter_a = n1;
+        length_a = Thickness;
 
-    float u_fillDistance0 = BaseWidth + WidthAmplitude*gsColor[1].a;
-    float u_fillDistance1 = BaseWidth + WidthAmplitude*gsColor[2].a;
+        // close the gap
+        if( dot( v0, n1 ) > 0 ) {
+            VertexOut.mTexCoord = vec2( 0, 0 );
+            VertexOut.mColor = VertexIn[1].mColor;
+            gl_Position = vec4( ( p1 + Thickness * n0 ) / Viewport, 0.0, 1.0 );
+            EmitVertex();
 
+            VertexOut.mTexCoord = vec2( 0, 0 );
+            VertexOut.mColor = VertexIn[1].mColor;
+            gl_Position = vec4( ( p1 + Thickness * n1 ) / Viewport, 0.0, 1.0 );
+            EmitVertex();
 
-    //one point case
-    if(windowP0 == windowP1) {
-        halfDiscStrip(vec2(1.0, 0.0), 1.0, windowP1.xyz, u_fillDistance0, gsColor[1]);
-        EndPrimitive();
-        halfDiscStrip(vec2(1.0, 0.0), -1.0, windowP1.xyz, u_fillDistance0, gsColor[1]);
-    }
-    else {
-        vec2 direction = normalize(windowP1.xy - windowP0.xy);
-        vec2 normal = vec2(direction.y, -direction.x);
+            VertexOut.mTexCoord = vec2( 0, 0.5 );
+            VertexOut.mColor = VertexIn[1].mColor;
+            gl_Position = vec4( p1 / Viewport, 0.0, 1.0 );
+            EmitVertex();
 
-        vec2 direction_before, direction_after, normal_after;
-        float a_before, sign_before, recul_before, a_after, sign_after, recul_after;
-        bool start = false;
-        bool end = false;
-        bool u_turn_before = false;
-        bool u_turn_after = false;
-
-        if(windowP0 != windowP_before)
-        {
-            direction_before = normalize(windowP0.xy - windowP_before.xy);
-            a_before = acos(clamp(dot(direction, direction_before), -1.0, 1.0));
-            sign_before = sign(dot(normal, direction_before));
-            if(sign_before != -1.0 && sign_before != 1.0) sign_before = 1.0;
-            if(a_before < epsilon)
-            {
-                recul_before = 0.0;
-            }
-            else if(a_before > pi/2.0)
-            {
-                recul_before = 0.0;
-                u_turn_before = true;
-            }
-            else
-                recul_before = u_fillDistance0/tan((pi-a_before)/2.0);
-        }
-        else
-        {
-            direction_before = vec2(0.0, 0.0);
-            a_before = 0.0;
-            sign_before = 1.0;
-            recul_before = 0.0;
-            start = true;
-        }
-
-        if(windowP1 != windowP_after)
-        {
-            direction_after = normalize(windowP_after.xy - windowP1.xy);
-            normal_after = vec2(direction_after.y, -direction_after.x);
-            a_after = acos(clamp(dot(direction, direction_after), -1.0, 1.0));
-            sign_after = sign(dot(normal, direction_after));
-            if(sign_after != -1.0 && sign_after != 1.0) sign_after = 1.0;
-
-            if(a_after < epsilon)
-            {
-                recul_after = 0.0;
-            }
-            else if(a_after > pi/2.0) //u turn
-            {
-                u_turn_after = true;
-                recul_after = 0.0;
-            }
-            else
-                recul_after = u_fillDistance1/tan((pi-a_after)/2.0);
-        }
-        else
-        {
-            direction_after = vec2(0.0, 0.0);
-            normal_after = vec2(0.0, 0.0);
-            a_after = 0.0;
-            sign_after = 1.0;
-            recul_after = 0.0;
-            end = true;
-        }
-
-        vec4 debug_color;
-
-        if(start == true)
-        {
-            halfDiscStrip(normal, -1.0, windowP0.xyz, u_fillDistance0, gsColor[1]);
             EndPrimitive();
-
-            gl_Position = vec4(windowP0.xy - (normal * u_fillDistance0 * sign_after), windowP0.z, 1.0);
-            fsColor = gsColor[1];
-            EmitVertex();
-
-            gl_Position = vec4(windowP0.xy + (normal * u_fillDistance0 * sign_after), windowP0.z, 1.0);
-            fsColor = gsColor[1];
-            EmitVertex();
         }
-        else if(u_turn_before == true)
-        {
-            gl_Position = vec4(windowP0.xy - (normal * u_fillDistance0 * sign_after), windowP0.z, 1.0);
-            fsColor = gsColor[1];
+        else {
+            VertexOut.mTexCoord = vec2( 0, 1 );
+            VertexOut.mColor = VertexIn[1].mColor;
+            gl_Position = vec4( ( p1 - Thickness * n1 ) / Viewport, 0.0, 1.0 );
             EmitVertex();
 
-            gl_Position = vec4(windowP0.xy + (normal * u_fillDistance0 * sign_after), windowP0.z, 1.0);
-            fsColor = gsColor[1];
-            EmitVertex();
-        }
-        else
-        {
-            if(recul_before != 0.0)
-            {
-                gl_Position = vec4(windowP0.xy, windowP0.z, 1.0);
-                fsColor = gsColor[1];
-                EmitVertex();
-            }
-            if(sign_before != sign_after)
-            {
-                gl_Position = vec4(windowP0.xy + (normal * u_fillDistance0 * sign_before), windowP0.z, 1.0);
-                fsColor = gsColor[1];
-                EmitVertex();
-
-                gl_Position = vec4(windowP0.xy - (normal * u_fillDistance0 * sign_before) + direction * recul_before, windowP0.z, 1.0);
-                fsColor = gsColor[1];
-                EmitVertex();
-            }
-            else
-            {
-                gl_Position = vec4(windowP0.xy - (normal * u_fillDistance0 * sign_before) + direction * recul_before, windowP0.z, 1.0);
-                fsColor = gsColor[1];
-                EmitVertex();
-
-                gl_Position = vec4(windowP0.xy + (normal * u_fillDistance0 * sign_before), windowP0.z, 1.0);
-                fsColor = gsColor[1];
-                EmitVertex();
-            }
-        }
-
-        if(end == true)
-        {
-                gl_Position = vec4(windowP1.xy - (normal * u_fillDistance1 * sign_after), windowP1.z, 1.0);
-                fsColor = gsColor[2];
-                EmitVertex();
-
-                gl_Position = vec4(windowP1.xy + (normal * u_fillDistance1 * sign_after), windowP1.z, 1.0);
-                fsColor = gsColor[2];
-                EmitVertex();
-
-                EndPrimitive();
-                halfDiscStrip(normal, 1.0, windowP1.xyz, u_fillDistance1, gsColor[2]);
-
-        }
-        else if(u_turn_after == true)
-        {
-            gl_Position = vec4(windowP1.xy - (normal * u_fillDistance1 * sign_after), windowP1.z, 1.0);
-            fsColor = gsColor[2];
+            VertexOut.mTexCoord = vec2( 0, 1 );
+            VertexOut.mColor = VertexIn[1].mColor;
+            gl_Position = vec4( ( p1 - Thickness * n0 ) / Viewport, 0.0, 1.0 );
             EmitVertex();
 
-            gl_Position = vec4(windowP1.xy + (normal * u_fillDistance1 * sign_after), windowP1.z, 1.0);
-            fsColor = gsColor[2];
-            EmitVertex();
-        }
-        else
-        {
-            gl_Position = vec4(windowP1.xy - (normal * u_fillDistance1 * sign_after), windowP1.z, 1.0);
-            fsColor = gsColor[2];
+            VertexOut.mTexCoord = vec2( 0, 0.5 );
+            VertexOut.mColor = VertexIn[1].mColor;
+            gl_Position = vec4( p1 / Viewport, 0.0, 1.0 );
             EmitVertex();
 
-            gl_Position = vec4(windowP1.xy + (normal * u_fillDistance1 * sign_after) - (direction * recul_after), windowP1.z, 1.0);
-            fsColor = gsColor[2];
-            EmitVertex();
-            if(recul_after != 0.0)
-            {
-              gl_Position = vec4(windowP1.xy, windowP1.z, 1.0);
-              fsColor = gsColor[2];
-              EmitVertex();
-            }
-        }
-
-
-        if(recul_after != 0.0 || u_turn_after)
-        {
             EndPrimitive();
-
-            gl_Position = vec4(windowP1.xy - (normal * u_fillDistance1 * sign_after), windowP1.z, 1.0);
-            fsColor = gsColor[2];
-            EmitVertex();
-
-            float da = -sign_after*a_after/3.0;
-
-            vec2 rot_x = vec2(cos(da), -sin(da));
-            vec2 rot_y = vec2(sin(da), cos(da));
-
-            vec2 new_normal1 = vec2(dot((-normal*sign_after), rot_x), dot((-normal*sign_after), rot_y));
-
-            gl_Position = vec4(windowP1.xy + (new_normal1 * u_fillDistance1), windowP1.z, 1.0);
-            fsColor = gsColor[2];
-            EmitVertex();
-
-            gl_Position = vec4(windowP1.xy, windowP1.z, 1.0);
-            fsColor = gsColor[2];
-            EmitVertex();
-
-            vec2 new_normal2 = vec2(dot(new_normal1, rot_x), dot(new_normal1, rot_y));
-
-            gl_Position = vec4(windowP1.xy + (new_normal2 * u_fillDistance1), windowP1.z, 1.0);
-            fsColor = gsColor[2];
-            EmitVertex();
-
-            gl_Position = vec4(windowP1.xy - (normal_after * u_fillDistance1 * sign_after), windowP1.z, 1.0);
-            fsColor = gsColor[2];
-            EmitVertex();
-           }
+        }
     }
+    if( dot( v1, v2 ) < -MiterLimit ) {
+        miter_b = n1;
+        length_b = Thickness;
+    }
+    // generate the triangle strip
+    VertexOut.mTexCoord = vec2( 0, 0 );
+    VertexOut.mColor = VertexIn[1].mColor;
+    gl_Position = vec4( ( p1 + length_a * miter_a ) / Viewport, 0.0, 1.0 );
+    EmitVertex();
+
+    VertexOut.mTexCoord = vec2( 0, 1 );
+    VertexOut.mColor = VertexIn[1].mColor;
+    gl_Position = vec4( ( p1 - length_a * miter_a ) / Viewport, 0.0, 1.0 );
+    EmitVertex();
+
+    VertexOut.mTexCoord = vec2( 0, 0 );
+    VertexOut.mColor = VertexIn[2].mColor;
+    gl_Position = vec4( ( p2 + length_b * miter_b ) / Viewport, 0.0, 1.0 );
+    EmitVertex();
+
+    VertexOut.mTexCoord = vec2( 0, 1 );
+    VertexOut.mColor = VertexIn[2].mColor;
+    gl_Position = vec4( ( p2 - length_b * miter_b ) / Viewport, 0.0, 1.0 );
+    EmitVertex();
+
+    EndPrimitive();
 }
-

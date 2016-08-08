@@ -1,12 +1,16 @@
-#version 150
-#extension GL_EXT_geometry_shader4 : enable
+#version 330
 
-varying out vec4 gsColor;
+uniform mat4 ModelViewProjectionMatrix;
 
-void main()
+layout(location = 0) in vec4 Vertex;
+layout(location = 1) in vec4 Color;
+
+out VertexData{
+    vec4 mColor;
+} VertexOut;
+
+void main(void)
 {
-    //Transform the vertex (ModelViewProj matrix)
-    gsColor = gl_Color;
-    //gl_Position = ftransform();
-    gl_Position = gl_Vertex;
+    VertexOut.mColor = Color;
+    gl_Position = ModelViewProjectionMatrix * Vertex;
 }
