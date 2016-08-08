@@ -29,7 +29,7 @@ Continious integration:
 * [Doxygen](www.doxygen.org/) (not mandatory; only used for documentation build)
 * [Git](https://git-scm.com/) (not mandatory; only used for development)
 * C/C++ compiler, e.g., `gcc` or Visual Studio, or `clang`
-* Graphics card supporting OpenGL (>= 1.3)
+* Graphics card supporting OpenGL (>=3.3 when shaders are supported, or can be used with >= 1.3 with more simplified look)
 
 All tools, but OpenSceneGraph (OSG), have binaries and are easy to install. There are no official binaries for OSG library and it is recommended to install it from source. Use the [official guide](http://trac.openscenegraph.org/projects/osg//wiki/Support/GettingStarted) for detailed steps. Note: the used version of OSG only requires OpenGL and CMake; there is no need to install additional plugins; the minimal install is enough.
 
