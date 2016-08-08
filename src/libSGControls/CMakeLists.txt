@@ -25,6 +25,8 @@ set (libSGControls_SRCS
     LogFileHandler.h
     FindNodeVisitor.h
     FindNodeVisitor.cpp
+    TestSupportOperation.h
+    TestSupportOperation.cpp
 )
 
 add_library(libSGControls

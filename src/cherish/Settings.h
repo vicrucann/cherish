@@ -189,6 +189,7 @@ const float HUD_TEXT_POSY = HUD_BOTTOM + 15.f;
 const float HUD_TEXT_POSZ = 0.f;
 
 extern double DPI_SCALING;
+extern bool SHADER_SUPPORTED;
 
 const size_t APP_SCREENSHOT_HEIGHT = 150;
 const size_t APP_WIDGET_BUTTON = 16;
