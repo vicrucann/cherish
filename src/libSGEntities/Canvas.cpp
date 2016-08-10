@@ -335,11 +335,11 @@ void entity::Canvas::rotate(const osg::Matrix& mr, const osg::Vec3f &c3d_new)
     osg::Vec3f c2d_old = m_center * invM;
     if (m_center != c3d_new){
         if (std::fabs(c2d_old.z()) > cher::EPSILON){
-            qCritical("Warning: updateFrame(): local central point z-coord is not close to zero");
+            qCritical("updateFrame(): local central point z-coord is not close to zero");
             return;
         }
         if (std::fabs(c2d_new.z()) > cher::EPSILON){
-            qCritical("Warning: updateFrame(): local central point z-coord is not close to zero");
+            qCritical("updateFrame(): local central point z-coord is not close to zero");
             return;
         }
         /* move every child back in local delta translation (diff between old and new centers) */
@@ -454,7 +454,7 @@ osg::Vec3f entity::Canvas::getEntitiesSelectedCenter3D() const
     return (m_selectedGroup.isEmpty() ? this->getCenter() : m_selectedGroup.getCenter3D(m_transform->getMatrix()) );
 }
 
-const osg::Vec3f &entity::Canvas::getEntitiesSelectedCenter2D() const
+osg::Vec3f entity::Canvas::getEntitiesSelectedCenter2D() const
 {
     return m_selectedGroup.getCenter2DCustom();
 }
@@ -468,18 +468,31 @@ osg::Vec3f entity::Canvas::getCenter2D() const
     return invertable? m_center * invM : cher::CENTER;
 }
 
-const osg::Vec3f &entity::Canvas::getBoundingBoxCenter3D() const
+osg::Vec3f entity::Canvas::getBoundingBoxCenter3D() const
 {
+    osg::Vec3f center3d = m_center;
     osg::BoundingBox bb = this->getBoundingBox();
-    if (!bb.valid()) return m_center;
-    return bb.center() * m_transform->getMatrix();
+    if (bb.valid()){
+        center3d = bb.center() * m_transform->getMatrix();
+
+        /* check validity of the center - whether it belongs to the plane */
+        osg::Matrix M = m_transform->getMatrix();
+        osg::Matrix invM;
+        invM.invert(M);
+        osg::Vec3f center2d = center3d * invM;
+        Q_ASSERT(std::fabs(center2d.z()) <= cher::EPSILON);
+    }
+    return center3d;
 }
 
-const osg::Vec3f &entity::Canvas::getBoundingBoxCenter2D() const
+osg::Vec3f entity::Canvas::getBoundingBoxCenter2D() const
 {
+    osg::Vec3f center2d = this->getCenter2D();
     osg::BoundingBox bb = this->getBoundingBox();
-    if (!bb.valid()) return this->getCenter2D();
-    return bb.center();
+    if (bb.valid()){
+        center2d = bb.center();
+    }
+    return center2d;
 }
 
 osg::BoundingBox entity::Canvas::getBoundingBox() const

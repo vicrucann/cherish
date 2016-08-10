@@ -357,19 +357,21 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
 
     osg::Quat rot(theta, alongAxis);
 
+    osg::Vec3f center3d = m_scene->getCanvasCurrent()->getBoundingBoxCenter3D();
+
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         outLogVec("canvas-rotate pressed, quat", rot.x(), rot.y(), rot.z());
         qDebug() << "canvas-rotate pressed, quat.w " << rot.w();
-        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getBoundingBoxCenter3D(), cher::EVENT_PRESSED);
+        m_scene->editCanvasRotate(rot, center3d, cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
         outLogVec("canvas-rotate released, quat", rot.x(), rot.y(), rot.z());
         qDebug() << "canvas-rotate released, quat.w " << rot.w();
-        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getBoundingBoxCenter3D(), cher::EVENT_RELEASED);
+        m_scene->editCanvasRotate(rot, center3d, cher::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::DRAG:
-        m_scene->editCanvasRotate(rot, m_scene->getCanvasCurrent()->getBoundingBoxCenter3D(), cher::EVENT_DRAGGED);
+        m_scene->editCanvasRotate(rot, center3d, cher::EVENT_DRAGGED);
         break;
     default:
         break;
