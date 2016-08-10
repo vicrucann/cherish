@@ -179,16 +179,16 @@ public:
     osg::Vec3f getEntitiesSelectedCenter3D() const;
 
     /*! \return local 2D center of SelectedGroup. */
-    const osg::Vec3f& getEntitiesSelectedCenter2D() const;
+    osg::Vec3f getEntitiesSelectedCenter2D() const;
 
     /*! \return local 2D center of canvas. \sa getCenter() */
     osg::Vec3f getCenter2D() const;
 
     /*! \return global 3D mean center of canvas; used as a default rotation point when rotating the canvas. */
-    const osg::Vec3f& getBoundingBoxCenter3D() const;
+    osg::Vec3f getBoundingBoxCenter3D() const;
 
     /*! \return local 2D center which is calculated based on bounding box of the whole canvas. */
-    const osg::Vec3f& getBoundingBoxCenter2D() const;
+    osg::Vec3f getBoundingBoxCenter2D() const;
 
     /*! \return a bounding box of the whole canvas. */
     osg::BoundingBox getBoundingBox() const;

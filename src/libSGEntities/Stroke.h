@@ -18,6 +18,7 @@
 #include "Settings.h"
 #include "Entity2D.h"
 #include <osg/Geometry>
+#include <osg/Camera>
 #include <osgDB/ObjectWrapper>
 
 namespace entity {
@@ -27,10 +28,10 @@ namespace entity {
 */
 class Stroke : public entity::Entity2D {
 public:
-    /*! */
+    /*! Constructor that creates an empty stroke. */
     Stroke();
 
-    /*! */
+    /*! Copy constructor */
     Stroke(const Stroke& copy, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
 
     META_Node(entity, Stroke)
@@ -44,30 +45,43 @@ public:
     inline const osg::Vec4f& getColor() const;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-    /*! A method to add a point to the end of a stroke. */
+    /*! A method to add a point to the end of a stroke. It is normally used when constructing a stroke in-motion while sketching.
+     * \param u is local U coordinate, \param v is local V coordinate. */
     void appendPoint(const float u, const float v);
 
-    /*! \return length of the stroke */
+    /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
+     * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
+    bool redefineToShader(osg::Camera* camera);
+
+    /*! \return length of the stroke, which is measured as a largest dimention of the bounding box around the stroke. */
     float getLength() const;
 
     /*! \return true if the stroke is longer than allowed threshold, false otherwise. */
     bool isLengthy() const;
 
-    /*! \param du is delta movement in X local axis direction, \param dv is delta movement in Y local axis direction. */
+    /*! A method to perform translation of the stroke in delta movement.
+     * \param du is delta movement in X local axis direction, \param dv is delta movement in Y local axis direction. */
     void moveDelta(double du, double dv);
 
-    /*! \param scaleX is scaling factor along U local axis, \param scaleY is scaling factor along V local axis,
+    /*! A method to scale the stroke around a fixed point.
+     * \param scaleX is scaling factor along U local axis, \param scaleY is scaling factor along V local axis,
      * \param center is the local 2D center around which to scale. */
     void scale(double scaleX, double scaleY, osg::Vec3f center);
 
-    /*! \param scale is scaling factor, \param center is the local 2D center around which to scale. */
+    /*! A method to uniformely scale the stroke around a fixed point.
+     * \param scale is scaling factor, \param center is the local 2D center around which to scale. */
     void scale(double scale, osg::Vec3f center);
 
-    /*! \param theta is angle in radians, \param center is the local 2D center around which to rotate. */
+    /*! A method to rotate the stroke around a fixed point.
+     * \param theta is angle in radians, \param center is the local 2D center around which to rotate. */
     void rotate(double theta, osg::Vec3f center);
 
-    /*! \return entity type */
+    /*! A re-defined method of entity::Entity2D to obtain entity type.
+     * \return entity type */
     cher::ENTITY_TYPE getEntityType() const;
+
+protected:
+    bool initializeShaderProgram(osg::Camera* camera);
 
 private:
     osg::ref_ptr<osg::DrawArrays> m_lines;

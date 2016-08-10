@@ -21,7 +21,7 @@ const QIcon &Data::fileNewSceneIcon()
 
 const QIcon &Data::fileCloseIcon()
 {
-    Q_ASSERT_X(!QPixmap(":file-close-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    Q_ASSERT_X(!QPixmap(":/file-close-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
     static QIcon icon(":/file-close-24px.svg");
     return icon;
 }
@@ -35,8 +35,8 @@ const QIcon &Data::fileExitIcon()
 
 const QIcon &Data::fileImageIcon()
 {
-    Q_ASSERT_X(!QPixmap(cher::FA_ICON_PATH + "picture-o.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
-    static QIcon icon(cher::FA_ICON_PATH + "picture-o.svg");
+    Q_ASSERT_X(!QPixmap(cher::OI_ICON_PATH + "image.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(cher::OI_ICON_PATH + "image.svg");
     return icon;
 }
 

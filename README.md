@@ -29,7 +29,7 @@ Continious integration:
 * [Doxygen](www.doxygen.org/) (not mandatory; only used for documentation build)
 * [Git](https://git-scm.com/) (not mandatory; only used for development)
 * C/C++ compiler, e.g., `gcc` or Visual Studio, or `clang`
-* Graphics card supporting OpenGL (>= 1.3)
+* Graphics card supporting OpenGL (>=3.3 when shaders are supported, or can be used with >= 1.3 with more simplified look)
 
 All tools, but OpenSceneGraph (OSG), have binaries and are easy to install. There are no official binaries for OSG library and it is recommended to install it from source. Use the [official guide](http://trac.openscenegraph.org/projects/osg//wiki/Support/GettingStarted) for detailed steps. Note: the used version of OSG only requires OpenGL and CMake; there is no need to install additional plugins; the minimal install is enough.
 
@@ -72,6 +72,19 @@ build/ $ make
 Assuming the project is checked out from git repository, use Qt Creator to open the project by opening the file `cherish/src/CMakeLists.txt`.
 
 Follow the steps of Qt Creator to finish the build using CMake. After the build is complete, compile the project by running `<Ctrl>+B`, or run from the menu: "Build" -> "Build All".
+
+### Compilation using Visual Studio
+
+Here we will only mention some specifics to know when performing the compilation using Visual Studio tools. 
+
+Generally speaking, the compilation process can be split into two main parts: 
+
+* CMake generation (for simplicity use CMake-gui)
+* Compilation itself using Visual Studio of the generated project
+
+It is recommended to use Visual Studio 2013 and its corresponding compiler. 
+
+When doind the second step, make sure to include the necessary Qt directories to the `PATH` environmental variable. Also, make sure to include certain Qt plugin folder: `plugins/imageformats`, otherwise the icons will not be displayed within the application.
 
 ## License
 

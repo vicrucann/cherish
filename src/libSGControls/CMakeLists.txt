@@ -25,6 +25,10 @@ set (libSGControls_SRCS
     LogFileHandler.h
     FindNodeVisitor.h
     FindNodeVisitor.cpp
+    ModelViewProjectionMatrixCallback.h
+    ModelViewProjectionMatrixCallback.cpp
+    ViewportVectorCallback.h
+    ViewportVectorCallback.cpp
 )
 
 add_library(libSGControls

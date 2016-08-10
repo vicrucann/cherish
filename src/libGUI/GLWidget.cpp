@@ -7,11 +7,15 @@
 #include <QKeyEvent>
 #include <QWheelEvent>
 #include <QDebug>
+#include <QMimeData>
+#include <QtGlobal>
 
 #include <osg/StateSet>
 #include <osg/Material>
 #include <osg/Camera>
+#include <osg/GraphicsContext>
 #include <osgViewer/Viewer>
+#include <osgViewer/ViewerBase>
 #include <osgGA/EventQueue>
 #include <osgGA/EventQueue>
 #include <osgGA/TrackballManipulator>
@@ -21,12 +25,11 @@
 GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::WindowFlags f)
     : QOpenGLWidget(parent, f)
 
-    , m_GraphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(), this->height()))
-    , m_Viewer(new osgViewer::CompositeViewer)
+    , m_graphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(), this->height()))
+    , m_viewer(new osgViewer::Viewer)
     , m_RootScene(root)
     , m_TabletDevice(QTabletEvent::Stylus) // http://doc.qt.io/qt-5/qtabletevent.html#TabletDevice-enum
 
-    , m_ModeView(1)
     , m_DeviceDown(false)
     , m_DeviceActive(false)
     , m_mouseMode(cher::PEN_SKETCH)
@@ -46,54 +49,37 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     camera->setViewport(0,0,this->width(), this->height());
     camera->setProjectionMatrixAsPerspective(30.f, ratio, 1.f, 1000.f);
     camera->setViewMatrixAsLookAt(center-look*(radius*3.f), center, up);
-    camera->setGraphicsContext(m_GraphicsWindow.get());
+    camera->setGraphicsContext(m_graphicsWindow.get());
     camera->setClearColor(cher::BACKGROUND_CLR);
     camera->setName("Camera");
-
-    /* view settings */
-    osg::ref_ptr< osgViewer::View> view = new osgViewer::View;
-    view->setCamera(camera);
-    view->setSceneData(m_RootScene.get());
-    view->setCameraManipulator(m_manipulator.get());
-    view->addEventHandler(m_EH.get());
 
     /* manipulator settings */
     m_manipulator->setAllowThrow(false);
     m_manipulator->getTransformation(m_eye, m_center, m_up);
 
-    // viewer settings
-    m_Viewer->addView(view.get());
-    m_Viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
-    m_Viewer->realize();
+    /* viewer settings */
+    m_viewer->setCamera(camera);
+    m_viewer->setSceneData(m_RootScene.get());
+    m_viewer->setCameraManipulator(m_manipulator.get());
+    m_viewer->addEventHandler(m_EH.get());
+    m_viewer->setThreadingModel(osgViewer::Viewer::SingleThreaded);
 
-    // widget settings
+    m_viewer->realize();
+
+    /* widget settings */
     this->setFocusPolicy(Qt::StrongFocus);
     this->setMouseTracking(true);
-}
-
-GLWidget::~GLWidget()
-{
+    this->setAcceptDrops(true); // do drag photos from PhotoWidget
 }
 
 osg::Camera *GLWidget::getCamera() const
 {
-    if (!m_Viewer.get()){
+    if (!m_viewer.get()){
         qWarning( "GLWindget getCamera: could not obtain viewer" );
         return NULL;
     }
 
-    if (!m_Viewer->getView(0))
-    {
-        qWarning( "GLWindget getCamera: could not obtain view" );
-        return NULL;
-    }
-    return m_Viewer->getView(0)->getCamera();
-    /*std::vector<osg::Camera*> cameras;
-    this->m_Viewer->getCameras(cameras);
-    if (cameras.empty())
-        return NULL;
-    else
-        return cameras.at(0);*/
+    return m_viewer->getCamera();
 }
 
 void GLWidget::setCameraView()
@@ -226,13 +212,13 @@ void GLWidget::initializeGL()
 
 void GLWidget::paintGL()
 {
-    this->m_Viewer->frame();
+    m_viewer->frame();
 }
 
 void GLWidget::resizeGL(int w, int h)
 {
     this->getEventQueue()->windowResize(this->x(), this->y(), w, h);
-    this->m_GraphicsWindow->resized(this->x(), this->y(), w, h);
+    this->m_graphicsWindow->resized(this->x(), this->y(), w, h);
     this->onResize(w, h);
 }
 
@@ -421,50 +407,74 @@ bool GLWidget::event(QEvent *event)
     return handled;
 }
 
+void GLWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    // accept event if it is photo import from PhotoWidget
+    if (event->mimeData()->hasFormat(cher::MIME_PHOTO))
+        event->accept();
+    else
+        event->ignore();
+}
+
+void GLWidget::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    // on drag finish, do the image import
+
+    // accept event
+    event->accept();
+}
+
+void GLWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+    if (event->mimeData()->hasFormat(cher::MIME_PHOTO)){
+        event->setDropAction(Qt::CopyAction);
+        event->accept();
+    }
+    else
+        event->ignore();
+}
+
+void GLWidget::dropEvent(QDropEvent *event)
+{
+    if (event->mimeData()->hasFormat(cher::MIME_PHOTO)){
+        QByteArray imageData = event->mimeData()->data(cher::MIME_PHOTO);
+        QDataStream dataStream(&imageData, QIODevice::ReadOnly);
+        QString fileName, directory;
+        dataStream >> fileName >> directory;
+
+        qInfo() << "GLWidget accepted filename " << fileName;
+        qInfo() << "GLWidget accepted path " << directory;
+
+        event->setDropAction(Qt::CopyAction);
+        event->accept();
+
+        // emit signal to let know image should be imported
+        emit this->importPhoto(directory, fileName);
+    }
+    else
+        event->ignore();
+}
+
 void GLWidget::onHome()
 {
-    osgViewer::ViewerBase::Views views;
-    m_Viewer->getViews(views);
-    for (unsigned int i=0; i<views.size(); ++i){
-        osgViewer::View* view = views.at(i);
-        view->home();
-
-        this->setCameraView();
-        m_manipulator->getTransformation(m_eye, m_center, m_up);
-    }
+    m_viewer->home();
+    this->setCameraView();
+    m_manipulator->getTransformation(m_eye, m_center, m_up);
 }
 
 void GLWidget::onResize(int w, int h)
 {
-    std::vector<osg::Camera*> cameras;
-    this->m_Viewer->getCameras(cameras);
-    if (cameras.size() != static_cast<unsigned int>(this->m_ModeView)) {
-        qWarning("onResize(): the cameras number does not correspond to view mode");
-        qDebug()<< "Camera size: " << cameras.size();
-        qDebug() << "View mode: " << this->m_ModeView;
+    osg::Camera* camera = m_viewer->getCamera();
+    if (!camera){
+        qCritical("GLWidget could not extract camera from viewer, camera is NULL");
         return;
     }
-    if (this->m_ModeView == 1)
-        cameras[0]->setViewport( 0,0,this->width(), this->height() );
-    else if (this->m_ModeView == 2){
-        cameras[0]->setViewport( 0,0,this->width()/2, this->height() );
-        cameras[1]->setViewport( this->width() / 2, 0, this->width() / 2, this->height() );
-    }
-    else if (this->m_ModeView == 3){
-        cameras[0]->setViewport( 0,0,this->width()/3, this->height() );
-        cameras[1]->setViewport( this->width() / 3, 0, this->width()/ 3, this->height() );
-        cameras[2]->setViewport( this->width() * 2 / 3, 0, this->width()/ 3, this->height() );
-    }
-    else{
-        qWarning("onResize(): unsupported view mode");
-        qDebug() << "Cameras number: " << cameras.size();
-        return;
-    }
+    camera->setViewport(0,0, this->width(), this->height());
 }
 
 osgGA::EventQueue *GLWidget::getEventQueue() const
 {
-    osgGA::EventQueue* eventQueue = m_GraphicsWindow->getEventQueue();
+    osgGA::EventQueue* eventQueue = m_graphicsWindow->getEventQueue();
     if( eventQueue )
         return eventQueue;
     else

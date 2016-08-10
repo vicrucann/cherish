@@ -12,6 +12,7 @@
 #include <QUndoView>
 #include <QToolButton>
 #include <QWidgetAction>
+#include <QFileSystemModel>
 
 #include <osg/ref_ptr>
 
@@ -21,6 +22,8 @@
 #include "CameraProperties.h"
 #include "ListWidget.h"
 #include "TreeWidget.h"
+#include "ListView.h"
+#include "PhotoModel.h"
 #include "Data.h"
 
 /*! \class MainWindow
@@ -91,6 +94,9 @@ public slots:
     /*! Slot called to obtain status of global tools visibilities. */
     void onRequestSceneToolStatus(bool& visibility);
 
+    /*! Slot called when user performed drag-and-drop from PhotoWidget to GLWidget of a entity::Photo. */
+    void onImportPhoto(const QString& path, const QString& fileName);
+
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */
     void onFileNew();
@@ -99,6 +105,7 @@ protected slots:
     void onFileSaveAs();
     void onFileExport();
     void onFileImage();
+    void onFilePhotoBase();
     void onFileClose();
     void onFileExit();
 
@@ -149,11 +156,15 @@ protected:
     void        initializeCallbacks(); // for ctor
     bool        loadSceneFromFile();
 
+    bool        importPhoto(QString& fileName);
+
     QMdiArea*       m_mdiArea;
 
-    QTabWidget*     m_tabWidget;
-    BookmarkWidget*    m_bookmarkWidget;
-    CanvasPhotoWidget*    m_canvasWidget;
+    QTabWidget*         m_tabWidget;
+    BookmarkWidget*     m_bookmarkWidget;
+    CanvasPhotoWidget*  m_canvasWidget;
+    PhotoWidget*        m_photoWidget;
+    PhotoModel*         m_photoModel;
 
 
     // http://doc.qt.io/qt-5/qtwidgets-tools-undoframework-example.html
@@ -167,7 +178,7 @@ protected:
     // FILE actions
     QAction * m_actionNewFile, * m_actionClose, * m_actionExit,
             * m_actionImportImage, * m_actionOpenFile, * m_actionSaveFile,
-            * m_actionSaveAsFile, * m_actionExportAs;
+            * m_actionSaveAsFile, * m_actionExportAs, * m_actionPhotoBase;
 
     // EDIT actions
     QAction * m_actionUndo, * m_actionRedo, * m_actionCut, * m_actionCopy,

@@ -27,7 +27,7 @@ qt5_add_resources(IMG_RSC_ADDED
 file(GLOB_RECURSE SHADER_RSC_ADDED
     Shaders/*.frag
     Shaders/*.vert
-    Shaders/*.glsl
+    Shaders/*.geom
 )
 
 add_executable(${PROJECT_NAME}

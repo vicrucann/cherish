@@ -1,10 +1,11 @@
-#version 150
+#version 330
 
-flat in vec4 fsColor;
-out vec4 fragmentColor;
-
-void main()
+in VertexData{
+    vec2 mTexCoord;
+    vec4 mColor;
+} VertexIn;
+const vec4 testColor = vec4(0.3,1,0,1);
+void main(void)
 {
-    fragmentColor = fsColor;
-    //fragmentColor.a = 0.5;
+    gl_FragColor = vec4(VertexIn.mColor.xy, 0.2, 1);
 }

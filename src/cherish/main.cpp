@@ -19,11 +19,23 @@
  *
  * \section Description
  *
- * This documentation site convers both API and user documentation.
+ * This documentation site covers both API and user documentation.
  *
  * For the API, go to "Classes".
  *
  * For user documentation files, go to "Related Pages".
+ *
+ * The codes are separated into different folders: cherish, libGUI, libSGControls, libSGEntities and tests.
+ *
+ * "cherish" folder contains main.cpp, as well as settings, utility functions and image data.
+ *
+ * "libGUI" contains all the elements related to user interface and its elements.
+ *
+ * "libSGControls" contains codes such as event handling, manipulators and anything related to undo/redo framework.
+ *
+ * "libSGEntities" contains geometry-based and group-based OpenSceneGraph elements that are elements of a scene graph.
+ *
+ * "tests" contains batteries of different basic unit tests.
  *
  */
 

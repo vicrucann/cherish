@@ -21,8 +21,12 @@ set(libGUI_SRCS
     TreeWidget.cpp
     ListDelegate.h
     ListDelegate.cpp
+    ListView.h
+    ListView.cpp
     CameraProperties.h
     CameraProperties.cpp
+    PhotoModel.h
+    PhotoModel.cpp
 )
 
 qt5_wrap_ui(UI_GENERATED_SRCS

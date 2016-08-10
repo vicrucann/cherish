@@ -10,6 +10,7 @@
 #include <QSize>
 #include <QDebug>
 #include <QMessageBox>
+#include <QFileInfo>
 
 #include <osg/MatrixTransform>
 
@@ -28,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_tabWidget(new QTabWidget())
     , m_bookmarkWidget(new BookmarkWidget())
     , m_canvasWidget(new CanvasPhotoWidget())
+    , m_photoWidget(new PhotoWidget())
+    , m_photoModel(new PhotoModel)
 
     , m_undoStack(new QUndoStack(this))
 
@@ -59,6 +62,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     m_tabWidget->setTabPosition(QTabWidget::West);
     m_tabWidget->addTab(m_canvasWidget, Data::controlCanvasesIcon(), QString(""));
     m_tabWidget->addTab(m_bookmarkWidget, Data::controlBookmarksIcon(), QString(""));
+    m_tabWidget->addTab(m_photoWidget, Data::controlImagesIcon(), QString(""));
+
     m_bookmarkWidget->setItemDelegate(new BookmarkDelegate(this));
     m_canvasWidget->setItemDelegate(new CanvasDelegate(this));
 
@@ -299,6 +304,12 @@ void MainWindow::onRequestSceneToolStatus(bool &visibility)
     visibility = m_actionTools->isChecked();
 }
 
+void MainWindow::onImportPhoto(const QString &path, const QString &fileName)
+{
+    QString fullPath = path + "/" + fileName;
+    this->importPhoto(fullPath);
+}
+
 /* Check whether the current scene is empty or not
  * If not - propose to save changes.
  * Clear the scene graph
@@ -395,14 +406,26 @@ void MainWindow::onFileImage()
     }
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load an Image File"), QString(),
             tr("Image Files (*.bmp)"));
-    if (!fileName.isEmpty()) {
-        m_rootScene->addPhoto(fileName.toStdString());
-        this->statusBar()->showMessage(tr("Image loaded to current canvas."));
-       /* if (!m_rootScene->loadPhotoFromFile(fileName.toStdString())){
-            QMessageBox::critical(this, tr("Error"), tr("Could not open file"));
-            return;
-        }*/
+
+    this->importPhoto(fileName);
+}
+
+void MainWindow::onFilePhotoBase()
+{
+    QString directory = QFileDialog::getExistingDirectory(this, tr("Chose photo base directory"), QString(),
+                                                        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (directory.isEmpty()){
+        QMessageBox::information(this, tr("Photo base directory"), tr("No directory was chosen"));
+        return;
     }
+
+    m_photoModel->setRootPath(directory);
+    m_photoWidget->setModel(m_photoModel);
+//    m_photoWidget->setRootIndex(m_photoModel->index(directory));
+
+    m_tabWidget->setCurrentWidget(m_photoWidget);
+
+    this->statusBar()->showMessage(tr("Start dragging photos one-by-one to the current canvas to perfrom a photo import to the scene."));
 }
 
 void MainWindow::onFileClose()
@@ -666,6 +689,9 @@ void MainWindow::initializeActions()
     m_actionExportAs = new QAction(Data::fileExportIcon(), tr("Export as..."), this);
     this->connect(m_actionExportAs, SIGNAL(triggered(bool)), this, SLOT(onFileExport()));
 
+    m_actionPhotoBase = new QAction(Data::controlImagesIcon(), tr("Chose folder with photo base..."), this);
+    this->connect(m_actionPhotoBase, SIGNAL(triggered(bool)), this, SLOT(onFilePhotoBase()));
+
     // EDIT
 
     m_actionUndo = m_undoStack->createUndoAction(this, tr("&Undo"));
@@ -803,6 +829,7 @@ void MainWindow::initializeMenus()
     menuFile->addAction(m_actionExportAs);
     menuFile->addSeparator();
     menuFile->addAction(m_actionImportImage);
+    menuFile->addAction(m_actionPhotoBase);
     menuFile->addSeparator();
     menuFile->addAction(m_actionClose);
     menuFile->addAction(m_actionExit);
@@ -873,6 +900,7 @@ void MainWindow::initializeToolbars()
     tbFile->addAction(m_actionOpenFile);
     tbFile->addAction(m_actionSaveFile);
     tbFile->addAction(m_actionImportImage);
+    tbFile->addAction(m_actionPhotoBase);
 
     // Edit
     QToolBar* tbEdit = this->addToolBar(tr("Edit"));
@@ -968,6 +996,10 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_glWidget, SIGNAL(autoSwitchMode(cher::MOUSE_MODE)),
                      this, SLOT(onAutoSwitchMode(cher::MOUSE_MODE)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_glWidget, SIGNAL(importPhoto(QString,QString)),
+                     this, SLOT(onImportPhoto(QString,QString)),
                      Qt::UniqueConnection);
 
     /* connect MainWindow with UserScene */
@@ -1120,5 +1152,37 @@ bool MainWindow::loadSceneFromFile()
     m_rootScene->resetBookmarks(m_bookmarkWidget);
     if (!m_rootScene->getUserScene()) return false;
     m_rootScene->getUserScene()->resetModel(m_canvasWidget);
+    return true;
+}
+
+bool MainWindow::importPhoto(QString &fileName)
+{
+    if (fileName.isEmpty()){
+        QMessageBox::critical(this, tr("Import Photo"), tr("Path is empty. "
+                                                           "No import will be performed."));
+        return false;
+    }
+
+    QFileInfo checkFile(fileName);
+    if (!checkFile.exists() || !checkFile.isFile()){
+        QMessageBox::critical(this, tr("Import Photo"), tr("No file exists under the given path."
+                                                           " No import will be performed."));
+        return false;
+    }
+
+    if (!m_rootScene.get()){
+        QMessageBox::critical(this, tr("Import Photo"), tr("The scene is NULL. It is advised to restart. "
+                                                          "No import will be performed."));
+        return false;
+    }
+
+    if (m_rootScene->isEmptyScene()){
+        QMessageBox::warning(this, tr("Import Photo"), tr("There are no canvases on the scene. Add a canvas first. "
+                                                          "No import will be performed."));
+        return false;
+    }
+
+    m_rootScene->addPhoto(fileName.toStdString());
+    this->statusBar()->showMessage(tr("Image loaded to current canvas."));
     return true;
 }

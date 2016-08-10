@@ -7,6 +7,10 @@
 #include <QStack>
 #include <QPixmap>
 #include <QScopedPointer>
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QDragMoveEvent>
+#include <QDropEvent>
 
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
@@ -30,7 +34,6 @@ class GLWidget : public QOpenGLWidget {
 public:
     /*! Construtor. */
     GLWidget(RootScene* root, QUndoStack* stack, QWidget* parent=0, Qt::WindowFlags f = 0);
-    virtual ~GLWidget();
 
     /*! \return a non-const pointer on osg::Camera that is current for the GLWidget. */
     osg::Camera* getCamera() const;
@@ -56,6 +59,9 @@ signals:
 
     /*! Signal is emitted when FOV was changed. */
     void FOVSet(double fov);
+
+    /*! Signal is emitted when user performs drag-and-drop from PhotoWidget to GLWidget. */
+    void importPhoto(const QString& path, const QString& fileName);
 
 public:
     /*! Method to set tablet proximity flag. */
@@ -89,6 +95,13 @@ protected:
 
     virtual bool event(QEvent* event);
 
+protected:
+    // Drag and drop related (from PhotoWidget)
+    void dragEnterEvent(QDragEnterEvent* event);
+    void dragLeaveEvent(QDragLeaveEvent* event);
+    void dragMoveEvent(QDragMoveEvent* event);
+    void dropEvent(QDropEvent* event);
+
 private:
     virtual void onHome();
     virtual void onResize(int w, int h);
@@ -97,13 +110,12 @@ private:
     // for more info see reference osgGA::EventQueue and osgGA::GUIEventAdapter
     // the later's enums are used in EventHandler.h
 
-    osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> m_GraphicsWindow;
-    osg::ref_ptr<osgViewer::CompositeViewer> m_Viewer;
+    osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> m_graphicsWindow;
+    osg::ref_ptr<osgViewer::Viewer> m_viewer;
     osg::observer_ptr<RootScene> m_RootScene;
 
     QTabletEvent::TabletDevice m_TabletDevice;
 
-    int m_ModeView; // number of views per CompositeViewer
     bool m_DeviceDown; // pen touches the device?
     bool m_DeviceActive; // pen is in device approximation?
 
