@@ -34,7 +34,6 @@ class GLWidget : public QOpenGLWidget {
 public:
     /*! Construtor. */
     GLWidget(RootScene* root, QUndoStack* stack, QWidget* parent=0, Qt::WindowFlags f = 0);
-    virtual ~GLWidget();
 
     /*! \return a non-const pointer on osg::Camera that is current for the GLWidget. */
     osg::Camera* getCamera() const;
@@ -111,13 +110,12 @@ private:
     // for more info see reference osgGA::EventQueue and osgGA::GUIEventAdapter
     // the later's enums are used in EventHandler.h
 
-    osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> m_GraphicsWindow;
-    osg::ref_ptr<osgViewer::CompositeViewer> m_Viewer;
+    osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> m_graphicsWindow;
+    osg::ref_ptr<osgViewer::Viewer> m_viewer;
     osg::observer_ptr<RootScene> m_RootScene;
 
     QTabletEvent::TabletDevice m_TabletDevice;
 
-    int m_ModeView; // number of views per CompositeViewer
     bool m_DeviceDown; // pen touches the device?
     bool m_DeviceActive; // pen is in device approximation?
 
