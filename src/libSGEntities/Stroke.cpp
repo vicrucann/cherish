@@ -112,9 +112,9 @@ void entity::Stroke::appendPoint(const float u, const float v)
 // read more on why: http://stackoverflow.com/questions/36655888/opengl-thick-and-smooth-non-broken-lines-in-3d
 bool entity::Stroke::redefineToShader(osg::Camera *camera)
 {
-    // The used shader requires that each line segment is represented as GL_LINES_AJACENCY_EXT
-    // This required adding padding points for each line segment
-    // Same goes for color, if it's not uniform
+    /* The used shader requires that each line segment is represented as GL_LINES_AJACENCY_EXT
+    *  This required adding padding points for each line segment
+    *  Same goes for color, if it's not uniform */
 
     if (!this->initializeShaderProgram(camera)){
         qWarning("Could not properly initialize the stroke shader program, default look will be used");
@@ -124,11 +124,33 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
     osg::ref_ptr<osg::Vec3Array> originPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
     if (!originPts) return false;
 
-    // For number of original points, the total number for the shader will be:
-    // (#points-1)*4
+    /* For number of original points, the total number for the shader will be: ((#points-1)*4)  */
     int numSh = (originPts->size()-1)*4;
     osg::ref_ptr<osg::Vec3Array> shaderPts = new osg::Vec3Array(numSh);
     if (!shaderPts) return false;
+
+    int idx = 0;
+    for (size_t i=0; i<originPts->size(); ++i){
+        /* first  two point */
+        if (i==0){
+            (*shaderPts)[idx++] = (*originPts)[i];
+            (*shaderPts)[idx++] = (*originPts)[i];
+        }
+        else{
+            (*shaderPts)[idx++] = (*originPts)[i-1];
+            (*shaderPts)[idx++] = (*originPts)[i];
+        }
+
+        /* last two points */
+        if (i==originPts->size()-1){
+            (*shaderPts)[idx++] = (*originPts)[i];
+            (*shaderPts)[idx++] = (*originPts)[i];
+        }
+        else{
+            (*shaderPts)[idx++] = (*originPts)[i+1];
+            (*shaderPts)[idx++] = (*originPts)[i+2];
+        }
+    }
 
     return true;
 }
