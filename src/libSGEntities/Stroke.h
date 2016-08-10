@@ -18,6 +18,7 @@
 #include "Settings.h"
 #include "Entity2D.h"
 #include <osg/Geometry>
+#include <osg/Camera>
 #include <osgDB/ObjectWrapper>
 
 namespace entity {
@@ -50,7 +51,7 @@ public:
 
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
-    bool redefineToShader();
+    bool redefineToShader(osg::Camera* camera);
 
     /*! \return length of the stroke, which is measured as a largest dimention of the bounding box around the stroke. */
     float getLength() const;
@@ -78,6 +79,9 @@ public:
     /*! A re-defined method of entity::Entity2D to obtain entity type.
      * \return entity type */
     cher::ENTITY_TYPE getEntityType() const;
+
+protected:
+    bool initializeShaderProgram(osg::Camera* camera);
 
 private:
     osg::ref_ptr<osg::DrawArrays> m_lines;

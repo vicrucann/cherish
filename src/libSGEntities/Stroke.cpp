@@ -12,11 +12,12 @@
 #include <osg/Point>
 #include <osg/Texture2D>
 
+#include "ModelViewProjectionMatrixCallback.h"
+#include "ViewportVectorCallback.h"
+
 entity::Stroke::Stroke()
     : entity::Entity2D()
-//    , m_lines(new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP))
     , m_lines(new osg::DrawArrays(GL_LINE_STRIP_ADJACENCY))
-//    , m_lines(new osg::DrawArrays(GL_LINE_STRIP_ADJACENCY_ARB))
     , m_program(new osg::Program)
     , m_color(osg::Vec4f(0.f, 0.f, 0.f, 1.f))
 {
@@ -28,17 +29,6 @@ entity::Stroke::Stroke()
     this->setVertexArray(verts);
     this->setColorArray(colors);
     this->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-//    osg::Shader* sh_geom = new osg::Shader(osg::Shader::GEOMETRY, "Stroke.glsl");
-//    osg::Shader* sh_vert = new osg::Shader(osg::Shader::VERTEX, "Stroke.vert");
-//    osg::Shader* sh_frag = new osg::Shader(osg::Shader::FRAGMENT, "Stroke.frag");
-//    m_program->addShader(sh_vert);
-//    m_program->addShader(sh_geom);
-//    m_program->addShader(sh_frag);
-
-//    m_program->setParameter(GL_GEOMETRY_VERTICES_OUT_EXT, 0);
-//    m_program->setParameter(GL_GEOMETRY_INPUT_TYPE_EXT, GL_LINES);
-//    m_program->setParameter(GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_LINE_STRIP);
 
     osg::StateSet* stateset = new osg::StateSet;
     osg::LineWidth* linewidth = new osg::LineWidth();
@@ -52,11 +42,6 @@ entity::Stroke::Stroke()
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     this->setStateSet(stateset);
-
-//    osg::Matrix m = osg::Matrix::identity();
-//    stateset->addUniform(new osg::Uniform("MVPW", m));
-//    stateset->addUniform(new osg::Uniform("BaseWidth", 50*0.002f));
-//    stateset->addUniform(new osg::Uniform("WidthAmplitude", 0.005f));
 
     this->setDataVariance(osg::Object::DYNAMIC);
     this->setUseDisplayList(false);
@@ -125,11 +110,16 @@ void entity::Stroke::appendPoint(const float u, const float v)
 }
 
 // read more on why: http://stackoverflow.com/questions/36655888/opengl-thick-and-smooth-non-broken-lines-in-3d
-bool entity::Stroke::redefineToShader()
+bool entity::Stroke::redefineToShader(osg::Camera *camera)
 {
     // The used shader requires that each line segment is represented as GL_LINES_AJACENCY_EXT
     // This required adding padding points for each line segment
     // Same goes for color, if it's not uniform
+
+    if (!this->initializeShaderProgram(camera)){
+        qWarning("Could not properly initialize the stroke shader program, default look will be used");
+        return false;
+    }
 
     osg::ref_ptr<osg::Vec3Array> originPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
     if (!originPts) return false;
@@ -208,6 +198,69 @@ void entity::Stroke::rotate(double theta, osg::Vec3f center)
 cher::ENTITY_TYPE entity::Stroke::getEntityType() const
 {
     return cher::ENTITY_STROKE;
+}
+
+bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
+{
+    m_program->setName("DefaultShader");
+
+    /* load and add shaders to the program */
+    osg::ref_ptr<osg::Shader> vertShader = new osg::Shader(osg::Shader::VERTEX);
+    if (!vertShader->loadShaderSourceFromFile("Stroke.vert")){
+        qWarning("Could not load vertex shader from file");
+        return false;
+    }
+    if (!m_program->addShader(vertShader.get())){
+        qWarning("Could not add vertext shader");
+        return false;
+    }
+
+    osg::ref_ptr<osg::Shader> geomShader = new osg::Shader(osg::Shader::GEOMETRY);
+    if (!geomShader->loadShaderSourceFromFile("Stroke.geom")){
+        qWarning("Could not load geometry shader from file");
+        return false;
+    }
+    if (!m_program->addShader(geomShader.get())){
+        qWarning("Could not add geometry shader");
+        return false;
+    }
+
+    osg::ref_ptr<osg::Shader> fragShader = new osg::Shader(osg::Shader::FRAGMENT);
+    if (!fragShader->loadShaderSourceFromFile("Stroke.frag")){
+        qWarning("Could not load fragment shader from file");
+        return false;
+    }
+    if (!m_program->addShader(fragShader.get())){
+           qWarning("Could not add fragment shader");
+           return false;
+    }
+
+    /* add uniforms */
+    osg::StateSet* state = this->getOrCreateStateSet();
+    if (!state){
+        qWarning("Creating shader: StateSet is NULL");
+        return false;
+    }
+
+    /* model view proj matrix */
+    osg::Uniform* MVPMatrix = new osg::Uniform(osg::Uniform::FLOAT_MAT4, "ModelViewProjectionMatrix");
+    MVPMatrix->setUpdateCallback(new ModelViewProjectionMatrixCallback(camera));
+    state->addUniform(MVPMatrix);
+
+    /* viewport vector */
+    osg::Uniform* viewportVector = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "Viewport");
+    viewportVector->setUpdateCallback(new ViewportVectorCallback(camera));
+    state->addUniform(viewportVector);
+
+    /* stroke thickness */
+    float thickness = 7.0;
+    state->addUniform(new osg::Uniform("Thickness", thickness));
+
+    /*  stroke miter limit */
+    float miterLimit = 0.75;
+    state->addUniform(new osg::Uniform("MiterLimit", miterLimit));
+
+    return true;
 }
 
 /* for serialization of stroke type
