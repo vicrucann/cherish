@@ -97,6 +97,9 @@ public slots:
     /*! Slot called when user performed drag-and-drop from PhotoWidget to GLWidget of a entity::Photo. */
     void onImportPhoto(const QString& path, const QString& fileName);
 
+    /*! Slot called when new entity::Stroke is added and is about to be re-defined as shader from entity::UserScene. */
+    void onRequestCamera(osg::Camera*& camera);
+
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */
     void onFileNew();

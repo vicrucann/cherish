@@ -4,6 +4,7 @@
 
 #include <QDebug>
 #include <QtGlobal>
+#include <QFile>
 
 #include <osg/Program>
 #include <osg/LineWidth>
@@ -116,6 +117,7 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
     *  This required adding padding points for each line segment
     *  Same goes for color, if it's not uniform */
 
+    /* initialize m_program */
     if (!this->initializeShaderProgram(camera)){
         qWarning("Could not properly initialize the stroke shader program, default look will be used");
         return false;
@@ -129,28 +131,60 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
     osg::ref_ptr<osg::Vec3Array> shaderPts = new osg::Vec3Array(numSh);
     if (!shaderPts) return false;
 
-    int idx = 0;
-    for (size_t i=0; i<originPts->size(); ++i){
+    /* fill-in shader points so that to use line adjacency */
+    unsigned int idx = 0;
+    for (size_t i=0; i<originPts->size()-1; ++i){
         /* first  two point */
         if (i==0){
+            Q_ASSERT(idx < shaderPts->size());
             (*shaderPts)[idx++] = (*originPts)[i];
+            Q_ASSERT(idx < shaderPts->size());
             (*shaderPts)[idx++] = (*originPts)[i];
         }
         else{
+            Q_ASSERT(idx < shaderPts->size());
             (*shaderPts)[idx++] = (*originPts)[i-1];
+            Q_ASSERT(idx < shaderPts->size());
             (*shaderPts)[idx++] = (*originPts)[i];
         }
 
         /* last two points */
         if (i==originPts->size()-1){
+            Q_ASSERT(idx < shaderPts->size());
             (*shaderPts)[idx++] = (*originPts)[i];
+            Q_ASSERT(idx < shaderPts->size());
             (*shaderPts)[idx++] = (*originPts)[i];
         }
-        else{
+        else if (i+1 == originPts->size()-1){
+            Q_ASSERT(idx < shaderPts->size());
             (*shaderPts)[idx++] = (*originPts)[i+1];
+            Q_ASSERT(idx < shaderPts->size());
+            (*shaderPts)[idx++] = (*originPts)[i+1];
+        }
+        else{
+            Q_ASSERT(idx < shaderPts->size());
+            (*shaderPts)[idx++] = (*originPts)[i+1];
+            Q_ASSERT(idx < shaderPts->size());
             (*shaderPts)[idx++] = (*originPts)[i+2];
         }
     }
+
+    /* reset the primitive type */
+    m_lines->set(GL_LINES_ADJACENCY_EXT, 0, shaderPts->size());
+
+    /* reset pointer to the vertex array */
+    this->setVertexArray(shaderPts);
+
+    /* set shader attributes */
+    this->setVertexAttribArray(0, shaderPts, osg::Array::BIND_PER_VERTEX);
+    osg::Vec4Array* colors = dynamic_cast<osg::Vec4Array*>(this->getColorArray());
+    Q_ASSERT(colors);
+    this->setVertexAttribArray(1, colors, osg::Array::BIND_OVERALL);
+
+    /* set up m_program as StateSet */
+    osg::StateSet* stateset = this->getOrCreateStateSet();
+    Q_ASSERT(stateset);
+    stateset->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
 
     return true;
 }
@@ -224,11 +258,11 @@ cher::ENTITY_TYPE entity::Stroke::getEntityType() const
 
 bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
 {
-    m_program->setName("DefaultShader");
+    m_program->setName("DefaultStrokeShader");
 
     /* load and add shaders to the program */
     osg::ref_ptr<osg::Shader> vertShader = new osg::Shader(osg::Shader::VERTEX);
-    if (!vertShader->loadShaderSourceFromFile("Stroke.vert")){
+    if (!vertShader->loadShaderSourceFromFile("Shaders/Stroke.vert")){
         qWarning("Could not load vertex shader from file");
         return false;
     }
@@ -238,7 +272,7 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
     }
 
     osg::ref_ptr<osg::Shader> geomShader = new osg::Shader(osg::Shader::GEOMETRY);
-    if (!geomShader->loadShaderSourceFromFile("Stroke.geom")){
+    if (!geomShader->loadShaderSourceFromFile("Shaders/Stroke.geom")){
         qWarning("Could not load geometry shader from file");
         return false;
     }
@@ -248,7 +282,7 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
     }
 
     osg::ref_ptr<osg::Shader> fragShader = new osg::Shader(osg::Shader::FRAGMENT);
-    if (!fragShader->loadShaderSourceFromFile("Stroke.frag")){
+    if (!fragShader->loadShaderSourceFromFile("Shaders/Stroke.frag")){
         qWarning("Could not load fragment shader from file");
         return false;
     }
