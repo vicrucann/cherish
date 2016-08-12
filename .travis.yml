@@ -14,6 +14,7 @@ addons:
       name: "vicrucann/cherish"
       description: "Build submitted via Travis CI"
     notification_email: vicrucann@gmail.com
+    build_command_prepend: "cov-configure --comptype gcc --compiler gcc-4.8"
     build_command:   "make -j2 VERBOSE=1"
     branch_pattern: coverity_scan
 
