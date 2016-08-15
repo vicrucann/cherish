@@ -54,7 +54,7 @@ bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, con
 {
     if (event->type() == QEvent::MouseButtonPress ||
             event->type() == QEvent::MouseButtonRelease) {
-        QMouseEvent * e = (QMouseEvent *)event;
+        QMouseEvent * e = static_cast<QMouseEvent *>(event);
         int clickX = e->x();
         int clickY = e->y();
 
@@ -223,7 +223,7 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
     if (index.data(cher::DelegateChildRole).toInt() == 1){
         if (event->type() == QEvent::MouseButtonPress ||
                 event->type() == QEvent::MouseButtonRelease) {
-            QMouseEvent * e = (QMouseEvent *)event;
+            QMouseEvent * e = static_cast<QMouseEvent *>(event);
             int clickX = e->x();
             int clickY = e->y();
 
@@ -261,7 +261,7 @@ bool CanvasDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
     else{
         if (event->type() == QEvent::MouseButtonPress ||
                 event->type() == QEvent::MouseButtonRelease){
-            QMouseEvent * e = (QMouseEvent *)event;
+            QMouseEvent * e = static_cast<QMouseEvent *>(event);
             int clickX = e->x();
             int clickY = e->y();
             QRect r = option.rect;

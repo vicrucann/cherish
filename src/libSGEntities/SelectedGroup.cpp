@@ -45,7 +45,7 @@ bool entity::SelectedGroup::removeEntity(entity::Entity2D *entity)
 {
     if (!entity) return false;
     int idx = this->isEntitySelected(entity);
-    if (idx >=0 && idx < (int)m_group.size()){
+    if (idx >=0 && idx < static_cast<int>(m_group.size())){
         this->setEntitySelectedColor(entity, false);
         m_group.erase(m_group.begin()+idx);
         if (!m_centerEdited) m_center = this->getCenter2D();
@@ -90,7 +90,7 @@ const std::vector<entity::Entity2D *> &entity::SelectedGroup::getEntities() cons
 
 entity::Entity2D *entity::SelectedGroup::getEntity(int i) const
 {
-    if (i<0 || i>= (int)m_group.size()) return 0;
+    if (i<0 || i>= static_cast<int>(m_group.size())) return 0;
     return m_group.at(i);
 }
 

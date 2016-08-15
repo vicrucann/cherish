@@ -810,7 +810,7 @@ bool entity::Canvas::addEntity(entity::Entity2D *entity)
     case cher::ENTITY_STROKE:
         result = m_geodeStrokes->addDrawable(entity);
         break;
-    case cher::ENTITY_PHOTO:
+    case cher::ENTITY_PHOTO:        
         result = m_geodePhotos->addDrawable(entity);
         break;
     default:

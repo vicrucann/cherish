@@ -389,6 +389,7 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
         osg::Vec3f p0 = verts.at(0);
         /* if normal mode, set up pickable position */
         if (selectionIsEmpty){
+            /* pickable is drawn on the right top corner */
             this->setQuadGeometry(m_geomPickable, p0, szCr, szCr);
             m_switch->setChildValue(m_geodePickable, true);
             m_switch->setChildValue(m_cameraAxis, false);

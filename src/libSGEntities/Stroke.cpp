@@ -20,10 +20,10 @@ entity::Stroke::Stroke()
     : entity::Entity2D()
     , m_lines(new osg::DrawArrays(GL_LINE_STRIP_ADJACENCY))
     , m_program(new osg::Program)
-    , m_color(osg::Vec4f(0.f, 0.f, 0.f, 1.f))
+    , m_color(cher::STROKE_CLR_NORMAL)
 {
     osg::Vec4Array* colors = new osg::Vec4Array;
-    colors->push_back(cher::STROKE_CLR_NORMAL);
+    colors->push_back(m_color);
     osg::Vec3Array* verts = new osg::Vec3Array;
 
     this->addPrimitiveSet(m_lines.get());
