@@ -1,17 +1,14 @@
 #include "UserSceneTest.h"
 
 
-void UserSceneTest::testBasicApi()
-{
-
-}
-
 void UserSceneTest::testWriteReadCanvases()
 {
     /* test RW for canvases */
     QCOMPARE((int)m_scene->getNumCanvases(), 3);
     QCOMPARE((int)m_scene->getNumChildren(), 2);
+    QVERIFY(m_scene->getChild(1));
     QCOMPARE(m_scene->getGroupCanvases(), m_scene->getChild(1));
+    QVERIFY(m_scene->getChild(0));
     QCOMPARE(m_scene->getBookmarks(), m_scene->getChild(0));
     QCOMPARE(m_canvas0.get(), m_scene->getCanvas(0));
     QCOMPARE(m_canvas1.get(), m_scene->getCanvas(1));
@@ -41,7 +38,9 @@ void UserSceneTest::testWriteReadCanvases()
     m_canvas2 = m_scene->getCanvas(2);
     QVERIFY(m_canvas2.get());
     QCOMPARE((int)m_scene->getNumChildren(), 2);
+    QVERIFY(m_scene->getChild(0));
     QCOMPARE(m_scene->getBookmarks(), m_scene->getChild(0));
+    QVERIFY(m_scene->getChild(1));
     QCOMPARE(m_scene->getGroupCanvases(), m_scene->getChild(1));
     m_scene->setCanvasCurrent(m_canvas1.get());
     m_scene->setCanvasCurrent(m_canvas0.get());
@@ -52,15 +51,22 @@ void UserSceneTest::testWriteReadCanvases()
     /* test scene graph of a canvas0 */
     QCOMPARE((int)m_canvas0->getNumChildren(), 1);
     QVERIFY(m_canvas0->getTransform());
+    QVERIFY(m_canvas0->getChild(0));
     QCOMPARE(m_canvas0->getChild(0), m_canvas0->getTransform());
     QCOMPARE((int)m_canvas0->getTransform()->getNumChildren(), 1);
     QVERIFY(m_canvas0->getSwitch());
+    QVERIFY(m_canvas0->getTransform()->getChild(0));
     QCOMPARE(m_canvas0->getSwitch(), m_canvas0->getTransform()->getChild(0));
     QCOMPARE((int)m_canvas0->getSwitch()->getNumChildren(), 2);
+    QVERIFY(m_canvas0->getSwitch()->getChild(0));
     QCOMPARE(m_canvas0->getSwitch()->getChild(0), m_canvas0->getGroupData());
+    QVERIFY(m_canvas0->getSwitch()->getChild(1));
     QCOMPARE(m_canvas0->getSwitch()->getChild(1), m_canvas0->getToolFrame());
     QCOMPARE((int)m_canvas0->getGroupData()->getNumChildren(), 2);
+    QVERIFY(m_canvas0->getGroupData());
+    QVERIFY(m_canvas0->getGroupData()->getChild(0));
     QCOMPARE(m_canvas0->getGroupData()->getChild(0), m_canvas0->getGeodeStrokes());
+    QVERIFY(m_canvas0->getGroupData()->getChild(1));
     QCOMPARE(m_canvas0->getGroupData()->getChild(1), m_canvas0->getGeodePhotos());
 }
 
