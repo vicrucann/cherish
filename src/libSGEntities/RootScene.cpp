@@ -462,7 +462,11 @@ void RootScene::copyToBuffer()
 
     for (size_t i=0; i<selected.size(); ++i){
         const entity::Stroke& copy = dynamic_cast<const entity::Stroke&>( *selected.at(i));
-        entity::Stroke* stroke = new entity::Stroke(copy, osg::CopyOp::DEEP_COPY_ALL);
+
+        entity::Stroke* stroke = new entity::Stroke;
+        stroke->copyFrom(&copy);
+        stroke->redefineToShader(copy.getCamera());
+
         if (!stroke) continue;
         m_buffer.push_back(stroke);
     }

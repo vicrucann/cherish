@@ -59,7 +59,7 @@ entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
     , m_lines(copy.m_lines)
     , m_program(copy.m_program)
     , m_color(copy.m_color)
-    , m_isShadered(false)
+    , m_isShadered(copy.m_isShadered)
 {
     qDebug("stroke copy ctor done");
 }
@@ -146,10 +146,13 @@ bool entity::Stroke::copyFrom(const entity::Stroke *copy)
             return false;
         }
 
-        for (unsigned int i=1; i<vertsCopy->size(); i+4){
+        for (unsigned int i=1; i<vertsCopy->size(); i=i+4){
+            Q_ASSERT(i<vertsCopy->size());
             osg::Vec2f p = copy->getPoint(i);
             this->appendPoint(p.x(), p.y());
         }
+        osg::Vec2f p = copy->getPoint(vertsCopy->size()-2);
+        this->appendPoint(p.x(), p.y());
         Q_ASSERT(verts->size() == vertsCopy->size()/4 + 1);
     }
 
@@ -234,7 +237,9 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
             Q_ASSERT(idx < shaderPts->size());
             osg::Vec3f dir0 = (*originPts)[i] - (*originPts)[i+1];
             dir0.normalize();
-            (*shaderPts)[idx++] = (*originPts)[i] + dir0;
+
+            // direction vector is shortened so that canvas BB is calculated correctly, and miter didn't look too long
+            (*shaderPts)[idx++] = (*originPts)[i] + dir0*0.05;
             Q_ASSERT(idx < shaderPts->size());
             (*shaderPts)[idx++] = (*originPts)[i];
         }
@@ -252,7 +257,9 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
             Q_ASSERT(idx < shaderPts->size());
             osg::Vec3f dirn = (*originPts)[i+1] - (*originPts)[i];
             dirn.normalize();
-            (*shaderPts)[idx++] = (*originPts)[i+1] + dirn;
+
+            // direction vector is shortened so that canvas BB is calculated correctly, and miter didn't look too long
+            (*shaderPts)[idx++] = (*originPts)[i+1] + dirn*0.05;
         }
         else{
             Q_ASSERT(idx < shaderPts->size());
@@ -414,7 +421,7 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
     state->addUniform(viewportVector);
 
     /* stroke thickness */
-    float thickness = 7.0;
+    float thickness = cher::STROKE_LINE_WIDTH;
     state->addUniform(new osg::Uniform("Thickness", thickness));
 
     /*  stroke miter limit */

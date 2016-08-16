@@ -647,8 +647,10 @@ entity::Canvas *entity::Canvas::clone() const
         {
             entity::Stroke* stroke = dynamic_cast<entity::Stroke*>(entcopy);
             if (stroke){
-                entity::Stroke* si = new entity::Stroke(*stroke, osg::CopyOp::DEEP_COPY_ALL);
+                entity::Stroke* si = new entity::Stroke;
                 if (si){
+                    si->copyFrom(stroke);
+                    si->redefineToShader(stroke->getCamera());
                     if (!clone->addEntity(si)) qWarning("canvas clone: could not add stroke as drawable");
                 }
                 else qWarning("canvas clone: coult not clone the stroke");

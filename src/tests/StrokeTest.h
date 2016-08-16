@@ -7,7 +7,8 @@ class StrokeTest : public BaseGuiTest
 {
     Q_OBJECT
 private slots:
-    void testBasicApi();
+    void testAddStroke();
+    void testCloneShaderedStroke();
     void testReadWrite();
 
 private:

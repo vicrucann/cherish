@@ -9,9 +9,8 @@
 
 #include "Stroke.h"
 
-void StrokeTest::testBasicApi()
+void StrokeTest::testAddStroke()
 {
-    qInfo("Test stroke basic API");
     qInfo("Simulate stroke creation by repeating steps from UserScene::addStroke()");
     QCOMPARE(m_canvas2.get(), m_scene->getCanvasCurrent());
     QCOMPARE(static_cast<int>(m_canvas2->getEntitiesSelectedSize()), 0);
@@ -134,8 +133,48 @@ void StrokeTest::testBasicApi()
     QVERIFY(m_canvas2->getGeodeStrokes()->getChild(0));
     QCOMPARE(m_canvas2->getGeodeStrokes()->getChild(0), stroke_clone.get());
     QVERIFY(!m_canvas2->getGeodeStrokes()->containsDrawable(stroke));
+}
 
-    m_canvas2->updateFrame(m_scene->getCanvasPrevious());
+void StrokeTest::testCloneShaderedStroke()
+{
+    entity::Canvas* canvas = m_scene->getCanvasCurrent();
+    QVERIFY(canvas);
+
+    qInfo("Create new stroke");
+    osg::ref_ptr<entity::Stroke> original = new entity::Stroke;
+    QVERIFY(original.get());
+
+    qInfo("Fill-in the stroke and add it to the canvas");
+    canvas->setStrokeCurrent(original);
+    QVERIFY(canvas->addEntity(original.get()));
+
+    original->appendPoint(0, 0);
+    original->appendPoint(1, 0);
+    original->appendPoint(1, 1);
+    original->appendPoint(0, 1);
+
+    osg::Camera* camera = NULL;
+    emit m_scene->requestCamera(camera);
+    QVERIFY(camera);
+
+    QVERIFY(original->redefineToShader(camera));
+    canvas->setStrokeCurrent(false);
+
+    qInfo("Create stroke by copying the original");
+    osg::ref_ptr<entity::Stroke> copy = new entity::Stroke;
+    QVERIFY(copy->copyFrom(original.get()));
+    QVERIFY(copy->redefineToShader(original->getCamera()));
+
+    qInfo("Delta move the copy stroke");
+    copy->moveDelta(-0.2, -0.2);
+    copy->setColor(solarized::cyan);
+
+    qInfo("Add the copy stroke to the scene");
+    QVERIFY(canvas->addEntity(copy));
+
+    QCOMPARE(static_cast<int>(canvas->getGeodeStrokes()->getNumChildren()), 2);
+
+    canvas->updateFrame(m_scene->getCanvasPrevious());
     QTest::qWait(3000);
 }
 

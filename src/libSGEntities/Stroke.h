@@ -24,7 +24,33 @@
 namespace entity {
 
 /*! \class Stroke
- * Class description
+ * \brief Geometry class that defined strokes entered by used.
+ * The creation and usage of this class must be followed after certain steps. Here's an example
+ * of how to create a new stroke when user is drawing right away:
+ *
+ * \code{.cpp}
+ * // create an empty stroke
+ * entity::Stroke* original = new entity::Stroke;
+ *
+ * // as user draws, add mouse coordinates, in an event loop:
+ * original->addPoint(u,v);
+ *
+ * \\ after user is finished drawing, re-define the look by using the shader:
+ * original->redefineToShader(camera);
+ * \endcode
+ *
+ * The below example provides details on how to copy/clone a stroke that is already present on the
+ * scene graph:
+ * \code{.cpp}
+ * // create an empty stroke
+ * entity::Stroke* copy = new entity::Stroke;
+ *
+ * // copy data points from the stroke that is already on the scene (which means it is shadered)
+ * copy->copyFrom(original);
+ *
+ * // as before, we re-define the stroke to be shadered
+ * copy->redefineToShader(original->getCamera());
+ * \endcode
 */
 class Stroke : public entity::Entity2D {
 public:
