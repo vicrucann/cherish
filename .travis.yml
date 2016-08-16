@@ -81,6 +81,7 @@ script:
   - ./test_SceneState
   - ./test_UserScene
   - ./test_Canvas
+  - ./test_Stroke
   - cd ..
 
 
