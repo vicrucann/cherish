@@ -59,6 +59,13 @@ add_executable(${CANVAS_NAME} ${CANVAS_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGU
 target_link_libraries(${CANVAS_NAME} ${TEST_LIBRARIES})
 add_test(${CANVAS_NAME} ${CANVAS_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
 
+# Stroke test
+set(STROKE_SRC StrokeTest.h StrokeTest.cpp ${BASEGUITEST_SRC})
+set(STROKE_NAME test_Stroke)
+add_executable(${STROKE_NAME} ${STROKE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
+target_link_libraries(${STROKE_NAME} ${TEST_LIBRARIES})
+add_test(${STROKE_NAME} ${STROKE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
+
 # UserScene tests
 set(USERSCENE_SRC UserSceneTest.h UserSceneTest.cpp ${BASEGUITEST_SRC})
 set(USERSCENE_NAME test_UserScene)

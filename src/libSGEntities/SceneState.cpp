@@ -136,7 +136,7 @@ void entity::SceneState::popBackTransparency()
 
 void entity::SceneState::insertDataFlag(int index, bool flag)
 {
-    if (index<0 || index>(int)m_canvasDataFlags.size()){
+    if (index<0 || index>static_cast<int>(m_canvasDataFlags.size())){
         qFatal("insertDataFlag called: index is out of range. "
                "No insert will be performed. Scene state data is out of sync.");
         return;
@@ -147,7 +147,7 @@ void entity::SceneState::insertDataFlag(int index, bool flag)
 
 void entity::SceneState::eraseDataFlag(int index)
 {
-    if (index<0 || index>=(int)m_canvasDataFlags.size()){
+    if (index<0 || index>=static_cast<int>(m_canvasDataFlags.size())){
         qFatal("eraseDataFlag called: index is out of range. "
                "No erase will be performed. Scene state data is out of sync.");
         return;
@@ -158,7 +158,7 @@ void entity::SceneState::eraseDataFlag(int index)
 
 void entity::SceneState::insertToolFlag(int index, bool flag)
 {
-    if (index<0 || index>(int)m_canvasToolFlags.size()){
+    if (index<0 || index>static_cast<int>(m_canvasToolFlags.size())){
         qFatal("insertToolFlag called: index is out of range. "
                "No insert will be performed. Scene state data is out of sync.");
         return;
@@ -168,7 +168,7 @@ void entity::SceneState::insertToolFlag(int index, bool flag)
 
 void entity::SceneState::eraseToolFlag(int index)
 {
-    if (index<0 || index>=(int)m_canvasToolFlags.size()){
+    if (index<0 || index>=static_cast<int>(m_canvasToolFlags.size())){
         qFatal("eraseToolFlag called: index is out of range. "
                "No erase will be performed. Scene state data is out of sync.");
         return;
@@ -178,7 +178,7 @@ void entity::SceneState::eraseToolFlag(int index)
 
 void entity::SceneState::insertTransparency(int index, float t)
 {
-    if (index<0 || index>(int)m_photoTransparencies.size()){
+    if (index<0 || index>static_cast<int>(m_photoTransparencies.size())){
         qFatal("insertTransparency called: index is out of range. "
                "No insert will be performed. Scene state data is out of sync.");
         return;
@@ -188,9 +188,9 @@ void entity::SceneState::insertTransparency(int index, float t)
 
 void entity::SceneState::eraseTransparency(int start, int number)
 {
-    if (start<0 || start>=(int)m_photoTransparencies.size() ||
-            number<0 || number>(int)m_photoTransparencies.size() ||
-            start+number>(int)m_photoTransparencies.size() ){
+    if (start<0 || start>=static_cast<int>(m_photoTransparencies.size()) ||
+            number<0 || number>static_cast<int>(m_photoTransparencies.size()) ||
+            start+number>static_cast<int>(m_photoTransparencies.size()) ){
         qFatal("eraseTransparency called: index is out of range. "
                "No erase will be performed. Scene state data is out of sync.");
         return;
@@ -200,7 +200,7 @@ void entity::SceneState::eraseTransparency(int start, int number)
 
 void entity::SceneState::resetTransparency(int index, float t)
 {
-    if (index<0 || index>=(int)m_photoTransparencies.size()){
+    if (index<0 || index>=static_cast<int>(m_photoTransparencies.size())){
         qFatal("insertTransparency called: index is out of range. "
                "No insert will be performed. Scene state data is out of sync.");
         return;

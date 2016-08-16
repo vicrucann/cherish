@@ -11,7 +11,6 @@ class UserSceneTest : public BaseGuiTest
     Q_OBJECT
 private slots:
 
-    void testBasicApi();
     void testWriteReadCanvases();
     void testWriteReadBookmarks();
 

@@ -123,13 +123,6 @@ if (Cherish_BUILD_TESTS)
         )
 endif()
 
-
-## Icons directory setting
-set(ICONS_DIR
-    "${CMAKE_SOURCE_DIR}/icons"
-)
-
-
 ## Adding subdirectories
 add_subdirectory(cherish)
 add_subdirectory(libGUI)
@@ -138,6 +131,10 @@ add_subdirectory(libSGControls)
 if (Cherish_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
+
+## copy shaders (only runs on cmake, not make command)
+file (COPY ${CMAKE_SOURCE_DIR}/cherish/Shaders DESTINATION ${CMAKE_BINARY_DIR}/cherish)
+file (COPY ${CMAKE_SOURCE_DIR}/cherish/Shaders DESTINATION ${CMAKE_BINARY_DIR}/tests)
 
 
 ## Installer settings (CPack) will be located here

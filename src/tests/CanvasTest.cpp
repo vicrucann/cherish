@@ -50,7 +50,7 @@ void CanvasTest::testReadWrite()
 {
     qInfo("Tests for read and write functionality");
     qInfo("Test initial structure");
-    QCOMPARE((int)m_scene->getNumCanvases(), 3);
+    QCOMPARE(static_cast<int>(m_scene->getNumCanvases()), 3);
     QCOMPARE(m_canvas0.get(), m_scene->getCanvas(0));
     QCOMPARE(m_canvas1.get(), m_scene->getCanvas(1));
     QCOMPARE(m_canvas2.get(), m_scene->getCanvas(2));
@@ -173,7 +173,7 @@ void CanvasTest::testCloneOrtho()
     qInfo("Test cloning with non-default initial parameters");
     qInfo("Create canvas in XY plane and test its parameters");
     this->onNewCanvasXY();
-    QCOMPARE((int)m_scene->getNumCanvases(), 4);
+    QCOMPARE(static_cast<int>(m_scene->getNumCanvases()), 4);
     entity::Canvas* canvas = m_scene->getCanvas(3);
     QVERIFY(canvas);
     QCOMPARE(m_scene->getCanvasCurrent(), canvas);
@@ -210,7 +210,7 @@ void CanvasTest::testCloneOrtho()
 
     qInfo("Create new canvas orthogonal to the current one");
     this->onNewCanvasOrtho();
-    QCOMPARE((int)m_scene->getNumCanvases(), 5);
+    QCOMPARE(static_cast<int>(m_scene->getNumCanvases()), 5);
     entity::Canvas* canvas2 = m_scene->getCanvas(4);
     QVERIFY(canvas2);
 
@@ -250,7 +250,7 @@ void CanvasTest::testStructure(entity::Canvas *canvas)
     const osg::MatrixTransform* mt = canvas->getTransform();
     QVERIFY(mt);
     QCOMPARE(mt->getName().c_str(), "Transform");
-    QCOMPARE((int)canvas->getNumChildren(), 1);
+    QCOMPARE(static_cast<int>(canvas->getNumChildren()), 1);
     QCOMPARE(canvas->getChild(0), mt);
 
     qInfo("Test switch");
@@ -258,14 +258,14 @@ void CanvasTest::testStructure(entity::Canvas *canvas)
     QVERIFY(switchC);
     QCOMPARE(switchC->getName().c_str(), "Switch");
     QCOMPARE(mt->getChild(0), switchC);
-    QCOMPARE((int)switchC->getNumChildren(), 2);
+    QCOMPARE(static_cast<int>(switchC->getNumChildren()), 2);
 
     qInfo("Test group data");
     const osg::Group* groupData = canvas->getGroupData();
     QVERIFY(groupData);
     QCOMPARE(int(groupData->getNodeMask()), int(cher::MASK_CANVASDATA_IN));
     QCOMPARE(switchC->getChild(0), groupData);
-    QCOMPARE((int)groupData->getNumChildren(), 2);
+    QCOMPARE(static_cast<int>(groupData->getNumChildren()), 2);
     QVERIFY(switchC->getChildValue(groupData));
 
     qInfo("Test frame tools");

@@ -79,7 +79,7 @@ const std::vector<double> &entity::Bookmarks::getFovs() const
 
 const entity::SceneState *entity::Bookmarks::getSceneState(int row) const
 {
-    if (row <0 || row >= (int)this->getNumChildren()){
+    if (row <0 || row >= static_cast<int>(this->getNumChildren())){
         qWarning("getSceneState: row index is out of range");
         return 0;
     }
@@ -88,7 +88,7 @@ const entity::SceneState *entity::Bookmarks::getSceneState(int row) const
 
 entity::SceneState *entity::Bookmarks::getSceneState(int row)
 {
-    if (row <0 || row >= (int)this->getNumChildren()){
+    if (row <0 || row >= static_cast<int>(this->getNumChildren())){
         qWarning("getSceneState: row index is out of range");
         return 0;
     }
@@ -132,7 +132,7 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
 /* update the look of the bookmakr's screenshot */
 void entity::Bookmarks::updateBookmark(BookmarkWidget *widget, int row)
 {
-    if (row >=0 && row < (int)m_eyes.size()){
+    if (row >=0 && row < static_cast<int>(m_eyes.size())){
         QListWidgetItem* item = widget->item(row);
         QPixmap pmap;
         emit this->requestSceneStateSet(this->getSceneState(row));
@@ -181,7 +181,7 @@ void entity::Bookmarks::clearModel()
 
 std::string entity::Bookmarks::getBookmarkName(int row) const
 {
-    if (row>=0 && row < (int)m_names.size())
+    if (row>=0 && row < static_cast<int>(m_names.size()))
         return m_names[row];
     else
         return "";
@@ -198,7 +198,7 @@ int entity::Bookmarks::getNumBookmarks() const
 void entity::Bookmarks::onClicked(const QModelIndex &index)
 {
     qDebug() << "Bookmarks: on clicked " << index.row();
-    if (index.row() >=0 && index.row() < (int) m_names.size() ){
+    if (index.row() >=0 && index.row() < static_cast<int>( m_names.size()) ){
         m_row = index.row();
         qDebug() << "Selected bookmark " << QString(m_names[m_row].c_str());
         emit this->requestBookmarkSet(m_row);
@@ -211,7 +211,7 @@ void entity::Bookmarks::onItemChanged(QListWidgetItem *item)
 {
     qDebug() << "onItemChanged: bookmark name edited to " << item->text();
     m_row = item->listWidget()->row(item);
-    if (m_row >= 0 && m_row < (int)m_names.size()){
+    if (m_row >= 0 && m_row < static_cast<int>(m_names.size())){
         m_names[m_row] = (item->text()).toStdString();
     }
     else{
@@ -246,11 +246,11 @@ void entity::Bookmarks::onRowsRemoved(const QModelIndex &, int first, int last)
 void entity::Bookmarks::deleteBookmarkData(int first, int last)
 {
     qDebug() << "deleting bookmark data at idx " << first;
-    if (first >= (int)m_names.size() || first < 0){
+    if (first >= static_cast<int>(m_names.size()) || first < 0){
         qWarning("deleteBookmark: first is out of range");
         return;
     }
-    if (last >= (int)m_names.size() || last < 0){
+    if (last >= static_cast<int>(m_names.size()) || last < 0){
         qWarning("deleteBookmark: last is out of range");
         return;
     }
@@ -260,11 +260,11 @@ void entity::Bookmarks::deleteBookmarkData(int first, int last)
     m_names.erase(m_names.begin()+first, m_names.begin()+last+1);
     m_fovs.erase(m_fovs.begin()+first, m_fovs.begin()+last+1);
 
-    if (first >= (int)this->getNumChildren() || first < 0){
+    if (first >= static_cast<int>(this->getNumChildren()) || first < 0){
         qWarning("deleteBookmarkData: first index is out of range");
         return;
     }
-    if (last >= (int)this->getNumChildren() || last < 0){
+    if (last >= static_cast<int>(this->getNumChildren()) || last < 0){
         qWarning("deleteBookmarkData: last index is out of range");
         return;
     }

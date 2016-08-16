@@ -24,14 +24,40 @@
 namespace entity {
 
 /*! \class Stroke
- * Class description
+ * \brief Geometry class that defined strokes entered by used.
+ * The creation and usage of this class must be followed after certain steps. Here's an example
+ * of how to create a new stroke when user is drawing right away:
+ *
+ * \code{.cpp}
+ * // create an empty stroke
+ * entity::Stroke* original = new entity::Stroke;
+ *
+ * // as user draws, add mouse coordinates, in an event loop:
+ * original->addPoint(u,v);
+ *
+ * \\ after user is finished drawing, re-define the look by using the shader:
+ * original->redefineToShader(camera);
+ * \endcode
+ *
+ * The below example provides details on how to copy/clone a stroke that is already present on the
+ * scene graph:
+ * \code{.cpp}
+ * // create an empty stroke
+ * entity::Stroke* copy = new entity::Stroke;
+ *
+ * // copy data points from the stroke that is already on the scene (which means it is shadered)
+ * copy->copyFrom(original);
+ *
+ * // as before, we re-define the stroke to be shadered
+ * copy->redefineToShader(original->getCamera());
+ * \endcode
 */
 class Stroke : public entity::Entity2D {
 public:
     /*! Constructor that creates an empty stroke. */
     Stroke();
 
-    /*! Copy constructor */
+    /*! Copy constructor, only used for serialization; not to be used otherwise. */
     Stroke(const Stroke& copy, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
 
     META_Node(entity, Stroke)
@@ -43,15 +69,30 @@ public:
 
     inline void setColor(const osg::Vec4f& color);
     inline const osg::Vec4f& getColor() const;
+    const osg::Program* getProgram() const;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+    /*! A method to be used to copy the input stroke's data. It is assumed *this stroke is empty.
+     * \param copy is the source stroke to copy from. */
+    bool copyFrom(const entity::Stroke* copy);
 
     /*! A method to add a point to the end of a stroke. It is normally used when constructing a stroke in-motion while sketching.
      * \param u is local U coordinate, \param v is local V coordinate. */
     void appendPoint(const float u, const float v);
 
+    /*! \param i is the point index. \return point coordinates at the specified index. */
+    osg::Vec2f getPoint(unsigned int i) const;
+
+    /*! \return observer pointer on camera which helped to create a shadered version.
+     * \sa redefineToShader(). */
+    osg::Camera* getCamera() const;
+
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
     bool redefineToShader(osg::Camera* camera);
+
+    /*! \return whether a shader is applied to strokes, or not. */
+    bool isShadered() const;
 
     /*! \return length of the stroke, which is measured as a largest dimention of the bounding box around the stroke. */
     float getLength() const;
@@ -84,9 +125,11 @@ protected:
     bool initializeShaderProgram(osg::Camera* camera);
 
 private:
-    osg::ref_ptr<osg::DrawArrays> m_lines;
-    osg::ref_ptr<osg::Program> m_program;
-    osg::Vec4f m_color;
+    osg::ref_ptr<osg::DrawArrays>   m_lines;
+    osg::ref_ptr<osg::Program>      m_program;
+    osg::observer_ptr<osg::Camera>  m_camera;
+    osg::Vec4f                      m_color;
+    bool                            m_isShadered;
 };
 }
 

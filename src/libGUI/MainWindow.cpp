@@ -310,6 +310,11 @@ void MainWindow::onImportPhoto(const QString &path, const QString &fileName)
     this->importPhoto(fullPath);
 }
 
+void MainWindow::onRequestCamera(osg::Camera *&camera)
+{
+    camera = m_glWidget->getCamera();
+}
+
 /* Check whether the current scene is empty or not
  * If not - propose to save changes.
  * Clear the scene graph
@@ -1009,6 +1014,10 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestSceneToolStatus(bool&)),
                      this, SLOT(onRequestSceneToolStatus(bool&)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestCamera(osg::Camera*&)),
+                     this, SLOT(onRequestCamera(osg::Camera*&)),
                      Qt::UniqueConnection);
 
     /* bookmark widget data */

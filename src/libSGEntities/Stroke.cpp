@@ -4,6 +4,7 @@
 
 #include <QDebug>
 #include <QtGlobal>
+#include <QFile>
 
 #include <osg/Program>
 #include <osg/LineWidth>
@@ -19,10 +20,12 @@ entity::Stroke::Stroke()
     : entity::Entity2D()
     , m_lines(new osg::DrawArrays(GL_LINE_STRIP_ADJACENCY))
     , m_program(new osg::Program)
-    , m_color(osg::Vec4f(0.f, 0.f, 0.f, 1.f))
+    , m_camera(0)
+    , m_color(cher::STROKE_CLR_NORMAL)
+    , m_isShadered(false)
 {
     osg::Vec4Array* colors = new osg::Vec4Array;
-    colors->push_back(cher::STROKE_CLR_NORMAL);
+    colors->push_back(m_color);
     osg::Vec3Array* verts = new osg::Vec3Array;
 
     this->addPrimitiveSet(m_lines.get());
@@ -56,6 +59,7 @@ entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
     , m_lines(copy.m_lines)
     , m_program(copy.m_program)
     , m_color(copy.m_color)
+    , m_isShadered(copy.m_isShadered)
 {
     qDebug("stroke copy ctor done");
 }
@@ -88,6 +92,73 @@ const osg::Vec4f&entity::Stroke::getColor() const
     return m_color;
 }
 
+const osg::Program *entity::Stroke::getProgram() const
+{
+    return m_program.get();
+}
+
+bool entity::Stroke::copyFrom(const entity::Stroke *copy)
+{
+    if (!copy){
+        qWarning("Copy stroke is NULL");
+        return false;
+    }
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    const osg::Vec3Array* vertsCopy = static_cast<const osg::Vec3Array*>(copy->getVertexArray());
+
+    if (this->getColor() != cher::STROKE_CLR_NORMAL ||
+            !this->getLines() ||
+            static_cast<int>(this->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY ||
+            !verts || !vertsCopy) {
+        qWarning("stroke::copyFrom() : stroke parameters check failed");
+        return false;
+    }
+
+    if (verts->size() != 0 || vertsCopy->size() == 0){
+        qWarning("stroke::copyFrom() : stroke size check failed");
+        return false;
+    }
+
+    if (!copy->isShadered()){
+        if (this->getColor() != cher::STROKE_CLR_NORMAL ||
+                !this->getLines() ||
+                static_cast<int>(this->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY ||
+                static_cast<int>(copy->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY ||
+                !verts || !vertsCopy)
+        {
+            qWarning("stroke::copyFrom() : stroke parameters check failed");
+            return false;
+        }
+
+
+        for (unsigned int i=0; i<vertsCopy->size(); ++i){
+            osg::Vec2f p = copy->getPoint(i);
+            this->appendPoint(p.x(), p.y());
+        }
+    }
+    else {
+        if (static_cast<int>(copy->getLines()->getMode()) != GL_LINES_ADJACENCY_EXT){
+            qWarning("stroke::copyFrom : copy stroke geometry's mode failed");
+            return false;
+        }
+        if (vertsCopy->size() % 4 != 0 ){
+            qWarning("stroke::copyFrom : copy stroke vertex number must be divadable to 4");
+            return false;
+        }
+
+        for (unsigned int i=1; i<vertsCopy->size(); i=i+4){
+            Q_ASSERT(i<vertsCopy->size());
+            osg::Vec2f p = copy->getPoint(i);
+            this->appendPoint(p.x(), p.y());
+        }
+        osg::Vec2f p = copy->getPoint(vertsCopy->size()-2);
+        this->appendPoint(p.x(), p.y());
+        Q_ASSERT(verts->size() == vertsCopy->size()/4 + 1);
+    }
+
+    return true;
+}
+
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 void entity::Stroke::appendPoint(const float u, const float v)
@@ -109,13 +180,41 @@ void entity::Stroke::appendPoint(const float u, const float v)
     // read more: http://forum.openscenegraph.org/viewtopic.php?t=2190&postdays=0&postorder=asc&start=15
 }
 
+osg::Vec2f entity::Stroke::getPoint(unsigned int i) const
+{
+    const osg::Vec3Array* verts = static_cast<const osg::Vec3Array*>(this->getVertexArray());
+    if (!verts){
+        qWarning("Stroke vertices are not initialized. Cannot obtain a point.");
+        return osg::Vec2f(0.f, 0.f);
+    }
+    unsigned int sz = verts->size();
+    if (i>=sz){
+        qWarning("Stroke's index is out of range. Cannot obtain  a point");
+        return osg::Vec2f(0.f, 0.f);
+    }
+    osg::Vec3f p = (*verts)[i];
+    if (std::fabs(p.z()) > cher::EPSILON){
+        qWarning("Stroke::getPoint : unexpected value of z-coordinate");
+        qInfo() << p.z();
+        return osg::Vec2f(0.f, 0.f);
+    }
+
+    return osg::Vec2f(p.x(), p.y());
+}
+
+osg::Camera *entity::Stroke::getCamera() const
+{
+    return m_camera.get();
+}
+
 // read more on why: http://stackoverflow.com/questions/36655888/opengl-thick-and-smooth-non-broken-lines-in-3d
 bool entity::Stroke::redefineToShader(osg::Camera *camera)
 {
-    // The used shader requires that each line segment is represented as GL_LINES_AJACENCY_EXT
-    // This required adding padding points for each line segment
-    // Same goes for color, if it's not uniform
+    /* The used shader requires that each line segment is represented as GL_LINES_AJACENCY_EXT
+    *  This required adding padding points for each line segment
+    *  Same goes for color, if it's not uniform */
 
+    /* initialize m_program */
     if (!this->initializeShaderProgram(camera)){
         qWarning("Could not properly initialize the stroke shader program, default look will be used");
         return false;
@@ -124,13 +223,77 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
     osg::ref_ptr<osg::Vec3Array> originPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
     if (!originPts) return false;
 
-    // For number of original points, the total number for the shader will be:
-    // (#points-1)*4
+    /* For number of original points, the total number for the shader will be: ((#points-1)*4)  */
     int numSh = (originPts->size()-1)*4;
     osg::ref_ptr<osg::Vec3Array> shaderPts = new osg::Vec3Array(numSh);
     if (!shaderPts) return false;
 
+    /* fill-in shader points so that to use line adjacency */
+    unsigned int idx = 0;
+    for (size_t i=0; i<originPts->size()-1; ++i){
+        /* first  two point */
+        if (i==0){
+            /* first point is 0th index */
+            Q_ASSERT(idx < shaderPts->size());
+            osg::Vec3f dir0 = (*originPts)[i] - (*originPts)[i+1];
+            dir0.normalize();
+
+            // direction vector is shortened so that canvas BB is calculated correctly, and miter didn't look too long
+            (*shaderPts)[idx++] = (*originPts)[i] + dir0*0.05;
+            Q_ASSERT(idx < shaderPts->size());
+            (*shaderPts)[idx++] = (*originPts)[i];
+        }
+        else{
+            Q_ASSERT(idx < shaderPts->size());
+            (*shaderPts)[idx++] = (*originPts)[i-1];
+            Q_ASSERT(idx < shaderPts->size());
+            (*shaderPts)[idx++] = (*originPts)[i];
+        }
+
+        /* last two points */
+        if (i+1 == originPts->size()-1){
+            Q_ASSERT(idx < shaderPts->size());
+            (*shaderPts)[idx++] = (*originPts)[i+1];
+            Q_ASSERT(idx < shaderPts->size());
+            osg::Vec3f dirn = (*originPts)[i+1] - (*originPts)[i];
+            dirn.normalize();
+
+            // direction vector is shortened so that canvas BB is calculated correctly, and miter didn't look too long
+            (*shaderPts)[idx++] = (*originPts)[i+1] + dirn*0.05;
+        }
+        else{
+            Q_ASSERT(idx < shaderPts->size());
+            (*shaderPts)[idx++] = (*originPts)[i+1];
+            Q_ASSERT(idx < shaderPts->size());
+            (*shaderPts)[idx++] = (*originPts)[i+2];
+        }
+    }
+
+    /* reset the primitive type */
+    m_lines->set(GL_LINES_ADJACENCY_EXT, 0, shaderPts->size());
+
+    /* reset pointer to the vertex array */
+    this->setVertexArray(shaderPts);
+
+    /* set shader attributes */
+    this->setVertexAttribArray(0, shaderPts, osg::Array::BIND_PER_VERTEX);
+    osg::Vec4Array* colors = dynamic_cast<osg::Vec4Array*>(this->getColorArray());
+    Q_ASSERT(colors);
+    this->setVertexAttribArray(1, colors, osg::Array::BIND_OVERALL);
+
+    /* set up m_program as StateSet */
+    osg::StateSet* stateset = this->getOrCreateStateSet();
+    Q_ASSERT(stateset);
+    stateset->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
+
+    m_camera = camera;
+
     return true;
+}
+
+bool entity::Stroke::isShadered() const
+{
+    return m_isShadered;
 }
 
 float entity::Stroke::getLength() const
@@ -202,11 +365,16 @@ cher::ENTITY_TYPE entity::Stroke::getEntityType() const
 
 bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
 {
-    m_program->setName("DefaultShader");
+    if (!camera){
+        qWarning("Camera is NULL");
+        return false;
+    }
+
+    m_program->setName("DefaultStrokeShader");
 
     /* load and add shaders to the program */
     osg::ref_ptr<osg::Shader> vertShader = new osg::Shader(osg::Shader::VERTEX);
-    if (!vertShader->loadShaderSourceFromFile("Stroke.vert")){
+    if (!vertShader->loadShaderSourceFromFile("Shaders/Stroke.vert")){
         qWarning("Could not load vertex shader from file");
         return false;
     }
@@ -216,7 +384,7 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
     }
 
     osg::ref_ptr<osg::Shader> geomShader = new osg::Shader(osg::Shader::GEOMETRY);
-    if (!geomShader->loadShaderSourceFromFile("Stroke.geom")){
+    if (!geomShader->loadShaderSourceFromFile("Shaders/Stroke.geom")){
         qWarning("Could not load geometry shader from file");
         return false;
     }
@@ -226,7 +394,7 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
     }
 
     osg::ref_ptr<osg::Shader> fragShader = new osg::Shader(osg::Shader::FRAGMENT);
-    if (!fragShader->loadShaderSourceFromFile("Stroke.frag")){
+    if (!fragShader->loadShaderSourceFromFile("Shaders/Stroke.frag")){
         qWarning("Could not load fragment shader from file");
         return false;
     }
@@ -253,13 +421,14 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
     state->addUniform(viewportVector);
 
     /* stroke thickness */
-    float thickness = 7.0;
+    float thickness = cher::STROKE_LINE_WIDTH;
     state->addUniform(new osg::Uniform("Thickness", thickness));
 
     /*  stroke miter limit */
     float miterLimit = 0.75;
     state->addUniform(new osg::Uniform("MiterLimit", miterLimit));
 
+    m_isShadered = true;
     return true;
 }
 
