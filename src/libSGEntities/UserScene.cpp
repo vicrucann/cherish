@@ -1029,18 +1029,20 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
     entity::Stroke* stroke = m_canvasCurrent->getStrokeCurrent();
     if (this->strokeValid()){
         if (stroke->isLengthy()){
-            osg::ref_ptr<entity::Stroke> stroke_clone = new entity::Stroke(*stroke, osg::CopyOp::DEEP_COPY_ALL);
+            osg::ref_ptr<entity::Stroke> stroke_clone = new entity::Stroke;
             Q_ASSERT(stroke_clone.get());
+            if (stroke_clone->copyFrom(stroke)){
 
-            osg::Camera* camera = NULL;
-            emit this->requestCamera(camera);
-            if (camera){
-                stroke_clone->redefineToShader(camera);
-                fur::AddStrokeCommand* cmd = new fur::AddStrokeCommand(this, stroke_clone);
-                stack->push(cmd);
+                osg::Camera* camera = NULL;
+                emit this->requestCamera(camera);
+                if (camera){
+                    stroke_clone->redefineToShader(camera);
+                    fur::AddStrokeCommand* cmd = new fur::AddStrokeCommand(this, stroke_clone);
+                    stack->push(cmd);
+                }
+                else
+                    qWarning("strokeFinish(): could not obtain camera");
             }
-            else
-                qWarning("strokeFinish(): could not obtain camera");
         }
     }
     else{
