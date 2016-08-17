@@ -7,5 +7,5 @@ in VertexData{
 const vec4 testColor = vec4(0.3,1,0,1);
 void main(void)
 {
-    gl_FragColor = vec4(VertexIn.mColor.xy, 0.2, 1);
+    gl_FragColor = vec4(VertexIn.mColor.xyz, 1);
 }
