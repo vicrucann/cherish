@@ -9,6 +9,9 @@
 #include <QDebug>
 #include <QMimeData>
 #include <QtGlobal>
+#include <QOpenGLContext>
+#include <QOpenGLFunctions_3_3_Core>
+#include <QSurfaceFormat>
 
 #include <osg/StateSet>
 #include <osg/Material>
@@ -25,7 +28,8 @@
 GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::WindowFlags f)
     : QOpenGLWidget(parent, f)
 
-    , m_graphicsWindow(new osgViewer::GraphicsWindowEmbedded(this->x(), this->y(), this->width(), this->height()))
+    , m_traits(new osg::GraphicsContext::Traits)
+    , m_graphicsWindow(new osgViewer::GraphicsWindowEmbedded(m_traits.get()))
     , m_viewer(new osgViewer::Viewer)
     , m_RootScene(root)
     , m_TabletDevice(QTabletEvent::Stylus) // http://doc.qt.io/qt-5/qtabletevent.html#TabletDevice-enum
@@ -66,10 +70,29 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
 
     m_viewer->realize();
 
+    /* OpenGL graphics context */
+    m_traits->samples = 8; // multi sampling (anti-aliasing)
+    m_traits->x = this->x(); // this->width(), this->height());
+    m_traits->y = this->y();
+    m_traits->width = this->width();
+    m_traits->height = this->height();
+    qInfo() << "Context version=" << QString(m_traits->glContextVersion.c_str()) ;
+//    osg::DisplaySettings::instance()->setNumMultiSamples(4);
+
     /* widget settings */
     this->setFocusPolicy(Qt::StrongFocus);
     this->setMouseTracking(true);
     this->setAcceptDrops(true); // do drag photos from PhotoWidget
+
+    /* OpenGL graphics format */
+    QSurfaceFormat format = this->format();
+    /*  To make sure shadered lines are rendered with anti-aliasing, we
+     * set the samples to 4. Equivalent to: http://www.learnopengl.com/#!Advanced-OpenGL/Anti-aliasing
+     * Since m_viewer is of type GraphicsWindowEmbedded, the format is managed by the outsider widget (QOpenGLWidget),
+     * that is why we set it up here. */
+    format.setSamples(4);
+    this->setFormat(format);
+    qInfo() << "multisampling samples=" << format.samples();
 }
 
 osg::Camera *GLWidget::getCamera() const
