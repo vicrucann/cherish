@@ -124,22 +124,44 @@ bool RootScene::writeScenetoFile()
     state->stripDataFrom(this);
     Q_ASSERT(!state->isEmpty());
 
-    /* for each canvas, detach its tools */
+    /* for each canvas, detach its tools and re-define the strokes to default geometry */
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* canvas = m_userScene->getCanvas(i);
         if (!canvas) continue;
         canvas->detachFrame();
+        for (size_t j=0; j<canvas->getNumStrokes(); ++j){
+            entity::Stroke* stroke = canvas->getStroke(j);
+            if (!stroke) {
+                qWarning("Could not obtain stroke pointer");
+                continue;
+            }
+            if (!stroke->redefineToDefault())
+                qWarning("Failed to re-define stroke to the default geometry");
+        }
     }
 
     if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) result = false;
 
-    /* for each canvas, attach its tools back */
+    /* for each canvas, attach its tools back and re-define the stroke back to shader geomtry */
+    osg::Camera* camera = NULL;
+    emit m_userScene->requestCamera(camera);
+    Q_ASSERT(camera);
+
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* canvas = m_userScene->getCanvas(i);
         if (!canvas) continue;
         if (!canvas->attachFrame()){
             qCritical("RootScene::writeSceneToFile: could not attach the tools back");
             result = false;
+        }
+        for (size_t j=0; j<canvas->getNumStrokes(); ++j){
+            entity::Stroke* stroke = canvas->getStroke(j);
+            if (!stroke){
+                qWarning("Could not obtain stroke pointer");
+                continue;
+            }
+            if (!stroke->redefineToShader(camera))
+                qWarning("Could not re-define stroke back as shader");
         }
     }
 
@@ -187,7 +209,7 @@ bool RootScene::loadSceneFromFile()
     /* update pointer */
     m_userScene = newscene.get();
 
-    /* load the construction tools and set photo textures */
+    /* load the construction tools, set photo textures */
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv) qFatal("RootScene::loadSceneFromFile() canvas is NULL");
@@ -196,11 +218,23 @@ bool RootScene::loadSceneFromFile()
         cnv->initializeMasks();
 
         /* photo textures */
-        for (size_t i=0; i<cnv->getNumPhotos(); ++i){
-            entity::Photo* photo = cnv->getPhoto(i);
+        for (size_t j=0; j<cnv->getNumPhotos(); ++j){
+            entity::Photo* photo = cnv->getPhoto(j);
             if (!photo) continue;
             photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTextureAsAttribute());
         }
+
+//        /* stroke shaders */
+//        for (size_t k=0; k<cnv->getNumStrokes(); ++k){
+//            entity::Stroke* stroke = cnv->getStroke(k);
+//            if (!stroke) {
+//                qWarning("Could not read stroke");
+//                continue;
+//            }
+//            if (!stroke->redefineToShader(camera))
+//                qWarning("Could not redefine stroke as shader");
+//        }
+
     }
 
     /* update current/previous canvases */

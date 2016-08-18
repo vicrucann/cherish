@@ -69,6 +69,9 @@ public:
 
     inline void setColor(const osg::Vec4f& color);
     inline const osg::Vec4f& getColor() const;
+
+    bool isShadered() const;
+
     const osg::Program* getProgram() const;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
@@ -91,8 +94,12 @@ public:
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
     bool redefineToShader(osg::Camera* camera);
 
-    /*! \return whether a shader is applied to strokes, or not. */
-    bool isShadered() const;
+    /*! A method to reset the shadered look to the default OpenGL geometry.
+     * \return true on success. */
+    bool redefineToDefault();
+
+    /*! \return number of vertices. */
+    int getNumPoints() const;
 
     /*! \return length of the stroke, which is measured as a largest dimention of the bounding box around the stroke. */
     float getLength() const;
@@ -125,10 +132,10 @@ protected:
     bool initializeShaderProgram(osg::Camera* camera);
 
 private:
-    osg::ref_ptr<osg::DrawArrays>   m_lines;
+    osg::ref_ptr<osg::DrawArrays>   m_lines; // saved to file
     osg::ref_ptr<osg::Program>      m_program;
     osg::observer_ptr<osg::Camera>  m_camera;
-    osg::Vec4f                      m_color;
+    osg::Vec4f                      m_color; // saved to file
     bool                            m_isShadered;
 };
 }

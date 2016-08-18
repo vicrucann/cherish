@@ -261,8 +261,14 @@ public:
     /*! \return total number of photos that canvas contains. */
     unsigned int getNumPhotos() const;
 
+    /*! \return total number of strokes that canvas contains. */
+    unsigned int getNumStrokes() const;
+
     /*! \return pointer on a photo with the given index. */
     entity::Photo* getPhoto(int row) const;
+
+    /*! \return pointer on a stroke with the given index */
+    entity::Stroke* getStroke(int i) const;
 
     /*! Method to iterate throught all the entities: both strokes and photos
      * \param i is the index of desired entity

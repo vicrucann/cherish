@@ -1158,9 +1158,29 @@ bool MainWindow::loadSceneFromFile()
     if (!m_rootScene->loadSceneFromFile()) return false;
     m_glWidget->update();
     this->initializeCallbacks();
+
     m_rootScene->resetBookmarks(m_bookmarkWidget);
     if (!m_rootScene->getUserScene()) return false;
     m_rootScene->getUserScene()->resetModel(m_canvasWidget);
+
+    /* re-define shaders */
+    osg::Camera* camera = NULL;
+    this->onRequestCamera(camera);
+    Q_ASSERT(camera);
+    for (int i=0; i<m_rootScene->getUserScene()->getNumCanvases(); ++i){
+        entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvas(i);
+        if (!cnv) continue;
+
+        for (size_t j=0; j<cnv->getNumStrokes(); ++j){
+            entity::Stroke* stroke = cnv->getStroke(j);
+            if (!stroke) continue;
+
+            if (!stroke->redefineToShader(camera))
+                qWarning("Could not redefine stroke as shader");
+        }
+
+    }
+
     return true;
 }
 

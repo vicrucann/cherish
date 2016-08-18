@@ -180,6 +180,81 @@ void StrokeTest::testCloneShaderedStroke()
 
 void StrokeTest::testReadWrite()
 {
+    entity::Canvas* canvas = m_scene->getCanvasCurrent();
+    QVERIFY(canvas);
+
+    qInfo("Create a stroke to save to file");
+    osg::ref_ptr<entity::Stroke> original = new entity::Stroke;
+    QVERIFY(original.get());
+
+    qInfo("Fill-in the stroke and add it to the canvas");
+    canvas->setStrokeCurrent(original);
+    QVERIFY(canvas->addEntity(original.get()));
+
+    original->appendPoint(0, 0);
+    original->appendPoint(1, 0);
+    original->appendPoint(1, 1);
+    original->appendPoint(0, 1);
+
+    qInfo("Shaderize the stroke");
+    osg::Camera* camera = NULL;
+    emit m_scene->requestCamera(camera);
+    QVERIFY(camera);
+
+    QVERIFY(original->redefineToShader(camera));
+    canvas->setStrokeCurrent(false);
+
+    qInfo("Test stroke parameters");
+    QVERIFY(original->isShadered());
+    QCOMPARE(original->getNumPoints(), 12);
+    QCOMPARE(static_cast<int>(original->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
+    QVERIFY(original->getCamera());
+    QCOMPARE(static_cast<int>(canvas->getGeodeStrokes()->getNumChildren()), 1);
+    QCOMPARE(canvas->getGeodeStrokes()->getChild(0), original.get());
+
+    qInfo("Write scene to file");
+    QString fname = QString("RW_StrokeTest.osgt");
+    m_rootScene->setFilePath(fname.toStdString());
+    QVERIFY(m_rootScene->writeScenetoFile());
+    QVERIFY(m_rootScene->isSavedToFile());
+
+    qInfo("Verify stroke params didnt change after the write");
+    QVERIFY(original->isShadered());
+    QCOMPARE(original->getNumPoints(), 12);
+    QCOMPARE(static_cast<int>(original->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
+    QVERIFY(original->getCamera());
+    QCOMPARE(static_cast<int>(canvas->getGeodeStrokes()->getNumChildren()), 1);
+    QCOMPARE(canvas->getGeodeStrokes()->getChild(0), original.get());
+
+    qInfo("Clear scene");
+    this->onFileClose();
+    QVERIFY(m_rootScene->isEmptyScene());
+
+    qInfo("Re-open the saved file");
+    m_rootScene->setFilePath(fname.toStdString());
+    QVERIFY(m_rootScene->isSetFilePath());
+    QVERIFY(this->loadSceneFromFile());
+    m_scene = m_rootScene->getUserScene();
+    QVERIFY(m_scene.get());
+
+    qInfo("Get the canvas pointer");
+    QCOMPARE(static_cast<int>(m_scene->getNumCanvases()), 3);
+    canvas = m_scene->getCanvas(2);
+    QVERIFY(canvas);
+
+    qInfo("Test stroke structure and its relation for canvas");
+    QCOMPARE(static_cast<int>(canvas->getGeodeStrokes()->getNumChildren()), 1);
+    const entity::Stroke* saved = dynamic_cast<const entity::Stroke*>(canvas->getGeodeStrokes()->getChild(0));
+    QVERIFY(saved);
+
+    QVERIFY(saved->getProgram());
+    QCOMPARE(static_cast<int>(saved->getProgram()->getNumShaders()), 3);
+
+    QVERIFY(saved->isShadered());
+    QCOMPARE(saved->getNumPoints(), 12);
+    QCOMPARE(static_cast<int>(saved->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
+    QVERIFY(saved->getCamera());
+    QCOMPARE(saved->getCamera(), m_glWidget->getCamera());
 
 }
 

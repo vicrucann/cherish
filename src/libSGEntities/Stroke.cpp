@@ -92,6 +92,11 @@ const osg::Vec4f&entity::Stroke::getColor() const
     return m_color;
 }
 
+bool entity::Stroke::isShadered() const
+{
+    return m_isShadered;
+}
+
 const osg::Program *entity::Stroke::getProgram() const
 {
     return m_program.get();
@@ -214,6 +219,8 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
     *  This required adding padding points for each line segment
     *  Same goes for color, if it's not uniform */
 
+    if (m_isShadered) return true;
+
     /* initialize m_program */
     if (!this->initializeShaderProgram(camera)){
         qWarning("Could not properly initialize the stroke shader program, default look will be used");
@@ -287,13 +294,53 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
     stateset->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
 
     m_camera = camera;
+    m_isShadered = true;
 
     return true;
 }
 
-bool entity::Stroke::isShadered() const
+bool entity::Stroke::redefineToDefault()
 {
-    return m_isShadered;
+    if (!m_isShadered) return true;
+
+    osg::ref_ptr<osg::Vec3Array> shaderedPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    if (!shaderedPts.get()) {
+        qWarning("Could not extract shadered vertices");
+        return false;
+    }
+    if (shaderedPts->size() % 4 != 0 || shaderedPts->size() == 0 ||
+            static_cast<int>(m_lines->getMode()) !=  GL_LINES_ADJACENCY_EXT) {
+        qWarning("Shadered vertices chech failed");
+        return false;
+    }
+
+    osg::ref_ptr<osg::Vec3Array> defaultPts = new osg::Vec3Array(shaderedPts->size()/4+1);
+    int idx = 0;
+    for (size_t i=1; i<shaderedPts->size(); i=i+4){
+        (*defaultPts)[idx++] = (*shaderedPts)[i];
+    }
+    (*defaultPts)[idx++] = (*shaderedPts)[shaderedPts->size()-2];
+    Q_ASSERT(idx == shaderedPts->size()/4+1);
+
+    this->setVertexArray(defaultPts.get());
+
+    /* reset the primitive type */
+    m_lines->set(GL_LINE_STRIP_ADJACENCY, 0, defaultPts->size());
+
+    /* disable shader program */
+    this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::OFF);
+
+    m_isShadered = false;
+
+    return true;
+}
+
+int entity::Stroke::getNumPoints() const
+{
+    const osg::Vec3Array* verts = static_cast<const osg::Vec3Array*>(this->getVertexArray());
+    Q_ASSERT(verts);
+
+    return static_cast<int>(verts->size());
 }
 
 float entity::Stroke::getLength() const
@@ -370,6 +417,10 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
         return false;
     }
 
+    if (m_program->getNumShaders() == 3) {
+        return true;
+    }
+
     m_program->setName("DefaultStrokeShader");
 
     /* load and add shaders to the program */
@@ -428,7 +479,6 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
     float miterLimit = 0.75;
     state->addUniform(new osg::Uniform("MiterLimit", miterLimit));
 
-    m_isShadered = true;
     return true;
 }
 
