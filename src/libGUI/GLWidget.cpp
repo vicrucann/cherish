@@ -422,6 +422,7 @@ bool GLWidget::event(QEvent *event)
     case QEvent::MouseButtonRelease:
     case QEvent::MouseMove:
     case QEvent::Wheel:
+    case QEvent::Paint:
         this->update();
         break;
     default:
