@@ -17,15 +17,15 @@ template <typename Real>
 class PathFitter
 {
 public:
-    PathFitter(const osg::Vec2Array& path);
-    osg::Vec2Array* fit(Real error = 2.5);
+    PathFitter(const osg::Vec3Array& path);
+    osg::Vec3Array* fit(Real error = 2.5);
 
 protected:
     /* Fit a Bezier curve to a (sub-)set of digitized points */
-    void fitCubic(osg::Vec2Array *curves, Real error, int first, int last, const osg::Vec2f& tan1, const osg::Vec2f& tan2);
+    void fitCubic(osg::Vec3Array *curves, Real error, int first, int last, const osg::Vec2f& tan1, const osg::Vec2f& tan2);
 
 private:
-    void addCurve(osg::Vec2Array *curvesSet, const Curve& curve);
+    void addCurve(osg::Vec3Array *curvesSet, const Curve& curve);
 
     Real getDistance(const osg::Vec2f& p1, const osg::Vec2f& p2);
 

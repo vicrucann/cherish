@@ -15,6 +15,7 @@
 
 #include "ModelViewProjectionMatrixCallback.h"
 #include "ViewportVectorCallback.h"
+#include "PathFitter.h"
 
 entity::Stroke::Stroke()
     : entity::Entity2D()
@@ -22,6 +23,7 @@ entity::Stroke::Stroke()
     , m_program(new osg::Program)
     , m_camera(0)
     , m_color(cher::STROKE_CLR_NORMAL)
+    , m_isCurved(false)
     , m_isShadered(false)
 {
     osg::Vec4Array* colors = new osg::Vec4Array;
@@ -59,6 +61,7 @@ entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
     , m_lines(copy.m_lines)
     , m_program(copy.m_program)
     , m_color(copy.m_color)
+    , m_isCurved(copy.m_isCurved)
     , m_isShadered(copy.m_isShadered)
 {
     qDebug("stroke copy ctor done");
@@ -90,6 +93,11 @@ void entity::Stroke::setColor(const osg::Vec4f& color)
 const osg::Vec4f&entity::Stroke::getColor() const
 {
     return m_color;
+}
+
+bool entity::Stroke::isCurved() const
+{
+    return m_isCurved;
 }
 
 bool entity::Stroke::isShadered() const
@@ -212,6 +220,38 @@ osg::Camera *entity::Stroke::getCamera() const
     return m_camera.get();
 }
 
+bool entity::Stroke::redefineToCurve(float tolerance)
+{
+    if (m_isCurved) return true;
+
+    osg::ref_ptr<osg::Vec3Array> path = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    if (!path.get()){
+        qWarning("Vertex data is NULL");
+        return false;
+    }
+
+    PathFitter<float> fitter(*(path.get()));
+    osg::ref_ptr<osg::Vec3Array> curves = fitter.fit(tolerance);
+    if (!curves.get()){
+        qWarning("Curves is NULL");
+        return false;
+    }
+
+    osg::ref_ptr<osg::Vec3Array> sampled = this->interpolateCurves(curves.get());
+    if (!sampled.get()){
+        qWarning("Sampled curves is NULL");
+        return false;
+    }
+
+    this->setVertexArray(sampled);
+    sampled->dirty();
+    this->dirtyBound();
+    qDebug() << "Stroke compression=" << 100 - std::round(float(sampled->size()) / float(path->size()) * 100);
+
+    m_isCurved = true;
+    return true;
+}
+
 // read more on why: http://stackoverflow.com/questions/36655888/opengl-thick-and-smooth-non-broken-lines-in-3d
 bool entity::Stroke::redefineToShader(osg::Camera *camera)
 {
@@ -301,36 +341,42 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
 
 bool entity::Stroke::redefineToDefault()
 {
-    if (!m_isShadered) return true;
+    if (!m_isShadered && !m_isCurved) return true;
 
-    osg::ref_ptr<osg::Vec3Array> shaderedPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    if (!shaderedPts.get()) {
-        qWarning("Could not extract shadered vertices");
-        return false;
-    }
-    if (shaderedPts->size() % 4 != 0 || shaderedPts->size() == 0 ||
-            static_cast<int>(m_lines->getMode()) !=  GL_LINES_ADJACENCY_EXT) {
-        qWarning("Shadered vertices chech failed");
-        return false;
+    if (m_isCurved){
+        m_isCurved = false;
     }
 
-    osg::ref_ptr<osg::Vec3Array> defaultPts = new osg::Vec3Array(shaderedPts->size()/4+1);
-    int idx = 0;
-    for (size_t i=1; i<shaderedPts->size(); i=i+4){
-        (*defaultPts)[idx++] = (*shaderedPts)[i];
+    if (m_isShadered){
+        osg::ref_ptr<osg::Vec3Array> shaderedPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+        if (!shaderedPts.get()) {
+            qWarning("Could not extract shadered vertices");
+            return false;
+        }
+        if (shaderedPts->size() % 4 != 0 || shaderedPts->size() == 0 ||
+                static_cast<int>(m_lines->getMode()) !=  GL_LINES_ADJACENCY_EXT) {
+            qWarning("Shadered vertices chech failed");
+            return false;
+        }
+
+        osg::ref_ptr<osg::Vec3Array> defaultPts = new osg::Vec3Array(shaderedPts->size()/4+1);
+        int idx = 0;
+        for (size_t i=1; i<shaderedPts->size(); i=i+4){
+            (*defaultPts)[idx++] = (*shaderedPts)[i];
+        }
+        (*defaultPts)[idx++] = (*shaderedPts)[shaderedPts->size()-2];
+        Q_ASSERT(idx == shaderedPts->size()/4+1);
+
+        this->setVertexArray(defaultPts.get());
+
+        /* reset the primitive type */
+        m_lines->set(GL_LINE_STRIP_ADJACENCY, 0, defaultPts->size());
+
+        /* disable shader program */
+        this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::OFF);
+
+        m_isShadered = false;
     }
-    (*defaultPts)[idx++] = (*shaderedPts)[shaderedPts->size()-2];
-    Q_ASSERT(idx == shaderedPts->size()/4+1);
-
-    this->setVertexArray(defaultPts.get());
-
-    /* reset the primitive type */
-    m_lines->set(GL_LINE_STRIP_ADJACENCY, 0, defaultPts->size());
-
-    /* disable shader program */
-    this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::OFF);
-
-    m_isShadered = false;
 
     return true;
 }
@@ -480,6 +526,38 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
     state->addUniform(new osg::Uniform("MiterLimit", miterLimit));
 
     return true;
+}
+
+osg::Vec3Array *entity::Stroke::interpolateCurves(const osg::Vec3Array *curves, int samples)
+{
+    osg::ref_ptr<osg::Vec3Array> sampled = new osg::Vec3Array;
+    if (curves->size() % 4 != 0){
+        qWarning("Curves input size must be dividable to 4");
+        return 0;
+    }
+    int nCurves = curves->size() / 4;
+    auto delta = 1.f / float(samples);
+    for (decltype(curves->size()) i=0; i<curves->size(); i=i+4){
+        auto b0 = curves->at(i),
+                b1 = curves->at(i+1),
+                b2 = curves->at(i+2),
+                b3 = curves->at(i+3);
+        for (int j=0; j<samples; ++j){
+            auto t = delta * float(j),
+                    t2 = t*t,
+                    one_minus_t = 1.f - t,
+                    one_minus_t2 = one_minus_t * one_minus_t;
+
+            auto Bt = b0 * one_minus_t2 * one_minus_t
+                    + b1 * 3.f * t * one_minus_t2
+                    + b2 * 3.f * t2 * one_minus_t
+                    + b3 * t2 * t;
+
+            sampled->push_back(Bt);
+        }
+    }
+    Q_ASSERT(sampled->size() == samples*nCurves);
+    return sampled.release();
 }
 
 /* for serialization of stroke type

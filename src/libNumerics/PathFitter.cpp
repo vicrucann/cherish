@@ -4,26 +4,29 @@
 #include <algorithm>
 #include <memory>
 
+#include "Settings.h"
+
 template <typename Real>
-PathFitter<Real>::PathFitter(const osg::Vec2Array &path)
+PathFitter<Real>::PathFitter(const osg::Vec3Array &path)
     : m_data(0)
 {
     /* copy points from path and filter out adjacent duplicates */
-    osg::Vec2f prev = osg::Vec2f(NAN,NAN);
+    osg::Vec3f prev = osg::Vec3f(NAN,NAN,NAN);
     for (unsigned int i=0; i<path.size(); ++i){
         auto point = path.at(i);
+        Q_ASSERT(std::fabs(point.z()) < cher::EPSILON);
         if (prev.isNaN() || prev != point)
         {
-            m_data.push_back(point);
+            m_data.push_back(osg::Vec2f(point.x(), point.y()));
             prev = point;
         }
     }
 }
 
 template <typename Real>
-osg::Vec2Array *PathFitter<Real>::fit(Real error)
+osg::Vec3Array *PathFitter<Real>::fit(Real error)
 {
-    osg::ref_ptr<osg::Vec2Array> bezierSet = new osg::Vec2Array;
+    osg::ref_ptr<osg::Vec3Array> bezierSet = new osg::Vec3Array;
     auto length = m_data.size();
 
     if (length>0){
@@ -41,7 +44,7 @@ osg::Vec2Array *PathFitter<Real>::fit(Real error)
 }
 
 template <typename Real>
-void PathFitter<Real>::fitCubic(osg::Vec2Array *bezierSet, Real error, int first, int last, const osg::Vec2f& tan1, const osg::Vec2f& tan2)
+void PathFitter<Real>::fitCubic(osg::Vec3Array *bezierSet, Real error, int first, int last, const osg::Vec2f& tan1, const osg::Vec2f& tan2)
 {
     /* 2 points case */
     if (last-first == 1){
@@ -93,12 +96,16 @@ void PathFitter<Real>::fitCubic(osg::Vec2Array *bezierSet, Real error, int first
 }
 
 template <typename Real>
-void PathFitter<Real>::addCurve(osg::Vec2Array *bezierSet, const Curve &curve)
+void PathFitter<Real>::addCurve(osg::Vec3Array *bezierSet, const Curve &curve)
 {
-    bezierSet->push_back( curve.at(0) );
-    bezierSet->push_back( curve.at(1) );
-    bezierSet->push_back( curve.at(2) );
-    bezierSet->push_back( curve.at(3) );
+    auto p0 = curve.at(0)
+            , p1 = curve.at(1)
+            , p2 = curve.at(2)
+            , p3 = curve.at(3);
+    bezierSet->push_back( osg::Vec3f(p0.x(), p0.y(), 0) );
+    bezierSet->push_back( osg::Vec3f(p1.x(), p1.y(), 0) );
+    bezierSet->push_back( osg::Vec3f(p2.x(), p2.y(), 0) );
+    bezierSet->push_back( osg::Vec3f(p3.x(), p3.y(), 0) );
 }
 
 template <typename Real>

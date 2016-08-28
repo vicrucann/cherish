@@ -35,7 +35,8 @@ namespace entity {
  * // as user draws, add mouse coordinates, in an event loop:
  * original->addPoint(u,v);
  *
- * \\ after user is finished drawing, re-define the look by using the shader:
+ * \\ after user is finished drawing, re-define the look
+ * original->redefineToCurve();
  * original->redefineToShader(camera);
  * \endcode
  *
@@ -49,6 +50,7 @@ namespace entity {
  * copy->copyFrom(original);
  *
  * // as before, we re-define the stroke to be shadered
+ * copy->redefineToCurve();
  * copy->redefineToShader(original->getCamera());
  * \endcode
 */
@@ -70,6 +72,7 @@ public:
     inline void setColor(const osg::Vec4f& color);
     inline const osg::Vec4f& getColor() const;
 
+    bool isCurved() const;
     bool isShadered() const;
 
     const osg::Program* getProgram() const;
@@ -89,6 +92,10 @@ public:
     /*! \return observer pointer on camera which helped to create a shadered version.
      * \sa redefineToShader(). */
     osg::Camera* getCamera() const;
+
+    /*! A method that fits the stroke's points to a set of curve using Schneider's algorithm.
+     * \return true upon success. */
+    bool redefineToCurve(float tolerance = 0.05f);
 
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
@@ -130,12 +137,14 @@ public:
 
 protected:
     bool initializeShaderProgram(osg::Camera* camera);
+    osg::Vec3Array *interpolateCurves(const osg::Vec3Array *curves, int samples = 11);
 
 private:
     osg::ref_ptr<osg::DrawArrays>   m_lines; // saved to file
     osg::ref_ptr<osg::Program>      m_program;
     osg::observer_ptr<osg::Camera>  m_camera;
     osg::Vec4f                      m_color; // saved to file
+    bool                            m_isCurved;
     bool                            m_isShadered;
 };
 }

@@ -1036,6 +1036,7 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
                 osg::Camera* camera = NULL;
                 emit this->requestCamera(camera);
                 if (camera){
+                    stroke_clone->redefineToCurve(0.001);
                     stroke_clone->redefineToShader(camera);
                     fur::AddStrokeCommand* cmd = new fur::AddStrokeCommand(this, stroke_clone);
                     stack->push(cmd);
