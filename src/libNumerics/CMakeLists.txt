@@ -7,9 +7,13 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/libSGEntities
 )
 
+add_subdirectory(CurveFitting/libPathFitter)
+
+link_directories(${CMAKE_BINARY_DIR}/src/libNumerics/CurveFitting/libPathFitter)
+
 set (libNumerics_SRCS
-    PathFitter.h
-    PathFitter.cpp
+    #PathFitter.h
+    #PathFitter.cpp
 
 )
 
@@ -18,6 +22,7 @@ add_library(libNumerics
 )
 
 target_link_libraries( libNumerics
+    libPathFitter
     ${QT_LIBRARIES}
     ${OPENSCENEGRAPH_LIBRARIES}
 )

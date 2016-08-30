@@ -15,7 +15,7 @@
 
 #include "ModelViewProjectionMatrixCallback.h"
 #include "ViewportVectorCallback.h"
-#include "PathFitter.h"
+//#include "PathFitter.h"
 
 entity::Stroke::Stroke()
     : entity::Entity2D()
@@ -241,24 +241,24 @@ bool entity::Stroke::redefineToCurve(float tolerance)
         qDebug() << "assume threshold=" << tolerance;
     }
 
-    PathFitter<float> fitter(*(path.get()));
-    osg::ref_ptr<osg::Vec3Array> curves = fitter.fit(tolerance);
-    if (!curves.get()){
-        qWarning("Curves is NULL");
-        return false;
-    }
+//    PathFitter<float> fitter(*(path.get()));
+//    osg::ref_ptr<osg::Vec3Array> curves = fitter.fit(tolerance);
+//    if (!curves.get()){
+//        qWarning("Curves is NULL");
+//        return false;
+//    }
 
-    osg::ref_ptr<osg::Vec3Array> sampled = this->interpolateCurves(curves.get());
-    if (!sampled.get()){
-        qWarning("Sampled curves is NULL");
-        return false;
-    }
+//    osg::ref_ptr<osg::Vec3Array> sampled = this->interpolateCurves(curves.get());
+//    if (!sampled.get()){
+//        qWarning("Sampled curves is NULL");
+//        return false;
+//    }
 
-    this->setVertexArray(sampled);
-    sampled->dirty();
-    this->dirtyBound();
-    qDebug() << "path.samples=" << path->size();
-    qDebug() << "curves.number=" << curves->size()/4;
+//    this->setVertexArray(sampled);
+//    sampled->dirty();
+//    this->dirtyBound();
+//    qDebug() << "path.samples=" << path->size();
+//    qDebug() << "curves.number=" << curves->size()/4;
 
     m_isCurved = true;
     return true;
