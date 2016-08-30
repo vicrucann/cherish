@@ -230,6 +230,17 @@ bool entity::Stroke::redefineToCurve(float tolerance)
         return false;
     }
 
+    /* set up auto threshold if necessary */
+    if (tolerance < 0.f){
+        /* auto threshold helps to avoid under-fitting or over-fitting of the curve
+         * depending on the scale of drawn stroke. */
+        float length = this->getLength();
+        qDebug() << "length=" << length;
+
+        tolerance = length * 0.005;
+        qDebug() << "assume threshold=" << tolerance;
+    }
+
     PathFitter<float> fitter(*(path.get()));
     osg::ref_ptr<osg::Vec3Array> curves = fitter.fit(tolerance);
     if (!curves.get()){
@@ -246,7 +257,8 @@ bool entity::Stroke::redefineToCurve(float tolerance)
     this->setVertexArray(sampled);
     sampled->dirty();
     this->dirtyBound();
-    qDebug() << "Stroke compression=" << 100 - std::round(float(sampled->size()) / float(path->size()) * 100);
+    qDebug() << "path.samples=" << path->size();
+    qDebug() << "curves.number=" << curves->size()/4;
 
     m_isCurved = true;
     return true;
@@ -542,7 +554,7 @@ osg::Vec3Array *entity::Stroke::interpolateCurves(const osg::Vec3Array *curves, 
                 b1 = curves->at(i+1),
                 b2 = curves->at(i+2),
                 b3 = curves->at(i+3);
-        for (int j=0; j<samples; ++j){
+        for (int j=0; j<=samples; ++j){
             auto t = delta * float(j),
                     t2 = t*t,
                     one_minus_t = 1.f - t,
@@ -556,7 +568,7 @@ osg::Vec3Array *entity::Stroke::interpolateCurves(const osg::Vec3Array *curves, 
             sampled->push_back(Bt);
         }
     }
-    Q_ASSERT(sampled->size() == samples*nCurves);
+    Q_ASSERT(sampled->size() == (samples+1)*nCurves);
     return sampled.release();
 }
 

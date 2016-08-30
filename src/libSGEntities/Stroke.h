@@ -95,7 +95,7 @@ public:
 
     /*! A method that fits the stroke's points to a set of curve using Schneider's algorithm.
      * \return true upon success. */
-    bool redefineToCurve(float tolerance = 0.05f);
+    bool redefineToCurve(float tolerance = -1.f);
 
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */

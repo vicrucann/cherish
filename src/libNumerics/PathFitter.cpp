@@ -138,7 +138,7 @@ Curve PathFitter<Real>::generateBezier(int first, int last, const std::vector<Re
         auto a1 = tan1 * b1,
                 a2 = tan2 * b2,
                 tmp = m_data.at(first+i) - (pt1 * (b0 + b1)) - (pt2 * (b2 + b3)) ;
-        C[0][0] += a1 * a2;
+        C[0][0] += a1 * a1;
         C[0][1] += a1 * a2;
         C[1][0] = C[0][1];
         C[1][1] += a2 * a2;
@@ -187,9 +187,9 @@ Curve PathFitter<Real>::generateBezier(int first, int last, const std::vector<Re
     }
 
     auto pta = handle1.isNaN()? pt1+tan1*alpha1 : pt1+handle1;
-    auto ptb = handle2.isNaN() ? pt2 + tan2 * alpha2 : pt2 + handle2;
+    auto ptb = handle2.isNaN() ? pt2+tan2*alpha2 : pt2 + handle2;
 
-    return Curve{pt1, pta, ptb, pt2};
+    return Curve{pt1, pt1+tan1*alpha1, pt2+tan2*alpha2, pt2};
 }
 
 template <typename Real>
