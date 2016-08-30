@@ -42,8 +42,8 @@ set(CHERISH_SRC
     ${CMAKE_SOURCE_DIR}/libSGControls/Manipulator.cpp
     ${CMAKE_SOURCE_DIR}/libSGControls/EventHandler.h
     ${CMAKE_SOURCE_DIR}/libSGControls/EventHandler.cpp
-    ${CMAKE_SOURCE_DIR}/libNumerics/PathFitter.h
-    ${CMAKE_SOURCE_DIR}/libNumerics/PathFitter.cpp
+    ${CMAKE_SOURCE_DIR}/libNumerics/CurveFitting/libPathFitter/OsgPathFitter.h
+    ${CMAKE_SOURCE_DIR}/libNumerics/CurveFitting/libPathFitter/OsgPathFitter.cpp
     )
 
 ## base GUI test to inherit, which inherits MainWindow

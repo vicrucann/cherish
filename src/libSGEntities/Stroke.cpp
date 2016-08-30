@@ -15,7 +15,7 @@
 
 #include "ModelViewProjectionMatrixCallback.h"
 #include "ViewportVectorCallback.h"
-//#include "PathFitter.h"
+#include "CurveFitting/libPathFitter/OsgPathFitter.h"
 
 entity::Stroke::Stroke()
     : entity::Entity2D()
@@ -241,24 +241,25 @@ bool entity::Stroke::redefineToCurve(float tolerance)
         qDebug() << "assume threshold=" << tolerance;
     }
 
-//    PathFitter<float> fitter(*(path.get()));
-//    osg::ref_ptr<osg::Vec3Array> curves = fitter.fit(tolerance);
-//    if (!curves.get()){
-//        qWarning("Curves is NULL");
-//        return false;
-//    }
+    OsgPathFitter<osg::Vec3Array, osg::Vec3f, float> fitter;
+    fitter.init(*(path.get()));
+    osg::ref_ptr<osg::Vec3Array> curves = fitter.fit(tolerance);
+    if (!curves.get()){
+        qWarning("Curves is NULL");
+        return false;
+    }
 
-//    osg::ref_ptr<osg::Vec3Array> sampled = this->interpolateCurves(curves.get());
-//    if (!sampled.get()){
-//        qWarning("Sampled curves is NULL");
-//        return false;
-//    }
+    osg::ref_ptr<osg::Vec3Array> sampled = this->interpolateCurves(curves.get());
+    if (!sampled.get()){
+        qWarning("Sampled curves is NULL");
+        return false;
+    }
 
-//    this->setVertexArray(sampled);
-//    sampled->dirty();
-//    this->dirtyBound();
-//    qDebug() << "path.samples=" << path->size();
-//    qDebug() << "curves.number=" << curves->size()/4;
+    this->setVertexArray(sampled);
+    sampled->dirty();
+    this->dirtyBound();
+    qDebug() << "path.samples=" << path->size();
+    qDebug() << "curves.number=" << curves->size()/4;
 
     m_isCurved = true;
     return true;
@@ -540,7 +541,7 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
     return true;
 }
 
-osg::Vec3Array *entity::Stroke::interpolateCurves(const osg::Vec3Array *curves, int samples)
+osg::Vec3Array *entity::Stroke::interpolateCurves(const osg::Vec3Array *curves, int segments)
 {
     osg::ref_ptr<osg::Vec3Array> sampled = new osg::Vec3Array;
     if (curves->size() % 4 != 0){
@@ -548,13 +549,14 @@ osg::Vec3Array *entity::Stroke::interpolateCurves(const osg::Vec3Array *curves, 
         return 0;
     }
     int nCurves = curves->size() / 4;
-    auto delta = 1.f / float(samples);
+    auto delta = 1.f / float(segments);
+    osg::Vec3f prev = osg::Vec3f(NAN, NAN, NAN); /* to detect duplicates */
     for (decltype(curves->size()) i=0; i<curves->size(); i=i+4){
         auto b0 = curves->at(i),
                 b1 = curves->at(i+1),
                 b2 = curves->at(i+2),
                 b3 = curves->at(i+3);
-        for (int j=0; j<=samples; ++j){
+        for (int j=0; j<=segments; ++j){
             auto t = delta * float(j),
                     t2 = t*t,
                     one_minus_t = 1.f - t,
@@ -564,11 +566,14 @@ osg::Vec3Array *entity::Stroke::interpolateCurves(const osg::Vec3Array *curves, 
                     + b1 * 3.f * t * one_minus_t2
                     + b2 * 3.f * t2 * one_minus_t
                     + b3 * t2 * t;
-
-            sampled->push_back(Bt);
+            /* do not push duplicates */
+            if (prev.isNaN() || prev != Bt){
+                sampled->push_back(Bt);
+                prev = Bt;
+            }
         }
     }
-    Q_ASSERT(sampled->size() == (samples+1)*nCurves);
+//    Q_ASSERT(sampled->size() == (segments)*nCurves);
     return sampled.release();
 }
 

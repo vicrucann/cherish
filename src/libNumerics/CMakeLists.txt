@@ -12,9 +12,6 @@ add_subdirectory(CurveFitting/libPathFitter)
 link_directories(${CMAKE_BINARY_DIR}/src/libNumerics/CurveFitting/libPathFitter)
 
 set (libNumerics_SRCS
-    #PathFitter.h
-    #PathFitter.cpp
-
 )
 
 add_library(libNumerics

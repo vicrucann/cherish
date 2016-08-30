@@ -137,7 +137,7 @@ public:
 
 protected:
     bool initializeShaderProgram(osg::Camera* camera);
-    osg::Vec3Array *interpolateCurves(const osg::Vec3Array *curves, int samples = 11);
+    osg::Vec3Array *interpolateCurves(const osg::Vec3Array *curves, int segments = 11);
 
 private:
     osg::ref_ptr<osg::DrawArrays>   m_lines; // saved to file
