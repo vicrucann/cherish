@@ -249,17 +249,11 @@ bool entity::Stroke::redefineToCurve(float tolerance)
         return false;
     }
 
-    osg::ref_ptr<osg::Vec3Array> sampled = this->interpolateCurves(curves.get());
-    if (!sampled.get()){
-        qWarning("Sampled curves is NULL");
-        return false;
-    }
-
-    this->setVertexArray(sampled);
-    sampled->dirty();
+    this->setVertexArray(curves);
+    curves->dirty();
     this->dirtyBound();
     qDebug() << "path.samples=" << path->size();
-    qDebug() << "curves.number=" << curves->size()/4;
+    qDebug() << "curves.points=" << curves->size();
 
     m_isCurved = true;
     return true;
@@ -273,6 +267,10 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
     *  Same goes for color, if it's not uniform */
 
     if (m_isShadered) return true;
+    if (!this->redefineToCurve()){
+        qWarning() << "Could not re-define to curve";
+        return false;
+    }
 
     /* initialize m_program */
     if (!this->initializeShaderProgram(camera)){
@@ -280,63 +278,14 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
         return false;
     }
 
-    osg::ref_ptr<osg::Vec3Array> originPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    if (!originPts) return false;
-
-    /* For number of original points, the total number for the shader will be: ((#points-1)*4)  */
-    int numSh = (originPts->size()-1)*4;
-    osg::ref_ptr<osg::Vec3Array> shaderPts = new osg::Vec3Array(numSh);
-    if (!shaderPts) return false;
-
-    /* fill-in shader points so that to use line adjacency */
-    unsigned int idx = 0;
-    for (size_t i=0; i<originPts->size()-1; ++i){
-        /* first  two point */
-        if (i==0){
-            /* first point is 0th index */
-            Q_ASSERT(idx < shaderPts->size());
-            osg::Vec3f dir0 = (*originPts)[i] - (*originPts)[i+1];
-            dir0.normalize();
-
-            // direction vector is shortened so that canvas BB is calculated correctly, and miter didn't look too long
-            (*shaderPts)[idx++] = (*originPts)[i] + dir0*0.05;
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i];
-        }
-        else{
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i-1];
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i];
-        }
-
-        /* last two points */
-        if (i+1 == originPts->size()-1){
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i+1];
-            Q_ASSERT(idx < shaderPts->size());
-            osg::Vec3f dirn = (*originPts)[i+1] - (*originPts)[i];
-            dirn.normalize();
-
-            // direction vector is shortened so that canvas BB is calculated correctly, and miter didn't look too long
-            (*shaderPts)[idx++] = (*originPts)[i+1] + dirn*0.05;
-        }
-        else{
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i+1];
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i+2];
-        }
-    }
+    osg::ref_ptr<osg::Vec3Array> bezierPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    if (!bezierPts) return false;
 
     /* reset the primitive type */
-    m_lines->set(GL_LINES_ADJACENCY_EXT, 0, shaderPts->size());
-
-    /* reset pointer to the vertex array */
-    this->setVertexArray(shaderPts);
+    m_lines->set(GL_LINES_ADJACENCY_EXT, 0, bezierPts->size());
 
     /* set shader attributes */
-    this->setVertexAttribArray(0, shaderPts, osg::Array::BIND_PER_VERTEX);
+    this->setVertexAttribArray(0, bezierPts, osg::Array::BIND_PER_VERTEX);
     osg::Vec4Array* colors = dynamic_cast<osg::Vec4Array*>(this->getColorArray());
     Q_ASSERT(colors);
     this->setVertexAttribArray(1, colors, osg::Array::BIND_OVERALL);
@@ -538,43 +487,11 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
     float miterLimit = 0.75;
     state->addUniform(new osg::Uniform("MiterLimit", miterLimit));
 
+    /* stroke number of segments (the more the smoothier the look) */
+    int segments = cher::STROKE_SEGMENTS_NUMBER;
+    state->addUniform(new osg::Uniform("Segments", segments));
+
     return true;
-}
-
-osg::Vec3Array *entity::Stroke::interpolateCurves(const osg::Vec3Array *curves, int segments)
-{
-    osg::ref_ptr<osg::Vec3Array> sampled = new osg::Vec3Array;
-    if (curves->size() % 4 != 0){
-        qWarning("Curves input size must be dividable to 4");
-        return 0;
-    }
-    int nCurves = curves->size() / 4;
-    auto delta = 1.f / float(segments);
-    osg::Vec3f prev = osg::Vec3f(NAN, NAN, NAN); /* to detect duplicates */
-    for (decltype(curves->size()) i=0; i<curves->size(); i=i+4){
-        auto b0 = curves->at(i),
-                b1 = curves->at(i+1),
-                b2 = curves->at(i+2),
-                b3 = curves->at(i+3);
-        for (int j=0; j<=segments; ++j){
-            auto t = delta * float(j),
-                    t2 = t*t,
-                    one_minus_t = 1.f - t,
-                    one_minus_t2 = one_minus_t * one_minus_t;
-
-            auto Bt = b0 * one_minus_t2 * one_minus_t
-                    + b1 * 3.f * t * one_minus_t2
-                    + b2 * 3.f * t2 * one_minus_t
-                    + b3 * t2 * t;
-            /* do not push duplicates */
-            if (prev.isNaN() || prev != Bt){
-                sampled->push_back(Bt);
-                prev = Bt;
-            }
-        }
-    }
-//    Q_ASSERT(sampled->size() == (segments)*nCurves);
-    return sampled.release();
 }
 
 /* for serialization of stroke type
