@@ -480,11 +480,13 @@ void RootScene::copyToBuffer()
         const entity::Stroke& copy = dynamic_cast<const entity::Stroke&>( *selected.at(i));
 
         entity::Stroke* stroke = new entity::Stroke;
+        if (!stroke) {
+            qWarning("Could not allocated stroke");
+            continue;
+        }
         stroke->copyFrom(&copy);
         stroke->redefineToCurve();
         stroke->redefineToShader(copy.getCamera());
-
-        if (!stroke) continue;
         m_buffer.push_back(stroke);
     }
 }

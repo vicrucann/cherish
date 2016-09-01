@@ -279,9 +279,9 @@ fur::EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas
     for (size_t i=0; i<buffer.size(); ++i){
         const entity::Stroke& copy = dynamic_cast<const entity::Stroke&> (*buffer.at(i));
         entity::Stroke* stroke = new entity::Stroke;
+        if (!stroke) continue;
         stroke->copyFrom(&copy);
         stroke->redefineToShader(copy.getCamera());
-        if (!stroke) continue;
         m_entities.push_back(stroke);
     }
 
