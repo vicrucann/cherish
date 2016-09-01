@@ -134,6 +134,10 @@ bool RootScene::writeScenetoFile()
     if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) result = false;
 
     /* for each canvas, attach its tools back */
+    osg::Camera* camera = NULL;
+    emit m_userScene->requestCamera(camera);
+    Q_ASSERT(camera);
+
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* canvas = m_userScene->getCanvas(i);
         if (!canvas) continue;
@@ -187,7 +191,7 @@ bool RootScene::loadSceneFromFile()
     /* update pointer */
     m_userScene = newscene.get();
 
-    /* load the construction tools and set photo textures */
+    /* load the construction tools, set photo textures */
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
         if (!cnv) qFatal("RootScene::loadSceneFromFile() canvas is NULL");
@@ -196,11 +200,23 @@ bool RootScene::loadSceneFromFile()
         cnv->initializeMasks();
 
         /* photo textures */
-        for (size_t i=0; i<cnv->getNumPhotos(); ++i){
-            entity::Photo* photo = cnv->getPhoto(i);
+        for (size_t j=0; j<cnv->getNumPhotos(); ++j){
+            entity::Photo* photo = cnv->getPhoto(j);
             if (!photo) continue;
             photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTextureAsAttribute());
         }
+
+//        /* stroke shaders */
+//        for (size_t k=0; k<cnv->getNumStrokes(); ++k){
+//            entity::Stroke* stroke = cnv->getStroke(k);
+//            if (!stroke) {
+//                qWarning("Could not read stroke");
+//                continue;
+//            }
+//            if (!stroke->redefineToShader(camera))
+//                qWarning("Could not redefine stroke as shader");
+//        }
+
     }
 
     /* update current/previous canvases */
@@ -465,6 +481,7 @@ void RootScene::copyToBuffer()
 
         entity::Stroke* stroke = new entity::Stroke;
         stroke->copyFrom(&copy);
+        stroke->redefineToCurve();
         stroke->redefineToShader(copy.getCamera());
 
         if (!stroke) continue;
@@ -495,6 +512,11 @@ void RootScene::pasteFromBuffer()
     if (!cmd) return;
     m_undoStack->push(cmd);
     m_saved = false;
+}
+
+const std::vector<osg::ref_ptr<entity::Entity2D> > &RootScene::getBuffer() const
+{
+    return m_buffer;
 }
 
 entity::SceneState *RootScene::createSceneState() const

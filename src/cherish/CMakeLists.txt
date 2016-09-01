@@ -1,6 +1,7 @@
 include_directories(
     ${CMAKE_SOURCE_DIR}/libGUI
     ${CMAKE_SOURCE_DIR}/libSGEntities
+    ${CMAKE_SOURCE_DIR}/libNumerics
     ${CMAKE_SOURCE_DIR}/tests
 )
 
@@ -45,6 +46,7 @@ target_link_libraries( ${PROJECT_NAME}
     libGUI
     libSGEntities
     libSGControls
+    libNumerics
 )
 
 

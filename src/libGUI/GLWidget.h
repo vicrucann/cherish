@@ -110,6 +110,7 @@ private:
     // for more info see reference osgGA::EventQueue and osgGA::GUIEventAdapter
     // the later's enums are used in EventHandler.h
 
+    osg::ref_ptr<osg::GraphicsContext::Traits> m_traits;
     osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> m_graphicsWindow;
     osg::ref_ptr<osgViewer::Viewer> m_viewer;
     osg::observer_ptr<RootScene> m_RootScene;

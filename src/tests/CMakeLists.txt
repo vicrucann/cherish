@@ -6,6 +6,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/libGUI
     ${CMAKE_SOURCE_DIR}/libSGEntities
     ${CMAKE_SOURCE_DIR}/libSGControls
+    ${CMAKE_SOURCE_DIR}/libNumerics
 )
 
 if(POLICY CMP0020)
@@ -16,6 +17,7 @@ SET( TEST_LIBRARIES
     libSGEntities
     libSGControls
     libGUI
+    libNumerics
     ${QT_QTTEST_LIBRARY}
     ${QT_LIBRARIES}
     ${OPENSCENEGRAPH_LIBRARIES}
@@ -40,6 +42,8 @@ set(CHERISH_SRC
     ${CMAKE_SOURCE_DIR}/libSGControls/Manipulator.cpp
     ${CMAKE_SOURCE_DIR}/libSGControls/EventHandler.h
     ${CMAKE_SOURCE_DIR}/libSGControls/EventHandler.cpp
+    ${CMAKE_SOURCE_DIR}/libNumerics/CurveFitting/libPathFitter/OsgPathFitter.h
+    ${CMAKE_SOURCE_DIR}/libNumerics/CurveFitting/libPathFitter/OsgPathFitter.cpp
     )
 
 ## base GUI test to inherit, which inherits MainWindow

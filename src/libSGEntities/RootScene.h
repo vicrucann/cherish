@@ -118,6 +118,8 @@ public:
     void cutToBuffer();
     void pasteFromBuffer();
 
+    const std::vector< osg::ref_ptr<entity::Entity2D> >& getBuffer() const;
+
     /*! \return A pointer on SceneState allocated instance. Note: this pointer is not managed by smart pointers and must
      * be deleted manually.
      * \sa entity::SceneState::stripDataFrom() */

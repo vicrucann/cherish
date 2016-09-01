@@ -783,10 +783,21 @@ unsigned int entity::Canvas::getNumPhotos() const
     return m_geodePhotos->getNumChildren();
 }
 
+unsigned int entity::Canvas::getNumStrokes() const
+{
+    return m_geodeStrokes->getNumChildren();
+}
+
 entity::Photo *entity::Canvas::getPhoto(int row) const
 {
     if (row<0 || row>=(int)m_geodePhotos->getNumChildren()) return NULL;
     return dynamic_cast<entity::Photo*>(m_geodePhotos->getChild(row));
+}
+
+entity::Stroke *entity::Canvas::getStroke(int i) const
+{
+    if (i<0 || i>=static_cast<int>(this->getNumStrokes())) return NULL;
+    return dynamic_cast<entity::Stroke*>(m_geodeStrokes->getChild(i));
 }
 
 entity::Entity2D *entity::Canvas::getEntity(unsigned int i) const

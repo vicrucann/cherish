@@ -15,6 +15,7 @@
 
 #include "ModelViewProjectionMatrixCallback.h"
 #include "ViewportVectorCallback.h"
+#include "CurveFitting/libPathFitter/OsgPathFitter.h"
 
 entity::Stroke::Stroke()
     : entity::Entity2D()
@@ -22,6 +23,7 @@ entity::Stroke::Stroke()
     , m_program(new osg::Program)
     , m_camera(0)
     , m_color(cher::STROKE_CLR_NORMAL)
+    , m_isCurved(false)
     , m_isShadered(false)
 {
     osg::Vec4Array* colors = new osg::Vec4Array;
@@ -59,6 +61,7 @@ entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
     , m_lines(copy.m_lines)
     , m_program(copy.m_program)
     , m_color(copy.m_color)
+    , m_isCurved(copy.m_isCurved)
     , m_isShadered(copy.m_isShadered)
 {
     qDebug("stroke copy ctor done");
@@ -92,6 +95,21 @@ const osg::Vec4f&entity::Stroke::getColor() const
     return m_color;
 }
 
+void entity::Stroke::setIsCurved(bool curved)
+{
+    m_isCurved = curved;
+}
+
+bool entity::Stroke::getIsCurved() const
+{
+    return m_isCurved;
+}
+
+bool entity::Stroke::isShadered() const
+{
+    return m_isShadered;
+}
+
 const osg::Program *entity::Stroke::getProgram() const
 {
     return m_program.get();
@@ -103,57 +121,33 @@ bool entity::Stroke::copyFrom(const entity::Stroke *copy)
         qWarning("Copy stroke is NULL");
         return false;
     }
-    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    const osg::Vec3Array* vertsCopy = static_cast<const osg::Vec3Array*>(copy->getVertexArray());
 
     if (this->getColor() != cher::STROKE_CLR_NORMAL ||
             !this->getLines() ||
-            static_cast<int>(this->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY ||
-            !verts || !vertsCopy) {
+            static_cast<int>(this->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY) {
         qWarning("stroke::copyFrom() : stroke parameters check failed");
         return false;
     }
 
-    if (verts->size() != 0 || vertsCopy->size() == 0){
+    if (this->getNumPoints() != 0 || copy->getNumPoints() == 0){
         qWarning("stroke::copyFrom() : stroke size check failed");
         return false;
     }
 
-    if (!copy->isShadered()){
-        if (this->getColor() != cher::STROKE_CLR_NORMAL ||
-                !this->getLines() ||
-                static_cast<int>(this->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY ||
-                static_cast<int>(copy->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY ||
-                !verts || !vertsCopy)
-        {
-            qWarning("stroke::copyFrom() : stroke parameters check failed");
-            return false;
-        }
-
-
-        for (unsigned int i=0; i<vertsCopy->size(); ++i){
-            osg::Vec2f p = copy->getPoint(i);
-            this->appendPoint(p.x(), p.y());
-        }
+    if (copy->getIsCurved() && copy->getNumPoints() % 4 != 0){
+        qWarning("Copy stroke vertex number must be divadable to 4");
+        return false;
     }
-    else {
-        if (static_cast<int>(copy->getLines()->getMode()) != GL_LINES_ADJACENCY_EXT){
-            qWarning("stroke::copyFrom : copy stroke geometry's mode failed");
-            return false;
-        }
-        if (vertsCopy->size() % 4 != 0 ){
-            qWarning("stroke::copyFrom : copy stroke vertex number must be divadable to 4");
-            return false;
-        }
 
-        for (unsigned int i=1; i<vertsCopy->size(); i=i+4){
-            Q_ASSERT(i<vertsCopy->size());
-            osg::Vec2f p = copy->getPoint(i);
-            this->appendPoint(p.x(), p.y());
-        }
-        osg::Vec2f p = copy->getPoint(vertsCopy->size()-2);
+    for (int i=0; i<copy->getNumPoints(); i++){
+        osg::Vec2f p = copy->getPoint(i);
         this->appendPoint(p.x(), p.y());
-        Q_ASSERT(verts->size() == vertsCopy->size()/4 + 1);
+    }
+    this->setIsCurved(copy->getIsCurved());
+
+    if (copy->getNumPoints() != this->getNumPoints()){
+        qWarning("Stroke copy failed");
+        return false;
     }
 
     return true;
@@ -207,6 +201,45 @@ osg::Camera *entity::Stroke::getCamera() const
     return m_camera.get();
 }
 
+bool entity::Stroke::redefineToCurve(float tolerance)
+{
+    if (m_isCurved) return true;
+
+    osg::ref_ptr<osg::Vec3Array> path = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    if (!path.get()){
+        qWarning("Vertex data is NULL");
+        return false;
+    }
+
+    /* set up auto threshold if necessary */
+    if (tolerance < 0.f){
+        /* auto threshold helps to avoid under-fitting or over-fitting of the curve
+         * depending on the scale of drawn stroke. */
+        float length = this->getLength();
+        qDebug() << "length=" << length;
+
+        tolerance = length * 0.005;
+        qDebug() << "assume threshold=" << tolerance;
+    }
+
+    OsgPathFitter<osg::Vec3Array, osg::Vec3f, float> fitter;
+    fitter.init(*(path.get()));
+    osg::ref_ptr<osg::Vec3Array> curves = fitter.fit(tolerance);
+    if (!curves.get()){
+        qWarning("Curves is NULL");
+        return false;
+    }
+
+    this->setVertexArray(curves);
+    curves->dirty();
+    this->dirtyBound();
+    qDebug() << "path.samples=" << path->size();
+    qDebug() << "curves.points=" << curves->size();
+
+    m_isCurved = true;
+    return true;
+}
+
 // read more on why: http://stackoverflow.com/questions/36655888/opengl-thick-and-smooth-non-broken-lines-in-3d
 bool entity::Stroke::redefineToShader(osg::Camera *camera)
 {
@@ -214,69 +247,26 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
     *  This required adding padding points for each line segment
     *  Same goes for color, if it's not uniform */
 
+    if (m_isShadered) return true;
+    if (!this->redefineToCurve()){
+        qWarning() << "Could not re-define to curve";
+        return false;
+    }
+
     /* initialize m_program */
     if (!this->initializeShaderProgram(camera)){
         qWarning("Could not properly initialize the stroke shader program, default look will be used");
         return false;
     }
 
-    osg::ref_ptr<osg::Vec3Array> originPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    if (!originPts) return false;
-
-    /* For number of original points, the total number for the shader will be: ((#points-1)*4)  */
-    int numSh = (originPts->size()-1)*4;
-    osg::ref_ptr<osg::Vec3Array> shaderPts = new osg::Vec3Array(numSh);
-    if (!shaderPts) return false;
-
-    /* fill-in shader points so that to use line adjacency */
-    unsigned int idx = 0;
-    for (size_t i=0; i<originPts->size()-1; ++i){
-        /* first  two point */
-        if (i==0){
-            /* first point is 0th index */
-            Q_ASSERT(idx < shaderPts->size());
-            osg::Vec3f dir0 = (*originPts)[i] - (*originPts)[i+1];
-            dir0.normalize();
-
-            // direction vector is shortened so that canvas BB is calculated correctly, and miter didn't look too long
-            (*shaderPts)[idx++] = (*originPts)[i] + dir0*0.05;
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i];
-        }
-        else{
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i-1];
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i];
-        }
-
-        /* last two points */
-        if (i+1 == originPts->size()-1){
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i+1];
-            Q_ASSERT(idx < shaderPts->size());
-            osg::Vec3f dirn = (*originPts)[i+1] - (*originPts)[i];
-            dirn.normalize();
-
-            // direction vector is shortened so that canvas BB is calculated correctly, and miter didn't look too long
-            (*shaderPts)[idx++] = (*originPts)[i+1] + dirn*0.05;
-        }
-        else{
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i+1];
-            Q_ASSERT(idx < shaderPts->size());
-            (*shaderPts)[idx++] = (*originPts)[i+2];
-        }
-    }
+    osg::ref_ptr<osg::Vec3Array> bezierPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    if (!bezierPts) return false;
 
     /* reset the primitive type */
-    m_lines->set(GL_LINES_ADJACENCY_EXT, 0, shaderPts->size());
-
-    /* reset pointer to the vertex array */
-    this->setVertexArray(shaderPts);
+    m_lines->set(GL_LINES_ADJACENCY_EXT, 0, bezierPts->size());
 
     /* set shader attributes */
-    this->setVertexAttribArray(0, shaderPts, osg::Array::BIND_PER_VERTEX);
+    this->setVertexAttribArray(0, bezierPts, osg::Array::BIND_PER_VERTEX);
     osg::Vec4Array* colors = dynamic_cast<osg::Vec4Array*>(this->getColorArray());
     Q_ASSERT(colors);
     this->setVertexAttribArray(1, colors, osg::Array::BIND_OVERALL);
@@ -287,13 +277,17 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
     stateset->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
 
     m_camera = camera;
+    m_isShadered = true;
 
     return true;
 }
 
-bool entity::Stroke::isShadered() const
+int entity::Stroke::getNumPoints() const
 {
-    return m_isShadered;
+    const osg::Vec3Array* verts = static_cast<const osg::Vec3Array*>(this->getVertexArray());
+    Q_ASSERT(verts);
+
+    return static_cast<int>(verts->size());
 }
 
 float entity::Stroke::getLength() const
@@ -370,6 +364,10 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
         return false;
     }
 
+    if (m_program->getNumShaders() == 3) {
+        return true;
+    }
+
     m_program->setName("DefaultStrokeShader");
 
     /* load and add shaders to the program */
@@ -428,7 +426,10 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera)
     float miterLimit = 0.75;
     state->addUniform(new osg::Uniform("MiterLimit", miterLimit));
 
-    m_isShadered = true;
+    /* stroke number of segments (the more the smoothier the look) */
+    int segments = cher::STROKE_SEGMENTS_NUMBER;
+    state->addUniform(new osg::Uniform("Segments", segments));
+
     return true;
 }
 
@@ -443,4 +444,5 @@ REGISTER_OBJECT_WRAPPER(Stroke_Wrapper
 {
     ADD_OBJECT_SERIALIZER(Lines, osg::DrawArrays, NULL);
     ADD_VEC4F_SERIALIZER(Color, osg::Vec4f());
+    ADD_BOOL_SERIALIZER(IsCurved, false);
 }

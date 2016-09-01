@@ -4,3 +4,6 @@
 [submodule "src/cherish/Images/OI"]
 	path = src/cherish/Images/OI
 	url = https://github.com/vicrucann/open-iconic.git
+[submodule "src/libNumerics/CurveFitting"]
+	path = src/libNumerics/CurveFitting
+	url = https://github.com/vicrucann/CurveFitting.git

@@ -37,4 +37,6 @@ void BaseGuiTest::cleanup()
     QVERIFY(m_rootScene.get());
     QVERIFY(m_rootScene->getUserScene());
     QVERIFY(m_rootScene->getUserScene()->getNumCanvases() == 0);
+
+    QTest::qWait(1000);
 }
