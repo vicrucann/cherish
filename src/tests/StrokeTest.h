@@ -10,6 +10,7 @@ private slots:
     void testAddStroke();
     void testCloneShaderedStroke();
     void testReadWrite();
+    void testCopyPaste();
 
 private:
 

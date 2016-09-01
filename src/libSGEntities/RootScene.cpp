@@ -124,25 +124,16 @@ bool RootScene::writeScenetoFile()
     state->stripDataFrom(this);
     Q_ASSERT(!state->isEmpty());
 
-    /* for each canvas, detach its tools and re-define the strokes to default geometry */
+    /* for each canvas, detach its tools */
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* canvas = m_userScene->getCanvas(i);
         if (!canvas) continue;
         canvas->detachFrame();
-        for (size_t j=0; j<canvas->getNumStrokes(); ++j){
-            entity::Stroke* stroke = canvas->getStroke(j);
-            if (!stroke) {
-                qWarning("Could not obtain stroke pointer");
-                continue;
-            }
-            if (!stroke->redefineToDefault())
-                qWarning("Failed to re-define stroke to the default geometry");
-        }
     }
 
     if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) result = false;
 
-    /* for each canvas, attach its tools back and re-define the stroke back to shader geomtry */
+    /* for each canvas, attach its tools back */
     osg::Camera* camera = NULL;
     emit m_userScene->requestCamera(camera);
     Q_ASSERT(camera);
@@ -153,15 +144,6 @@ bool RootScene::writeScenetoFile()
         if (!canvas->attachFrame()){
             qCritical("RootScene::writeSceneToFile: could not attach the tools back");
             result = false;
-        }
-        for (size_t j=0; j<canvas->getNumStrokes(); ++j){
-            entity::Stroke* stroke = canvas->getStroke(j);
-            if (!stroke){
-                qWarning("Could not obtain stroke pointer");
-                continue;
-            }
-            if (!stroke->redefineToShader(camera))
-                qWarning("Could not re-define stroke back as shader");
         }
     }
 
@@ -499,6 +481,7 @@ void RootScene::copyToBuffer()
 
         entity::Stroke* stroke = new entity::Stroke;
         stroke->copyFrom(&copy);
+        stroke->redefineToCurve();
         stroke->redefineToShader(copy.getCamera());
 
         if (!stroke) continue;
@@ -529,6 +512,11 @@ void RootScene::pasteFromBuffer()
     if (!cmd) return;
     m_undoStack->push(cmd);
     m_saved = false;
+}
+
+const std::vector<osg::ref_ptr<entity::Entity2D> > &RootScene::getBuffer() const
+{
+    return m_buffer;
 }
 
 entity::SceneState *RootScene::createSceneState() const

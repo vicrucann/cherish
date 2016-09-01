@@ -1163,7 +1163,7 @@ bool MainWindow::loadSceneFromFile()
     if (!m_rootScene->getUserScene()) return false;
     m_rootScene->getUserScene()->resetModel(m_canvasWidget);
 
-    /* re-define shaders */
+    /* re-define shaders, must be put here since we update the signals/slots first */
     osg::Camera* camera = NULL;
     this->onRequestCamera(camera);
     Q_ASSERT(camera);
@@ -1175,8 +1175,15 @@ bool MainWindow::loadSceneFromFile()
             entity::Stroke* stroke = cnv->getStroke(j);
             if (!stroke) continue;
 
-            if (!stroke->redefineToShader(camera))
+            Q_ASSERT(stroke->getIsCurved());
+            if (!stroke->redefineToCurve()){
+                qWarning("Could not re-define as curve");
+                continue;
+            }
+            if (!stroke->redefineToShader(camera)){
                 qWarning("Could not redefine stroke as shader");
+                continue;
+            }
         }
 
     }

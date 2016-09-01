@@ -95,7 +95,12 @@ const osg::Vec4f&entity::Stroke::getColor() const
     return m_color;
 }
 
-bool entity::Stroke::isCurved() const
+void entity::Stroke::setIsCurved(bool curved)
+{
+    m_isCurved = curved;
+}
+
+bool entity::Stroke::getIsCurved() const
 {
     return m_isCurved;
 }
@@ -116,57 +121,33 @@ bool entity::Stroke::copyFrom(const entity::Stroke *copy)
         qWarning("Copy stroke is NULL");
         return false;
     }
-    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    const osg::Vec3Array* vertsCopy = static_cast<const osg::Vec3Array*>(copy->getVertexArray());
 
     if (this->getColor() != cher::STROKE_CLR_NORMAL ||
             !this->getLines() ||
-            static_cast<int>(this->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY ||
-            !verts || !vertsCopy) {
+            static_cast<int>(this->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY) {
         qWarning("stroke::copyFrom() : stroke parameters check failed");
         return false;
     }
 
-    if (verts->size() != 0 || vertsCopy->size() == 0){
+    if (this->getNumPoints() != 0 || copy->getNumPoints() == 0){
         qWarning("stroke::copyFrom() : stroke size check failed");
         return false;
     }
 
-    if (!copy->isShadered()){
-        if (this->getColor() != cher::STROKE_CLR_NORMAL ||
-                !this->getLines() ||
-                static_cast<int>(this->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY ||
-                static_cast<int>(copy->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY ||
-                !verts || !vertsCopy)
-        {
-            qWarning("stroke::copyFrom() : stroke parameters check failed");
-            return false;
-        }
-
-
-        for (unsigned int i=0; i<vertsCopy->size(); ++i){
-            osg::Vec2f p = copy->getPoint(i);
-            this->appendPoint(p.x(), p.y());
-        }
+    if (copy->getIsCurved() && copy->getNumPoints() % 4 != 0){
+        qWarning("Copy stroke vertex number must be divadable to 4");
+        return false;
     }
-    else {
-        if (static_cast<int>(copy->getLines()->getMode()) != GL_LINES_ADJACENCY_EXT){
-            qWarning("stroke::copyFrom : copy stroke geometry's mode failed");
-            return false;
-        }
-        if (vertsCopy->size() % 4 != 0 ){
-            qWarning("stroke::copyFrom : copy stroke vertex number must be divadable to 4");
-            return false;
-        }
 
-        for (unsigned int i=1; i<vertsCopy->size(); i=i+4){
-            Q_ASSERT(i<vertsCopy->size());
-            osg::Vec2f p = copy->getPoint(i);
-            this->appendPoint(p.x(), p.y());
-        }
-        osg::Vec2f p = copy->getPoint(vertsCopy->size()-2);
+    for (int i=0; i<copy->getNumPoints(); i++){
+        osg::Vec2f p = copy->getPoint(i);
         this->appendPoint(p.x(), p.y());
-        Q_ASSERT(verts->size() == vertsCopy->size()/4 + 1);
+    }
+    this->setIsCurved(copy->getIsCurved());
+
+    if (copy->getNumPoints() != this->getNumPoints()){
+        qWarning("Stroke copy failed");
+        return false;
     }
 
     return true;
@@ -297,48 +278,6 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera)
 
     m_camera = camera;
     m_isShadered = true;
-
-    return true;
-}
-
-bool entity::Stroke::redefineToDefault()
-{
-    if (!m_isShadered && !m_isCurved) return true;
-
-    if (m_isCurved){
-        m_isCurved = false;
-    }
-
-    if (m_isShadered){
-        osg::ref_ptr<osg::Vec3Array> shaderedPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-        if (!shaderedPts.get()) {
-            qWarning("Could not extract shadered vertices");
-            return false;
-        }
-        if (shaderedPts->size() % 4 != 0 || shaderedPts->size() == 0 ||
-                static_cast<int>(m_lines->getMode()) !=  GL_LINES_ADJACENCY_EXT) {
-            qWarning("Shadered vertices chech failed");
-            return false;
-        }
-
-        osg::ref_ptr<osg::Vec3Array> defaultPts = new osg::Vec3Array(shaderedPts->size()/4+1);
-        int idx = 0;
-        for (size_t i=1; i<shaderedPts->size(); i=i+4){
-            (*defaultPts)[idx++] = (*shaderedPts)[i];
-        }
-        (*defaultPts)[idx++] = (*shaderedPts)[shaderedPts->size()-2];
-        Q_ASSERT(idx == shaderedPts->size()/4+1);
-
-        this->setVertexArray(defaultPts.get());
-
-        /* reset the primitive type */
-        m_lines->set(GL_LINE_STRIP_ADJACENCY, 0, defaultPts->size());
-
-        /* disable shader program */
-        this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::OFF);
-
-        m_isShadered = false;
-    }
 
     return true;
 }
@@ -505,4 +444,5 @@ REGISTER_OBJECT_WRAPPER(Stroke_Wrapper
 {
     ADD_OBJECT_SERIALIZER(Lines, osg::DrawArrays, NULL);
     ADD_VEC4F_SERIALIZER(Color, osg::Vec4f());
+    ADD_BOOL_SERIALIZER(IsCurved, false);
 }

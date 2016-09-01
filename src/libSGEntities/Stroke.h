@@ -72,7 +72,8 @@ public:
     inline void setColor(const osg::Vec4f& color);
     inline const osg::Vec4f& getColor() const;
 
-    bool isCurved() const;
+    void setIsCurved(bool curved);
+    bool getIsCurved() const;
     bool isShadered() const;
 
     const osg::Program* getProgram() const;
@@ -100,10 +101,6 @@ public:
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
     bool redefineToShader(osg::Camera* camera);
-
-    /*! A method to reset the shadered look to the default OpenGL geometry.
-     * \return true on success. */
-    bool redefineToDefault();
 
     /*! \return number of vertices. */
     int getNumPoints() const;
@@ -140,7 +137,7 @@ protected:
 
 private:
     osg::ref_ptr<osg::DrawArrays>   m_lines; // saved to file
-    osg::ref_ptr<osg::Program>      m_program;
+    osg::ref_ptr<osg::Program>      m_program; // OPT: put program higher on scene graph so that to load it only once and then apply to all the strokes
     osg::observer_ptr<osg::Camera>  m_camera;
     osg::Vec4f                      m_color; // saved to file
     bool                            m_isCurved;
