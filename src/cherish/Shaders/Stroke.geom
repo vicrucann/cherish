@@ -4,17 +4,23 @@ uniform float Thickness;
 uniform vec2 Viewport;
 uniform float MiterLimit;
 uniform int Segments;
+uniform float FogMin;
+uniform float FogMax;
+uniform vec4 CameraEye;
+
 const int SegmentsMax = 30; // max_vertices = (SegmentsMax+1)*4;
+const int SegmentsMin = 3; // min number of segments per curve
 
 layout(lines_adjacency) in;
 layout(triangle_strip, max_vertices = 124) out;
 
 in VertexData{
     vec4 mColor;
+    vec4 mVertex;
 } VertexIn[4];
 
 out VertexData{
-    vec2 mTexCoord;
+    vec2 mTexCoord; // fix before usage
     vec4 mColor;
 } VertexOut;
 
@@ -32,7 +38,17 @@ vec2 toBezier(float delta, int i, vec2 b0, vec2 b1, vec2 b2, vec2 b3)
     return (b0 * one_minus_t2 * one_minus_t + b1 * 3.0 * t * one_minus_t2 + b2 * 3.0 * t2 * one_minus_t + b3 * t2 * t);
 }
 
-void drawSegments(vec2 points[4])
+float getFogFactor(float d)
+{
+    const float padding = 0.f; // padding coridor where alpha is const
+    if (d>FogMax+padding) return 0;
+    if (d>FogMax) return 0.2;
+    if (d<FogMin) return 1;
+    if (d<FogMin+padding) return 0.8;
+    return (FogMax - d) / (FogMax - FogMin);
+}
+
+void drawSegment(vec2 points[4], vec4 colors[4])
 {
     vec2 p0 = points[0];
     vec2 p1 = points[1];
@@ -76,17 +92,17 @@ void drawSegments(vec2 points[4])
         /* close the gap */
         if( dot( v0, n1 ) > 0 ) {
             VertexOut.mTexCoord = vec2( 0, 0 );
-            VertexOut.mColor = VertexIn[1].mColor;
+            VertexOut.mColor = colors[1];
             gl_Position = vec4( ( p1 + Thickness * n0 ) / Viewport, 0.0, 1.0 );
             EmitVertex();
 
             VertexOut.mTexCoord = vec2( 0, 0 );
-            VertexOut.mColor = VertexIn[1].mColor;
+            VertexOut.mColor = colors[1];
             gl_Position = vec4( ( p1 + Thickness * n1 ) / Viewport, 0.0, 1.0 );
             EmitVertex();
 
             VertexOut.mTexCoord = vec2( 0, 0.5 );
-            VertexOut.mColor = VertexIn[1].mColor;
+            VertexOut.mColor = colors[1];
             gl_Position = vec4( p1 / Viewport, 0.0, 1.0 );
             EmitVertex();
 
@@ -94,17 +110,17 @@ void drawSegments(vec2 points[4])
         }
         else {
             VertexOut.mTexCoord = vec2( 0, 1 );
-            VertexOut.mColor = VertexIn[1].mColor;
+            VertexOut.mColor = colors[1];
             gl_Position = vec4( ( p1 - Thickness * n1 ) / Viewport, 0.0, 1.0 );
             EmitVertex();
 
             VertexOut.mTexCoord = vec2( 0, 1 );
-            VertexOut.mColor = VertexIn[1].mColor;
+            VertexOut.mColor = colors[1];
             gl_Position = vec4( ( p1 - Thickness * n0 ) / Viewport, 0.0, 1.0 );
             EmitVertex();
 
             VertexOut.mTexCoord = vec2( 0, 0.5 );
-            VertexOut.mColor = VertexIn[1].mColor;
+            VertexOut.mColor = colors[1];
             gl_Position = vec4( p1 / Viewport, 0.0, 1.0 );
             EmitVertex();
 
@@ -117,22 +133,22 @@ void drawSegments(vec2 points[4])
     }
     // generate the triangle strip
     VertexOut.mTexCoord = vec2( 0, 0 );
-    VertexOut.mColor = VertexIn[1].mColor;
+    VertexOut.mColor = colors[1];
     gl_Position = vec4( ( p1 + length_a * miter_a ) / Viewport, 0.0, 1.0 );
     EmitVertex();
 
     VertexOut.mTexCoord = vec2( 0, 1 );
-    VertexOut.mColor = VertexIn[1].mColor;
+    VertexOut.mColor = colors[1];
     gl_Position = vec4( ( p1 - length_a * miter_a ) / Viewport, 0.0, 1.0 );
     EmitVertex();
 
     VertexOut.mTexCoord = vec2( 0, 0 );
-    VertexOut.mColor = VertexIn[2].mColor;
+    VertexOut.mColor = colors[2];
     gl_Position = vec4( ( p2 + length_b * miter_b ) / Viewport, 0.0, 1.0 );
     EmitVertex();
 
     VertexOut.mTexCoord = vec2( 0, 1 );
-    VertexOut.mColor = VertexIn[2].mColor;
+    VertexOut.mColor = colors[2];
     gl_Position = vec4( ( p2 - length_b * miter_b ) / Viewport, 0.0, 1.0 );
     EmitVertex();
 
@@ -143,22 +159,34 @@ void main(void)
 {
     /* cut segments number if larger than allowed */
     int nSegments = (Segments > SegmentsMax)? SegmentsMax : Segments;
+    nSegments = (nSegments < SegmentsMin)? SegmentsMin: nSegments;
 
-    // 4 control points
-    vec4 P0 = gl_in[0].gl_Position;
-    vec4 P1 = gl_in[1].gl_Position;
-    vec4 P2 = gl_in[2].gl_Position;
-    vec4 P3 = gl_in[3].gl_Position;
+    /* read the input */
+    vec4 B[4], V[4], C[4];
+    for (int i=0; i<4; ++i){
+        B[i] = gl_in[i].gl_Position; // bezier points
+        V[i] = VertexIn[i].mVertex; // vertex format
+        C[i] = VertexIn[i].mColor; // attached colors
+    }
+
+    /* adjust alpha channels wrt camera eye distance */
+    for (int i=0; i<4; ++i){
+        float d = distance(CameraEye, V[0]);
+        float alpha = getFogFactor(d);
+        C[i] = vec4(C[i].rgb, alpha);
+    }
 
     /* get the 2d bezier control points */
-    vec2 b0 = toScreenSpace( P0 );
-    vec2 b1 = toScreenSpace( P1 );
-    vec2 b2 = toScreenSpace( P2 );
-    vec2 b3 = toScreenSpace( P3 );
+    vec2 b0 = toScreenSpace( B[0] );
+    vec2 b1 = toScreenSpace( B[1] );
+    vec2 b2 = toScreenSpace( B[2] );
+    vec2 b3 = toScreenSpace( B[3] );
 
     /* use the points to build a bezier line */
     float delta = 1.0 / float(nSegments);
     vec2 points[4];
+    vec4 colors[4]; // interpolated colors
+     int j = 0; // bezier segment index for color interpolation
     for (int i=0; i<=nSegments; ++i){
         /* first point */
         if (i==0){
@@ -182,7 +210,21 @@ void main(void)
             vec2 dir = normalize(points[2] - points[1]);
             points[3] = points[2] + dir * 0.01;
         }
-        drawSegments(points);
+
+        {
+            if (i==0) colors[1] = C[0];
+            else colors[1] = colors[2];
+
+            /* fraction p{i} is located between fraction p{j} and p{j+1} */
+            float pi = float(i+1) / float(nSegments);
+            if (pi >= float(j+1)/3.f) j++;
+            float pj = float(j)/3.f; // 4 bezier points means 3 segments between which points are plotted
+            float pj1 = float(j+1)/3.f;
+            float a = (pi-pj) / (pj1-pj);
+            colors[2] = mix(C[j], C[j+1], a); // j <= 3
+        }
+
+        drawSegment(points, colors);
     }
 
 }

@@ -471,9 +471,10 @@ void RootScene::editStrokeDelete(entity::Stroke *stroke)
 void RootScene::copyToBuffer()
 {
     m_buffer.clear();
-    if (!m_userScene->getCanvasCurrent()) return;
+    entity::Canvas* canvas = m_userScene->getCanvasCurrent();
+    if (!canvas) return;
 
-    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getEntitiesSelected();
+    const std::vector<entity::Entity2D*>& selected = canvas->getEntitiesSelected();
     if (selected.size()==0) return;
 
     for (size_t i=0; i<selected.size(); ++i){
@@ -486,7 +487,7 @@ void RootScene::copyToBuffer()
         }
         stroke->copyFrom(&copy);
         stroke->redefineToCurve();
-        stroke->redefineToShader(copy.getCamera());
+        stroke->redefineToShader(copy.getCamera(), canvas->getTransform());
         m_buffer.push_back(stroke);
     }
 }

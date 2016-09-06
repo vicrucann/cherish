@@ -70,7 +70,7 @@ void StrokeTest::testAddStroke()
 
     qInfo("Re-define cloned stroke as a curve and as a shader");
     QVERIFY(stroke_clone->redefineToCurve());
-    QVERIFY(stroke_clone->redefineToShader(camera));
+    QVERIFY(stroke_clone->redefineToShader(camera, m_scene->getCanvasCurrent()->getTransform()));
 
     qInfo("Add cloned stroke as an entity to the scene to replace the phantom");
     QVERIFY(m_canvas2->addEntity(stroke_clone.get()));
@@ -89,7 +89,7 @@ void StrokeTest::testAddStroke()
 
     qInfo("Shaderize phantom and test against it");
     QVERIFY(stroke->redefineToCurve());
-    QVERIFY(stroke->redefineToShader(camera));
+    QVERIFY(stroke->redefineToShader(camera, m_canvas2->getTransform()));
     verts =  static_cast<osg::Vec3Array*>(stroke->getVertexArray());
     QVERIFY(verts);
     verts_clone = static_cast<osg::Vec3Array*>(stroke_clone->getVertexArray());
@@ -132,14 +132,14 @@ void StrokeTest::testCloneShaderedStroke()
     QVERIFY(camera);
 
     QVERIFY(original->redefineToCurve());
-    QVERIFY(original->redefineToShader(camera));
+    QVERIFY(original->redefineToShader(camera, canvas->getTransform()));
     canvas->setStrokeCurrent(false);
 
     qInfo("Create stroke by copying the original");
     osg::ref_ptr<entity::Stroke> copy = new entity::Stroke;
     QVERIFY(copy->copyFrom(original.get()));
     QVERIFY(copy->redefineToCurve());
-    QVERIFY(copy->redefineToShader(original->getCamera()));
+    QVERIFY(copy->redefineToShader(original->getCamera(), canvas->getTransform()));
 
     qInfo("Delta move the copy stroke");
     copy->moveDelta(-0.2, -0.2);
@@ -178,7 +178,7 @@ void StrokeTest::testReadWrite()
     QVERIFY(camera);
 
     QVERIFY(original->redefineToCurve());
-    QVERIFY(original->redefineToShader(camera));
+    QVERIFY(original->redefineToShader(camera, canvas->getTransform()));
     canvas->setStrokeCurrent(false);
 
     qInfo("Test stroke parameters");
@@ -263,7 +263,7 @@ void StrokeTest::testCopyPaste()
 
     qInfo("Shaderize the stroke");
     QVERIFY(original->redefineToCurve());
-    QVERIFY(original->redefineToShader(camera));
+    QVERIFY(original->redefineToShader(camera, canvas->getTransform()));
     canvas->setStrokeCurrent(false);
 
     qInfo("Test stroke parameters");

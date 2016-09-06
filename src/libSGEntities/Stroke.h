@@ -19,6 +19,7 @@
 #include "Entity2D.h"
 #include <osg/Geometry>
 #include <osg/Camera>
+#include <osg/MatrixTransform>
 #include <osgDB/ObjectWrapper>
 
 namespace entity {
@@ -100,7 +101,7 @@ public:
 
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
-    bool redefineToShader(osg::Camera* camera);
+    bool redefineToShader(osg::Camera* camera, osg::MatrixTransform* t);
 
     /*! \return number of vertices. */
     int getNumPoints() const;
@@ -133,12 +134,13 @@ public:
     cher::ENTITY_TYPE getEntityType() const;
 
 protected:
-    bool initializeShaderProgram(osg::Camera* camera);
+    bool initializeShaderProgram(osg::Camera* camera, osg::MatrixTransform* t);
 
 private:
     osg::ref_ptr<osg::DrawArrays>   m_lines; // saved to file
     osg::ref_ptr<osg::Program>      m_program; // OPT: put program higher on scene graph so that to load it only once and then apply to all the strokes
     osg::observer_ptr<osg::Camera>  m_camera;
+    osg::observer_ptr<osg::MatrixTransform> m_transform; // canvas transform; to calculate 3D coords of points for shader use (fog effect)
     osg::Vec4f                      m_color; // saved to file
     bool                            m_isCurved;
     bool                            m_isShadered;

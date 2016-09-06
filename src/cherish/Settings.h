@@ -144,7 +144,9 @@ const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
 const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
 const float STROKE_MINL = 0.05f;
 const float STROKE_LINE_WIDTH = 4.f;
-const int STROKE_SEGMENTS_NUMBER = 11;
+const int STROKE_SEGMENTS_NUMBER = 15;
+const float STROKE_FOG_MIN = 8.f;
+const float STROKE_FOG_MAX = 40.f;
 
 const osg::Vec4 PHOTO_CLR_SELECTED = solarized::red; // texture frame colors
 const osg::Vec4f PHOTO_CLR_REST = osg::Vec4f(1.f,1.f,1.f,1.0f); // white filter

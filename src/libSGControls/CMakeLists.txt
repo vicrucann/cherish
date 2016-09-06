@@ -33,6 +33,10 @@ set (libSGControls_SRCS
     ModelViewProjectionMatrixCallback.cpp
     ViewportVectorCallback.h
     ViewportVectorCallback.cpp
+    CameraEyeCallback.h
+    CameraEyeCallback.cpp
+    CanvasTransformCallback.h
+    CanvasTransformCallback.cpp
 )
 
 add_library(libSGControls
