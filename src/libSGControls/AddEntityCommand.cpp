@@ -134,7 +134,7 @@ fur::AddCanvasSeparationCommand::AddCanvasSeparationCommand(entity::UserScene *s
         if (!ent) continue;
         m_entities.push_back(ent);
     }
-    if (m_entities.size() != m_target->getNumEntities())
+    if (m_entities.size() != m_target->getEntitiesSelectedSize())
         qCritical("fur::AddCanvasSeparationCommand: failed to initialize entities");
 }
 
@@ -161,6 +161,9 @@ void fur::AddCanvasSeparationCommand::moveEntities(entity::Canvas *from, entity:
 {
     if (!from || !to) return;
 
+    osg::Camera* camera = NULL;
+    emit m_scene->requestCamera(camera); // for stroke shadering, if needed
+
     for (size_t i=0; i<m_entities.size(); ++i){
         entity::Entity2D* entity = m_entities.at(i);
         if (!entity) continue;
@@ -168,6 +171,12 @@ void fur::AddCanvasSeparationCommand::moveEntities(entity::Canvas *from, entity:
             qCritical("AddCanvasSeparationCommand: could not add entity to the target");
         if (!m_scene->removeEntity(from, entity))
             qCritical("AddCanvasSeparationCommand: could not remove entity from the source");
+        if (entity->getEntityType() == cher::ENTITY_STROKE){
+            entity::Stroke* s = dynamic_cast<entity::Stroke*>(entity);
+            if (s){
+                s->redefineToShader(camera, to->getTransform()); // to update shader's transform callback
+            }
+        }
     }
     to->updateFrame(0);
     from->updateFrame(0);
