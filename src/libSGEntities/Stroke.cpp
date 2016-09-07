@@ -231,7 +231,7 @@ bool entity::Stroke::redefineToCurve(float tolerance)
         float length = this->getLength();
         qDebug() << "length=" << length;
 
-        tolerance = length * 0.005;
+        tolerance = length * 0.001;
         qDebug() << "assume threshold=" << tolerance;
     }
 
@@ -375,7 +375,7 @@ cher::ENTITY_TYPE entity::Stroke::getEntityType() const
     return cher::ENTITY_STROKE;
 }
 
-bool entity::Stroke::initializeShaderProgram(osg::Camera *camera, osg::MatrixTransform *t)
+bool entity::Stroke::initializeShaderProgram(osg::Camera *camera, osg::MatrixTransform *t, bool fogged)
 {
     if (!camera || !t){
         qWarning("Camera or transform is NULL");
@@ -466,6 +466,9 @@ bool entity::Stroke::initializeShaderProgram(osg::Camera *camera, osg::MatrixTra
     /*  fog factors */
     state->addUniform(new osg::Uniform("FogMin", cher::STROKE_FOG_MIN));
     state->addUniform(new osg::Uniform("FogMax", cher::STROKE_FOG_MAX));
+
+    osg::Uniform* isFogged = state->getOrCreateUniform("IsFogged", osg::Uniform::BOOL);
+    isFogged->set(fogged);
 
     return true;
 }

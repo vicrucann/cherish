@@ -134,7 +134,7 @@ public:
     cher::ENTITY_TYPE getEntityType() const;
 
 protected:
-    bool initializeShaderProgram(osg::Camera* camera, osg::MatrixTransform* t);
+    bool initializeShaderProgram(osg::Camera* camera, osg::MatrixTransform* t, bool fogged = false);
 
 private:
     osg::ref_ptr<osg::DrawArrays>   m_lines; // saved to file

@@ -4,6 +4,7 @@ uniform float Thickness;
 uniform vec2 Viewport;
 uniform float MiterLimit;
 uniform int Segments;
+uniform bool IsFogged;
 uniform float FogMin;
 uniform float FogMax;
 uniform vec4 CameraEye;
@@ -40,11 +41,9 @@ vec2 toBezier(float delta, int i, vec2 b0, vec2 b1, vec2 b2, vec2 b3)
 
 float getFogFactor(float d)
 {
-    const float padding = 0.f; // padding coridor where alpha is const
-    if (d>FogMax+padding) return 0;
-    if (d>FogMax) return 0.2;
-    if (d<FogMin) return 1;
-    if (d<FogMin+padding) return 0.8;
+    if (d>=FogMax) return 0;
+    if (d<=FogMin) return 1;
+
     return (FogMax - d) / (FogMax - FogMin);
 }
 
@@ -170,10 +169,12 @@ void main(void)
     }
 
     /* adjust alpha channels wrt camera eye distance */
-    for (int i=0; i<4; ++i){
-        float d = distance(CameraEye, V[0]);
-        float alpha = getFogFactor(d);
-        C[i] = vec4(C[i].rgb, alpha);
+    if (IsFogged){
+        for (int i=0; i<4; ++i){
+            float d = distance(CameraEye, V[0]);
+            float alpha = getFogFactor(d);
+            C[i] = vec4(C[i].rgb, alpha);
+        }
     }
 
     /* get the 2d bezier control points */

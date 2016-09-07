@@ -152,6 +152,13 @@ const QIcon &Data::sceneZoomIcon()
     return icon;
 }
 
+const QIcon &Data::optionsVisibilityIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-visibility-options.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/scene-visibility-options.svg");
+    return icon;
+}
+
 const QIcon &Data::sceneNewCanvasIcon()
 {
     Q_ASSERT_X(!QPixmap(":/scene-newcanvas-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");

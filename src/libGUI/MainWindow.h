@@ -152,6 +152,8 @@ protected slots:
 
     void onBookmark();
 
+    void onStrokeFogFactor();
+
 protected:
     void        initializeActions();
     void        initializeMenus();
@@ -206,6 +208,9 @@ protected:
             // Edit Strokes
             , * m_actionStrokesPush
     ;
+
+    // OPTION actions
+    QAction* m_actionStrokeFogFactor;
 
     CameraProperties* m_cameraProperties;
 };
