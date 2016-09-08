@@ -15,6 +15,7 @@
 #include <QFileSystemModel>
 
 #include <osg/ref_ptr>
+#include <osg/Camera>
 
 #include "RootScene.h"
 #include "Settings.h"
@@ -38,6 +39,9 @@ public:
 
     /*! \return const pointer to RootScene. */
     const RootScene* getRootScene() const;
+
+    osg::Camera* getCamera() const;
+    bool getStrokeFogFactor() const;
 
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */

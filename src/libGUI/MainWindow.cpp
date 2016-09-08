@@ -89,6 +89,18 @@ const RootScene *MainWindow::getRootScene() const
     return m_rootScene.get();
 }
 
+osg::Camera *MainWindow::getCamera() const
+{
+    if (!m_glWidget) return 0;
+    return m_glWidget->getCamera();
+}
+
+bool MainWindow::getStrokeFogFactor() const
+{
+    if (!m_actionStrokeFogFactor) return false;
+    return m_actionStrokeFogFactor->isChecked();
+}
+
 void MainWindow::onSetTabletActivity(bool active){
     m_glWidget->setTabletActivity(active);
 }
