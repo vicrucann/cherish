@@ -32,6 +32,8 @@ void ProgramStroke::initialize(osg::StateSet *state, osg::Camera *camera, osg::M
         qCritical("Could not add necessary shaders");
     if (!this->addPresetUniforms())
         qCritical("Could not add necessary uniforms");
+
+    qInfo("Stroke shader was successfully initialized");
 }
 
 

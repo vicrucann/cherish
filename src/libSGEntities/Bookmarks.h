@@ -131,13 +131,6 @@ signals:
      * \param row is the bookmark index */
     void requestBookmarkSet(int row);
 
-    /*! A signal to request bookmark's icon to be updated with correspondance of what GLWidget sees.
-     * \param pixmap is the result icon
-     * \param eye is the camera eye vector
-     * \param center is the camera center vector
-     * \param up is the camera up vector */
-    void requestScreenshot(QPixmap& pixmap, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
-
     /*! A singal to request bookmarks scene state to be updated.
      * \param state is the pointer on SceneState to be updated */
     void requestSceneData(entity::SceneState* state);

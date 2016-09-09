@@ -67,9 +67,10 @@ public:
     /*! Method to set tablet proximity flag. */
     void setTabletActivity(bool active);
 
+    /*! Method to obtain a scene graph screenshot by given camera position.  */
+    QPixmap getScreenShot(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+
 public slots:
-    /*! Slot to obtain a scene graph screenshot by given canera position.  */
-    void onRequestScreenshot(QPixmap& pmap, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
 
     /*! \param fov is the new  FOV (to change manipulator's camera) */
     void onFOVChangedSlider(double fov);

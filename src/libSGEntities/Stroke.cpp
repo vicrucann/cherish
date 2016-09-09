@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <QtGlobal>
 #include <QFile>
+#include <QWidgetList>
+#include "MainWindow.h"
 
 #include <osg/Program>
 #include <osg/LineWidth>
@@ -22,12 +24,9 @@
 entity::Stroke::Stroke()
     : entity::Entity2D()
     , m_lines(new osg::DrawArrays(GL_LINE_STRIP_ADJACENCY))
-    , m_program(new osg::Program)
-    , m_camera(0)
-    , m_transform(0)
+    , m_program(new ProgramStroke)
     , m_color(cher::STROKE_CLR_NORMAL)
     , m_isCurved(false)
-    , m_isShadered(false)
 {
     osg::Vec4Array* colors = new osg::Vec4Array;
     colors->push_back(m_color);
@@ -63,11 +62,8 @@ entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
     : entity::Entity2D(copy, copyop)
     , m_lines(copy.m_lines)
     , m_program(copy.m_program)
-    , m_camera(copy.m_camera)
-    , m_transform(copy.m_transform)
     , m_color(copy.m_color)
     , m_isCurved(copy.m_isCurved)
-    , m_isShadered(copy.m_isShadered)
 {
     qDebug("stroke copy ctor done");
 }
@@ -113,12 +109,7 @@ bool entity::Stroke::getIsCurved() const
     return m_isCurved;
 }
 
-bool entity::Stroke::isShadered() const
-{
-    return m_isShadered;
-}
-
-const osg::Program *entity::Stroke::getProgram() const
+const ProgramStroke *entity::Stroke::getProgram() const
 {
     return m_program.get();
 }
@@ -203,11 +194,6 @@ osg::Vec2f entity::Stroke::getPoint(unsigned int i) const
     return osg::Vec2f(p.x(), p.y());
 }
 
-osg::Camera *entity::Stroke::getCamera() const
-{
-    return m_camera.get();
-}
-
 bool entity::Stroke::redefineToCurve(float tolerance)
 {
     if (m_isCurved) return true;
@@ -258,26 +244,22 @@ bool entity::Stroke::redefineToCurve(float tolerance)
 }
 
 // read more on why: http://stackoverflow.com/questions/36655888/opengl-thick-and-smooth-non-broken-lines-in-3d
-bool entity::Stroke::redefineToShader(osg::Camera *camera, osg::MatrixTransform *t)
+bool entity::Stroke::redefineToShader(osg::MatrixTransform *t)
 {
-    /* The used shader requires that each line segment is represented as GL_LINES_AJACENCY_EXT */
-
-    if (t != m_transform.get()) m_isShadered = false; // update transform uniform if needed
-    if (m_isShadered) return true;
     if (!this->redefineToCurve()){
         qWarning() << "Could not re-define to curve";
         return false;
     }
 
-    /* initialize m_program */
-    if (!this->initializeShaderProgram(camera, t)){
-        qWarning("Could not properly initialize the stroke shader program, default look will be used");
-        return false;
-    }
+    /* use shader program? */
+    m_program->initialize(this->getOrCreateStateSet(),
+                          MainWindow::instance().getCamera(),
+                          t,
+                          MainWindow::instance().getStrokeFogFactor());
 
+    /* The used shader requires that each line segment is represented as GL_LINES_AJACENCY_EXT */
     osg::ref_ptr<osg::Vec3Array> bezierPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
     if (!bezierPts) return false;
-
 
     /* reset the primitive type */
     m_lines->set(GL_LINES_ADJACENCY_EXT, 0, bezierPts->size());
@@ -288,14 +270,9 @@ bool entity::Stroke::redefineToShader(osg::Camera *camera, osg::MatrixTransform 
     Q_ASSERT(colors);
     this->setVertexAttribArray(1, colors, osg::Array::BIND_PER_VERTEX);
 
-    /* set up m_program as StateSet */
-    osg::StateSet* stateset = this->getOrCreateStateSet();
-    Q_ASSERT(stateset);
-    stateset->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
-
-    m_camera = camera;
-    m_transform = t;
-    m_isShadered = true;
+    /* apply shader to the state set */
+    Q_ASSERT(this->getOrCreateStateSet());
+    this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
 
     return true;
 }
@@ -373,104 +350,6 @@ void entity::Stroke::rotate(double theta, osg::Vec3f center)
 cher::ENTITY_TYPE entity::Stroke::getEntityType() const
 {
     return cher::ENTITY_STROKE;
-}
-
-bool entity::Stroke::initializeShaderProgram(osg::Camera *camera, osg::MatrixTransform *t, bool fogged)
-{
-    if (!camera || !t){
-        qWarning("Camera or transform is NULL");
-        return false;
-    }
-
-    if (m_program->getNumShaders() != 3) {
-        qDebug("Shader program initialization");
-        m_program->setName("DefaultStrokeShader");
-
-        /* load and add shaders to the program */
-        osg::ref_ptr<osg::Shader> vertShader = new osg::Shader(osg::Shader::VERTEX);
-        if (!vertShader->loadShaderSourceFromFile("Shaders/Stroke.vert")){
-            qWarning("Could not load vertex shader from file");
-            return false;
-        }
-        if (!m_program->addShader(vertShader.get())){
-            qWarning("Could not add vertext shader");
-            return false;
-        }
-
-        osg::ref_ptr<osg::Shader> geomShader = new osg::Shader(osg::Shader::GEOMETRY);
-        if (!geomShader->loadShaderSourceFromFile("Shaders/Stroke.geom")){
-            qWarning("Could not load geometry shader from file");
-            return false;
-        }
-        if (!m_program->addShader(geomShader.get())){
-            qWarning("Could not add geometry shader");
-            return false;
-        }
-
-        osg::ref_ptr<osg::Shader> fragShader = new osg::Shader(osg::Shader::FRAGMENT);
-        if (!fragShader->loadShaderSourceFromFile("Shaders/Stroke.frag")){
-            qWarning("Could not load fragment shader from file");
-            return false;
-        }
-        if (!m_program->addShader(fragShader.get())){
-               qWarning("Could not add fragment shader");
-               return false;
-        }
-    }
-
-    /* add uniforms */
-    osg::StateSet* state = this->getOrCreateStateSet();
-    if (!state){
-        qWarning("Creating shader: StateSet is NULL");
-        return false;
-    }
-
-    /* model view proj matrix */
-    if (!state->getUniform("ModelViewProjectionMatrix")){
-        osg::Uniform* MVPMatrix = new osg::Uniform(osg::Uniform::FLOAT_MAT4, "ModelViewProjectionMatrix");
-        MVPMatrix->setUpdateCallback(new ModelViewProjectionMatrixCallback(camera));
-        state->addUniform(MVPMatrix);
-    }
-
-    /* viewport vector */
-    if (!state->getUniform("Viewport")){
-        osg::Uniform* viewportVector = new osg::Uniform(osg::Uniform::FLOAT_VEC2, "Viewport");
-        viewportVector->setUpdateCallback(new ViewportVectorCallback(camera));
-        state->addUniform(viewportVector);
-    }
-
-    /* camera eye */
-    if (!state->getUniform("CameraEye")){
-        osg::Uniform* cameraEye = new osg::Uniform(osg::Uniform::FLOAT_VEC4, "CameraEye");
-        cameraEye->setUpdateCallback(new CameraEyeCallback(camera));
-        state->addUniform(cameraEye);
-    }
-
-    if (!state->getUniform("CanvasMatrix") || t != m_transform.get()){
-        osg::Uniform* canvasMatrix = state->getOrCreateUniform("CanvasMatrix", osg::Uniform::FLOAT_MAT4);
-        canvasMatrix->setUpdateCallback(new CanvasTransformCallback(t));
-    }
-
-    /* stroke thickness */
-    float thickness = cher::STROKE_LINE_WIDTH;
-    state->addUniform(new osg::Uniform("Thickness", thickness));
-
-    /*  stroke miter limit */
-    float miterLimit = 0.75;
-    state->addUniform(new osg::Uniform("MiterLimit", miterLimit));
-
-    /* stroke number of segments (the more the smoothier the look) */
-    int segments = cher::STROKE_SEGMENTS_NUMBER;
-    state->addUniform(new osg::Uniform("Segments", segments));
-
-    /*  fog factors */
-    state->addUniform(new osg::Uniform("FogMin", cher::STROKE_FOG_MIN));
-    state->addUniform(new osg::Uniform("FogMax", cher::STROKE_FOG_MAX));
-
-    osg::Uniform* isFogged = state->getOrCreateUniform("IsFogged", osg::Uniform::BOOL);
-    isFogged->set(fogged);
-
-    return true;
 }
 
 /* for serialization of stroke type

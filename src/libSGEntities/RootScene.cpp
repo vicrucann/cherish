@@ -1,3 +1,5 @@
+#include "RootScene.h"
+
 #include "iostream"
 #include <sstream>
 #include <stdlib.h>
@@ -11,9 +13,9 @@
 #include <osgDB/ReaderWriter>
 #include <osgDB/Registry>
 
-#include "RootScene.h"
 #include "Settings.h"
 #include "EditEntityCommand.h"
+#include "MainWindow.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
     : osg::ProtectedGroup()
@@ -134,10 +136,6 @@ bool RootScene::writeScenetoFile()
     if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) result = false;
 
     /* for each canvas, attach its tools back */
-    osg::Camera* camera = NULL;
-    emit m_userScene->requestCamera(camera);
-    Q_ASSERT(camera);
-
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* canvas = m_userScene->getCanvas(i);
         if (!canvas) continue;
@@ -487,7 +485,7 @@ void RootScene::copyToBuffer()
         }
         stroke->copyFrom(&copy);
         stroke->redefineToCurve();
-        stroke->redefineToShader(copy.getCamera(), canvas->getTransform());
+        stroke->redefineToShader(canvas->getTransform());
         m_buffer.push_back(stroke);
     }
 }

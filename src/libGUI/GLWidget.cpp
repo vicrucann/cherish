@@ -162,7 +162,7 @@ void GLWidget::setTabletActivity(bool active)
     m_DeviceActive = active;
 }
 
-void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+QPixmap GLWidget::getScreenShot(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     /* save the current camera view */
     osg::Vec3d eye_, center_, up_;
@@ -171,7 +171,6 @@ void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const o
 
     /* move the camera to bookmark view */
     m_manipulator->setTransformation(eye, center, up);
-
 
     /* save the current scene state */
     osg::ref_ptr<entity::SceneState> ss = new entity::SceneState();
@@ -182,7 +181,9 @@ void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const o
     this->update();
 
     /* grab the screenshot */
-    pmap = this->grab();
+    QPixmap pmap(this->rect().size());
+    this->render(&pmap, QPoint(), QRegion(this->rect()));
+//    QPixmap pmap = this->grab( QRect(QPoint(0,0), QSize(this->width(), this->height())));
 
     /* apply the saved scene state */
     m_RootScene->setSceneState(ss);
@@ -190,6 +191,8 @@ void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const o
     /* return to the current camera view */
     m_manipulator->setTransformation(eye_, center_, up_);
     this->update();
+
+    return pmap;
 }
 
 /* FOV is a whole angle, not half angle */

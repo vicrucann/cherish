@@ -22,6 +22,8 @@
 #include "Data.h"
 #include "Utilities.h"
 
+MainWindow* MainWindow::m_instance = nullptr;
+
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
     , m_mdiArea(new QMdiArea(this))
@@ -41,6 +43,10 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_glWidget(new GLWidget(m_rootScene.get(), m_viewStack))
     , m_cameraProperties( new CameraProperties(60.f, this) )
 {
+    /* singleton check and setup */
+    Q_ASSERT_X(m_instance == 0, "MainWindow ctor", "MainWindow is a singleton and cannot be created more than once");
+    m_instance = this;
+
     this->setMenuBar(m_menuBar);
 //    this->setIconSize(QSize(cher::APP_MAINWINDOW_ICONSIZE * cher::DPI_SCALING, cher::APP_MAINWINDOW_ICONSIZE * cher::DPI_SCALING));
 
@@ -84,6 +90,17 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     this->onSketch();
 }
 
+MainWindow::~MainWindow()
+{
+    m_instance = nullptr;
+}
+
+MainWindow &MainWindow::instance()
+{
+    Q_ASSERT_X(m_instance, "MainWindow::instance", "Singleton not constructed yet");
+    return *m_instance;
+}
+
 const RootScene *MainWindow::getRootScene() const
 {
     return m_rootScene.get();
@@ -99,6 +116,11 @@ bool MainWindow::getStrokeFogFactor() const
 {
     if (!m_actionStrokeFogFactor) return false;
     return m_actionStrokeFogFactor->isChecked();
+}
+
+QPixmap MainWindow::getScreenshot(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+{
+    return m_glWidget->getScreenShot(eye, center, up);
 }
 
 void MainWindow::onSetTabletActivity(bool active){
@@ -320,11 +342,6 @@ void MainWindow::onImportPhoto(const QString &path, const QString &fileName)
 {
     QString fullPath = path + "/" + fileName;
     this->importPhoto(fullPath);
-}
-
-void MainWindow::onRequestCamera(osg::Camera *&camera)
-{
-    camera = m_glWidget->getCamera();
 }
 
 /* Check whether the current scene is empty or not
@@ -1036,10 +1053,6 @@ void MainWindow::initializeCallbacks()
                      this, SLOT(onRequestSceneToolStatus(bool&)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestCamera(osg::Camera*&)),
-                     this, SLOT(onRequestCamera(osg::Camera*&)),
-                     Qt::UniqueConnection);
-
     /* bookmark widget data */
     QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)),
                      m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)),
@@ -1077,11 +1090,6 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)),
                      m_rootScene->getBookmarksModel(), SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)),
-                     Qt::UniqueConnection);
-
-
-    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
-                     m_glWidget, SLOT(onRequestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestSceneData(entity::SceneState*)),
@@ -1183,10 +1191,8 @@ bool MainWindow::loadSceneFromFile()
     if (!m_rootScene->getUserScene()) return false;
     m_rootScene->getUserScene()->resetModel(m_canvasWidget);
 
+    // FIXME: move the below block to root scene
     /* re-define shaders, must be put here since we update the signals/slots first */
-    osg::Camera* camera = NULL;
-    this->onRequestCamera(camera);
-    Q_ASSERT(camera);
     for (int i=0; i<m_rootScene->getUserScene()->getNumCanvases(); ++i){
         entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvas(i);
         if (!cnv) continue;
@@ -1200,7 +1206,7 @@ bool MainWindow::loadSceneFromFile()
                 qWarning("Could not re-define as curve");
                 continue;
             }
-            if (!stroke->redefineToShader(camera, cnv->getTransform())){
+            if (!stroke->redefineToShader(cnv->getTransform())){
                 qWarning("Could not redefine stroke as shader");
                 continue;
             }

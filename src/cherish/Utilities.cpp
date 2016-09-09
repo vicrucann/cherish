@@ -83,7 +83,7 @@ bool Utilities::areStrokesProjectable(const std::vector<entity::Stroke *> &strok
     return true;
 }
 
-bool Utilities::getViewProjectionWorld(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, osg::Matrix &VPW, osg::Matrix &invVPW)
+bool Utilities::getViewProjectionWorld(osgGA::GUIActionAdapter &aa, osg::Matrix &VPW, osg::Matrix &invVPW)
 {
     osgViewer::View* viewer = dynamic_cast<osgViewer::View*>(&aa);
     if (!viewer){

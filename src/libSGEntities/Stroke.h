@@ -22,6 +22,8 @@
 #include <osg/MatrixTransform>
 #include <osgDB/ObjectWrapper>
 
+#include "libSGControls/ProgramStroke.h"
+
 namespace entity {
 
 /*! \class Stroke
@@ -75,9 +77,8 @@ public:
 
     void setIsCurved(bool curved);
     bool getIsCurved() const;
-    bool isShadered() const;
 
-    const osg::Program* getProgram() const;
+    const ProgramStroke* getProgram() const;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
     /*! A method to be used to copy the input stroke's data. It is assumed *this stroke is empty.
@@ -91,17 +92,13 @@ public:
     /*! \param i is the point index. \return point coordinates at the specified index. */
     osg::Vec2f getPoint(unsigned int i) const;
 
-    /*! \return observer pointer on camera which helped to create a shadered version.
-     * \sa redefineToShader(). */
-    osg::Camera* getCamera() const;
-
     /*! A method that fits the stroke's points to a set of curve using Schneider's algorithm.
      * \return true upon success. */
     bool redefineToCurve(float tolerance = -1.f);
 
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
-    bool redefineToShader(osg::Camera* camera, osg::MatrixTransform* t);
+    bool redefineToShader(osg::MatrixTransform* t);
 
     /*! \return number of vertices. */
     int getNumPoints() const;
@@ -134,16 +131,12 @@ public:
     cher::ENTITY_TYPE getEntityType() const;
 
 protected:
-    bool initializeShaderProgram(osg::Camera* camera, osg::MatrixTransform* t, bool fogged = false);
 
 private:
     osg::ref_ptr<osg::DrawArrays>   m_lines; // saved to file
-    osg::ref_ptr<osg::Program>      m_program; // OPT: put program higher on scene graph so that to load it only once and then apply to all the strokes
-    osg::observer_ptr<osg::Camera>  m_camera;
-    osg::observer_ptr<osg::MatrixTransform> m_transform; // canvas transform; to calculate 3D coords of points for shader use (fog effect)
+    osg::ref_ptr<ProgramStroke>     m_program; // OPT: put program higher on scene graph so that to load it only once and then apply to all the strokes
     osg::Vec4f                      m_color; // saved to file
     bool                            m_isCurved;
-    bool                            m_isShadered;
 };
 }
 

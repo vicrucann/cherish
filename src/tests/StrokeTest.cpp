@@ -47,12 +47,6 @@ void StrokeTest::testAddStroke()
     QCOMPARE(stroke->getLength(), 1.f);
     QVERIFY(stroke->isLengthy());
 
-    qInfo("Extract camera to do shader re-definition");
-    osg::Camera* camera = NULL;
-    QVERIFY(!camera);
-    emit m_scene->requestCamera(camera);
-    QVERIFY(camera);
-
     qInfo("Clone stroke by copying the data");
     osg::ref_ptr<entity::Stroke> stroke_clone = new entity::Stroke;
     QVERIFY(stroke_clone.get());
@@ -70,7 +64,7 @@ void StrokeTest::testAddStroke()
 
     qInfo("Re-define cloned stroke as a curve and as a shader");
     QVERIFY(stroke_clone->redefineToCurve());
-    QVERIFY(stroke_clone->redefineToShader(camera, m_scene->getCanvasCurrent()->getTransform()));
+    QVERIFY(stroke_clone->redefineToShader(m_scene->getCanvasCurrent()->getTransform()));
 
     qInfo("Add cloned stroke as an entity to the scene to replace the phantom");
     QVERIFY(m_canvas2->addEntity(stroke_clone.get()));
@@ -82,14 +76,12 @@ void StrokeTest::testAddStroke()
 
     qInfo("Test cloned stroke's shader parameters");
     QVERIFY(stroke_clone->getIsCurved());
-    QVERIFY(stroke_clone->isShadered());
     QVERIFY(!stroke->getIsCurved());
-    QVERIFY(!stroke->isShadered());
     QCOMPARE(static_cast<int>(stroke_clone->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
 
     qInfo("Shaderize phantom and test against it");
     QVERIFY(stroke->redefineToCurve());
-    QVERIFY(stroke->redefineToShader(camera, m_canvas2->getTransform()));
+    QVERIFY(stroke->redefineToShader(m_canvas2->getTransform()));
     verts =  static_cast<osg::Vec3Array*>(stroke->getVertexArray());
     QVERIFY(verts);
     verts_clone = static_cast<osg::Vec3Array*>(stroke_clone->getVertexArray());
@@ -127,19 +119,15 @@ void StrokeTest::testCloneShaderedStroke()
     original->appendPoint(1, 1);
     original->appendPoint(0, 1);
 
-    osg::Camera* camera = NULL;
-    emit m_scene->requestCamera(camera);
-    QVERIFY(camera);
-
     QVERIFY(original->redefineToCurve());
-    QVERIFY(original->redefineToShader(camera, canvas->getTransform()));
+    QVERIFY(original->redefineToShader(canvas->getTransform()));
     canvas->setStrokeCurrent(false);
 
     qInfo("Create stroke by copying the original");
     osg::ref_ptr<entity::Stroke> copy = new entity::Stroke;
     QVERIFY(copy->copyFrom(original.get()));
     QVERIFY(copy->redefineToCurve());
-    QVERIFY(copy->redefineToShader(original->getCamera(), canvas->getTransform()));
+    QVERIFY(copy->redefineToShader(canvas->getTransform()));
 
     qInfo("Delta move the copy stroke");
     copy->moveDelta(-0.2, -0.2);
@@ -173,20 +161,15 @@ void StrokeTest::testReadWrite()
     original->appendPoint(0, 1);
 
     qInfo("Shaderize the stroke");
-    osg::Camera* camera = NULL;
-    emit m_scene->requestCamera(camera);
-    QVERIFY(camera);
 
     QVERIFY(original->redefineToCurve());
-    QVERIFY(original->redefineToShader(camera, canvas->getTransform()));
+    QVERIFY(original->redefineToShader(canvas->getTransform()));
     canvas->setStrokeCurrent(false);
 
     qInfo("Test stroke parameters");
     QVERIFY(original->getIsCurved());
-    QVERIFY(original->isShadered());
     int n0 = original->getNumPoints();
     QCOMPARE(static_cast<int>(original->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
-    QVERIFY(original->getCamera());
     QCOMPARE(static_cast<int>(canvas->getGeodeStrokes()->getNumChildren()), 1);
     QCOMPARE(canvas->getGeodeStrokes()->getChild(0), original.get());
 
@@ -198,10 +181,8 @@ void StrokeTest::testReadWrite()
 
     qInfo("Verify stroke params didnt change after the write");
     QVERIFY(original->getIsCurved());
-    QVERIFY(original->isShadered());
     QCOMPARE(n0, original->getNumPoints());
     QCOMPARE(static_cast<int>(original->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
-    QVERIFY(original->getCamera());
     QCOMPARE(static_cast<int>(canvas->getGeodeStrokes()->getNumChildren()), 1);
     QCOMPARE(canvas->getGeodeStrokes()->getChild(0), original.get());
 
@@ -230,11 +211,8 @@ void StrokeTest::testReadWrite()
     QCOMPARE(static_cast<int>(saved->getProgram()->getNumShaders()), 3);
 
     QVERIFY(saved->getIsCurved());
-    QVERIFY(saved->isShadered());
     QCOMPARE(saved->getNumPoints(), n0);
     QCOMPARE(static_cast<int>(saved->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
-    QVERIFY(saved->getCamera());
-    QCOMPARE(saved->getCamera(), m_glWidget->getCamera());
 
 }
 
@@ -257,18 +235,13 @@ void StrokeTest::testCopyPaste()
     original->appendPoint(0.4, 0.4);
     original->appendPoint(0.8, 0.9);
 
-    osg::Camera* camera = NULL;
-    emit m_scene->requestCamera(camera);
-    QVERIFY(camera);
-
     qInfo("Shaderize the stroke");
     QVERIFY(original->redefineToCurve());
-    QVERIFY(original->redefineToShader(camera, canvas->getTransform()));
+    QVERIFY(original->redefineToShader(canvas->getTransform()));
     canvas->setStrokeCurrent(false);
 
     qInfo("Test stroke parameters");
     QVERIFY(original->getIsCurved());
-    QVERIFY(original->isShadered());
     QCOMPARE(static_cast<int>(original->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
     QCOMPARE(static_cast<int>(canvas->getGeodeStrokes()->getNumChildren()), 1);
     QCOMPARE(canvas->getGeodeStrokes()->getChild(0), original.get());

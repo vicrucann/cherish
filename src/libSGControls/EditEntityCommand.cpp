@@ -281,7 +281,7 @@ fur::EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas
         entity::Stroke* stroke = new entity::Stroke;
         if (!stroke) continue;
         stroke->copyFrom(&copy);
-        stroke->redefineToShader(copy.getCamera(), m_canvas->getTransform());
+        stroke->redefineToShader(m_canvas->getTransform());
         m_entities.push_back(stroke);
     }
 
