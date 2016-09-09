@@ -204,16 +204,16 @@ bool RootScene::loadSceneFromFile()
             photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTextureAsAttribute());
         }
 
-//        /* stroke shaders */
-//        for (size_t k=0; k<cnv->getNumStrokes(); ++k){
-//            entity::Stroke* stroke = cnv->getStroke(k);
-//            if (!stroke) {
-//                qWarning("Could not read stroke");
-//                continue;
-//            }
-//            if (!stroke->redefineToShader(camera))
-//                qWarning("Could not redefine stroke as shader");
-//        }
+        /* stroke curved */
+        for (size_t k=0; k<cnv->getNumStrokes(); ++k){
+            entity::Stroke* stroke = cnv->getStroke(k);
+            if (!stroke) {
+                qWarning("Could not read stroke");
+                continue;
+            }
+            if (!stroke->redefineToCurve())
+                qWarning("Could not redefine stroke as curve");
+        }
 
     }
 

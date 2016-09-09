@@ -64,7 +64,6 @@ void StrokeTest::testAddStroke()
 
     qInfo("Re-define cloned stroke as a curve and as a shader");
     QVERIFY(stroke_clone->redefineToCurve());
-    QVERIFY(stroke_clone->redefineToShader(m_scene->getCanvasCurrent()->getTransform()));
 
     qInfo("Add cloned stroke as an entity to the scene to replace the phantom");
     QVERIFY(m_canvas2->addEntity(stroke_clone.get()));
@@ -77,16 +76,15 @@ void StrokeTest::testAddStroke()
     qInfo("Test cloned stroke's shader parameters");
     QVERIFY(stroke_clone->getIsCurved());
     QVERIFY(!stroke->getIsCurved());
-    QCOMPARE(static_cast<int>(stroke_clone->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
+//    QCOMPARE(static_cast<int>(stroke_clone->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
 
     qInfo("Shaderize phantom and test against it");
     QVERIFY(stroke->redefineToCurve());
-    QVERIFY(stroke->redefineToShader(m_canvas2->getTransform()));
     verts =  static_cast<osg::Vec3Array*>(stroke->getVertexArray());
     QVERIFY(verts);
     verts_clone = static_cast<osg::Vec3Array*>(stroke_clone->getVertexArray());
     QVERIFY(verts_clone);
-    QCOMPARE(static_cast<int>(stroke->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
+//    QCOMPARE(static_cast<int>(stroke->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
     for (unsigned int i=0; i<verts->size(); ++i){
         auto delta = verts->at(i) - verts_clone->at(i);
         QVERIFY( std::fabs(delta.x()) < cher::EPSILON);
@@ -120,14 +118,12 @@ void StrokeTest::testCloneShaderedStroke()
     original->appendPoint(0, 1);
 
     QVERIFY(original->redefineToCurve());
-    QVERIFY(original->redefineToShader(canvas->getTransform()));
     canvas->setStrokeCurrent(false);
 
     qInfo("Create stroke by copying the original");
     osg::ref_ptr<entity::Stroke> copy = new entity::Stroke;
     QVERIFY(copy->copyFrom(original.get()));
     QVERIFY(copy->redefineToCurve());
-    QVERIFY(copy->redefineToShader(canvas->getTransform()));
 
     qInfo("Delta move the copy stroke");
     copy->moveDelta(-0.2, -0.2);
@@ -163,13 +159,12 @@ void StrokeTest::testReadWrite()
     qInfo("Shaderize the stroke");
 
     QVERIFY(original->redefineToCurve());
-    QVERIFY(original->redefineToShader(canvas->getTransform()));
     canvas->setStrokeCurrent(false);
 
     qInfo("Test stroke parameters");
     QVERIFY(original->getIsCurved());
     int n0 = original->getNumPoints();
-    QCOMPARE(static_cast<int>(original->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
+//    QCOMPARE(static_cast<int>(original->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
     QCOMPARE(static_cast<int>(canvas->getGeodeStrokes()->getNumChildren()), 1);
     QCOMPARE(canvas->getGeodeStrokes()->getChild(0), original.get());
 
@@ -182,7 +177,7 @@ void StrokeTest::testReadWrite()
     qInfo("Verify stroke params didnt change after the write");
     QVERIFY(original->getIsCurved());
     QCOMPARE(n0, original->getNumPoints());
-    QCOMPARE(static_cast<int>(original->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
+//    QCOMPARE(static_cast<int>(original->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
     QCOMPARE(static_cast<int>(canvas->getGeodeStrokes()->getNumChildren()), 1);
     QCOMPARE(canvas->getGeodeStrokes()->getChild(0), original.get());
 
@@ -208,11 +203,11 @@ void StrokeTest::testReadWrite()
     QVERIFY(saved);
 
     QVERIFY(saved->getProgram());
-    QCOMPARE(static_cast<int>(saved->getProgram()->getNumShaders()), 3);
+//    QCOMPARE(static_cast<int>(saved->getProgram()->getNumShaders()), 3);
 
     QVERIFY(saved->getIsCurved());
     QCOMPARE(saved->getNumPoints(), n0);
-    QCOMPARE(static_cast<int>(saved->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
+//    QCOMPARE(static_cast<int>(saved->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
 
 }
 
@@ -237,12 +232,11 @@ void StrokeTest::testCopyPaste()
 
     qInfo("Shaderize the stroke");
     QVERIFY(original->redefineToCurve());
-    QVERIFY(original->redefineToShader(canvas->getTransform()));
     canvas->setStrokeCurrent(false);
 
     qInfo("Test stroke parameters");
     QVERIFY(original->getIsCurved());
-    QCOMPARE(static_cast<int>(original->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
+//    QCOMPARE(static_cast<int>(original->getLines()->getMode()), GL_LINES_ADJACENCY_EXT);
     QCOMPARE(static_cast<int>(canvas->getGeodeStrokes()->getNumChildren()), 1);
     QCOMPARE(canvas->getGeodeStrokes()->getChild(0), original.get());
 

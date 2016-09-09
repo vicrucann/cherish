@@ -1033,7 +1033,7 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
             Q_ASSERT(stroke_clone.get());
             if (stroke_clone->copyFrom(stroke)){
                 stroke_clone->redefineToCurve();
-                stroke_clone->redefineToShader(m_canvasCurrent->getTransform());
+                Q_ASSERT(stroke_clone->getIsCurved());
                 fur::AddStrokeCommand* cmd = new fur::AddStrokeCommand(this, stroke_clone);
                 stack->push(cmd);
 

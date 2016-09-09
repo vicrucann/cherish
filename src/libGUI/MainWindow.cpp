@@ -1206,10 +1206,6 @@ bool MainWindow::loadSceneFromFile()
                 qWarning("Could not re-define as curve");
                 continue;
             }
-            if (!stroke->redefineToShader(cnv->getTransform())){
-                qWarning("Could not redefine stroke as shader");
-                continue;
-            }
         }
 
     }

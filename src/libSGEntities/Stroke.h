@@ -40,7 +40,6 @@ namespace entity {
  *
  * \\ after user is finished drawing, re-define the look
  * original->redefineToCurve();
- * original->redefineToShader(camera);
  * \endcode
  *
  * The below example provides details on how to copy/clone a stroke that is already present on the
@@ -54,7 +53,6 @@ namespace entity {
  *
  * // as before, we re-define the stroke to be shadered
  * copy->redefineToCurve();
- * copy->redefineToShader(original->getCamera());
  * \endcode
 */
 class Stroke : public entity::Entity2D {
@@ -131,6 +129,8 @@ public:
     cher::ENTITY_TYPE getEntityType() const;
 
 protected:
+
+    osg::Vec3Array* getCurvePoints(const osg::Vec3Array* bezierPts) const;
 
 private:
     osg::ref_ptr<osg::DrawArrays>   m_lines; // saved to file

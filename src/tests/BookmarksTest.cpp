@@ -23,7 +23,6 @@ void BookmarksTest::testAddBookmark()
 
     qInfo("Re-define the stroke look");
     QVERIFY(stroke->redefineToCurve());
-    QVERIFY(stroke->redefineToShader(m_canvas2->getTransform()));
 
     qInfo("Check bookmark widget is empty");
     QCOMPARE( m_bookmarkWidget->count(), 0);

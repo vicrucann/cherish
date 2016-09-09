@@ -168,12 +168,6 @@ void fur::AddCanvasSeparationCommand::moveEntities(entity::Canvas *from, entity:
             qCritical("AddCanvasSeparationCommand: could not add entity to the target");
         if (!m_scene->removeEntity(from, entity))
             qCritical("AddCanvasSeparationCommand: could not remove entity from the source");
-        if (entity->getEntityType() == cher::ENTITY_STROKE){
-            entity::Stroke* s = dynamic_cast<entity::Stroke*>(entity);
-            if (s){
-                s->redefineToShader(to->getTransform()); // to update shader's transform callback
-            }
-        }
     }
     to->updateFrame(0);
     from->updateFrame(0);

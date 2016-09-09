@@ -229,15 +229,19 @@ bool entity::Stroke::redefineToCurve(float tolerance)
         return false;
     }
 
+    osg::ref_ptr<osg::Vec3Array> points = this->getCurvePoints(curves.get());
+    this->setVertexArray(points);
+    m_lines->setFirst(0);
+    m_lines->setCount(points->size());
+    points->dirty();
+
     /* re-adjust color array */
-    colors->resize(curves->size(), m_color);
+    colors->resize(points->size(), m_color);
     colors->dirty();
 
-    this->setVertexArray(curves);
-    curves->dirty();
     this->dirtyBound();
     qDebug() << "path.samples=" << path->size();
-    qDebug() << "curves.points=" << curves->size();
+    qDebug() << "curves.points=" << points->size();
 
     m_isCurved = true;
     return true;
@@ -350,6 +354,32 @@ void entity::Stroke::rotate(double theta, osg::Vec3f center)
 cher::ENTITY_TYPE entity::Stroke::getEntityType() const
 {
     return cher::ENTITY_STROKE;
+}
+
+osg::Vec3Array *entity::Stroke::getCurvePoints(const osg::Vec3Array *bezierPts) const
+{
+    Q_ASSERT(bezierPts->size() % 4 == 0);
+
+    osg::ref_ptr<osg::Vec3Array> points = new osg::Vec3Array;
+
+    float delta = 1.f / cher::STROKE_SEGMENTS_NUMBER;
+    for (unsigned int j=0; j<bezierPts->size(); j=j+4){
+        auto b0 = bezierPts->at(j)
+                , b1 = bezierPts->at(j+1)
+                , b2 = bezierPts->at(j+2)
+                , b3 = bezierPts->at(j+3) ;
+
+        for (int i=0; i<=cher::STROKE_SEGMENTS_NUMBER; ++i){
+            float t = delta * float(i);
+            float t2 = t * t;
+            float one_minus_t = 1.0 - t;
+            float one_minus_t2 = one_minus_t * one_minus_t;
+            osg::Vec3f p = (b0 * one_minus_t2 * one_minus_t + b1 * 3.0 * t * one_minus_t2 + b2 * 3.0 * t2 * one_minus_t + b3 * t2 * t);
+            points->push_back(p);
+        }
+    }
+    Q_ASSERT(points->size() == (cher::STROKE_SEGMENTS_NUMBER + 1) * (bezierPts->size() / 4));
+    return points.release();
 }
 
 /* for serialization of stroke type
