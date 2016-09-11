@@ -92,7 +92,7 @@ public:
 
     /*! A method that fits the stroke's points to a set of curve using Schneider's algorithm.
      * \return true upon success. */
-    bool redefineToCurve(float tolerance = -1.f);
+    bool redefineToCurve(osg::MatrixTransform* t = 0, float tolerance = -1.f);
 
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
@@ -137,6 +137,7 @@ private:
     osg::ref_ptr<ProgramStroke>     m_program; // OPT: put program higher on scene graph so that to load it only once and then apply to all the strokes
     osg::Vec4f                      m_color; // saved to file
     bool                            m_isCurved;
+    bool                            m_isShadered;
 };
 }
 

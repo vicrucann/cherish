@@ -27,6 +27,7 @@ entity::Stroke::Stroke()
     , m_program(new ProgramStroke)
     , m_color(cher::STROKE_CLR_NORMAL)
     , m_isCurved(false)
+    , m_isShadered(false)
 {
     osg::Vec4Array* colors = new osg::Vec4Array;
     colors->push_back(m_color);
@@ -64,6 +65,7 @@ entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
     , m_program(copy.m_program)
     , m_color(copy.m_color)
     , m_isCurved(copy.m_isCurved)
+    , m_isShadered(copy.m_isShadered)
 {
     qDebug("stroke copy ctor done");
 }
@@ -194,7 +196,7 @@ osg::Vec2f entity::Stroke::getPoint(unsigned int i) const
     return osg::Vec2f(p.x(), p.y());
 }
 
-bool entity::Stroke::redefineToCurve(float tolerance)
+bool entity::Stroke::redefineToCurve(osg::MatrixTransform *t, float tolerance)
 {
     if (m_isCurved) return true;
 
@@ -229,19 +231,34 @@ bool entity::Stroke::redefineToCurve(float tolerance)
         return false;
     }
 
-    osg::ref_ptr<osg::Vec3Array> points = this->getCurvePoints(curves.get());
-    this->setVertexArray(points);
+    this->setVertexArray(curves.get());
     m_lines->setFirst(0);
-    m_lines->setCount(points->size());
-    points->dirty();
-
-    /* re-adjust color array */
-    colors->resize(points->size(), m_color);
+    m_lines->setCount(curves->size());
+    curves->dirty();
+    colors->resize(curves->size(), m_color);
     colors->dirty();
 
-    this->dirtyBound();
     qDebug() << "path.samples=" << path->size();
-    qDebug() << "curves.points=" << points->size();
+    if (this->redefineToShader(t==0? MainWindow::instance().getCanvasCurrent()->getTransform() : t) ) {
+        qDebug() << "curves.number=" << curves->size()/4;
+    }
+    else{
+        qWarning("Could not re-define to shader, re-defining to curve points instead");
+        osg::ref_ptr<osg::Vec3Array> points = this->getCurvePoints(curves.get());
+        this->setVertexArray(points);
+
+        /* resize arrays and dirty the bounds */
+        m_lines->setFirst(0);
+        m_lines->setCount(points->size());
+        points->dirty();
+        colors->resize(points->size(), m_color);
+        colors->dirty();
+
+        qDebug() << "curves.points=" << points->size();
+    }
+
+
+    this->dirtyBound();
 
     m_isCurved = true;
     return true;
@@ -250,12 +267,7 @@ bool entity::Stroke::redefineToCurve(float tolerance)
 // read more on why: http://stackoverflow.com/questions/36655888/opengl-thick-and-smooth-non-broken-lines-in-3d
 bool entity::Stroke::redefineToShader(osg::MatrixTransform *t)
 {
-    if (!this->redefineToCurve()){
-        qWarning() << "Could not re-define to curve";
-        return false;
-    }
-
-    /* use shader program? */
+    /* use shader program */
     m_program->initialize(this->getOrCreateStateSet(),
                           MainWindow::instance().getCamera(),
                           t,
@@ -278,6 +290,7 @@ bool entity::Stroke::redefineToShader(osg::MatrixTransform *t)
     Q_ASSERT(this->getOrCreateStateSet());
     this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
 
+    m_isShadered = true;
     return true;
 }
 

@@ -17,6 +17,9 @@
 #include <osgViewer/GraphicsWindow>
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/Viewer>
+#include <osg/Camera>
+#include <osg/Image>
+#include <osg/GraphicsContext>
 
 #include "RootScene.h"
 #include "Settings.h"
@@ -29,7 +32,8 @@ class EventHandler;
 /*! \class GLWidget
  * \brief A proxy class connecting QOpenGLWidget with the content of RootScene; and also to transmit events.
 */
-class GLWidget : public QOpenGLWidget {
+class GLWidget : public QOpenGLWidget
+{
     Q_OBJECT
 public:
     /*! Construtor. */

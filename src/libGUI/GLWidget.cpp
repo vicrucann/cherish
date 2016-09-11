@@ -12,6 +12,10 @@
 #include <QOpenGLContext>
 #include <QOpenGLFunctions_3_3_Core>
 #include <QSurfaceFormat>
+#include <QOpenGLFramebufferObject>
+#include <QOpenGLFramebufferObjectFormat>
+#include <QOpenGLPaintDevice>
+#include <QScopedPointer>
 
 #include <osg/StateSet>
 #include <osg/Material>
@@ -71,7 +75,8 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     m_viewer->realize();
 
     /* OpenGL graphics context */
-    m_traits->samples = 8; // multi sampling (anti-aliasing)
+    m_traits->samples = 4; // multi sampling (anti-aliasing)
+    m_traits->sampleBuffers = 4;
     m_traits->x = this->x(); // this->width(), this->height());
     m_traits->y = this->y();
     m_traits->width = this->width();
@@ -181,8 +186,27 @@ QPixmap GLWidget::getScreenShot(const osg::Vec3d &eye, const osg::Vec3d &center,
     this->update();
 
     /* grab the screenshot */
-    QPixmap pmap(this->rect().size());
-    this->render(&pmap, QPoint(), QRegion(this->rect()));
+    osg::ref_ptr<osg::Image> image = new osg::Image;
+    int width =  m_traits->width;
+    int height = m_traits->height;
+    GLenum pixelFormat = (m_traits->alpha ? GL_RGBA : GL_RGB);
+    image->readPixels( 0, 0, width, height, pixelFormat, GL_UNSIGNED_BYTE );
+
+    QImage img(image->s(), image->t(), QImage::Format_RGB32);
+    for (int i=0; i<image->s(); ++i){
+        for (int j=0; j<image->t(); ++j){
+            osg::Vec4f clr = image->getColor(i,j);
+            img.setPixel(i,j, qRgb(int(clr.r()), int(clr.g()), int(clr.b())));
+        }
+    }
+
+//    QImage img(this->size(), QImage::Format_RGB32);
+//    QPainter painter(&img);
+//    this->render(&painter);
+    QPixmap pmap = QPixmap::fromImage(img);
+
+//    QPixmap pmap(this->rect().size());
+//    this->render(&pmap, QPoint(), QRegion(this->rect()));
 //    QPixmap pmap = this->grab( QRect(QPoint(0,0), QSize(this->width(), this->height())));
 
     /* apply the saved scene state */

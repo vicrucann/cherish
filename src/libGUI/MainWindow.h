@@ -43,6 +43,7 @@ public:
     /*! \return const pointer to RootScene. */
     const RootScene* getRootScene() const;
 
+    entity::Canvas* getCanvasCurrent() const;
     osg::Camera* getCamera() const;
     bool getStrokeFogFactor() const;
     QPixmap getScreenshot(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);

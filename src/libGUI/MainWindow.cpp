@@ -106,6 +106,13 @@ const RootScene *MainWindow::getRootScene() const
     return m_rootScene.get();
 }
 
+entity::Canvas *MainWindow::getCanvasCurrent() const
+{
+    if (!m_rootScene->getUserScene())
+        return 0;
+    return m_rootScene->getUserScene()->getCanvasCurrent();
+}
+
 osg::Camera *MainWindow::getCamera() const
 {
     if (!m_glWidget) return 0;
@@ -120,7 +127,8 @@ bool MainWindow::getStrokeFogFactor() const
 
 QPixmap MainWindow::getScreenshot(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
-    return m_glWidget->getScreenShot(eye, center, up);
+    return m_glWidget->grab();
+//    return m_glWidget->getScreenShot(eye, center, up);
 }
 
 void MainWindow::onSetTabletActivity(bool active){
