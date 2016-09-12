@@ -90,14 +90,14 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     this->setAcceptDrops(true); // do drag photos from PhotoWidget
 
     /* OpenGL graphics format */
-    QSurfaceFormat format = this->format();
+//    QSurfaceFormat format = this->format();
     /*  To make sure shadered lines are rendered with anti-aliasing, we
      * set the samples to 4. Equivalent to: http://www.learnopengl.com/#!Advanced-OpenGL/Anti-aliasing
      * Since m_viewer is of type GraphicsWindowEmbedded, the format is managed by the outsider widget (QOpenGLWidget),
      * that is why we set it up here. */
-    format.setSamples(4);
-    this->setFormat(format);
-    qInfo() << "multisampling samples=" << format.samples();
+//    format.setSamples(4);
+//    this->setFormat(format);
+//    qInfo() << "multisampling samples=" << format.samples();
 }
 
 osg::Camera *GLWidget::getCamera() const
@@ -186,28 +186,7 @@ QPixmap GLWidget::getScreenShot(const osg::Vec3d &eye, const osg::Vec3d &center,
     this->update();
 
     /* grab the screenshot */
-    osg::ref_ptr<osg::Image> image = new osg::Image;
-    int width =  m_traits->width;
-    int height = m_traits->height;
-    GLenum pixelFormat = (m_traits->alpha ? GL_RGBA : GL_RGB);
-    image->readPixels( 0, 0, width, height, pixelFormat, GL_UNSIGNED_BYTE );
-
-    QImage img(image->s(), image->t(), QImage::Format_RGB32);
-    for (int i=0; i<image->s(); ++i){
-        for (int j=0; j<image->t(); ++j){
-            osg::Vec4f clr = image->getColor(i,j);
-            img.setPixel(i,j, qRgb(int(clr.r()), int(clr.g()), int(clr.b())));
-        }
-    }
-
-//    QImage img(this->size(), QImage::Format_RGB32);
-//    QPainter painter(&img);
-//    this->render(&painter);
-    QPixmap pmap = QPixmap::fromImage(img);
-
-//    QPixmap pmap(this->rect().size());
-//    this->render(&pmap, QPoint(), QRegion(this->rect()));
-//    QPixmap pmap = this->grab( QRect(QPoint(0,0), QSize(this->width(), this->height())));
+    QPixmap pmap = this->grab();
 
     /* apply the saved scene state */
     m_RootScene->setSceneState(ss);

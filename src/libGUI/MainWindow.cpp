@@ -127,8 +127,7 @@ bool MainWindow::getStrokeFogFactor() const
 
 QPixmap MainWindow::getScreenshot(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
-    return m_glWidget->grab();
-//    return m_glWidget->getScreenShot(eye, center, up);
+    return m_glWidget->getScreenShot(eye, center, up);
 }
 
 void MainWindow::onSetTabletActivity(bool active){
