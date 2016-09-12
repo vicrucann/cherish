@@ -53,10 +53,11 @@ target_link_libraries( ${PROJECT_NAME}
     libNumerics
 )
 
-## copy shader files
+## copy shader files to binary and test folders
 foreach(shaderpath ${SHADER_RSC_ADDED})
     get_filename_component(shader ${shaderpath} NAME)
     configure_file("${CMAKE_SOURCE_DIR}/cherish/Shaders/${shader}" "${CMAKE_BINARY_DIR}/cherish/Shaders/${shader}" COPYONLY)
+    configure_file("${CMAKE_SOURCE_DIR}/cherish/Shaders/${shader}" "${CMAKE_BINARY_DIR}/tests/Shaders/${shader}" COPYONLY)
 endforeach()
 
 if( CMAKE_BUILD_TYPE MATCHES "^([Dd][Ee][Bb][Uu][Gg])" )

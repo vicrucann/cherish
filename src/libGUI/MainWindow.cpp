@@ -714,10 +714,8 @@ void MainWindow::onStrokeFogFactor()
                 qWarning("Stroke is NULL");
                 continue;
             }
-
-            osg::StateSet* sset = s->getOrCreateStateSet();
-            osg::Uniform* isFogged = sset->getOrCreateUniform("IsFogged", osg::Uniform::BOOL);
-            isFogged->set(factor);
+            if (s->getProgram())
+                s->getProgram()->updateIsFogged(factor);
         }
     }
 }
@@ -1198,25 +1196,6 @@ bool MainWindow::loadSceneFromFile()
     m_rootScene->resetBookmarks(m_bookmarkWidget);
     if (!m_rootScene->getUserScene()) return false;
     m_rootScene->getUserScene()->resetModel(m_canvasWidget);
-
-    // FIXME: move the below block to root scene
-    /* re-define shaders, must be put here since we update the signals/slots first */
-    for (int i=0; i<m_rootScene->getUserScene()->getNumCanvases(); ++i){
-        entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvas(i);
-        if (!cnv) continue;
-
-        for (size_t j=0; j<cnv->getNumStrokes(); ++j){
-            entity::Stroke* stroke = cnv->getStroke(j);
-            if (!stroke) continue;
-
-            Q_ASSERT(stroke->getIsCurved());
-            if (!stroke->redefineToCurve()){
-                qWarning("Could not re-define as curve");
-                continue;
-            }
-        }
-
-    }
 
     return true;
 }

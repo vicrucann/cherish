@@ -76,7 +76,10 @@ public:
     void setIsCurved(bool curved);
     bool getIsCurved() const;
 
-    const ProgramStroke* getProgram() const;
+    void setIsShadered(bool shadered);
+    bool getIsShadered() const;
+
+    ProgramStroke* getProgram() const;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
     /*! A method to be used to copy the input stroke's data. It is assumed *this stroke is empty.
@@ -91,13 +94,17 @@ public:
     osg::Vec2f getPoint(unsigned int i) const;
 
     /*! A method that fits the stroke's points to a set of curve using Schneider's algorithm.
+     * \param t is the Canvas matrix transform. If none is provided, the transform of the current canvas is taken.
+     * \param tolerance is the threshold fitting.
      * \return true upon success. */
     bool redefineToCurve(osg::MatrixTransform* t = 0, float tolerance = -1.f);
 
+protected:
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
     bool redefineToShader(osg::MatrixTransform* t);
 
+public:
     /*! \return number of vertices. */
     int getNumPoints() const;
 

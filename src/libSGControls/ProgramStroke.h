@@ -24,12 +24,20 @@ public:
     /*! A method to update one of the uniforms of the state set - fog factor. */
     void updateIsFogged(bool f);
 
+    void updateTransform(osg::MatrixTransform* t);
+
+    osg::MatrixTransform* getTransform() const;
+    osg::Camera* getCamera() const;
+    bool getIsFogged() const;
+
 private:
     bool addPresetShaders();
     bool addPresetUniforms();
 
     template <typename T>
     bool addUniform(const std::string& name, osg::Uniform::Type type, T* updateCallback = 0);
+
+    bool addUniformCanvasMatrix();
 
     template <typename T>
     bool addUniform(const std::string& name, osg::Uniform::Type type, T value);

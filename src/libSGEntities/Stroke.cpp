@@ -111,7 +111,17 @@ bool entity::Stroke::getIsCurved() const
     return m_isCurved;
 }
 
-const ProgramStroke *entity::Stroke::getProgram() const
+void entity::Stroke::setIsShadered(bool shadered)
+{
+    m_isShadered = shadered;
+}
+
+bool entity::Stroke::getIsShadered() const
+{
+    return m_isShadered;
+}
+
+ProgramStroke *entity::Stroke::getProgram() const
 {
     return m_program.get();
 }
@@ -135,7 +145,7 @@ bool entity::Stroke::copyFrom(const entity::Stroke *copy)
         return false;
     }
 
-    if (copy->getIsCurved() && copy->getNumPoints() % 4 != 0){
+    if (copy->getIsShadered() && copy->getNumPoints() % 4 != 0){
         qWarning("Copy stroke vertex number must be divadable to 4");
         return false;
     }
@@ -145,9 +155,12 @@ bool entity::Stroke::copyFrom(const entity::Stroke *copy)
         this->appendPoint(p.x(), p.y());
     }
     this->setIsCurved(copy->getIsCurved());
+    this->redefineToCurve(copy->getProgram()->getTransform());
 
-    if (copy->getNumPoints() != this->getNumPoints()){
-        qWarning("Stroke copy failed");
+    if (copy->getIsCurved() == this->getIsCurved() &&
+            copy->getIsShadered() == this->getIsShadered() &&
+            copy->getNumPoints() != this->getNumPoints()){
+        qWarning("Stroke copy failed : number of points mismatch");
         return false;
     }
 
@@ -198,69 +211,77 @@ osg::Vec2f entity::Stroke::getPoint(unsigned int i) const
 
 bool entity::Stroke::redefineToCurve(osg::MatrixTransform *t, float tolerance)
 {
-    if (m_isCurved) return true;
+    if (m_isCurved && m_isShadered) return true;
 
-    osg::ref_ptr<osg::Vec3Array> path = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    if (!path.get()){
-        qWarning("Vertex data is NULL");
-        return false;
-    }
+    if (!m_isCurved){
+        osg::ref_ptr<osg::Vec3Array> path = static_cast<osg::Vec3Array*>(this->getVertexArray());
+        if (!path.get()){
+            qWarning("Vertex data is NULL");
+            return false;
+        }
+        qDebug() << "path.samples=" << path->size();
 
-    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
-    if (!colors){
-        qWarning("Color data is NULL");
-        return false;
-    }
+        osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+        if (!colors){
+            qWarning("Color data is NULL");
+            return false;
+        }
 
-    /* set up auto threshold if necessary */
-    if (tolerance < 0.f){
-        /* auto threshold helps to avoid under-fitting or over-fitting of the curve
+        /* set up auto threshold if necessary */
+        if (tolerance < 0.f){
+            /* auto threshold helps to avoid under-fitting or over-fitting of the curve
          * depending on the scale of drawn stroke. */
-        float length = this->getLength();
-        qDebug() << "length=" << length;
+            float length = this->getLength();
+            qDebug() << "length=" << length;
 
-        tolerance = length * 0.001;
-        qDebug() << "assume threshold=" << tolerance;
+            tolerance = length * 0.001;
+            qDebug() << "assume threshold=" << tolerance;
+        }
+
+        OsgPathFitter<osg::Vec3Array, osg::Vec3f, float> fitter;
+        fitter.init(*(path.get()));
+        osg::ref_ptr<osg::Vec3Array> curves = fitter.fit(tolerance);
+        if (!curves.get()){
+            qWarning("Curves is NULL");
+            return false;
+        }
+
+        this->setVertexArray(curves.get());
+        m_isCurved = true;
     }
 
-    OsgPathFitter<osg::Vec3Array, osg::Vec3f, float> fitter;
-    fitter.init(*(path.get()));
-    osg::ref_ptr<osg::Vec3Array> curves = fitter.fit(tolerance);
-    if (!curves.get()){
-        qWarning("Curves is NULL");
-        return false;
-    }
-
-    this->setVertexArray(curves.get());
-    m_lines->setFirst(0);
-    m_lines->setCount(curves->size());
-    curves->dirty();
-    colors->resize(curves->size(), m_color);
-    colors->dirty();
-
-    qDebug() << "path.samples=" << path->size();
     if (this->redefineToShader(t==0? MainWindow::instance().getCanvasCurrent()->getTransform() : t) ) {
-        qDebug() << "curves.number=" << curves->size()/4;
+        m_isShadered = true;
+        qDebug() << "curves.number=" << this->getNumPoints()/4;
     }
     else{
         qWarning("Could not re-define to shader, re-defining to curve points instead");
-        osg::ref_ptr<osg::Vec3Array> points = this->getCurvePoints(curves.get());
+        osg::Vec3Array* curves = static_cast<osg::Vec3Array*>(this->getVertexArray());
+        osg::ref_ptr<osg::Vec3Array> points = this->getCurvePoints(curves);
         this->setVertexArray(points);
 
-        /* resize arrays and dirty the bounds */
-        m_lines->setFirst(0);
-        m_lines->setCount(points->size());
-        points->dirty();
-        colors->resize(points->size(), m_color);
-        colors->dirty();
-
         qDebug() << "curves.points=" << points->size();
+        m_isCurved = true;
+        m_isShadered = false;
     }
 
+    /* update sizing of vertices and color arrays */
+    osg::Vec3Array* finalPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    if (finalPts){
+        m_lines->setFirst(0);
+        m_lines->setCount(finalPts->size());
+        finalPts->dirty();
+        osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+        if (colors){
+            colors->resize(finalPts->size(), m_color);
+            colors->dirty();
+        }
+    }
+    else
+        qCritical("Unable to update geometry correctly");
 
     this->dirtyBound();
 
-    m_isCurved = true;
     return true;
 }
 
