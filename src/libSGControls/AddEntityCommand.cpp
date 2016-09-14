@@ -134,7 +134,7 @@ fur::AddCanvasSeparationCommand::AddCanvasSeparationCommand(entity::UserScene *s
         if (!ent) continue;
         m_entities.push_back(ent);
     }
-    if (m_entities.size() != m_target->getEntitiesSelectedSize())
+    if (int(m_entities.size()) != m_target->getEntitiesSelectedSize())
         qCritical("fur::AddCanvasSeparationCommand: failed to initialize entities");
 }
 

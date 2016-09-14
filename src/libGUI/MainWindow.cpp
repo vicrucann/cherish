@@ -919,7 +919,7 @@ void MainWindow::initializeMenus()
 //    QMenu* submenuEC = menuScene->addMenu("Edit Canvas");
 //    submenuEC->addAction(m_actionCanvasOffset);
 //    submenuEC->addAction(m_actionCanvasRotate);
-    QMenu* submenuEI = menuScene->addMenu("Edit Image");
+//    QMenu* submenuEI = menuScene->addMenu("Edit Image");
 //    submenuEI->addAction(m_actionImageMove);
 //    submenuEI->addAction(m_actionImageRotate);
 //    submenuEI->addAction(m_actionImageScale);

@@ -70,8 +70,8 @@ public:
     void setLines(osg::DrawArrays* lines);
     const osg::DrawArrays* getLines() const;
 
-    inline void setColor(const osg::Vec4f& color);
-    inline const osg::Vec4f& getColor() const;
+    void setColor(const osg::Vec4f& color);
+    const osg::Vec4f& getColor() const;
 
     void setIsCurved(bool curved);
     bool getIsCurved() const;
