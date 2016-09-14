@@ -19,7 +19,10 @@
 #include "Entity2D.h"
 #include <osg/Geometry>
 #include <osg/Camera>
+#include <osg/MatrixTransform>
 #include <osgDB/ObjectWrapper>
+
+#include "libSGControls/ProgramStroke.h"
 
 namespace entity {
 
@@ -37,7 +40,6 @@ namespace entity {
  *
  * \\ after user is finished drawing, re-define the look
  * original->redefineToCurve();
- * original->redefineToShader(camera);
  * \endcode
  *
  * The below example provides details on how to copy/clone a stroke that is already present on the
@@ -51,7 +53,6 @@ namespace entity {
  *
  * // as before, we re-define the stroke to be shadered
  * copy->redefineToCurve();
- * copy->redefineToShader(original->getCamera());
  * \endcode
 */
 class Stroke : public entity::Entity2D {
@@ -74,9 +75,11 @@ public:
 
     void setIsCurved(bool curved);
     bool getIsCurved() const;
-    bool isShadered() const;
 
-    const osg::Program* getProgram() const;
+    void setIsShadered(bool shadered);
+    bool getIsShadered() const;
+
+    ProgramStroke* getProgram() const;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
     /*! A method to be used to copy the input stroke's data. It is assumed *this stroke is empty.
@@ -90,18 +93,18 @@ public:
     /*! \param i is the point index. \return point coordinates at the specified index. */
     osg::Vec2f getPoint(unsigned int i) const;
 
-    /*! \return observer pointer on camera which helped to create a shadered version.
-     * \sa redefineToShader(). */
-    osg::Camera* getCamera() const;
-
     /*! A method that fits the stroke's points to a set of curve using Schneider's algorithm.
+     * \param t is the Canvas matrix transform. If none is provided, the transform of the current canvas is taken.
+     * \param tolerance is the threshold fitting.
      * \return true upon success. */
-    bool redefineToCurve(float tolerance = -1.f);
+    bool redefineToCurve(osg::MatrixTransform* t = 0, float tolerance = -1.f);
 
+protected:
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
-    bool redefineToShader(osg::Camera* camera);
+    bool redefineToShader(osg::MatrixTransform* t);
 
+public:
     /*! \return number of vertices. */
     int getNumPoints() const;
 
@@ -133,12 +136,12 @@ public:
     cher::ENTITY_TYPE getEntityType() const;
 
 protected:
-    bool initializeShaderProgram(osg::Camera* camera);
+
+    osg::Vec3Array* getCurvePoints(const osg::Vec3Array* bezierPts) const;
 
 private:
     osg::ref_ptr<osg::DrawArrays>   m_lines; // saved to file
-    osg::ref_ptr<osg::Program>      m_program; // OPT: put program higher on scene graph so that to load it only once and then apply to all the strokes
-    osg::observer_ptr<osg::Camera>  m_camera;
+    osg::ref_ptr<ProgramStroke>     m_program; // OPT: put program higher on scene graph so that to load it only once and then apply to all the strokes
     osg::Vec4f                      m_color; // saved to file
     bool                            m_isCurved;
     bool                            m_isShadered;

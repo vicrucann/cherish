@@ -6,6 +6,7 @@
 #include <QtGlobal>
 
 #include "Settings.h"
+#include "MainWindow.h"
 
 entity::Bookmarks::Bookmarks()
     : QObject()
@@ -123,9 +124,8 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     item->setFlags(item->flags() | Qt::ItemIsEditable);
 
     // take snapshot of the bookmark
-    QPixmap pmap;
     int idx = m_eyes.size()-1;
-    emit this->requestScreenshot(pmap, m_eyes[idx], m_centers[idx], m_ups[idx]);
+    QPixmap pmap = MainWindow::instance().getScreenshot(m_eyes[idx], m_centers[idx], m_ups[idx]);
     item->setIcon(QIcon(pmap));
 }
 
@@ -134,9 +134,10 @@ void entity::Bookmarks::updateBookmark(BookmarkWidget *widget, int row)
 {
     if (row >=0 && row < static_cast<int>(m_eyes.size())){
         QListWidgetItem* item = widget->item(row);
-        QPixmap pmap;
+        QPixmap pmap = MainWindow::instance().getScreenshot(m_eyes[row],
+                                                            m_centers[row],
+                                                            m_ups[row]);;
         emit this->requestSceneStateSet(this->getSceneState(row));
-        emit this->requestScreenshot(pmap, m_eyes[row], m_centers[row], m_ups[row]);
         item->setIcon(QIcon(pmap));
     }
 }
@@ -162,8 +163,7 @@ void entity::Bookmarks::resetModel(BookmarkWidget *widget)
         QListWidgetItem* item = widget->item(i);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
         emit requestSceneStateSet(this->getSceneState(i));
-        QPixmap pmap;
-        emit this->requestScreenshot(pmap, m_eyes[i], m_centers[i], m_ups[i]);
+        QPixmap pmap = MainWindow::instance().getScreenshot(m_eyes[i], m_centers[i], m_ups[i]);
         item->setIcon(QIcon(pmap));
     }
 }

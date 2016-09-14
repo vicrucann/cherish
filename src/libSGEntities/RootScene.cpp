@@ -1,3 +1,5 @@
+#include "RootScene.h"
+
 #include "iostream"
 #include <sstream>
 #include <stdlib.h>
@@ -11,9 +13,9 @@
 #include <osgDB/ReaderWriter>
 #include <osgDB/Registry>
 
-#include "RootScene.h"
 #include "Settings.h"
 #include "EditEntityCommand.h"
+#include "MainWindow.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
     : osg::ProtectedGroup()
@@ -134,10 +136,6 @@ bool RootScene::writeScenetoFile()
     if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) result = false;
 
     /* for each canvas, attach its tools back */
-    osg::Camera* camera = NULL;
-    emit m_userScene->requestCamera(camera);
-    Q_ASSERT(camera);
-
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* canvas = m_userScene->getCanvas(i);
         if (!canvas) continue;
@@ -206,17 +204,16 @@ bool RootScene::loadSceneFromFile()
             photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, photo->getTextureAsAttribute());
         }
 
-//        /* stroke shaders */
-//        for (size_t k=0; k<cnv->getNumStrokes(); ++k){
-//            entity::Stroke* stroke = cnv->getStroke(k);
-//            if (!stroke) {
-//                qWarning("Could not read stroke");
-//                continue;
-//            }
-//            if (!stroke->redefineToShader(camera))
-//                qWarning("Could not redefine stroke as shader");
-//        }
-
+        /* stroke curved */
+        for (size_t k=0; k<cnv->getNumStrokes(); ++k){
+            entity::Stroke* stroke = cnv->getStroke(k);
+            if (!stroke) {
+                qWarning("Could not read stroke");
+                continue;
+            }
+            if (!stroke->redefineToCurve(cnv->getTransform()))
+                qWarning("Could not redefine stroke as curve");
+        }
     }
 
     /* update current/previous canvases */
@@ -471,20 +468,22 @@ void RootScene::editStrokeDelete(entity::Stroke *stroke)
 void RootScene::copyToBuffer()
 {
     m_buffer.clear();
-    if (!m_userScene->getCanvasCurrent()) return;
+    entity::Canvas* canvas = m_userScene->getCanvasCurrent();
+    if (!canvas) return;
 
-    const std::vector<entity::Entity2D*>& selected = m_userScene->getCanvasCurrent()->getEntitiesSelected();
+    const std::vector<entity::Entity2D*>& selected = canvas->getEntitiesSelected();
     if (selected.size()==0) return;
 
     for (size_t i=0; i<selected.size(); ++i){
         const entity::Stroke& copy = dynamic_cast<const entity::Stroke&>( *selected.at(i));
 
         entity::Stroke* stroke = new entity::Stroke;
+        if (!stroke) {
+            qWarning("Could not allocated stroke");
+            continue;
+        }
         stroke->copyFrom(&copy);
-        stroke->redefineToCurve();
-        stroke->redefineToShader(copy.getCamera());
-
-        if (!stroke) continue;
+        stroke->redefineToCurve(copy.getProgram()->getTransform());
         m_buffer.push_back(stroke);
     }
 }

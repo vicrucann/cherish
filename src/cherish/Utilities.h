@@ -27,7 +27,7 @@ public:
 
     static bool areStrokesProjectable(const std::vector<entity::Stroke *> &strokes, entity::Canvas *source, entity::Canvas *target, osg::Camera* camera);
 
-    static bool getViewProjectionWorld(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
+    static bool getViewProjectionWorld(osgGA::GUIActionAdapter& aa,
                                        osg::Matrix& VPW, osg::Matrix& invVPW);
 
     static void getFarNear(double x, double y, const osg::Matrix& invVPW,

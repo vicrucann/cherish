@@ -641,7 +641,7 @@ bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& e
 {
     /* get view-projection-world matrix and its inverse*/
     osg::Matrix VPW, invVPW;
-    if (!Utilities::getViewProjectionWorld(ea, aa, VPW, invVPW))
+    if (!Utilities::getViewProjectionWorld(aa, VPW, invVPW))
         return false;
 
     /* get far and near in global 3D coords */
@@ -683,7 +683,7 @@ bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& e
 bool EventHandler::getRaytraceNormalProjection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, osg::Vec3f& XC)
 {
     osg::Matrix VPW, invVPW;
-    if (!Utilities::getViewProjectionWorld(ea, aa, VPW, invVPW))
+    if (!Utilities::getViewProjectionWorld(aa, VPW, invVPW))
         return false;
 
     osg::Vec3f nearPoint, farPoint;
@@ -705,7 +705,7 @@ bool EventHandler::getRaytracePlaneIntersection(const osgGA::GUIEventAdapter &ea
 {
     /* get view-projection-world matrix and its inverse*/
     osg::Matrix VPW, invVPW;
-    if (!Utilities::getViewProjectionWorld(ea, aa, VPW, invVPW))
+    if (!Utilities::getViewProjectionWorld(aa, VPW, invVPW))
         return false;
 
     /* get far and near in global 3D coords */

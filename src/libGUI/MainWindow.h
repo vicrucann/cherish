@@ -15,6 +15,7 @@
 #include <QFileSystemModel>
 
 #include <osg/ref_ptr>
+#include <osg/Camera>
 
 #include "RootScene.h"
 #include "Settings.h"
@@ -35,9 +36,17 @@ class MainWindow : public QMainWindow {
 public:
     /*! Constructor. */
     explicit MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+    ~MainWindow();
+
+    static MainWindow& instance();
 
     /*! \return const pointer to RootScene. */
     const RootScene* getRootScene() const;
+
+    entity::Canvas* getCanvasCurrent() const;
+    osg::Camera* getCamera() const;
+    bool getStrokeFogFactor() const;
+    QPixmap getScreenshot(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
 
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
@@ -97,9 +106,6 @@ public slots:
     /*! Slot called when user performed drag-and-drop from PhotoWidget to GLWidget of a entity::Photo. */
     void onImportPhoto(const QString& path, const QString& fileName);
 
-    /*! Slot called when new entity::Stroke is added and is about to be re-defined as shader from entity::UserScene. */
-    void onRequestCamera(osg::Camera*& camera);
-
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */
     void onFileNew();
@@ -151,6 +157,8 @@ protected slots:
     void onStrokesPush();
 
     void onBookmark();
+
+    void onStrokeFogFactor();
 
 protected:
     void        initializeActions();
@@ -207,7 +215,12 @@ protected:
             , * m_actionStrokesPush
     ;
 
+    // OPTION actions
+    QAction* m_actionStrokeFogFactor;
+
     CameraProperties* m_cameraProperties;
+
+    static MainWindow* m_instance;
 };
 
 #endif // MAINWINDOW

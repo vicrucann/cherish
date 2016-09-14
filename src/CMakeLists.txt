@@ -2,6 +2,10 @@
 project(Cherish)
 cmake_minimum_required(VERSION 2.8.11)
 
+if(POLICY CMP0054)
+    cmake_policy(SET CMP0054 NEW)
+endif()
+
 
 ## Project version
 if (NOT Cherish_VERSION)
@@ -132,10 +136,6 @@ add_subdirectory(libNumerics)
 if (Cherish_BUILD_TESTS)
     add_subdirectory(tests)
 endif()
-
-## copy shaders (only runs on cmake, not make command)
-file (COPY ${CMAKE_SOURCE_DIR}/cherish/Shaders DESTINATION ${CMAKE_BINARY_DIR}/cherish)
-file (COPY ${CMAKE_SOURCE_DIR}/cherish/Shaders DESTINATION ${CMAKE_BINARY_DIR}/tests)
 
 
 ## Installer settings (CPack) will be located here

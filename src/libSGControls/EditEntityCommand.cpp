@@ -279,9 +279,9 @@ fur::EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas
     for (size_t i=0; i<buffer.size(); ++i){
         const entity::Stroke& copy = dynamic_cast<const entity::Stroke&> (*buffer.at(i));
         entity::Stroke* stroke = new entity::Stroke;
-        stroke->copyFrom(&copy);
-        stroke->redefineToShader(copy.getCamera());
         if (!stroke) continue;
+        stroke->copyFrom(&copy);
+        Q_ASSERT(stroke->getIsShadered());
         m_entities.push_back(stroke);
     }
 
@@ -309,6 +309,11 @@ void fur::EditPasteCommand::redo()
         entity->moveDelta(0.2, 0.2);
         m_scene->addEntity(m_canvas.get(), entity);
         m_canvas->addEntitySelected(entity);
+        if (entity->getEntityType() == cher::ENTITY_STROKE){
+            entity::Stroke* s = dynamic_cast<entity::Stroke*>(entity);
+            if (!s) continue;
+            s->getProgram()->updateTransform(m_canvas->getTransform());
+        }
     }
 }
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */

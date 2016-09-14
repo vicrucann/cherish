@@ -650,7 +650,7 @@ entity::Canvas *entity::Canvas::clone() const
                 entity::Stroke* si = new entity::Stroke;
                 if (si){
                     si->copyFrom(stroke);
-                    si->redefineToShader(stroke->getCamera());
+                    Q_ASSERT(si->getIsCurved());
                     if (!clone->addEntity(si)) qWarning("canvas clone: could not add stroke as drawable");
                 }
                 else qWarning("canvas clone: coult not clone the stroke");

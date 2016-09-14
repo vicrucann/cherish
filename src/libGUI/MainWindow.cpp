@@ -22,6 +22,8 @@
 #include "Data.h"
 #include "Utilities.h"
 
+MainWindow* MainWindow::m_instance = nullptr;
+
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags)
     , m_mdiArea(new QMdiArea(this))
@@ -41,6 +43,10 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_glWidget(new GLWidget(m_rootScene.get(), m_viewStack))
     , m_cameraProperties( new CameraProperties(60.f, this) )
 {
+    /* singleton check and setup */
+    Q_ASSERT_X(m_instance == 0, "MainWindow ctor", "MainWindow is a singleton and cannot be created more than once");
+    m_instance = this;
+
     this->setMenuBar(m_menuBar);
 //    this->setIconSize(QSize(cher::APP_MAINWINDOW_ICONSIZE * cher::DPI_SCALING, cher::APP_MAINWINDOW_ICONSIZE * cher::DPI_SCALING));
 
@@ -84,9 +90,44 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     this->onSketch();
 }
 
+MainWindow::~MainWindow()
+{
+    m_instance = nullptr;
+}
+
+MainWindow &MainWindow::instance()
+{
+    Q_ASSERT_X(m_instance, "MainWindow::instance", "Singleton not constructed yet");
+    return *m_instance;
+}
+
 const RootScene *MainWindow::getRootScene() const
 {
     return m_rootScene.get();
+}
+
+entity::Canvas *MainWindow::getCanvasCurrent() const
+{
+    if (!m_rootScene->getUserScene())
+        return 0;
+    return m_rootScene->getUserScene()->getCanvasCurrent();
+}
+
+osg::Camera *MainWindow::getCamera() const
+{
+    if (!m_glWidget) return 0;
+    return m_glWidget->getCamera();
+}
+
+bool MainWindow::getStrokeFogFactor() const
+{
+    if (!m_actionStrokeFogFactor) return false;
+    return m_actionStrokeFogFactor->isChecked();
+}
+
+QPixmap MainWindow::getScreenshot(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+{
+    return m_glWidget->getScreenShot(eye, center, up);
 }
 
 void MainWindow::onSetTabletActivity(bool active){
@@ -308,11 +349,6 @@ void MainWindow::onImportPhoto(const QString &path, const QString &fileName)
 {
     QString fullPath = path + "/" + fileName;
     this->importPhoto(fullPath);
-}
-
-void MainWindow::onRequestCamera(osg::Camera *&camera)
-{
-    camera = m_glWidget->getCamera();
 }
 
 /* Check whether the current scene is empty or not
@@ -661,6 +697,28 @@ void MainWindow::onBookmark()
     this->statusBar()->showMessage(tr("Current camera view is saved as a bookmark"));
 }
 
+void MainWindow::onStrokeFogFactor()
+{
+    bool factor = m_actionStrokeFogFactor->isChecked()? true : false;
+    for (int i=0; i<m_rootScene->getUserScene()->getNumCanvases(); ++i){
+        entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvas(i);
+        if (!cnv) {
+            qWarning("Canvas is NULL");
+            continue;
+        }
+
+        for (unsigned int j=0; j<cnv->getNumStrokes(); ++j){
+            entity::Stroke* s = cnv->getStroke(j);
+            if (!s){
+                qWarning("Stroke is NULL");
+                continue;
+            }
+            if (s->getProgram())
+                s->getProgram()->updateIsFogged(factor);
+        }
+    }
+}
+
 void MainWindow::initializeActions()
 {
     // FILE
@@ -784,41 +842,17 @@ void MainWindow::initializeActions()
     m_actionSetStandard = new QAction(Data::sceneNewCanvasSetStandardIcon(), tr("Standard"), this);
     this->connect(m_actionSetStandard, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasStandard()));
 
-//    m_actionSetCoaxial = new QAction(Data::sceneNewCanvasSetCoaxialIcon(), tr("Coaxial"), this);
-//    this->connect(m_actionSetCoaxial, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasCoaxial()));
-
-//    m_actionSetParallel = new QAction(Data::sceneNewCanvasSetParallelIcon(), tr("Parallel"), this);
-//    this->connect(m_actionSetParallel, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasParallel()));
-
-//    m_actionSetRing = new QAction(Data::sceneNewCanvasSetRingIcon(), tr("Ring"), this);
-//    this->connect(m_actionSetRing, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasRing()));
-
-//    m_actionCanvasOffset = new QAction(Data::sceneCanvasOffsetIcon(), tr("Offset Canvas"), this);
-//    this->connect(m_actionCanvasOffset, SIGNAL(triggered(bool)), this, SLOT(onCanvasOffset()));
-
-//    m_actionCanvasRotate = new QAction(Data::sceneCanvasRotateIcon(), tr("Rotate Canvas"), this);
-//    this->connect(m_actionCanvasRotate, SIGNAL(triggered(bool)), this, SLOT(onCanvasRotate()));
-
     m_actionCanvasEdit = new QAction(Data::sceneCanvasEditIcon(), tr("Edit canvas location"), this);
     this->connect(m_actionCanvasEdit, SIGNAL(triggered(bool)), this, SLOT(onCanvasEdit()));
 
-//    m_actionImageMove = new QAction(Data::sceneImageMoveIcon(), tr("Move Image"), this);
-//    this->connect(m_actionImageMove, SIGNAL(triggered(bool)), this, SLOT(onImageMove()));
-
-//    m_actionImageRotate = new QAction(Data::sceneImageRotateIcon(), tr("Rotate Image"), this);
-//    this->connect(m_actionImageRotate, SIGNAL(triggered(bool)), this, SLOT(onImageRotate()));
-
-//    m_actionImageScale = new QAction(Data::sceneImageScaleIcon(), tr("Scale Image"), this);
-//    this->connect(m_actionImageScale, SIGNAL(triggered(bool)), this, SLOT(onImageScale()));
-
-//    m_actionImageFlipV = new QAction(Data::sceneImageFlipVIcon(), tr("Flip Image"), this);
-//    this->connect(m_actionImageFlipV, SIGNAL(triggered(bool)), this, SLOT(onImageFlipV()));
-
-//    m_actionImageFlipH = new QAction(Data::sceneImageFlipHIcon(), tr("Flip Image"), this);
-//    this->connect(m_actionImageFlipH, SIGNAL(triggered(bool)), this, SLOT(onImageFlipH()));
-
     m_actionStrokesPush = new QAction(Data::scenePushStrokesIcon(), tr("Push Strokes"), this);
     this->connect(m_actionStrokesPush, SIGNAL(triggered(bool)), this, SLOT(onStrokesPush()));
+
+    // OPTIONS
+    m_actionStrokeFogFactor = new QAction(Data::viewerIsoIcon(), tr("Fog factor"), this);
+    m_actionStrokeFogFactor->setCheckable(true);
+    m_actionStrokeFogFactor->setChecked(false);
+    this->connect(m_actionStrokeFogFactor, SIGNAL(toggled(bool)), this, SLOT(onStrokeFogFactor()));
 
 }
 
@@ -880,9 +914,7 @@ void MainWindow::initializeMenus()
     QMenu* submenuSet = menuScene->addMenu("New Canvas Set");
     submenuSet->setIcon(Data::sceneNewCanvasSetIcon());
     submenuSet->addAction(m_actionSetStandard);
-//    submenuSet->addAction(m_actionSetCoaxial);
-//    submenuSet->addAction(m_actionSetParallel);
-//    submenuSet->addAction(m_actionSetRing);
+
     menuScene->addSeparator();
 //    QMenu* submenuEC = menuScene->addMenu("Edit Canvas");
 //    submenuEC->addAction(m_actionCanvasOffset);
@@ -895,6 +927,14 @@ void MainWindow::initializeMenus()
 //    submenuEI->addAction(m_actionImageFlipV);
     QMenu* submenuES = menuScene->addMenu("Edit Strokes");
     submenuES->addAction(m_actionStrokesPush);
+
+    /* OPTIONS */
+    QMenu* menuOptions = m_menuBar->addMenu(tr("&Options"));
+    menuOptions->addAction(m_actionTools);
+    QMenu* submenuVisuals = menuOptions->addMenu("Visuals");
+    submenuVisuals->setIcon(Data::optionsVisibilityIcon());
+    submenuVisuals->addAction(m_actionStrokeFogFactor);
+
 }
 
 void MainWindow::initializeToolbars()
@@ -915,8 +955,6 @@ void MainWindow::initializeToolbars()
     tbEdit->addAction(m_actionCut);
     tbEdit->addAction(m_actionCopy);
     tbEdit->addAction(m_actionPaste);
-//    tbEdit->addAction(m_actionDelete);
-    tbEdit->addAction(m_actionTools);
 
     // Camera navigation
     QToolBar* tbCamera = new QToolBar(tr("Camera"));
@@ -951,9 +989,6 @@ void MainWindow::initializeToolbars()
 
     QMenu* menuNewCanvasSet = new QMenu(this);
     menuNewCanvasSet->addAction(m_actionSetStandard);
-//    menuNewCanvasSet->addAction(m_actionSetCoaxial);
-//    menuNewCanvasSet->addAction(m_actionSetParallel);
-//    menuNewCanvasSet->addAction(m_actionSetRing);
     QToolButton* tbNewCanvasSet = new QToolButton();
     tbNewCanvasSet->setIcon(Data::sceneNewCanvasSetIcon());
     tbNewCanvasSet->setMenu(menuNewCanvasSet);
@@ -966,17 +1001,7 @@ void MainWindow::initializeToolbars()
 
     // Edit entity
     QToolBar* tbEntity = new QToolBar(tr("Edit entity"));
-    //QToolBar* tbEntity = this->addToolBar(tr("Edit entity"));
     this->addToolBar(Qt::LeftToolBarArea, tbEntity);
-//    tbEntity->addAction(m_actionCanvasOffset);
-//    tbEntity->addAction(m_actionCanvasRotate);
-//    tbEntity->addSeparator();
-//    tbEntity->addAction(m_actionImageMove);
-//    tbEntity->addAction(m_actionImageRotate);
-//    tbEntity->addAction(m_actionImageScale);
-//    tbEntity->addAction(m_actionImageFlipH);
-//    tbEntity->addAction(m_actionImageFlipV);
-    //tbEntity->addSeparator();
     tbEntity->addAction(m_actionStrokesPush);
 
     /* VIEWER bar */
@@ -986,6 +1011,23 @@ void MainWindow::initializeToolbars()
     tbViewer->addAction(m_actionNextView);
     tbViewer->addAction(m_actionBookmark);
     tbViewer->addAction(m_actionCameraSettings);
+
+    /* OPTIONS bar */
+    QToolBar* tbOptions = new QToolBar(tr("Options"));
+    this->addToolBar(Qt::TopToolBarArea, tbOptions);
+    tbOptions->addAction(m_actionTools);
+
+    QMenu* menuVisuals = new QMenu(this);
+    menuVisuals->addAction(m_actionStrokeFogFactor);
+    QToolButton* tbVisuals = new QToolButton();
+    tbVisuals->setIcon(Data::optionsVisibilityIcon());
+    tbVisuals->setMenu(menuVisuals);
+    tbVisuals->setPopupMode(QToolButton::InstantPopup);
+    QWidgetAction* waVisuals = new QWidgetAction(this);
+    waVisuals->setDefaultWidget(tbVisuals);
+
+    tbOptions->addAction(waVisuals);
+
 }
 
 /* signal slot connections must be established in two cases:
@@ -1014,10 +1056,6 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestSceneToolStatus(bool&)),
                      this, SLOT(onRequestSceneToolStatus(bool&)),
-                     Qt::UniqueConnection);
-
-    QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestCamera(osg::Camera*&)),
-                     this, SLOT(onRequestCamera(osg::Camera*&)),
                      Qt::UniqueConnection);
 
     /* bookmark widget data */
@@ -1057,11 +1095,6 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)),
                      m_rootScene->getBookmarksModel(), SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)),
-                     Qt::UniqueConnection);
-
-
-    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
-                     m_glWidget, SLOT(onRequestScreenshot(QPixmap&,osg::Vec3d,osg::Vec3d,osg::Vec3d)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestSceneData(entity::SceneState*)),
@@ -1162,31 +1195,6 @@ bool MainWindow::loadSceneFromFile()
     m_rootScene->resetBookmarks(m_bookmarkWidget);
     if (!m_rootScene->getUserScene()) return false;
     m_rootScene->getUserScene()->resetModel(m_canvasWidget);
-
-    /* re-define shaders, must be put here since we update the signals/slots first */
-    osg::Camera* camera = NULL;
-    this->onRequestCamera(camera);
-    Q_ASSERT(camera);
-    for (int i=0; i<m_rootScene->getUserScene()->getNumCanvases(); ++i){
-        entity::Canvas* cnv = m_rootScene->getUserScene()->getCanvas(i);
-        if (!cnv) continue;
-
-        for (size_t j=0; j<cnv->getNumStrokes(); ++j){
-            entity::Stroke* stroke = cnv->getStroke(j);
-            if (!stroke) continue;
-
-            Q_ASSERT(stroke->getIsCurved());
-            if (!stroke->redefineToCurve()){
-                qWarning("Could not re-define as curve");
-                continue;
-            }
-            if (!stroke->redefineToShader(camera)){
-                qWarning("Could not redefine stroke as shader");
-                continue;
-            }
-        }
-
-    }
 
     return true;
 }

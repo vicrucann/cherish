@@ -39,6 +39,10 @@ public:
     static const QIcon& scenePanIcon();
     static const QIcon& sceneZoomIcon();
 
+
+    static const QIcon& optionsVisibilityIcon();
+
+
     static const QIcon& sceneNewCanvasIcon();
     static const QIcon& sceneNewCanvasCloneIcon();
     static const QIcon& sceneNewCanvasXYIcon();

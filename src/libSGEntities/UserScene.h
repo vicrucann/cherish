@@ -511,10 +511,6 @@ signals:
      * \param visibility is a boolean flag which indicated whether the tools are on (true) of off (false). */
     void requestSceneToolStatus(bool& visibility);
 
-    /*! A signal which is emitted to obtain a pointer on GLWidget's camera. The camera is used by entity::Stroke in order to
-     * re-define the stroke as a shader. It is used from method addStroke(). */
-    void requestCamera(osg::Camera*& camera);
-
 public slots:
     /*! A slot which is called when the canvas name was edited from CanvasPhotoWidget. Based on the edited item, the slot
      * edits the name of the corresponding canvas. This slot is connected to CanvasPhotoWidget::itemChanged() */

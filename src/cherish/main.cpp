@@ -58,9 +58,13 @@ int main(int argc, char** argv)
     qputenv("QT_DEVICE_PIXEL_RATIO", QByteArray("1"));
 #endif // QT_VERSION
 
+    /* application */
     CherishApplication cherish_app(argc, argv);
     cherish_app.setWindowIcon(Data::appIcon());
+
+    /* main window */
     MainWindow mwin;
+    mwin.move(0,0); // if multi-monitor system, always open in main display
     mwin.setWindowState(Qt::WindowMaximized);
     QObject::connect(&cherish_app, SIGNAL(setTabletActivity(bool)), &mwin, SLOT(onSetTabletActivity(bool)));
     mwin.show();

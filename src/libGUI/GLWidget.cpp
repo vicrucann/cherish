@@ -12,6 +12,10 @@
 #include <QOpenGLContext>
 #include <QOpenGLFunctions_3_3_Core>
 #include <QSurfaceFormat>
+#include <QOpenGLFramebufferObject>
+#include <QOpenGLFramebufferObjectFormat>
+#include <QOpenGLPaintDevice>
+#include <QScopedPointer>
 
 #include <osg/StateSet>
 #include <osg/Material>
@@ -71,7 +75,8 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     m_viewer->realize();
 
     /* OpenGL graphics context */
-    m_traits->samples = 8; // multi sampling (anti-aliasing)
+    m_traits->samples = 4; // multi sampling (anti-aliasing)
+    m_traits->sampleBuffers = 4;
     m_traits->x = this->x(); // this->width(), this->height());
     m_traits->y = this->y();
     m_traits->width = this->width();
@@ -85,14 +90,14 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     this->setAcceptDrops(true); // do drag photos from PhotoWidget
 
     /* OpenGL graphics format */
-    QSurfaceFormat format = this->format();
+//    QSurfaceFormat format = this->format();
     /*  To make sure shadered lines are rendered with anti-aliasing, we
      * set the samples to 4. Equivalent to: http://www.learnopengl.com/#!Advanced-OpenGL/Anti-aliasing
      * Since m_viewer is of type GraphicsWindowEmbedded, the format is managed by the outsider widget (QOpenGLWidget),
      * that is why we set it up here. */
-    format.setSamples(4);
-    this->setFormat(format);
-    qInfo() << "multisampling samples=" << format.samples();
+//    format.setSamples(4);
+//    this->setFormat(format);
+//    qInfo() << "multisampling samples=" << format.samples();
 }
 
 osg::Camera *GLWidget::getCamera() const
@@ -162,7 +167,7 @@ void GLWidget::setTabletActivity(bool active)
     m_DeviceActive = active;
 }
 
-void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+QPixmap GLWidget::getScreenShot(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     /* save the current camera view */
     osg::Vec3d eye_, center_, up_;
@@ -171,7 +176,6 @@ void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const o
 
     /* move the camera to bookmark view */
     m_manipulator->setTransformation(eye, center, up);
-
 
     /* save the current scene state */
     osg::ref_ptr<entity::SceneState> ss = new entity::SceneState();
@@ -182,7 +186,7 @@ void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const o
     this->update();
 
     /* grab the screenshot */
-    pmap = this->grab();
+    QPixmap pmap = this->grab();
 
     /* apply the saved scene state */
     m_RootScene->setSceneState(ss);
@@ -190,6 +194,8 @@ void GLWidget::onRequestScreenshot(QPixmap &pmap, const osg::Vec3d &eye, const o
     /* return to the current camera view */
     m_manipulator->setTransformation(eye_, center_, up_);
     this->update();
+
+    return pmap;
 }
 
 /* FOV is a whole angle, not half angle */

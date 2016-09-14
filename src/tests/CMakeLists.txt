@@ -77,6 +77,13 @@ add_executable(${USERSCENE_NAME} ${USERSCENE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${
 target_link_libraries(${USERSCENE_NAME} ${TEST_LIBRARIES})
 add_test(${USERSCENE_NAME} ${USERSCENE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
 
+# Bookmarks test
+set(BOOKMARKS_SRC BookmarksTest.h BookmarksTest.cpp ${BASEGUITEST_SRC})
+set(BOOKMARKS_NAME test_Bookmarks)
+add_executable(${BOOKMARKS_NAME} ${BOOKMARKS_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
+target_link_libraries(${BOOKMARKS_NAME} ${TEST_LIBRARIES})
+add_test(${BOOKMARKS_NAME} ${BOOKMARKS_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
+
 # MainWindow tests
 set(MAINWINDOW_SRC MainWindowTest.h MainWindowTest.cpp ${BASEGUITEST_SRC})
 set(MAINWINDOW_NAME test_MainWindow)

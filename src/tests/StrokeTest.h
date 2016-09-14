@@ -11,6 +11,7 @@ private slots:
     void testCloneShaderedStroke();
     void testReadWrite();
     void testCopyPaste();
+    void testFogSwitch();
 
 private:
 
