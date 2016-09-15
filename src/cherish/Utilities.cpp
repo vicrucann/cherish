@@ -419,5 +419,6 @@ QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
     default:
         break;
     }
+
     return cur;
 }
