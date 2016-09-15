@@ -678,7 +678,7 @@ entity::Canvas *entity::Canvas::separate()
     clone->setMatrixTranslation(this->getMatrixTranslation());
     clone->setName(this->getName());
 
-    for (size_t i=0; i<(size_t)m_selectedGroup.getSize(); ++i){
+    for (auto i=0; i<m_selectedGroup.getSize(); ++i){
         entity::Entity2D* entcopy = m_selectedGroup.getEntity(i);;
         if (!entcopy) continue;
         switch(entcopy->getEntityType()){
@@ -790,7 +790,7 @@ unsigned int entity::Canvas::getNumStrokes() const
 
 entity::Photo *entity::Canvas::getPhoto(int row) const
 {
-    if (row<0 || row>=(int)m_geodePhotos->getNumChildren()) return NULL;
+    if (row<0 || row>=static_cast<int>(m_geodePhotos->getNumChildren())) return NULL;
     return dynamic_cast<entity::Photo*>(m_geodePhotos->getChild(row));
 }
 
@@ -809,7 +809,7 @@ entity::Entity2D *entity::Canvas::getEntity(unsigned int i) const
         return dynamic_cast<entity::Entity2D*> (m_geodeStrokes->getDrawable(i));
     /* requested entity is a photo */
     else{
-        Q_ASSERT((int)i-(int)m_geodeStrokes->getNumChildren()>=0 && i-m_geodeStrokes->getNumChildren()<m_geodeStrokes->getNumChildren());
+        Q_ASSERT(int(i)-int(m_geodeStrokes->getNumChildren()) >= 0 && int(i)-int(m_geodeStrokes->getNumChildren()) < int(m_geodeStrokes->getNumChildren()));
         return dynamic_cast<entity::Entity2D*>(m_geodePhotos->getDrawable(i-m_geodeStrokes->getNumChildren()));
     }
 }

@@ -9,6 +9,10 @@ addons:
     packages:
       - cmake
       - g++-4.8
+        # OpenGL related
+      - libgl1-mesa-dev
+      - mesa-utils
+      - libgl1-mesa-glx 
   coverity_scan:
     project:
       name: "vicrucann/cherish"
@@ -27,14 +31,21 @@ env:
     - secure: "iWzeGhXtnQ0QgZ/iyhC7DTdm2ppbSaGPZGcxB7VDoi09bIsn2Q8MWsaU4uv6ofwfzIK3l7FZPyXKPKyyXVH463cSxk+LcfJW8Oqj6d8RxotHkzF9ysRPtI5wFcvaIN2vktux+9ufTj5Ay9fl+xDjLCXk/qaGZ6makEYbUHOzAYThXvMMjwC4gvwNyELDttCN0bV/OOAAmkCWbHic+oe/xhHbwxPxJg/en0Zlz1cIHT3KKSqoq+aOyOfK/9yiGAMZVDuZhCbZmmlL7jOh1xDghTKtwl47wI6rjTAY+yGfuvtQnhuJI0C/VZI+m6ucihyr1cOhv899Fct62QETQPhZSOp71UOIU22p8dvHdzdbB9J/K/v6uppfqZ/uOTDUDElqyh11uWkFVp4ouZGGV/pJunzVdb+AttH9XwbJRuM0zM2B9ZBwzzv9GdhXifxpLOKHUGI8XFvJGZW6PhrjTUipSVpBQS9qCp8lf+KmQfMb2molZljyc82R4SDn/k4uImOJh6thWTjBJOsI/7pn+Jtqgj3rXC0kJ8D1DRNJ8E9igfWmB4A814w6z8EdljCDb+wveCd/alL/tREyZfCMgRCdcr/MUWJjYTrVCsdlCh5WVC1y0NBO2AacQPAhZC1XmFPHyTJUWKvXXkb1uBHYqGdh9WEDkzfKtBW55u4TNp0nh4Q="
 
 before_install:
+  # Qt
   - sudo apt-add-repository --yes ppa:beineri/opt-qt551-trusty
   - sudo apt-get -qq update
+  # OpenSceneGraph
   - wget https://github.com/vicrucann/OpenSceneGraph/releases/download/OpenSceneGraph-3.4.0/osg-340-deb.tar.gz
   - tar -zxvf osg-340-deb.tar.gz
+  # OpenGL
+  - sudo apt-add-repository --yes ppa:oibaf/graphics-drivers
+  - sudo apt-get update -qq -y
+  - sudo apt-get -yq --force-yes install libgl1-mesa-dev libgl1-mesa-glx mesa-common-dev libglapi-mesa libgl1-mesa-dri
   # imitate x server
   - export DISPLAY=:99.0
   - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16
   - sleep 3
+  - glxinfo | grep version
 
 install:
   - sudo apt-get --yes install qt55base qt55imageformats qt55svg 
@@ -77,6 +88,7 @@ script:
   - ./test_UserScene
   - ./test_Canvas
   - ./test_Stroke
+    #  - ./test_Bookmarks
   - cd ..
 
 
