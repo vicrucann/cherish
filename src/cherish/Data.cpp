@@ -510,7 +510,7 @@ const QPixmap &Data::editDeleteCursor()
     QString fname(":/edit-delete-cursor-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -520,7 +520,7 @@ const QPixmap &Data::sceneOrbitPixmap()
     QString fname(":/scene-orbit-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -530,7 +530,7 @@ const QPixmap &Data::scenePanPixmap()
     QString fname(":/scene-pan-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -540,7 +540,7 @@ const QPixmap &Data::sceneZoomPixmap()
     QString fname(":/scene-zoom-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -550,7 +550,7 @@ const QPixmap &Data::sceneCanvasOffsetCursor()
     QString fname(":/scene-canvas-offset-cursor-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -560,7 +560,7 @@ const QPixmap &Data::sceneCanvasRotateCursor()
     QString fname(":/scene-canvas-rotate-cursor-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -570,7 +570,7 @@ const QPixmap &Data::sceneCanvasCloneCursor()
     QString fname(":/scene-newcanvas-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -580,7 +580,7 @@ const QPixmap &Data::sceneSelectPixmap()
     QString fname(":/scene-select-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -590,7 +590,7 @@ const QPixmap &Data::sceneSelect3DPixmap()
     QString fname(":/scene-select3d-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -600,7 +600,7 @@ const QPixmap &Data::sceneSketchPixmap()
     QString fname(":/scene-sketch-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -610,7 +610,7 @@ const QPixmap &Data::sceneEraserPixmap()
     QString fname(":/scene-eraser-cursor-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -620,7 +620,7 @@ const QPixmap &Data::sceneImageFlipHPixmap()
     QString fname(":/scene-image-flipv-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -630,7 +630,7 @@ const QPixmap &Data::sceneImageFlipVPixmap()
     QString fname(":/scene-image-fliph-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -640,7 +640,7 @@ const QPixmap &Data::sceneImageMovePixmap()
     QString fname(":/scene-image-move-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -650,7 +650,7 @@ const QPixmap &Data::sceneImageScalePixmap()
     QString fname(":/scene-image-scale-cursor-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }
@@ -660,7 +660,7 @@ const QPixmap &Data::sceneImageRotatePixmap()
     QString fname(":/scene-image-rotate-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
-    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE, cher::CURSOR_SIZE);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
 }

@@ -124,7 +124,7 @@ enum TraversalMask{
 };
 
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;
-const int CURSOR_SIZE = 32;
+const int CURSOR_SIZE = 18;
 
 const osg::Vec3f NORMAL = osg::Vec3f(0.f,0.f,1.f);
 
