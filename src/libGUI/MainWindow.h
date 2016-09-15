@@ -60,12 +60,12 @@ public:
     /*! Method to obtain status of global tools visibilities. */
     bool getSceneToolStatus() const;
 
+    /*! Method called when a bookmark was added to scene graph. */
+    void doBookmarkSet(int row);
+
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
     void onSetTabletActivity(bool active);
-
-    /*! Slot called when a bookmark was added to scene graph. */
-    void onRequestBookmarkSet(int row);
 
     /*! Slot called when user requested to delete bookmark from the BookmarkWidget. */
     void onDeleteBookmark(const QModelIndex &index);
