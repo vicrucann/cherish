@@ -34,9 +34,6 @@ public:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 signals:
-    /*! Signal which is emitted whenver the user presses delete button for the corresponding bookmark. */
-    void clickedDelete(const QModelIndex& index);
-
     /*! Signal which is emitted whenver the user presses the move button of the corresponding bookmark. */
     void clickedMove(const QModelIndex& index);
 

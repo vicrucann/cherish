@@ -127,10 +127,6 @@ public:
     int getNumBookmarks() const;
 
 signals:
-    /*! A singal to request bookmarks scene state to be updated.
-     * \param state is the pointer on SceneState to be updated */
-    void requestSceneData(entity::SceneState* state);
-
     void requestSceneStateSet(entity::SceneState* state);
 
 public slots:

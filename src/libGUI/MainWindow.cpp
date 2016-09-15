@@ -192,14 +192,10 @@ void MainWindow::doBookmarkSet(int row)
     m_glWidget->setCameraView(eye, center, up, fov);
 
     // we only want to keep original screenshot
-//    m_rootScene->updateBookmark(m_bookmarkWidget, row);
+    //    m_rootScene->updateBookmark(m_bookmarkWidget, row);
 }
 
-void MainWindow::onSetTabletActivity(bool active){
-    m_glWidget->setTabletActivity(active);
-}
-
-void MainWindow::onDeleteBookmark(const QModelIndex &index)
+void MainWindow::doDeleteBookmark(const QModelIndex &index)
 {
     const std::string& name = m_rootScene->getBookmarksModel()->getBookmarkName(index.row());
     QMessageBox::StandardButton reply = QMessageBox::question(this,
@@ -208,6 +204,19 @@ void MainWindow::onDeleteBookmark(const QModelIndex &index)
                                                               QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::Yes)
         m_rootScene->deleteBookmark(m_bookmarkWidget, index);
+}
+
+entity::SceneState *MainWindow::getSceneData()
+{
+    osg::ref_ptr<entity::SceneState> state = new entity::SceneState;
+    if (!state.get()) throw std::runtime_error("SceneState is NULL");
+    state->stripDataFrom(m_rootScene.get());
+    if (state->isEmpty()) qWarning("MainWindow: failed to strip data to scene state");
+    return state.release();
+}
+
+void MainWindow::onSetTabletActivity(bool active){
+    m_glWidget->setTabletActivity(active);
 }
 
 void MainWindow::onDeleteCanvas(const QModelIndex &index)
@@ -333,18 +342,6 @@ void MainWindow::onPhotoPushed(int parent, int start, int, int destination, int)
     if (!photo) return;
 
     m_rootScene->editPhotoPush(photo, canvas_old, canvas_new);
-}
-
-void MainWindow::onRequestSceneData(entity::SceneState *state)
-{
-    if (!state){
-        qWarning("onRequestSceneData: state is NULL");
-        return;
-    }
-    else
-        state->stripDataFrom(m_rootScene.get());
-    if (state->isEmpty())
-        qDebug("MainWindow: failed to strip data to scene state");
 }
 
 void MainWindow::onRequestSceneStateSet(entity::SceneState *state)
@@ -1056,10 +1053,6 @@ void MainWindow::initializeCallbacks()
                      m_rootScene->getBookmarksModel(), SLOT(onRowsRemoved(QModelIndex,int,int)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QModelIndex)),
-                     this, SLOT(onDeleteBookmark(QModelIndex)),
-                     Qt::UniqueConnection);
-
     QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedMove(QModelIndex)),
                      this, SLOT(onMoveBookmark(QModelIndex)),
                      Qt::UniqueConnection);
@@ -1070,10 +1063,6 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)),
                      m_rootScene->getBookmarksModel(), SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)),
-                     Qt::UniqueConnection);
-
-    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestSceneData(entity::SceneState*)),
-                     this, SLOT(onRequestSceneData(entity::SceneState*)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestSceneStateSet(entity::SceneState*)),

@@ -106,9 +106,8 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
     m_fovs.push_back(fov);
 
     // add scene state as a child of this
-    osg::ref_ptr<entity::SceneState> state = new entity::SceneState;
-    if (!state) return;
-    emit this->requestSceneData(state.get());
+    osg::ref_ptr<entity::SceneState> state = MainWindow::instance().getSceneData();
+
     if (state->isEmpty()){
         qWarning("addBookmark: could not initialize StateScene");
         return;

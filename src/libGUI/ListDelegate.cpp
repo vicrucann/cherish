@@ -11,6 +11,7 @@
 #include <QDebug>
 #include <QtGlobal>
 
+#include "MainWindow.h"
 #include "Data.h"
 #include "Settings.h"
 
@@ -66,7 +67,7 @@ bool BookmarkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, con
                     return true;
                 else{
                     qDebug("delegate: clicked delete");
-                    emit this->clickedDelete(index);
+                    MainWindow::instance().doDeleteBookmark(index);
                 }
                 return true;
             }
