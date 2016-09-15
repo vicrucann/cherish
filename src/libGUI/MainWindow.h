@@ -48,15 +48,18 @@ public:
     bool getStrokeFogFactor() const;
     QPixmap getScreenshot(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
 
+    void setMouseMode(cher::MOUSE_MODE mode);
+    void doAutoSwitchMode(cher::MOUSE_MODE mode);
+
+    /*! Method called from GLWidget when user performed drag-and-drop from PhotoWidget to GLWidget of a entity::Photo. */
+    void doImportPhoto(const QString &path, const QString &fileName);
+
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
     void onSetTabletActivity(bool active);
 
     /*! Slot called whenver we need to update GLWidget, e.g., when scene graph is changed. */
     void onRequestUpdate();
-
-    /*! Slot called when user performs switch of mouse mode automatically, e.g. by doing double-click. */
-    void onAutoSwitchMode(cher::MOUSE_MODE mode);
 
     /*! Slot called when a bookmark was added to scene graph. */
     void onRequestBookmarkSet(int row);
@@ -82,9 +85,6 @@ public slots:
     /*! Slot called when BookmarkWidget content had changed, i.e., a row was removed. */
     void onBookmarkRemovedFromWidget(const QModelIndex &, int first, int last);
 
-    /*! Slot called when mouse mode is changed. */
-    void onMouseModeSet(cher::MOUSE_MODE mode);
-
     /*! Slot called when photo's transparency was changed by user from CanvasPhotoWidget. */
     void onPhotoTransparencyPlus(const QModelIndex& index);
 
@@ -102,9 +102,6 @@ public slots:
 
     /*! Slot called to obtain status of global tools visibilities. */
     void onRequestSceneToolStatus(bool& visibility);
-
-    /*! Slot called when user performed drag-and-drop from PhotoWidget to GLWidget of a entity::Photo. */
-    void onImportPhoto(const QString& path, const QString& fileName);
 
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */

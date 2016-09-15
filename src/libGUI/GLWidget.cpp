@@ -28,6 +28,7 @@
 #include <osgGA/TrackballManipulator>
 
 #include "SceneState.h"
+#include "MainWindow.h"
 
 GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::WindowFlags f)
     : QOpenGLWidget(parent, f)
@@ -159,7 +160,7 @@ void GLWidget::setMouseMode(const cher::MOUSE_MODE &mode)
     m_mouseMode = mode;
     m_manipulator->setMode(m_mouseMode);
     m_EH->setMode(m_mouseMode);
-    emit this->mouseModeSet(m_mouseMode);
+    MainWindow::instance().setMouseMode(m_mouseMode);
 }
 
 void GLWidget::setTabletActivity(bool active)
@@ -324,7 +325,7 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 void GLWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     qDebug("double click detected");
-    emit this->autoSwitchMode(m_mouseMode);
+    MainWindow::instance().doAutoSwitchMode(m_mouseMode);
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -479,7 +480,7 @@ void GLWidget::dropEvent(QDropEvent *event)
         event->accept();
 
         // emit signal to let know image should be imported
-        emit this->importPhoto(directory, fileName);
+        MainWindow::instance().doImportPhoto(directory, fileName);
     }
     else
         event->ignore();
