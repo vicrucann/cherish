@@ -54,12 +54,15 @@ public:
     /*! Method called from GLWidget when user performed drag-and-drop from PhotoWidget to GLWidget of a entity::Photo. */
     void doImportPhoto(const QString &path, const QString &fileName);
 
+    /*! Method called whenever we need to update GLWidget, e.g., when scene graph is changed. */
+    void doUpdate();
+
+    /*! Method to obtain status of global tools visibilities. */
+    bool getSceneToolStatus() const;
+
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
     void onSetTabletActivity(bool active);
-
-    /*! Slot called whenver we need to update GLWidget, e.g., when scene graph is changed. */
-    void onRequestUpdate();
 
     /*! Slot called when a bookmark was added to scene graph. */
     void onRequestBookmarkSet(int row);
@@ -99,9 +102,6 @@ public slots:
 
     /*! Slot called when scene state change was requested, e.g. when setting up a bookmark. */
     void onRequestSceneStateSet(entity::SceneState* state);
-
-    /*! Slot called to obtain status of global tools visibilities. */
-    void onRequestSceneToolStatus(bool& visibility);
 
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */

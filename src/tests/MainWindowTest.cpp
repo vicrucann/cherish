@@ -65,9 +65,7 @@ void MainWindowTest::testToolsOnOff()
 
 
     qInfo("Add another canvas");
-    QSignalSpy spy_canvas(m_scene.get(), SIGNAL(requestSceneToolStatus(bool&)));
     this->onNewCanvasXY();
-    QCOMPARE(spy_canvas.count(), 1);
     QCOMPARE(m_scene->getNumCanvases(), 4);
     entity::Canvas* m_canvas3 = m_scene->getCanvas(3);
     QVERIFY(m_canvas3);
