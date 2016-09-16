@@ -99,13 +99,19 @@ MainWindow::~MainWindow()
 
 MainWindow &MainWindow::instance()
 {
-    Q_ASSERT_X(m_instance, "MainWindow::instance", "Singleton not constructed yet");
+    if (!m_instance) throw std::runtime_error("instance() : singleton is not constructed.");
     return *m_instance;
 }
 
 const RootScene *MainWindow::getRootScene() const
 {
     return m_rootScene.get();
+}
+
+CanvasPhotoWidget *MainWindow::getCanvasPhotoWidget() const
+{
+    if (!m_canvasWidget) throw std::runtime_error("CanvasPhoto widget was not initialized");
+    return m_canvasWidget;
 }
 
 entity::Canvas *MainWindow::getCanvasCurrent() const
@@ -213,6 +219,11 @@ entity::SceneState *MainWindow::getSceneData()
     state->stripDataFrom(m_rootScene.get());
     if (state->isEmpty()) qWarning("MainWindow: failed to strip data to scene state");
     return state.release();
+}
+
+bool MainWindow::setSceneState(entity::SceneState *state)
+{
+     return m_rootScene->setSceneState(state);
 }
 
 void MainWindow::onSetTabletActivity(bool active){
@@ -342,11 +353,6 @@ void MainWindow::onPhotoPushed(int parent, int start, int, int destination, int)
     if (!photo) return;
 
     m_rootScene->editPhotoPush(photo, canvas_old, canvas_new);
-}
-
-void MainWindow::onRequestSceneStateSet(entity::SceneState *state)
-{
-    m_rootScene->setSceneState(state);
 }
 
 /* Check whether the current scene is empty or not
@@ -1065,19 +1071,7 @@ void MainWindow::initializeCallbacks()
                      m_rootScene->getBookmarksModel(), SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)),
                      Qt::UniqueConnection);
 
-    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestSceneStateSet(entity::SceneState*)),
-                     this, SLOT(onRequestSceneStateSet(entity::SceneState*)),
-                     Qt::UniqueConnection);
-
     /* canvas widget area */
-    QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasAdded(std::string)),
-                     m_canvasWidget, SLOT(onCanvasAdded(std::string)),
-                     Qt::UniqueConnection);
-
-    QObject::connect(m_rootScene->getUserScene(), SIGNAL(photoAdded(std::string,int)),
-                     m_canvasWidget, SLOT(onPhotoAdded(std::string,int)),
-                     Qt::UniqueConnection);
-
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasSelectedColor(int,int)),
                      m_canvasWidget, SLOT(onCanvasSelectedColor(int,int)),
                      Qt::UniqueConnection);

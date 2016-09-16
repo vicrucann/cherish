@@ -23,36 +23,65 @@ CanvasDelegate *CanvasPhotoWidget::getCanvasDelegate() const
     return dynamic_cast<CanvasDelegate*>(this->itemDelegate());
 }
 
-void CanvasPhotoWidget::onCanvasAdded(const std::string &name)
+void CanvasPhotoWidget::doAddCanvas(const std::string &name)
 {
     QTreeWidgetItem* item = new QTreeWidgetItem();
-    if (!item) return;
+    if (!item) throw std::runtime_error("Could not allocate QTreeWidgetItem");
     item->setText(0, QString(name.c_str()));
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     item->setData(0,cher::DelegateChildRole,1);
     item->setChildIndicatorPolicy(QTreeWidgetItem::ShowIndicator);
-//    item->setSizeHint(0, QSize(cher::APP_WIDGET_BUTTON, cher::APP_WIDGET_BUTTON));
     this->addTopLevelItem(item);
 }
 
-void CanvasPhotoWidget::onPhotoAdded(const std::string &name, int rowParent)
+void CanvasPhotoWidget::doAddPhoto(const std::string &name, int rowParent)
 {
     if (rowParent < 0 || rowParent >= this->topLevelItemCount())
     {
-        qWarning("onPhotoAdded: canvas index is out of range, "
+        qWarning("doAddPhoto: canvas index is out of range, "
                   "addition will not be performed");
         qDebug() << "row " <<  rowParent;
         qDebug() << "count " << this->topLevelItemCount();
         return;
     }
     QTreeWidgetItem* parent = this->topLevelItem(rowParent);
-    if (!parent) return;
+    if (!parent) throw std::runtime_error("doAddPhoto(): parent is NULL");
     QTreeWidgetItem* child = new QTreeWidgetItem();
-    if (!child) return;
+    if (!child) throw std::runtime_error("doAddPhoto(): could not allocate item");
     child->setText(0, QString(name.c_str()));
     child->setFlags(child->flags() | Qt::ItemIsEditable);
     child->setData(0,cher::DelegateChildRole,2);
     parent->addChild(child);
+}
+
+void CanvasPhotoWidget::doSelectCanvas(int row, int color)
+{
+    if (row >= this->topLevelItemCount() || row < 0){
+        qDebug("onCanvasSelectedColor: canvas index is out of range, "
+                  "selection on widget will not be performed");
+        qDebug() << "row " << row;
+        qDebug() << "count " << this->topLevelItemCount();
+        return;
+    }
+
+    QTreeWidgetItem* item = this->topLevelItem(row);
+    if (!item) throw std::runtime_error("doSelectCanvas(): item is NULL");
+    QColor qcolor;
+    switch (color){
+    case 0:
+        qcolor = Qt::white;
+        break;
+    case 1:
+        qcolor = Utilities::getQColor(cher::CANVAS_CLR_CURRENT);
+        break;
+    case 2:
+        qcolor = Utilities::getQColor(cher::CANVAS_CLR_PREVIOUS);
+        break;
+    default:
+        qcolor = Qt::white;
+        break;
+    }
+    item->setData(0, cher::DelegateBGColor, qcolor);
 }
 
 void CanvasPhotoWidget::onCanvasRemoved(int row)
@@ -88,41 +117,10 @@ void CanvasPhotoWidget::onPhotoRemoved(int rowP, int row)
     delete item;
 }
 
-void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
-{
-    if (row >= this->topLevelItemCount() || row < 0){
-        qDebug("onCanvasSelectedColor: canvas index is out of range, "
-                  "selection on widget will not be performed");
-        qDebug() << "row " << row;
-        qDebug() << "count " << this->topLevelItemCount();
-        return;
-    }
-
-    QTreeWidgetItem* item = this->topLevelItem(row);
-    if (!item) return;
-    QColor qcolor;
-    switch (color){
-    case 0:
-        qcolor = Qt::white;
-        break;
-    case 1:
-        qcolor = Utilities::getQColor(cher::CANVAS_CLR_CURRENT);
-        break;
-    case 2:
-        qcolor = Utilities::getQColor(cher::CANVAS_CLR_PREVIOUS);
-        break;
-    default:
-        qcolor = Qt::white;
-        break;
-    }
-//    item->setBackgroundColor(0, qcolor);
-    item->setData(0, cher::DelegateBGColor, qcolor);
-}
-
 void CanvasPhotoWidget::onCanvasVisibilitySet(int row, bool visibility)
 {
     if (row >= this->topLevelItemCount() || row < 0){
-        qDebug("onCanvasSelectedColor: canvas index is out of range, "
+        qDebug("onCanvasVisibilitySet: canvas index is out of range, "
                   "selection on widget will not be performed");
         qDebug() << "row " << row;
         qDebug() << "count " << this->topLevelItemCount();

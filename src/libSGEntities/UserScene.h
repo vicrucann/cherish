@@ -479,21 +479,11 @@ public:
     void resetModel(CanvasPhotoWidget* widget);
 
 signals:
-    /*! A signal which is connected with  CanvasPhotoWidget::onCanvasAdded() to request to add a canvas item to the widget */
-    void canvasAdded(const std::string& name);
-
-    /*! A signal which is connected with  CanvasPhotoWidget::onPhotoAdded() to request to add a photo item to the widget */
-    void photoAdded(const std::string& name, int idxCanvas);
-
     /*! A signal which is connected with  CanvasPhotoWidget::onCanvasRemoved() to request to remove a canvas item from the widget */
     void canvasRemoved(int row);
 
     /*! A signal which is connected with  CanvasPhotoWidget::onPhotoRemoved() to request to remove a photo item from the widget */
     void photoRemoved(int rowCanvas, int rowPhoto);
-
-    /*! A signal which is connected with  CanvasPhotoWidget::onCanvasSelectedColor() to request to update color indications for a
-     * certain canvas, e.g., when switching the canvas status from normal to current, or from current to previous. */
-    void canvasSelectedColor(int row, int color);
 
     /*! A signal which is connected with CanvasPhotoWidget and is called from RootScene when the scene is loaded from file.
      * It is to provide a back feedback from scene to the widget and it triggers the setting of the visibility icon
