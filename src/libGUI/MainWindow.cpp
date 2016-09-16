@@ -130,13 +130,16 @@ QPixmap MainWindow::getScreenshot(const osg::Vec3d &eye, const osg::Vec3d &cente
     return m_glWidget->getScreenShot(eye, center, up);
 }
 
-void MainWindow::setMouseMode(cher::MOUSE_MODE mode)
-{
-    QCursor cur = Utilities::getCursorFromMode(mode);
-    if (cur.shape() != Qt::ArrowCursor) m_mdiArea->setCursor(cur);
+void MainWindow::onSetTabletActivity(bool active){
+    m_glWidget->setTabletActivity(active);
 }
 
-void MainWindow::doAutoSwitchMode(cher::MOUSE_MODE mode)
+void MainWindow::onRequestUpdate()
+{
+    m_glWidget->update();
+}
+
+void MainWindow::onAutoSwitchMode(cher::MOUSE_MODE mode)
 {
     switch (mode){
     case cher::SELECT_ENTITY:
@@ -152,21 +155,6 @@ void MainWindow::doAutoSwitchMode(cher::MOUSE_MODE mode)
         emit this->onSelect();
         break;
     }
-}
-
-void MainWindow::doImportPhoto(const QString &path, const QString &fileName)
-{
-    QString fullPath = path + "/" + fileName;
-    this->importPhoto(fullPath);
-}
-
-void MainWindow::onSetTabletActivity(bool active){
-    m_glWidget->setTabletActivity(active);
-}
-
-void MainWindow::onRequestUpdate()
-{
-    m_glWidget->update();
 }
 
 void MainWindow::onRequestBookmarkSet(int row)
@@ -281,6 +269,12 @@ void MainWindow::onBookmarkRemovedFromWidget(const QModelIndex &, int first, int
     m_rootScene->deleteBookmarkTool(first, last);
 }
 
+void MainWindow::onMouseModeSet(cher::MOUSE_MODE mode)
+{
+    QCursor cur = Utilities::getCursorFromMode(mode);
+    if (cur.shape() != Qt::ArrowCursor) m_mdiArea->setCursor(cur);
+}
+
 void MainWindow::onPhotoTransparencyPlus(const QModelIndex &index)
 {
     const QModelIndex parent = index.parent();
@@ -349,6 +343,12 @@ void MainWindow::onRequestSceneStateSet(entity::SceneState *state)
 void MainWindow::onRequestSceneToolStatus(bool &visibility)
 {
     visibility = m_actionTools->isChecked();
+}
+
+void MainWindow::onImportPhoto(const QString &path, const QString &fileName)
+{
+    QString fullPath = path + "/" + fileName;
+    this->importPhoto(fullPath);
 }
 
 /* Check whether the current scene is empty or not
@@ -1036,6 +1036,19 @@ void MainWindow::initializeToolbars()
  */
 void MainWindow::initializeCallbacks()
 {
+    /* connect MainWindow with GLWidget */
+    QObject::connect(m_glWidget, SIGNAL(mouseModeSet(cher::MOUSE_MODE)),
+                     this, SLOT(onMouseModeSet(cher::MOUSE_MODE)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_glWidget, SIGNAL(autoSwitchMode(cher::MOUSE_MODE)),
+                     this, SLOT(onAutoSwitchMode(cher::MOUSE_MODE)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_glWidget, SIGNAL(importPhoto(QString,QString)),
+                     this, SLOT(onImportPhoto(QString,QString)),
+                     Qt::UniqueConnection);
+
     /* connect MainWindow with UserScene */
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(sendRequestUpdate()),
                      this, SLOT(onRequestUpdate()),

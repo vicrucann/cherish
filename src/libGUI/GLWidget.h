@@ -55,8 +55,17 @@ public:
     void setMouseMode(const cher::MOUSE_MODE& mode);
 
 signals:
+    /*! Signal is emitted on double click to automatically switch the mouse mode. */
+    void autoSwitchMode(cher::MOUSE_MODE mode);
+
+    /*! Signal is emitted when mouse mode was set. */
+    void mouseModeSet(cher::MOUSE_MODE mode);
+
     /*! Signal is emitted when FOV was changed. */
     void FOVSet(double fov);
+
+    /*! Signal is emitted when user performs drag-and-drop from PhotoWidget to GLWidget. */
+    void importPhoto(const QString& path, const QString& fileName);
 
 public:
     /*! Method to set tablet proximity flag. */
