@@ -127,6 +127,10 @@ public:
     int getNumBookmarks() const;
 
 signals:
+    /*! A signal to request GLWidget to be set with correspondance of the passed bookmark
+     * \param row is the bookmark index */
+    void requestBookmarkSet(int row);
+
     /*! A singal to request bookmarks scene state to be updated.
      * \param state is the pointer on SceneState to be updated */
     void requestSceneData(entity::SceneState* state);

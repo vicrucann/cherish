@@ -173,11 +173,14 @@ bool MainWindow::getSceneToolStatus() const
     return m_actionTools->isChecked();
 }
 
-void MainWindow::doBookmarkSet(int row)
+void MainWindow::onSetTabletActivity(bool active){
+    m_glWidget->setTabletActivity(active);
+}
+
+void MainWindow::onRequestBookmarkSet(int row)
 {
     qDebug("bookmark recieved at MainWindow");
     entity::Bookmarks* bms = m_rootScene->getBookmarksModel();
-    if (!bms) throw std::runtime_error("Bookmark model is not initialized");
     osg::Vec3d eye, center, up;
     double fov;
     eye = bms->getEyes()[row];
@@ -186,17 +189,16 @@ void MainWindow::doBookmarkSet(int row)
     fov = bms->getFovs()[row];
 
     const entity::SceneState* state = bms->getSceneState(row);
-    if (!state) throw std::runtime_error("SceneState of that row is NULL");
+    if (!state){
+        qWarning("onRequestBookmarkSet: state is NULL");
+        return;
+    }
     m_rootScene->setSceneState(state);
 
     m_glWidget->setCameraView(eye, center, up, fov);
 
     // we only want to keep original screenshot
 //    m_rootScene->updateBookmark(m_bookmarkWidget, row);
-}
-
-void MainWindow::onSetTabletActivity(bool active){
-    m_glWidget->setTabletActivity(active);
 }
 
 void MainWindow::onDeleteBookmark(const QModelIndex &index)
@@ -1040,6 +1042,10 @@ void MainWindow::initializeCallbacks()
     /* bookmark widget data */
     QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)),
                      m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getBookmarksModel(), SIGNAL(requestBookmarkSet(int)),
+                     this, SLOT(onRequestBookmarkSet(int)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_bookmarkWidget->model(), SIGNAL(rowsInserted(QModelIndex,int,int)),

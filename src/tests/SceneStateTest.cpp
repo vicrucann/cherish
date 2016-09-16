@@ -214,6 +214,7 @@ void SceneStateTest::testBookmarkClickedOn()
     entity::Bookmarks* bookmarks = m_rootScene->getBookmarksModel();
     QVERIFY(bookmarks != NULL);
     QSignalSpy spy1(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)));
+    QSignalSpy spy2(bookmarks, SIGNAL(requestBookmarkSet(int)));
     QListWidgetItem* itemBM = m_bookmarkWidget->item(0);
     QVERIFY(itemBM);
     QRect rect = m_bookmarkWidget->visualItemRect(itemBM);
@@ -224,6 +225,10 @@ void SceneStateTest::testBookmarkClickedOn()
     QCOMPARE(spy1.count(), 1);
     QList<QVariant> args1 = spy1.takeFirst();
     QVERIFY(args1.at(0).type() == QVariant::ModelIndex);
+
+    QCOMPARE(spy2.count(), 1);
+    QList<QVariant> args2 = spy2.takeFirst();
+    QVERIFY(args2.at(0).type() == QVariant::Int);
 
     /* see if scene state was set correctly as in the bookmark */
     QVERIFY(m_canvas0->getVisibilityAll() == false);

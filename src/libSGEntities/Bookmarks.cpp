@@ -201,7 +201,7 @@ void entity::Bookmarks::onClicked(const QModelIndex &index)
     if (index.row() >=0 && index.row() < static_cast<int>( m_names.size()) ){
         m_row = index.row();
         qDebug() << "Selected bookmark " << QString(m_names[m_row].c_str());
-        MainWindow::instance().doBookmarkSet(m_row);
+        emit this->requestBookmarkSet(m_row);
     }
     else
         qDebug("onClicked: m_row is out of range");
