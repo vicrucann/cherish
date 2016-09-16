@@ -90,10 +90,3 @@ set(MAINWINDOW_NAME test_MainWindow)
 add_executable(${MAINWINDOW_NAME} ${MAINWINDOW_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
 target_link_libraries(${MAINWINDOW_NAME} ${TEST_LIBRARIES})
 add_test(${MAINWINDOW_NAME} ${MAINWINDOW_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
-
-# CanvasPhotoWidget tests
-set(CPWIDGET_SRC CanvasPhotoWidgetTest.h CanvasPhotoWidgetTest.cpp ${BASEGUITEST_SRC})
-set(CPWIDGET_NAME test_CanvasPhotoWidget)
-add_executable(${CPWIDGET_NAME} ${CPWIDGET_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
-target_link_libraries(${CPWIDGET_NAME} ${TEST_LIBRARIES})
-add_test(${CPWIDGET_NAME} ${CPWIDGET_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
