@@ -63,15 +63,12 @@ public:
     /*! Method called when a bookmark was added to scene graph. */
     void doBookmarkSet(int row);
 
-    /*! Method called when user requested to delete bookmark from the BookmarkWidget. */
-    void doDeleteBookmark(const QModelIndex &index);
-
-    /*! Method to request a data of SceneState, e.g. when setting up a bookmark. */
-    entity::SceneState* getSceneData();
-
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
     void onSetTabletActivity(bool active);
+
+    /*! Slot called when user requested to delete bookmark from the BookmarkWidget. */
+    void onDeleteBookmark(const QModelIndex &index);
 
     /*! Slot called when user requested to delete canvas from CanvasPhotoWidget. */
     void onDeleteCanvas(const QModelIndex& index);
@@ -99,6 +96,9 @@ public slots:
 
     /*! Slot called when push photo is performed. */
     void onPhotoPushed(int parent, int start, int, int destination, int);
+
+    /*! Slot called so that to request a data of SceneState, e.g. when setting up a bookmark. */
+    void onRequestSceneData(entity::SceneState* state);
 
     /*! Slot called when scene state change was requested, e.g. when setting up a bookmark. */
     void onRequestSceneStateSet(entity::SceneState* state);

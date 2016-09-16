@@ -147,8 +147,14 @@ void SceneStateTest::testBookmarkTaken()
     QVERIFY(state_old->getCanvasToolFlags()[1] == true);
     QVERIFY(state_old->getCanvasToolFlags()[2] == true);
 
+    qInfo("spy on emitted signals");
+    QSignalSpy spy1(m_rootScene->getUserScene()->getBookmarks(), SIGNAL(requestSceneData(entity::SceneState*)));
+
     qInfo("take a bookmark");
     this->onBookmark();
+
+    qInfo("check if signal was emitted correctly");
+    QCOMPARE(spy1.count(), 1);
 
     qInfo("check if bookmark was added successfully within the scene graph");
     const entity::Bookmarks* bookmarks = m_rootScene->getUserScene()->getBookmarks();
@@ -240,7 +246,9 @@ void SceneStateTest::testReadWrite()
     QVERIFY(!m_canvas0->getVisibilityAll());
 
     /* take bookmark with this settings */
+    QSignalSpy spy_bookmark(m_rootScene->getUserScene()->getBookmarks(), SIGNAL(requestSceneData(entity::SceneState*)));
     this->onBookmark();
+    QCOMPARE(spy_bookmark.count(), 1);
     const entity::Bookmarks* bookmarks = m_rootScene->getUserScene()->getBookmarks();
     QVERIFY(bookmarks);
     QCOMPARE(static_cast<int>(bookmarks->getNumChildren()), 1);
