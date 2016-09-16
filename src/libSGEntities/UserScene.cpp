@@ -12,8 +12,6 @@
 #include <osgDB/WriteFile>
 #include <osgDB/ReadFile>
 
-#include "MainWindow.h"
-
 entity::UserScene::UserScene()
     : osg::ProtectedGroup()
     , m_groupCanvases(new osg::Group)
@@ -858,7 +856,7 @@ bool entity::UserScene::clearUserData()
 
 void entity::UserScene::updateWidgets()
 {
-    MainWindow::instance().doUpdate();
+    emit sendRequestUpdate();
 }
 
 void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
@@ -1541,7 +1539,8 @@ bool entity::UserScene::addCanvas(entity::Canvas *canvas)
 
     // update frame and widget
     canvas->updateFrame(this->getCanvasPrevious());
-    bool vis = MainWindow::instance().getSceneToolStatus();
+    bool vis = true;
+    emit this->requestSceneToolStatus(vis);
     canvas->setVisibilityFrameInternal(vis);
     this->updateWidgets();
 

@@ -1,7 +1,4 @@
-#include "MainWindow.h"
-
 #include <iostream>
-#include <stdexcept>
 
 #include <QMdiSubWindow>
 #include <QAction>
@@ -17,6 +14,7 @@
 
 #include <osg/MatrixTransform>
 
+#include "MainWindow.h"
 #include "GLWidget.h"
 #include "ListDelegate.h"
 #include "CameraProperties.h"
@@ -162,19 +160,13 @@ void MainWindow::doImportPhoto(const QString &path, const QString &fileName)
     this->importPhoto(fullPath);
 }
 
-void MainWindow::doUpdate()
-{
-    m_glWidget->update();
-}
-
-bool MainWindow::getSceneToolStatus() const
-{
-    if (!m_actionTools) throw std::runtime_error("Action for tools was not initialized");
-    return m_actionTools->isChecked();
-}
-
 void MainWindow::onSetTabletActivity(bool active){
     m_glWidget->setTabletActivity(active);
+}
+
+void MainWindow::onRequestUpdate()
+{
+    m_glWidget->update();
 }
 
 void MainWindow::onRequestBookmarkSet(int row)
@@ -258,7 +250,7 @@ void MainWindow::onVisibilitySetCanvas(int index)
         return;
     }
     m_rootScene->setCanvasVisibilityAll(cnv, !cnv->getVisibilityAll());
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onMoveBookmark(const QModelIndex &index)
@@ -303,7 +295,7 @@ void MainWindow::onPhotoTransparencyPlus(const QModelIndex &index)
     if (!photo) return;
 
     m_rootScene->getUserScene()->editPhotoTransparency(photo, cnv, photo->getTransparency()+cher::PHOTO_TRANSPARECY_DELTA);
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onPhotoTransparencyMinus(const QModelIndex &index)
@@ -320,7 +312,7 @@ void MainWindow::onPhotoTransparencyMinus(const QModelIndex &index)
     if (!photo) return;
 
     m_rootScene->getUserScene()->editPhotoTransparency(photo, cnv, photo->getTransparency()-cher::PHOTO_TRANSPARECY_DELTA);
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onPhotoPushed(int parent, int start, int, int destination, int)
@@ -354,6 +346,11 @@ void MainWindow::onRequestSceneStateSet(entity::SceneState *state)
     m_rootScene->setSceneState(state);
 }
 
+void MainWindow::onRequestSceneToolStatus(bool &visibility)
+{
+    visibility = m_actionTools->isChecked();
+}
+
 /* Check whether the current scene is empty or not
  * If not - propose to save changes.
  * Clear the scene graph
@@ -363,7 +360,7 @@ void MainWindow::onFileNew()
     qDebug("onFileNew called");
     this->onFileClose();
 
-    this->doUpdate();
+    this->onRequestUpdate();
     this->statusBar()->showMessage(tr("Scene is cleared."));
 }
 
@@ -525,7 +522,7 @@ void MainWindow::onTools()
 {
     qDebug() << "Tools: change status called to " << m_actionTools->isChecked();
     m_rootScene->setToolsVisibility(m_actionTools->isChecked()? true : false);
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onCameraOrbit(){
@@ -549,31 +546,31 @@ void MainWindow::onCameraAperture()
 
 void MainWindow::onSelect(){
     m_glWidget->setMouseMode(cher::SELECT_ENTITY);
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onErase()
 {
     m_glWidget->setMouseMode(cher::PEN_ERASE);
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onDelete()
 {
     m_glWidget->setMouseMode(cher::PEN_DELETE);
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onSketch()
 {
     m_glWidget->setMouseMode(cher::PEN_SKETCH);
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasClone()
 {
     m_glWidget->setMouseMode(cher::CREATE_CANVASCLONE);
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasXY()
@@ -581,7 +578,7 @@ void MainWindow::onNewCanvasXY()
     m_rootScene->addCanvas(osg::Matrix::identity(), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasYZ()
@@ -589,7 +586,7 @@ void MainWindow::onNewCanvasYZ()
     m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 0, 1, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasXZ()
@@ -597,7 +594,7 @@ void MainWindow::onNewCanvasXZ()
     m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 1, 0, 0), osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasOrtho()
@@ -610,13 +607,13 @@ void MainWindow::onNewCanvasOrtho()
 
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas perpendicular to previous was created"));
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasSeparate()
 {
     m_glWidget->setMouseMode(cher::CREATE_CANVASSEPARATE);
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasStandard()
@@ -629,7 +626,7 @@ void MainWindow::onNewCanvasStandard()
                            osg::Matrix::translate(0.f, 0.f, 0.f));
     this->onSketch();
     this->statusBar()->showMessage(tr("Set of canvases created."));
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onNewCanvasCoaxial()
@@ -650,7 +647,7 @@ void MainWindow::onNewCanvasRing()
 void MainWindow::onCanvasEdit()
 {
     m_glWidget->setMouseMode(cher::MOUSE_CANVAS);
-    this->doUpdate();
+    this->onRequestUpdate();
 }
 
 void MainWindow::onImageMove()
@@ -1039,6 +1036,15 @@ void MainWindow::initializeToolbars()
  */
 void MainWindow::initializeCallbacks()
 {
+    /* connect MainWindow with UserScene */
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(sendRequestUpdate()),
+                     this, SLOT(onRequestUpdate()),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestSceneToolStatus(bool&)),
+                     this, SLOT(onRequestSceneToolStatus(bool&)),
+                     Qt::UniqueConnection);
+
     /* bookmark widget data */
     QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)),
                      m_rootScene->getBookmarksModel(), SLOT(onClicked(QModelIndex)),

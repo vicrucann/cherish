@@ -479,6 +479,9 @@ public:
     void resetModel(CanvasPhotoWidget* widget);
 
 signals:
+    /*! A signal which is connected with MainWindow::onRequestUpdate() to request for GLWidget update. */
+    void sendRequestUpdate();
+
     /*! A signal which is connected with  CanvasPhotoWidget::onCanvasAdded() to request to add a canvas item to the widget */
     void canvasAdded(const std::string& name);
 
@@ -502,6 +505,11 @@ signals:
      * \param visibility is the boolean variable indicating whether the canvas is visible on the scene (true) or not (false).
      * This value also corresponds to Canvas::getVisibilityData(). */
     void canvasVisibilitySet(int row, bool visibility);
+
+    /*! A signal to be emitted on addition of new canvas to the scene. It requests tool's status of MainWindow, and turns
+     * the internal frame on or off depending on the result.
+     * \param visibility is a boolean flag which indicated whether the tools are on (true) of off (false). */
+    void requestSceneToolStatus(bool& visibility);
 
 public slots:
     /*! A slot which is called when the canvas name was edited from CanvasPhotoWidget. Based on the edited item, the slot
