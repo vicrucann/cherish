@@ -1071,11 +1071,6 @@ void MainWindow::initializeCallbacks()
                      m_rootScene->getBookmarksModel(), SLOT(onRowsMoved(QModelIndex,int,int,QModelIndex,int)),
                      Qt::UniqueConnection);
 
-    /* canvas widget area */
-    QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasSelectedColor(int,int)),
-                     m_canvasWidget, SLOT(onCanvasSelectedColor(int,int)),
-                     Qt::UniqueConnection);
-
     /* canvasRemoved and deleteCanvas - are two different slots because
      * we use undo/redo framework to invoke the second signal */
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(canvasRemoved(int)),
