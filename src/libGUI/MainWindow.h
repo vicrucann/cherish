@@ -43,9 +43,6 @@ public:
     /*! \return const pointer to RootScene. */
     const RootScene* getRootScene() const;
 
-    /*! \return pointer on CanvasPhotoWidget. */
-    CanvasPhotoWidget* getCanvasPhotoWidget() const;
-
     entity::Canvas* getCanvasCurrent() const;
     osg::Camera* getCamera() const;
     bool getStrokeFogFactor() const;
@@ -71,9 +68,6 @@ public:
 
     /*! Method to request a data of SceneState, e.g. when setting up a bookmark. */
     entity::SceneState* getSceneData();
-
-    /*! Method called when scene state change was requested, e.g. when setting up a bookmark. */
-    bool setSceneState(entity::SceneState* state);
 
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
@@ -105,6 +99,9 @@ public slots:
 
     /*! Slot called when push photo is performed. */
     void onPhotoPushed(int parent, int start, int, int destination, int);
+
+    /*! Slot called when scene state change was requested, e.g. when setting up a bookmark. */
+    void onRequestSceneStateSet(entity::SceneState* state);
 
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */

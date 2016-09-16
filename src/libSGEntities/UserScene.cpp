@@ -325,19 +325,18 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
     // valiable candidate to assign the previous to;
     // if no canvases available at all, the observer ptrs are set to NULL
     if (cnv == m_canvasCurrent.get()){
-        if (!m_canvasCurrent.valid()) throw std::runtime_error("setCanvasCurrent(): canvas is NULL");
         m_canvasCurrent->setColor(cher::CANVAS_CLR_CURRENT);
-        MainWindow::instance().getCanvasPhotoWidget()->doSelectCanvas(this->getCanvasIndex(m_canvasCurrent.get()), 1);
+        emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasCurrent.get()), 1);
         return true;
     }
     if (m_canvasCurrent.valid()){
         if (m_canvasPrevious.valid()){
             m_canvasPrevious->setColor(cher::CANVAS_CLR_REST);
-            MainWindow::instance().getCanvasPhotoWidget()->doSelectCanvas(this->getCanvasIndex(m_canvasPrevious.get()), 0);
+            emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasPrevious.get()), 0);
             m_canvasPrevious = NULL;
         }
         m_canvasCurrent->setColor(cher::CANVAS_CLR_PREVIOUS);
-        MainWindow::instance().getCanvasPhotoWidget()->doSelectCanvas(this->getCanvasIndex(m_canvasCurrent.get()), 2);
+        emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasCurrent.get()), 2);
         m_canvasCurrent->unselectAll();
 
         m_canvasPrevious = m_canvasCurrent;
@@ -349,7 +348,7 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
     }
     m_canvasCurrent = cnv;
     m_canvasCurrent->setColor(cher::CANVAS_CLR_CURRENT);
-    MainWindow::instance().getCanvasPhotoWidget()->doSelectCanvas(this->getCanvasIndex(m_canvasCurrent.get()), 1);
+    emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasCurrent.get()), 1);
 
     /* make sure node masks are holding as before for the current canvas */
     if (m_canvasPrevious.get()){
@@ -867,8 +866,8 @@ void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
     widget->clear();
     for (int i=0; i<this->getNumCanvases(); ++i){
         entity::Canvas* cnv = this->getCanvas(i);
-        if (!cnv) throw std::runtime_error("Canvas is NULL");
-        MainWindow::instance().getCanvasPhotoWidget()->doAddCanvas(cnv->getName().c_str());
+        if (!cnv) qFatal("UserScene::resetModel canvas is NULL");
+        emit this->canvasAdded(cnv->getName().c_str());
 
         if (cnv == m_canvasCurrent.get())
             emit this->canvasSelectedColor(this->getCanvasIndex(cnv),1);
@@ -880,8 +879,8 @@ void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
         /* if canvas has any photos, reset photowidget */
         for (size_t j=0; j<cnv->getNumPhotos(); ++j){
             entity::Photo* photo = cnv->getPhoto(j);
-            if (!photo) throw std::runtime_error("resetModel(): photo is NULL");
-            MainWindow::instance().getCanvasPhotoWidget()->doAddPhoto(photo->getName(), this->getCanvasIndex(cnv));
+            if (!photo) continue;
+            emit this->photoAdded(photo->getName(), this->getCanvasIndex(cnv));
         }
 
         /* set canvas visibility on scene and on GUI */
@@ -1507,15 +1506,15 @@ void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
 
 bool entity::UserScene::addCanvas(entity::Canvas *canvas)
 {
-    if (!canvas) throw std::runtime_error("addCanvas: Canvas is NULL");
+    if (!canvas) qFatal("UserScene::addCanvas(Canvas*): canvas is NULL");
 
     // gui elements
-    MainWindow::instance().getCanvasPhotoWidget()->doAddCanvas(canvas->getName());
+    emit canvasAdded(canvas->getName());
     //see if any canvas contains any photos, they will be added to canvas widget
     for (size_t i=0; i<canvas->getNumPhotos(); ++i){
         entity::Photo* photo = canvas->getPhoto(i);
-        if (!photo) throw std::runtime_error("addCanvas(): photo is NULL");
-        MainWindow::instance().getCanvasPhotoWidget()->doAddPhoto(photo->getName(), this->getCanvasIndex(canvas));
+        if (!photo) qFatal("UserScene::addCanvas() - photo is null");
+        emit this->photoAdded(photo->getName(), this->getCanvasIndex(canvas));
     }
 
     // scene graph addition
@@ -1634,7 +1633,7 @@ bool entity::UserScene::addEntity(entity::Canvas *canvas, Entity2D *entity)
     if (result){
         switch(entity->getEntityType()){
         case cher::ENTITY_PHOTO:
-            MainWindow::instance().getCanvasPhotoWidget()->doAddPhoto(entity->getName(), this->getCanvasIndex(canvas));
+            emit this->photoAdded(entity->getName(), this->getCanvasIndex(canvas));
             break;
         default:
             break;

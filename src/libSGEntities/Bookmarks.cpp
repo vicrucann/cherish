@@ -135,8 +135,8 @@ void entity::Bookmarks::updateBookmark(BookmarkWidget *widget, int row)
         QListWidgetItem* item = widget->item(row);
         QPixmap pmap = MainWindow::instance().getScreenshot(m_eyes[row],
                                                             m_centers[row],
-                                                            m_ups[row]);
-        MainWindow::instance().setSceneState(this->getSceneState(row));
+                                                            m_ups[row]);;
+        emit this->requestSceneStateSet(this->getSceneState(row));
         item->setIcon(QIcon(pmap));
     }
 }
@@ -161,7 +161,7 @@ void entity::Bookmarks::resetModel(BookmarkWidget *widget)
         widget->addItem(QString((m_names[i]).c_str()));
         QListWidgetItem* item = widget->item(i);
         item->setFlags(item->flags() | Qt::ItemIsEditable);
-        MainWindow::instance().setSceneState(this->getSceneState(i));
+        emit requestSceneStateSet(this->getSceneState(i));
         QPixmap pmap = MainWindow::instance().getScreenshot(m_eyes[i], m_centers[i], m_ups[i]);
         item->setIcon(QIcon(pmap));
     }

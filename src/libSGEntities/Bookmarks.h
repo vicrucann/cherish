@@ -127,6 +127,7 @@ public:
     int getNumBookmarks() const;
 
 signals:
+    void requestSceneStateSet(entity::SceneState* state);
 
 public slots:
     void onClicked(const QModelIndex& index);

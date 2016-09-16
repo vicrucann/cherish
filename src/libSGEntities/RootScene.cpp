@@ -563,13 +563,13 @@ bool RootScene::setSceneState(const entity::SceneState *state)
     int idx = 0;
     for (size_t i=0; i<sz; ++i){
         entity::Canvas* cnv = m_userScene->getCanvas(i);
-        if (!cnv) throw std::runtime_error("Canvas is NULL");
+        if (!cnv) continue;
         cnv->setVisibilityAll(cdf[i]);
         emit m_userScene->canvasVisibilitySet(m_userScene->getCanvasIndex(cnv) , cdf[i]);
         cnv->setVisibilityFrameInternal(ctf[i]);
         for (size_t j=0; j<cnv->getNumPhotos(); ++j){
             entity::Photo* photo = cnv->getPhoto(j);
-            if (!photo) throw std::runtime_error("Photo is NULL");
+            if (!photo) continue;
             photo->setTransparency(pt[idx]);
             idx++;
         }
