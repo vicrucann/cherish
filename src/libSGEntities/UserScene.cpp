@@ -372,7 +372,7 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
         return true;
     if (m_canvasPrevious.valid()){
         m_canvasPrevious->setColor(cher::CANVAS_CLR_REST);
-        MainWindow::instance().getCanvasPhotoWidget()->doSelectCanvas(this->getCanvasIndex(m_canvasPrevious.get()), 0);
+        emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasPrevious.get()), 0);
         m_canvasPrevious = NULL;
     }
     if (!cnv){
@@ -382,7 +382,7 @@ bool entity::UserScene::setCanvasPrevious(entity::Canvas* cnv)
     }
     m_canvasPrevious = cnv;
     m_canvasPrevious->setColor(cher::CANVAS_CLR_PREVIOUS);
-    MainWindow::instance().getCanvasPhotoWidget()->doSelectCanvas(this->getCanvasIndex(m_canvasPrevious.get()), 2);
+    emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasPrevious.get()), 2);
     m_canvasPrevious->updateFrame();
     m_canvasCurrent->updateFrame(m_canvasPrevious.get());
     return true;
@@ -871,11 +871,11 @@ void entity::UserScene::resetModel(CanvasPhotoWidget *widget)
         MainWindow::instance().getCanvasPhotoWidget()->doAddCanvas(cnv->getName().c_str());
 
         if (cnv == m_canvasCurrent.get())
-            MainWindow::instance().getCanvasPhotoWidget()->doSelectCanvas(this->getCanvasIndex(cnv),1);
+            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),1);
         else if (cnv == m_canvasPrevious.get())
-            MainWindow::instance().getCanvasPhotoWidget()->doSelectCanvas(this->getCanvasIndex(cnv),2);
+            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),2);
         else
-            MainWindow::instance().getCanvasPhotoWidget()->doSelectCanvas(this->getCanvasIndex(cnv),0);
+            emit this->canvasSelectedColor(this->getCanvasIndex(cnv),0);
 
         /* if canvas has any photos, reset photowidget */
         for (size_t j=0; j<cnv->getNumPhotos(); ++j){

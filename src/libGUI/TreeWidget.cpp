@@ -57,7 +57,7 @@ void CanvasPhotoWidget::doAddPhoto(const std::string &name, int rowParent)
 void CanvasPhotoWidget::doSelectCanvas(int row, int color)
 {
     if (row >= this->topLevelItemCount() || row < 0){
-        qDebug("doSelectCanvas: canvas index is out of range, "
+        qDebug("onCanvasSelectedColor: canvas index is out of range, "
                   "selection on widget will not be performed");
         qDebug() << "row " << row;
         qDebug() << "count " << this->topLevelItemCount();
