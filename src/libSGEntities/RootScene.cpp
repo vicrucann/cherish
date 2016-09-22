@@ -196,6 +196,7 @@ bool RootScene::loadSceneFromFile()
         cnv->initializeTools();
         cnv->initializeStateMachine();
         cnv->initializeMasks();
+        cnv->initializeProgramStroke();
 
         /* photo textures */
         for (size_t j=0; j<cnv->getNumPhotos(); ++j){
@@ -211,6 +212,7 @@ bool RootScene::loadSceneFromFile()
                 qWarning("Could not read stroke");
                 continue;
             }
+            stroke->initializeProgram(cnv->getProgramStroke());
             if (!stroke->redefineToCurve(cnv->getTransform()))
                 qWarning("Could not redefine stroke as curve");
         }

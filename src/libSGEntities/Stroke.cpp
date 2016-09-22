@@ -24,7 +24,7 @@
 entity::Stroke::Stroke()
     : entity::Entity2D()
     , m_lines(new osg::DrawArrays(GL_LINE_STRIP_ADJACENCY))
-    , m_program(new ProgramStroke)
+    , m_program(0)
     , m_color(cher::STROKE_CLR_NORMAL)
     , m_isCurved(false)
     , m_isShadered(false)
@@ -121,9 +121,32 @@ bool entity::Stroke::getIsShadered() const
     return m_isShadered;
 }
 
+void entity::Stroke::setProgram(ProgramStroke *p)
+{
+    m_program = p;
+}
+
 ProgramStroke *entity::Stroke::getProgram() const
 {
     return m_program.get();
+}
+
+void entity::Stroke::initializeProgram(ProgramStroke *p)
+{
+    /* save program pointer, to be used later when redefineToCurve() */
+    if (!p) throw std::runtime_error("initializeProgram(): ProgramStroke is NULL");
+    m_program = p;
+
+    /* initial values for geometries */
+    osg::Vec3Array* points = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    if (!points) throw std::runtime_error("initializeProgram(): points are  NULL");
+    m_lines->set(GL_LINE_STRIP_ADJACENCY, 0, points->size());
+
+    /* to disable Stroke shader program, e.g., if it is phantom stroke, override with an empty program
+     * The OFF option would not work for the already established program (that is attached to Canvas::m_geodeStrokes), for
+     * more details see: http://forum.openscenegraph.org/viewtopic.php?t=11783&view=previous */
+    this->getOrCreateStateSet()->setAttributeAndModes(new osg::Program, osg::StateAttribute::PROTECTED);
+    m_isShadered = false;
 }
 
 bool entity::Stroke::copyFrom(const entity::Stroke *copy)
@@ -154,6 +177,7 @@ bool entity::Stroke::copyFrom(const entity::Stroke *copy)
         osg::Vec2f p = copy->getPoint(i);
         this->appendPoint(p.x(), p.y());
     }
+    this->setProgram(copy->getProgram());
     this->setIsCurved(copy->getIsCurved());
     this->redefineToCurve(copy->getProgram()->getTransform());
 
@@ -289,10 +313,11 @@ bool entity::Stroke::redefineToCurve(osg::MatrixTransform *t, float tolerance)
 bool entity::Stroke::redefineToShader(osg::MatrixTransform *t)
 {
     /* use shader program */
-    m_program->initialize(this->getOrCreateStateSet(),
-                          MainWindow::instance().getCamera(),
-                          t,
-                          MainWindow::instance().getStrokeFogFactor());
+    m_program->updateTransform(t);
+//    m_program->initialize(this->getOrCreateStateSet(),
+//                          MainWindow::instance().getCamera(),
+//                          t,
+//                          MainWindow::instance().getStrokeFogFactor());
 
     /* The used shader requires that each line segment is represented as GL_LINES_AJACENCY_EXT */
     osg::ref_ptr<osg::Vec3Array> bezierPts = static_cast<osg::Vec3Array*>(this->getVertexArray());

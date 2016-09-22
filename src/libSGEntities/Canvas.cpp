@@ -7,6 +7,7 @@
 #include "Stroke.h"
 #include "FindNodeVisitor.h"
 #include "Utilities.h"
+#include "MainWindow.h"
 
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -30,6 +31,8 @@ entity::Canvas::Canvas()
     , m_geodeStrokes(new osg::Geode)
     , m_geodePhotos(new osg::Geode)
 
+    , m_programStroke(new ProgramStroke)
+
     , m_strokeCurrent(0)
 
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
@@ -48,6 +51,8 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_groupData(cnv.m_groupData)
     , m_geodeStrokes(cnv.m_geodeStrokes)
     , m_geodePhotos(cnv.m_geodePhotos)
+
+    , m_programStroke(cnv.m_programStroke)
 
     , m_toolFrame(cnv.m_toolFrame)
 
@@ -97,6 +102,9 @@ void entity::Canvas::initializeSG()
 
     /* traversal masks */
     this->initializeMasks();
+
+    /* shaders */
+    this->initializeProgramStroke();
 }
 
 void entity::Canvas::initializeStateMachine()
@@ -123,6 +131,11 @@ void entity::Canvas::initializeMasks()
         m_groupData->setNodeMask(cher::MASK_CANVASDATA_IN);
     if (m_toolFrame.get())
         m_toolFrame->setNodeMask(cher::MASK_CANVASFRAME_IN);
+}
+
+ProgramStroke *entity::Canvas::getProgramStroke() const
+{
+    return m_programStroke.get();
 }
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -765,6 +778,23 @@ void entity::Canvas::setIntersection(entity::Canvas *against)
         if (Utilities::getCanvasesIntersection(this, against, P1,P2,P3,P4) != 2) return;
     }
     m_toolFrame->setIntersection(P1,P2,P3,P4);
+}
+
+void entity::Canvas::initializeProgramStroke()
+{
+    if (!m_programStroke) throw std::runtime_error("initializeProgramStroke(): Stroke shader program is not initialized.");
+    if (!m_geodeStrokes) throw std::runtime_error("initializeProgramStroke() : Stroke geode is not initialized");
+
+    /* use shader program */
+    m_programStroke->initialize(m_geodeStrokes->getOrCreateStateSet(),
+                                MainWindow::instance().getCamera(),
+                                this->getTransform(),
+                                MainWindow::instance().getStrokeFogFactor());
+
+    /* set up program as state set attribute for stroke geode
+     * This allows us to turn on or off the shader if neeeded, and it also requries only 1 shader per canvas vs. 1 shader per stroke. */
+    m_geodeStrokes->getOrCreateStateSet()->setAttributeAndModes(m_programStroke.get(),
+                                                                osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
 }
 
 const entity::FrameTool *entity::Canvas::getToolFrame() const

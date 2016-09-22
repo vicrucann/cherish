@@ -7,6 +7,7 @@
 #include "ToolGlobal.h"
 #include "SelectedGroup.h"
 #include "ProtectedGroup.h"
+#include "libSGControls/ProgramStroke.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
@@ -42,6 +43,8 @@ public:
 
     /*! Method is called automatically from initializeSG(), or must be called when reading scene from file. */
     virtual void initializeMasks();
+
+    ProgramStroke* getProgramStroke() const;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 public:
@@ -291,14 +294,18 @@ protected:
     void setVerticesDefault(const osg::Vec3f& center);
     void setIntersection(entity::Canvas* against = 0);
 
+public:
+    void initializeProgramStroke();
+
 private:
-    osg::Matrix m_mR; /* part of m_transform */
-    osg::Matrix m_mT; /* part of m_transform */
+    osg::Matrix                 m_mR; /* part of m_transform */
+    osg::Matrix                 m_mT; /* part of m_transform */
     osg::ref_ptr<osg::MatrixTransform> m_transform; /* matrix transform in 3D space */
-    osg::ref_ptr<osg::Switch> m_switch; /* inisible or not, the whole canvas content */
-    osg::ref_ptr<osg::Group> m_groupData; /* keeps user canvas 2d entities such as strokes and photos */
-    osg::ref_ptr<osg::Geode> m_geodeStrokes; // contains all the strokes as children
-    osg::ref_ptr<osg::Geode> m_geodePhotos; // contains all the photos as children
+    osg::ref_ptr<osg::Switch>   m_switch; /* inisible or not, the whole canvas content */
+    osg::ref_ptr<osg::Group>    m_groupData; /* keeps user canvas 2d entities such as strokes and photos */
+    osg::ref_ptr<osg::Geode>    m_geodeStrokes; // contains all the strokes as children
+    osg::ref_ptr<osg::Geode>    m_geodePhotos; // contains all the photos as children
+    osg::ref_ptr<ProgramStroke> m_programStroke; /*!< Shader program for all the strokes of the canvas, is applied to m_geodeStrokes */
 
     /* construction geodes */
     osg::ref_ptr<entity::FrameTool> m_toolFrame;

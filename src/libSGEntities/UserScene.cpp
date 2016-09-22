@@ -1004,6 +1004,7 @@ void entity::UserScene::strokeStart()
         return;
     }
     entity::Stroke* stroke = new entity::Stroke();
+    stroke->initializeProgram(m_canvasCurrent->getProgramStroke());
     m_canvasCurrent->setStrokeCurrent(stroke);
     m_canvasCurrent->addEntity(stroke);
 }

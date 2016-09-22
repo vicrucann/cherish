@@ -20,6 +20,8 @@ void StrokeTest::testAddStroke()
     qInfo("Create new stroke");
     osg::ref_ptr<entity::Stroke> stroke = new entity::Stroke;
     QVERIFY(stroke.get());
+    QVERIFY(m_canvas2->getProgramStroke());
+    stroke->initializeProgram(m_canvas2->getProgramStroke());
     qInfo("Check stroke's geometry and other properties");
     QCOMPARE(stroke->getColor(), cher::STROKE_CLR_NORMAL);
     QVERIFY(stroke->getLines());
@@ -104,6 +106,7 @@ void StrokeTest::testCloneShaderedStroke()
     qInfo("Create new stroke");
     osg::ref_ptr<entity::Stroke> original = new entity::Stroke;
     QVERIFY(original.get());
+    original->initializeProgram(canvas->getProgramStroke());
 
     qInfo("Fill-in the stroke and add it to the canvas");
     canvas->setStrokeCurrent(original);
@@ -152,6 +155,7 @@ void StrokeTest::testReadWrite()
     qInfo("Create a stroke to save to file");
     osg::ref_ptr<entity::Stroke> original = new entity::Stroke;
     QVERIFY(original.get());
+    original->initializeProgram(canvas->getProgramStroke());
 
     qInfo("Fill-in the stroke and add it to the canvas");
     canvas->setStrokeCurrent(original);
@@ -232,6 +236,7 @@ void StrokeTest::testCopyPaste()
     qInfo("Create a stroke");
     osg::ref_ptr<entity::Stroke> original = new entity::Stroke;
     QVERIFY(original.get());
+    original->initializeProgram(canvas->getProgramStroke());
 
     qInfo("Feed some points to the empty stroke");
     canvas->setStrokeCurrent(original.get());
@@ -327,6 +332,7 @@ void StrokeTest::testFogSwitch()
     qInfo("Add couple strokes to the scene");
     osg::ref_ptr<entity::Stroke> s1 = new entity::Stroke;
     QVERIFY(m_canvas0->addEntity(s1.get()));
+    s1->initializeProgram(m_canvas2->getProgramStroke());
     s1->appendPoint(0, 0);
     s1->appendPoint(0.2, 0.2);
     s1->appendPoint(0.4, 0.4);
@@ -341,6 +347,7 @@ void StrokeTest::testFogSwitch()
     qInfo("Add second stroke to another canvas");
     osg::ref_ptr<entity::Stroke> s2 = new entity::Stroke;
     QVERIFY(m_canvas1->addEntity(s2.get()));
+    s2->initializeProgram(m_canvas2->getProgramStroke());
     s2->appendPoint(0, 0);
     s2->appendPoint(0.2, 0.2);
     s2->appendPoint(0.4, 0.4);
