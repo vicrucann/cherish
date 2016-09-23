@@ -173,12 +173,8 @@ void MainWindow::onRequestBookmarkSet(int row)
         qWarning("onRequestBookmarkSet: state is NULL");
         return;
     }
-    m_rootScene->setSceneState(state);
-
+    this->setSceneState(state);
     m_glWidget->setCameraView(eye, center, up, fov);
-
-    // we only want to keep original screenshot
-//    m_rootScene->updateBookmark(m_bookmarkWidget, row);
 }
 
 void MainWindow::onDeleteBookmark(const QModelIndex &index)
@@ -337,7 +333,7 @@ void MainWindow::onRequestSceneData(entity::SceneState *state)
 
 void MainWindow::onRequestSceneStateSet(entity::SceneState *state)
 {
-    m_rootScene->setSceneState(state);
+    this->setSceneState(state);
 }
 
 void MainWindow::onRequestSceneToolStatus(bool &visibility)
@@ -1229,4 +1225,14 @@ bool MainWindow::importPhoto(QString &fileName)
     m_rootScene->addPhoto(fileName.toStdString());
     this->statusBar()->showMessage(tr("Image loaded to current canvas."));
     return true;
+}
+
+void MainWindow::setSceneState(const entity::SceneState *state)
+{
+    if (!state) throw std::runtime_error("setSceneState(): state is NULL");
+    m_rootScene->setSceneState(state);
+    m_actionTools->setChecked(state->getAxisFlag());
+
+    // we only want to keep original screenshot
+//    m_rootScene->updateBookmark(m_bookmarkWidget, row);
 }

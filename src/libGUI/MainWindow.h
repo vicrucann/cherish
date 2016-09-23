@@ -168,6 +168,7 @@ protected:
     bool        loadSceneFromFile();
 
     bool        importPhoto(QString& fileName);
+    void        setSceneState(const entity::SceneState* state);
 
     QMdiArea*       m_mdiArea;
 
