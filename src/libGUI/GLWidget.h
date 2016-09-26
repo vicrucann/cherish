@@ -107,8 +107,9 @@ protected:
     void dragMoveEvent(QDragMoveEvent* event);
     void dropEvent(QDropEvent* event);
 
-private:
+public:
     virtual void onHome();
+private:
     virtual void onResize(int w, int h);
 
     osgGA::EventQueue* getEventQueue() const; // for osg to process mouse and keyboard events

@@ -90,6 +90,7 @@ public:
     static const QIcon& viewerTopIcon();
     static const QIcon& viewerTwoscreenIcon();
     static const QIcon& viewerVirtualIcon();
+    static const QIcon& viewerAllCanvas();
 
 
     static const QIcon& controlBookmarksIcon();

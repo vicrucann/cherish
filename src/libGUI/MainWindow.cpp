@@ -537,7 +537,30 @@ void MainWindow::onCameraAperture()
 {
     m_cameraProperties->show();
 //    CameraProperties properties(this);
-//    properties.exec();
+    //    properties.exec();
+}
+
+void MainWindow::onHomeView()
+{
+    m_glWidget->onHome();
+}
+
+void MainWindow::onViewAllCanvas()
+{
+    entity::Canvas* canvas = m_rootScene->getCanvasCurrent();
+    if (!canvas) return;
+    osg::Vec3f new_eye, new_center, new_up;
+    new_up = canvas->getGlobalAxisV();
+    float delta = 1;
+    osg::BoundingBox bb = canvas->getBoundingBox();
+    Q_ASSERT(bb.valid());
+    new_center = bb.center();
+    /* delta = BB_min * tan(FOV/2) */
+    Q_ASSERT(m_cameraProperties->getFOV() > 0);
+    delta = std::max(bb.xMax()-bb.xMin(), bb.yMax() - bb.yMin()) * 0.5f * std::tan(m_cameraProperties->getFOV() * 0.5);
+    new_eye = new_center + canvas->getNormal() * delta;
+
+    m_glWidget->setCameraView(new_eye, new_center, new_up, m_cameraProperties->getFOV());
 }
 
 void MainWindow::onSelect(){
@@ -805,6 +828,12 @@ void MainWindow::initializeActions()
     m_actionCameraSettings = new QAction(Data::cameraApertureIcon(), tr("Camera settings"), this);
     this->connect(m_actionCameraSettings, SIGNAL(triggered(bool)), this, SLOT(onCameraAperture()));
 
+    m_actionHomeView = new QAction(Data::viewerHomeIcon(), tr("Home view"), this);
+    this->connect(m_actionHomeView, SIGNAL(triggered(bool)), this, SLOT(onHomeView()));
+
+    m_actionViewAllCanvas = new QAction(Data::viewerAllCanvas(), tr("Look at canvas"), this);
+    this->connect(m_actionViewAllCanvas, SIGNAL(triggered(bool)), this, SLOT(onViewAllCanvas()));
+
     // SCENE
 
     m_actionSketch = new QAction(Data::sceneSketchIcon(), tr("&Sketch"), this);
@@ -885,6 +914,8 @@ void MainWindow::initializeMenus()
     menuCamera->addAction(m_actionPan);
     menuCamera->addAction(m_actionZoom);
     menuCamera->addSeparator();
+    menuCamera->addAction(m_actionHomeView);
+    menuCamera->addAction(m_actionViewAllCanvas);
     menuCamera->addAction(m_actionPrevView);
     menuCamera->addAction(m_actionNextView);
     menuCamera->addSeparator();
@@ -1003,6 +1034,8 @@ void MainWindow::initializeToolbars()
     /* VIEWER bar */
     QToolBar* tbViewer = new QToolBar(tr("Viewer"));
     this->addToolBar(Qt::BottomToolBarArea, tbViewer);
+    tbViewer->addAction(m_actionHomeView);
+    tbViewer->addAction(m_actionViewAllCanvas);
     tbViewer->addAction(m_actionPrevView);
     tbViewer->addAction(m_actionNextView);
     tbViewer->addAction(m_actionBookmark);

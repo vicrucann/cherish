@@ -56,7 +56,8 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     osg::Camera* camera = new osg::Camera;
     camera->setViewport(0,0,this->width(), this->height());
     camera->setProjectionMatrixAsPerspective(30.f, ratio, 1.f, 1000.f);
-    camera->setViewMatrixAsLookAt(center-look*(radius*3.f), center, up);
+    osg::Vec3f eye = center-look*(radius*3.f);
+    camera->setViewMatrixAsLookAt(eye, center, up);
     camera->setGraphicsContext(m_graphicsWindow.get());
     camera->setClearColor(cher::BACKGROUND_CLR);
     camera->setName("Camera");
@@ -64,6 +65,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     /* manipulator settings */
     m_manipulator->setAllowThrow(false);
     m_manipulator->getTransformation(m_eye, m_center, m_up);
+    m_manipulator->setHomePosition(eye,center,up);
 
     /* viewer settings */
     m_viewer->setCamera(camera);

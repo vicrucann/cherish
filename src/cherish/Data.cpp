@@ -453,6 +453,13 @@ const QIcon &Data::viewerVirtualIcon()
     return icon;
 }
 
+const QIcon &Data::viewerAllCanvas()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-allcanvas-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/viewer-allcanvas-24px.svg");
+    return icon;
+}
+
 const QIcon &Data::controlBookmarksIcon()
 {
     Q_ASSERT_X(!QPixmap(":/control-bookmarks-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
