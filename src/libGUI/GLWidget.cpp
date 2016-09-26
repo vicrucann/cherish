@@ -34,7 +34,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
 
     , m_traits(new osg::GraphicsContext::Traits)
     , m_graphicsWindow(new osgViewer::GraphicsWindowEmbedded(m_traits.get()))
-    , m_viewer(new osgViewer::Viewer)
+    , m_viewer(new Viewer)
     , m_RootScene(root)
     , m_TabletDevice(QTabletEvent::Stylus) // http://doc.qt.io/qt-5/qtabletevent.html#TabletDevice-enum
 
