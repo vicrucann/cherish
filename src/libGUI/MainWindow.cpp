@@ -83,11 +83,15 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     this->initializeToolbars();
     this->initializeCallbacks();
 
-    /* load UI forms */
-
     /* setup initial mode */
-//    this->onNewCanvasXZ();
     this->onSketch();
+
+    // test adding second window
+//    GLWidget* widget = new GLWidget(m_rootScene, m_viewStack, this);
+//    QMdiSubWindow* subwin2 = m_mdiArea->addSubWindow(widget);
+//    widget->showMaximized();
+//    subwin2->show();
+//    m_mdiArea->tileSubWindows();
 }
 
 MainWindow::~MainWindow()
@@ -568,6 +572,12 @@ void MainWindow::onSelect(){
     this->onRequestUpdate();
 }
 
+void MainWindow::onSelect3d()
+{
+    m_glWidget->setMouseMode(cher::SELECT_CANVAS);
+    this->onRequestUpdate();
+}
+
 void MainWindow::onErase()
 {
     m_glWidget->setMouseMode(cher::PEN_ERASE);
@@ -843,8 +853,11 @@ void MainWindow::initializeActions()
     this->connect(m_actionEraser, SIGNAL(triggered(bool)), this, SLOT(onDelete()));
     m_actionEraser->setShortcut(Qt::Key_Delete);
 
-    m_actionSelect = new QAction(Data::sceneSelectIcon(), tr("S&elect"), this);
+    m_actionSelect = new QAction(Data::sceneSelectIcon(), tr("S&elect 2D entity"), this);
     this->connect(m_actionSelect, SIGNAL(triggered(bool)), this, SLOT(onSelect()));
+
+    m_actionSelect3d = new QAction(Data::sceneSelect3DIcon(), tr("Select &canvas"), this);
+    this->connect(m_actionSelect3d, SIGNAL(triggered(bool)), this, SLOT(onSelect3d()));
 
     m_actionCanvasClone = new QAction(Data::sceneNewCanvasCloneIcon(), tr("Clone Current"), this);
     this->connect(m_actionCanvasClone, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasClone()));
@@ -926,6 +939,7 @@ void MainWindow::initializeMenus()
     /* SCENE */
     QMenu* menuScene = m_menuBar->addMenu(tr("&Scene"));
     menuScene->addAction(m_actionSelect);
+    menuScene->addAction(m_actionSelect3d);
     menuScene->addAction(m_actionSketch);
     menuScene->addAction(m_actionEraser);
     menuScene->addAction(m_actionCanvasEdit);
@@ -996,6 +1010,7 @@ void MainWindow::initializeToolbars()
     this->addToolBar(Qt::LeftToolBarArea, tbInput);
     //QToolBar* tbInput = this->addToolBar(tr("Input"));
     tbInput->addAction(m_actionSelect);
+    tbInput->addAction(m_actionSelect3d);
     tbInput->addAction(m_actionSketch);
     tbInput->addAction(m_actionEraser);
     tbInput->addAction(m_actionCanvasEdit);

@@ -117,6 +117,13 @@ const QIcon &Data::sceneSelectIcon()
     return icon;
 }
 
+const QIcon &Data::sceneSelect3DIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-select3d-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/scene-select3d-24px.svg");
+    return icon;
+}
+
 const QIcon &Data::sceneSketchIcon()
 {
     Q_ASSERT_X(!QPixmap(":/scene-sketch-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");

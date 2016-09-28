@@ -141,9 +141,11 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     case cher::PEN_ERASE:
     case cher::PEN_DELETE:
     case cher::SELECT_ENTITY:
+        /* if mode is only for current canvas, disable all other canvases from usage */
         m_scene->setCanvasesButCurrent(false);
         break;
     default:
+        /* if selection within 3D, enable all the canvases for selection */
         m_scene->setCanvasesButCurrent(true);
         break;
     }

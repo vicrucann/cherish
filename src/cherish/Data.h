@@ -33,6 +33,7 @@ public:
 
 
     static const QIcon& sceneSelectIcon();
+    static const QIcon& sceneSelect3DIcon();
     static const QIcon& sceneSketchIcon();
     static const QIcon& sceneEraserIcon();
     static const QIcon& sceneOrbitIcon();

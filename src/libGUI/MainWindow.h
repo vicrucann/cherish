@@ -131,6 +131,7 @@ protected slots:
     void onViewAllCanvas();
 
     void onSelect();
+    void onSelect3d();
     void onErase();
     void onDelete();
     void onSketch();
@@ -205,7 +206,7 @@ protected:
             , * m_actionCameraSettings, * m_actionHomeView, * m_actionViewAllCanvas;
 
     // SCENE actions
-    QAction * m_actionSketch, * m_actionEraser, * m_actionSelect
+    QAction * m_actionSketch, * m_actionEraser, * m_actionSelect, * m_actionSelect3d
             // New Canvas sub-menu
             , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasXZ
             , * m_actionCanvasOrtho, * m_actionCanvasSeparate
