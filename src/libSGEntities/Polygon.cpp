@@ -138,6 +138,24 @@ void entity::Polygon::editLastPoint(float u, float v)
     this->dirtyBound();
 }
 
+void entity::Polygon::removeLastPoint()
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    Q_ASSERT(verts != 0);
+    verts->pop_back();
+    verts->dirty();
+
+    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+    Q_ASSERT(colors);
+    colors->pop_back();
+    colors->dirty();
+
+    m_lines->setFirst(0);
+    m_lines->setCount(verts->size());
+
+    this->dirtyBound();
+}
+
 osg::Vec2f entity::Polygon::getPoint(unsigned int i) const
 {
     const osg::Vec3Array* verts = static_cast<const osg::Vec3Array*>(this->getVertexArray());
@@ -167,7 +185,7 @@ void entity::Polygon::redefineToPolygon()
     Q_ASSERT(points);
     m_lines->set(GL_POLYGON, 0, this->getNumPoints());
     points->dirty();
-    this->setColor(solarized::violet); // replace to NORMALFILL
+    this->setColor(cher::POLYGON_CLR_NORMALFILL);
 }
 
 int entity::Polygon::getNumPoints() const

@@ -152,8 +152,8 @@ const float STROKE_FOG_MIN = 4.f;
 const float STROKE_FOG_MAX = 30.f;
 
 const float POLYGON_LINE_WIDTH = 4.f;
-const osg::Vec4f POLYGON_CLR_PHANTOM = solarized::base01;
-const osg::Vec4f POLYGON_CLR_NORMALFILL = BACKGROUND_CLR;
+const osg::Vec4f POLYGON_CLR_PHANTOM = solarized::base1;
+const osg::Vec4f POLYGON_CLR_NORMALFILL = solarized::base2;
 const osg::Vec4f POLYGON_CLR_SELECTEDFILL = solarized::green;
 const float POLYGON_PROXIMITY_THRESHOLD = 0.1f;
 

@@ -74,6 +74,9 @@ public:
     /*! A method that overwrites the coordinates of the last point of the polygon. */
     void editLastPoint(float u, float v);
 
+    /*! A method to remove the last point from the polygon. */
+    void removeLastPoint();
+
     /*! \param i is the point index. \return point coordinates at the specified index. */
     osg::Vec2f getPoint(unsigned int i) const;
 
