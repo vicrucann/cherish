@@ -22,10 +22,6 @@ EventHandler::EventHandler(GLWidget *widget, RootScene* scene, cher::MOUSE_MODE 
 {
 }
 
-// handle() has to be re-defined, for more info, check
-// OpenSceneGraph beginner's guide or
-// OpenSceneGraph 3.0 Cookbook
-// and search for custom event handler examples
 bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     /* if it's mouse navigation mode, don't process event
@@ -50,6 +46,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             break;
         case cher::PEN_DELETE:
             this->doDeleteEntity(ea, aa);
+            break;
+        case cher::PEN_POLYGON:
+            this->doSketchPolygon(ea, aa);
             break;
         default:
             break;
@@ -210,6 +209,42 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
         if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
             return;
         m_scene->addStroke(u,v,cher::EVENT_DRAGGED);
+        break;
+    default:
+        break;
+    }
+}
+
+void EventHandler::doSketchPolygon(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::MOVE)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK)
+           ))
+        return;
+
+    double u=0, v=0;
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        /* new point for a polygon */
+        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+            return;
+        m_scene->addPolygon(u,v, cher::EVENT_PRESSED);
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+            return;
+        m_scene->addPolygon(u,v, cher::EVENT_RELEASED);
+        break;
+    case osgGA::GUIEventAdapter::MOVE:
+        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+            return;
+        m_scene->addPolygon(u,v, cher::EVENT_DRAGGED);
+        break;
+    case osgGA::GUIEventAdapter::DOUBLECLICK:
+        /* close the polygon */
+        m_scene->addPolygon(0,0, cher::EVENT_OFF);
         break;
     default:
         break;
@@ -790,6 +825,9 @@ void EventHandler::finishAll()
     {
     case cher::PEN_SKETCH:
         m_scene->addStroke(0,0, cher::EVENT_OFF);
+        break;
+    case cher::PEN_POLYGON:
+        m_scene->addPolygon(0,0, cher::EVENT_OFF);
         break;
     case cher::CANVAS_OFFSET:
         m_scene->editCanvasOffset(osg::Vec3f(0,0,0), cher::EVENT_OFF);

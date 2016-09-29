@@ -1,19 +1,12 @@
 #include "Stroke.h"
 
-#include <assert.h>
-
 #include <QDebug>
 #include <QtGlobal>
-#include <QFile>
-#include <QWidgetList>
 #include "MainWindow.h"
 
 #include <osg/Program>
-#include <osg/LineWidth>
 #include <osg/StateSet>
-#include <osg/BlendFunc>
-#include <osg/Point>
-#include <osg/Texture2D>
+#include <osg/Camera>
 
 #include "ModelViewProjectionMatrixCallback.h"
 #include "ViewportVectorCallback.h"
@@ -21,9 +14,11 @@
 #include "CanvasTransformCallback.h"
 #include "CurveFitting/libPathFitter/OsgPathFitter.h"
 
+const GLenum STROKE_PHANTOM_TYPE = GL_LINE_STRIP;
+
 entity::Stroke::Stroke()
     : entity::Entity2D()
-    , m_lines(new osg::DrawArrays(GL_LINE_STRIP_ADJACENCY))
+    , m_lines(new osg::DrawArrays(STROKE_PHANTOM_TYPE))
     , m_program(0)
     , m_color(cher::STROKE_CLR_NORMAL)
     , m_isCurved(false)
@@ -37,19 +32,6 @@ entity::Stroke::Stroke()
     this->setVertexArray(verts);
     this->setColorArray(colors);
     this->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-
-    osg::StateSet* stateset = new osg::StateSet;
-    osg::LineWidth* linewidth = new osg::LineWidth();
-    linewidth->setWidth(cher::STROKE_LINE_WIDTH);
-    osg::BlendFunc* blendfunc = new osg::BlendFunc();
-    stateset->setAttributeAndModes(linewidth,osg::StateAttribute::ON);
-    stateset->setAttributeAndModes(blendfunc, osg::StateAttribute::ON);
-    stateset->setAttributeAndModes(new osg::Point(cher::STROKE_LINE_WIDTH));
-    stateset->setTextureAttributeAndModes(0, new osg::Texture2D, osg::StateAttribute::OFF);
-    stateset->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
-    stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
-    stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
-    this->setStateSet(stateset);
 
     this->setDataVariance(osg::Object::DYNAMIC);
     this->setUseDisplayList(false);
@@ -130,6 +112,7 @@ ProgramStroke *entity::Stroke::getProgram() const
 {
     return m_program.get();
 }
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 void entity::Stroke::initializeProgram(ProgramStroke *p)
 {
@@ -140,7 +123,7 @@ void entity::Stroke::initializeProgram(ProgramStroke *p)
     /* initial values for geometries */
     osg::Vec3Array* points = static_cast<osg::Vec3Array*>(this->getVertexArray());
     if (!points) throw std::runtime_error("initializeProgram(): points are  NULL");
-    m_lines->set(GL_LINE_STRIP_ADJACENCY, 0, points->size());
+    m_lines->set(STROKE_PHANTOM_TYPE, 0, points->size());
 
     /* to disable Stroke shader program, e.g., if it is phantom stroke, override with an empty program
      * The OFF option would not work for the already established program (that is attached to Canvas::m_geodeStrokes), for
@@ -158,7 +141,7 @@ bool entity::Stroke::copyFrom(const entity::Stroke *copy)
 
     if (this->getColor() != cher::STROKE_CLR_NORMAL ||
             !this->getLines() ||
-            static_cast<int>(this->getLines()->getMode()) != GL_LINE_STRIP_ADJACENCY) {
+            static_cast<int>(this->getLines()->getMode()) != STROKE_PHANTOM_TYPE) {
         qWarning("stroke::copyFrom() : stroke parameters check failed");
         return false;
     }
@@ -191,7 +174,7 @@ bool entity::Stroke::copyFrom(const entity::Stroke *copy)
     return true;
 }
 
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
 
 void entity::Stroke::appendPoint(const float u, const float v)
 {

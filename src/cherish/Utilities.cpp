@@ -392,6 +392,9 @@ QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
     case cher::PEN_SKETCH:
         cur = QCursor(Data::sceneSketchPixmap(), 0, Data::sceneSketchPixmap().height());
         break;
+    case cher::PEN_POLYGON:
+        cur = QCursor(Data::scenePolygonPixmap(), 0, Data::scenePolygonPixmap().height());
+        break;
     case cher::PEN_DELETE:
         cur = QCursor(Data::editDeleteCursor(), 0, 0);
         break;

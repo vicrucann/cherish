@@ -17,6 +17,7 @@
 #include "ProtectedGroup.h"
 #include "Canvas.h"
 #include "Stroke.h"
+#include "Polygon.h"
 #include "Photo.h"
 #include "Bookmarks.h"
 #include "../libGUI/ListWidget.h"
@@ -36,6 +37,7 @@ class EditCanvasDeleteCommand;
 class AddCanvasSeparationCommand;
 class EditPhotoDeleteCommand;
 class AddStrokeCommand;
+class AddPolygonCommand;
 class EditStrokesPushCommand;
 class EditStrokeDeleteCommand;
 class EditPasteCommand;
@@ -150,8 +152,17 @@ public:
      * \param stack  is the undo/redo stack where the fur::AddStrokeCommand will be pushed to
      * \param u is the local canvas U-coordinate of the stroke point [u, v] to append to Canvas::m_strokeCurrent
      * \param v is the local canvas V-coordinate of the stroke point [u, v] to append to Canvas::m_strokeCurrent
-     * \param event is the current mouse state: click, drag or release */
+     * \param event is the current mouse state: click, drag or release
+     * \sa addPolygon() */
     void addStroke(QUndoStack* stack, float u, float v, cher::EVENT event);
+
+    /*! Adds a point to a current polygon of the current canvas through undo/redo framework.
+     * \param stack  is the undo/redo stack where the fur::AddStrokeCommand will be pushed to
+     * \param u is the local canvas U-coordinate of the stroke point [u, v] to append to Canvas::m_strokeCurrent
+     * \param v is the local canvas V-coordinate of the stroke point [u, v] to append to Canvas::m_strokeCurrent
+     * \param event is the current mouse state: click, drag or release
+     * \sa addStroke() */
+    void addPolygon(QUndoStack* stack, float u, float v, cher::EVENT event);
 
     /*! Creates and adds a photo to  a current canvas through undo/redo framework by
      * asigning to it an automatic name.
@@ -535,6 +546,12 @@ protected:
     void strokeFinish(QUndoStack* stack);
     bool strokeValid() const;
 
+    void polygonStart();
+    void polygonAppend(float u, float v, QUndoStack *stack);
+    void polygonEdit(float u, float v);
+    void polygonFinish(QUndoStack* stack);
+    bool polygonValid() const;
+
     void entitiesMoveStart(double u, double v);
     void entitiesMoveAppend(double u, double v);
     void entitiesMoveFinish(QUndoStack* stack);
@@ -577,6 +594,7 @@ protected:
     friend class ::fur::AddCanvasSeparationCommand;
     friend class ::fur::EditPhotoDeleteCommand;
     friend class ::fur::AddStrokeCommand;
+    friend class ::fur::AddPolygonCommand;
     friend class ::fur::EditStrokesPushCommand;
     friend class ::fur::EditStrokeDeleteCommand;
     friend class ::fur::EditPasteCommand;

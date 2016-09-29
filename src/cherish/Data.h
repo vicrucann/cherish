@@ -34,6 +34,7 @@ public:
 
     static const QIcon& sceneSelectIcon();
     static const QIcon& sceneSelect3DIcon();
+    static const QIcon& scenePolygonIcon();
     static const QIcon& sceneSketchIcon();
     static const QIcon& sceneEraserIcon();
     static const QIcon& sceneOrbitIcon();
@@ -119,6 +120,7 @@ public:
     static const QPixmap& sceneSelectPixmap();
     static const QPixmap& sceneSelect3DPixmap();
     static const QPixmap& sceneSketchPixmap();
+    static const QPixmap& scenePolygonPixmap();
     static const QPixmap& sceneEraserPixmap();
     static const QPixmap& sceneImageFlipHPixmap();
     static const QPixmap& sceneImageFlipVPixmap();

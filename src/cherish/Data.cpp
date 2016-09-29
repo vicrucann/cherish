@@ -124,6 +124,13 @@ const QIcon &Data::sceneSelect3DIcon()
     return icon;
 }
 
+const QIcon &Data::scenePolygonIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/scene-polygon-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/scene-polygon-24px.svg");
+    return icon;
+}
+
 const QIcon &Data::sceneSketchIcon()
 {
     Q_ASSERT_X(!QPixmap(":/scene-sketch-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
@@ -612,6 +619,16 @@ const QPixmap &Data::sceneSelect3DPixmap()
 const QPixmap &Data::sceneSketchPixmap()
 {
     QString fname(":/scene-sketch-24px.svg");
+    Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
+    QIcon icon(fname);
+    static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
+
+    return pmap;
+}
+
+const QPixmap &Data::scenePolygonPixmap()
+{
+    QString fname(":/scene-polygon-24px.svg");
     Q_ASSERT_X(!QPixmap(fname).isNull(), Q_FUNC_INFO, "Required resource not available");
     QIcon icon(fname);
     static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);

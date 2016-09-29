@@ -269,6 +269,12 @@ void RootScene::addStroke(float u, float v, cher::EVENT event)
     m_saved = false;
 }
 
+void RootScene::addPolygon(float u, float v, cher::EVENT event)
+{
+    m_userScene->addPolygon(m_undoStack, u, v, event);
+    m_saved = false;
+}
+
 void RootScene::selectAllEntities()
 {
     if (this->getCanvasCurrent())

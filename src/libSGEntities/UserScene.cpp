@@ -213,6 +213,36 @@ void entity::UserScene::addStroke(QUndoStack* stack, float u, float v, cher::EVE
     }
 }
 
+void entity::UserScene::addPolygon(QUndoStack *stack, float u, float v, cher::EVENT event)
+{
+    if (!stack){
+        qWarning("addPolygon(): undo stack is NULL, it is not initialized. "
+                 "Sketching is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
+    }
+
+    switch(event){
+    case cher::EVENT_OFF:
+        qDebug("polygon_OFF");
+        this->polygonFinish(stack);
+        break;
+    case cher::EVENT_PRESSED:
+        qDebug("polygon_PRESSED");
+        if (!this->polygonValid())
+            this->polygonStart();
+        this->polygonAppend(u, v, stack);
+        break;
+    case cher::EVENT_DRAGGED:
+    case cher::EVENT_RELEASED:
+        if (!this->polygonValid()) break;
+        this->polygonEdit(u, v);
+        break;
+    default:
+        break;
+    }
+}
+
 void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
 {
     qDebug("loadPhotoFromFile()");
@@ -1052,7 +1082,92 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
 
 bool entity::UserScene::strokeValid() const
 {
+    if (!m_canvasCurrent) throw std::runtime_error("There is no current canvas on the scene");
     return m_canvasCurrent->getStrokeCurrent();
+}
+
+void entity::UserScene::polygonStart()
+{
+    m_canvasCurrent->unselectEntities();
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityAll())
+        m_canvasCurrent->setVisibilityAll(true);
+    qDebug("Polygone start");
+    if (this->polygonValid()){
+        qWarning("polygonStart(): Cannot start new polygon since the pointer is not NULL");
+        return;
+    }
+    entity::Polygon* poly = new entity::Polygon;
+    m_canvasCurrent->setPolygonCurrent(poly);
+    m_canvasCurrent->addEntity(poly);
+
+    this->updateWidgets();
+}
+
+void entity::UserScene::polygonAppend(float u, float v, QUndoStack *stack)
+{
+    if (this->polygonValid()){
+        entity::Polygon* poly = m_canvasCurrent->getPolygonCurrent();
+        Q_ASSERT(poly);
+        float dist = 10.f;
+        if (poly->getNumPoints() >= 3){
+            osg::Vec2f p0 = poly->getPoint(0);
+            dist = std::sqrt((p0.x()-u)*(p0.x()-u) + (p0.y()-v)*(p0.y()-v));
+        }
+
+        /* close the polygon if the last point is close to the first point */
+        if (dist <= cher::POLYGON_PROXIMITY_THRESHOLD){
+            this->polygonFinish(stack);
+            return;
+        }
+
+        /* otherwise, append it */
+        qDebug("Appending point to a polygon");
+        poly->appendPoint(u, v);
+        this->updateWidgets();
+    }
+    else
+        qWarning("polygonAppend: pointer is nULUL");
+}
+
+void entity::UserScene::polygonEdit(float u, float v)
+{
+    if (this->polygonValid()){
+        entity::Polygon* poly = m_canvasCurrent->getPolygonCurrent();
+        poly->editLastPoint(u, v);
+        this->updateWidgets();
+    }
+    else
+        qWarning("polygonEdit: pointer is nULUL");
+}
+
+void entity::UserScene::polygonFinish(QUndoStack *stack)
+{
+    qDebug("redefining polygon");
+    entity::Polygon* poly = m_canvasCurrent->getPolygonCurrent();
+    if (this->polygonValid()){
+        osg::ref_ptr<entity::Polygon> poly_clone = new entity::Polygon;
+        Q_ASSERT(poly_clone);
+        if (poly_clone->copyFrom(poly)){
+            poly_clone->redefineToPolygon();
+            fur::AddPolygonCommand* cmd = new fur::AddPolygonCommand(this, poly_clone);
+            Q_ASSERT(cmd);
+            stack->push(cmd);
+        }
+    }
+    else{
+        qWarning("polygonFinish(): polygon pointer is NULL, impossible to finish the polygon");
+        return;
+    }
+    m_canvasCurrent->removeEntity(poly);
+    m_canvasCurrent->setPolygonCurrent(false);
+    qDebug("Polygon finish");
+}
+
+bool entity::UserScene::polygonValid() const
+{
+    if (!m_canvasCurrent) throw std::runtime_error("There is no current canvas on the scene");
+    return m_canvasCurrent->getPolygonCurrent();
 }
 
 void entity::UserScene::entitiesMoveStart(double u, double v)

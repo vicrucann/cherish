@@ -135,6 +135,7 @@ protected slots:
     void onErase();
     void onDelete();
     void onSketch();
+    void onPolygon();
 
     void onNewCanvasClone();
     void onNewCanvasXY();
@@ -206,7 +207,7 @@ protected:
             , * m_actionCameraSettings, * m_actionHomeView, * m_actionViewAllCanvas;
 
     // SCENE actions
-    QAction * m_actionSketch, * m_actionEraser, * m_actionSelect, * m_actionSelect3d
+    QAction * m_actionSketch, * m_actionEraser, * m_actionSelect, * m_actionSelect3d, * m_actionPolygon
             // New Canvas sub-menu
             , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasXZ
             , * m_actionCanvasOrtho, * m_actionCanvasSeparate

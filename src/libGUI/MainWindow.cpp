@@ -596,6 +596,12 @@ void MainWindow::onSketch()
     this->onRequestUpdate();
 }
 
+void MainWindow::onPolygon()
+{
+    m_glWidget->setMouseMode(cher::PEN_POLYGON);
+    this->onRequestUpdate();
+}
+
 void MainWindow::onNewCanvasClone()
 {
     m_glWidget->setMouseMode(cher::CREATE_CANVASCLONE);
@@ -859,6 +865,9 @@ void MainWindow::initializeActions()
     m_actionSelect3d = new QAction(Data::sceneSelect3DIcon(), tr("Select &canvas"), this);
     this->connect(m_actionSelect3d, SIGNAL(triggered(bool)), this, SLOT(onSelect3d()));
 
+    m_actionPolygon = new QAction(Data::scenePolygonIcon(), tr("Draw polygon"), this);
+    this->connect(m_actionPolygon, SIGNAL(triggered(bool)), this, SLOT(onPolygon()));
+
     m_actionCanvasClone = new QAction(Data::sceneNewCanvasCloneIcon(), tr("Clone Current"), this);
     this->connect(m_actionCanvasClone, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasClone()));
 
@@ -941,6 +950,7 @@ void MainWindow::initializeMenus()
     menuScene->addAction(m_actionSelect);
     menuScene->addAction(m_actionSelect3d);
     menuScene->addAction(m_actionSketch);
+    menuScene->addAction(m_actionPolygon);
     menuScene->addAction(m_actionEraser);
     menuScene->addAction(m_actionCanvasEdit);
     menuScene->addSeparator();
@@ -1012,6 +1022,7 @@ void MainWindow::initializeToolbars()
     tbInput->addAction(m_actionSelect);
     tbInput->addAction(m_actionSelect3d);
     tbInput->addAction(m_actionSketch);
+    tbInput->addAction(m_actionPolygon);
     tbInput->addAction(m_actionEraser);
     tbInput->addAction(m_actionCanvasEdit);
 
