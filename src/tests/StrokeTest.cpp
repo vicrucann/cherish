@@ -25,7 +25,7 @@ void StrokeTest::testAddStroke()
     qInfo("Check stroke's geometry and other properties");
     QCOMPARE(stroke->getColor(), cher::STROKE_CLR_NORMAL);
     QVERIFY(stroke->getLines());
-    QCOMPARE(static_cast<int>(stroke->getLines()->getMode()), GL_LINE_STRIP_ADJACENCY);
+    QCOMPARE(static_cast<int>(stroke->getLines()->getMode()), GL_LINE_STRIP);
     QCOMPARE(stroke->getColorBinding(), osg::Geometry::BIND_PER_VERTEX);
 
     qInfo("Add a phantom to the current canvas");

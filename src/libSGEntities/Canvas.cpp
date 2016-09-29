@@ -980,6 +980,7 @@ REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
     ADD_OBJECT_SERIALIZER(GroupData, osg::Group, NULL);
     ADD_OBJECT_SERIALIZER(GeodeStrokes, osg::Geode, NULL);
     ADD_OBJECT_SERIALIZER(GeodePhotos, osg::Geode, NULL);
+    ADD_OBJECT_SERIALIZER(GeodePolygons, osg::Geode, NULL);
 
     ADD_VEC3F_SERIALIZER(Center, osg::Vec3f());
     ADD_VEC3F_SERIALIZER(Normal, osg::Vec3f());
