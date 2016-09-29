@@ -9,6 +9,8 @@
 #include <osg/Point>
 #include <osg/Texture2D>
 
+#include "MainWindow.h"
+
 entity::Polygon::Polygon()
     : entity::Entity2D()
     , m_lines(new osg::DrawArrays(GL_LINE_STRIP))
@@ -185,7 +187,8 @@ void entity::Polygon::redefineToPolygon()
     Q_ASSERT(points);
     m_lines->set(GL_POLYGON, 0, this->getNumPoints());
     points->dirty();
-    this->setColor(cher::POLYGON_CLR_NORMALFILL);
+    osg::Vec4f color = MainWindow::instance().getCurrentColor();
+    this->setColor(color);
 }
 
 int entity::Polygon::getNumPoints() const

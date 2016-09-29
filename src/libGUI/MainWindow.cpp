@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_viewStack(new QUndoStack(this))
     , m_glWidget(new GLWidget(m_rootScene.get(), m_viewStack))
     , m_cameraProperties( new CameraProperties(60.f, this) )
+    , m_colorDialog(new QColorDialog(this))
 {
     /* singleton check and setup */
     Q_ASSERT_X(m_instance == 0, "MainWindow ctor", "MainWindow is a singleton and cannot be created more than once");
@@ -85,6 +86,12 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     /* setup initial mode */
     this->onSketch();
+
+    /* ui elements setup */
+//    m_colorDialog->setWindowFlags(Qt::FramelessWindowHint);
+    m_colorDialog->setOption(QColorDialog::ShowAlphaChannel);
+    m_colorDialog->setCurrentColor(Utilities::getQColor(cher::POLYGON_CLR_NORMALFILL));
+//    m_colorDialog->move(this->width(), this->height());
 
     // test adding second window
 //    GLWidget* widget = new GLWidget(m_rootScene, m_viewStack, this);
@@ -132,6 +139,12 @@ bool MainWindow::getStrokeFogFactor() const
 QPixmap MainWindow::getScreenshot(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     return m_glWidget->getScreenShot(eye, center, up);
+}
+
+osg::Vec4f MainWindow::getCurrentColor() const
+{
+    QColor qc = m_colorDialog->currentColor();
+    return Utilities::getOsgColor(qc);
 }
 
 void MainWindow::onSetTabletActivity(bool active){
@@ -272,6 +285,10 @@ void MainWindow::onBookmarkRemovedFromWidget(const QModelIndex &, int first, int
 void MainWindow::onMouseModeSet(cher::MOUSE_MODE mode)
 {
     QCursor cur = Utilities::getCursorFromMode(mode);
+    if (mode == cher::PEN_POLYGON)
+        m_colorDialog->show();
+    else
+        m_colorDialog->hide();
     if (cur.shape() != Qt::ArrowCursor) m_mdiArea->setCursor(cur);
 }
 

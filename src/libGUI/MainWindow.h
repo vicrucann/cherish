@@ -13,6 +13,7 @@
 #include <QToolButton>
 #include <QWidgetAction>
 #include <QFileSystemModel>
+#include <QColorDialog>
 
 #include <osg/ref_ptr>
 #include <osg/Camera>
@@ -47,6 +48,9 @@ public:
     osg::Camera* getCamera() const;
     bool getStrokeFogFactor() const;
     QPixmap getScreenshot(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+
+    /*! A method to obtain current color of the color dialog (for polygon drawing). */
+    osg::Vec4f getCurrentColor() const;
 
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
@@ -223,7 +227,8 @@ protected:
     // OPTION actions
     QAction* m_actionStrokeFogFactor;
 
-    CameraProperties* m_cameraProperties;
+    CameraProperties*   m_cameraProperties;
+    QColorDialog*       m_colorDialog;
 
     static MainWindow* m_instance;
 };
