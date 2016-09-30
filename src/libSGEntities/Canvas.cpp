@@ -574,23 +574,24 @@ osg::Vec3f entity::Canvas::getBoundingBoxCenter2D() const
 
 osg::BoundingBox entity::Canvas::getBoundingBox() const
 {
-//    osg::BoundingBox result;
-    return m_toolFrame->getGeodeWire()->getBoundingBox();
-//    osg::BoundingBox bb_strokes = m_geodeStrokes->getBoundingBox();
-//    osg::BoundingBox bb_photos = m_geodePhotos->getBoundingBox();
-//    if (bb_strokes.valid() && bb_photos.valid()){
-//        double xmin = std::min(bb_strokes.xMin(), bb_photos.xMin());
-//        double ymin = std::min(bb_strokes.yMin(), bb_photos.yMin());
-//        double zmin = std::min(bb_strokes.zMin(), bb_photos.zMin());
-//        double xmax = std::max(bb_strokes.xMax(), bb_photos.xMax());
-//        double ymax = std::max(bb_strokes.yMax(), bb_photos.yMax());
-//        double zmax = std::max(bb_strokes.zMax(), bb_photos.zMax());
-//        result.set(xmin,ymin,zmin, xmax,ymax,zmax);
-//    }
-//    else if (bb_strokes.valid()) result = bb_strokes;
-//    else if (bb_photos.valid()) result = bb_photos;
+    osg::BoundingBox result = m_toolFrame->getGeodeWire()->getBoundingBox();
+    osg::BoundingBox bb_strokes = m_geodeStrokes->getBoundingBox();
+    osg::BoundingBox bb_photos = m_geodePhotos->getBoundingBox();
+    osg::BoundingBox bb_polygons = m_geodePolygons->getBoundingBox();
 
-//    return result;
+    if (!bb_strokes.valid()) bb_strokes = result;
+    if (!bb_photos.valid())   bb_photos = result;
+    if (!bb_polygons.valid()) bb_polygons = result;
+
+    auto xmin = std::min( {bb_strokes.xMin(), bb_photos.xMin(), bb_polygons.xMin()} );
+    auto ymin = std::min( {bb_strokes.yMin(), bb_photos.yMin(), bb_polygons.yMin()} );
+    auto zmin = std::min( {bb_strokes.zMin(), bb_photos.zMin(), bb_polygons.zMin()} );
+    auto xmax = std::max( {bb_strokes.xMax(), bb_photos.xMax(), bb_polygons.xMax()} );
+    auto ymax = std::max( {bb_strokes.yMax(), bb_photos.yMax(), bb_polygons.yMax()} );
+    auto zmax = std::max( {bb_strokes.zMax(), bb_photos.zMax(), bb_polygons.zMax()} );
+    result.set(xmin,ymin,zmin, xmax,ymax,zmax);
+
+    return result;
 }
 
 void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, double du, double dv)
