@@ -578,7 +578,7 @@ void MainWindow::onViewAllCanvas()
     new_center = bb.center();
     /* delta = BB_min * tan(FOV/2) */
     Q_ASSERT(m_cameraProperties->getFOV() > 0);
-    delta = std::max(bb.xMax()-bb.xMin(), bb.yMax() - bb.yMin()) * 0.5f * std::tan(m_cameraProperties->getFOV() * 0.5);
+    delta = std::fabs(std::max(bb.xMax()-bb.xMin(), bb.yMax() - bb.yMin()) * 0.5f * std::tan(m_cameraProperties->getFOV() * 0.5));
     new_eye = new_center + canvas->getNormal() * delta;
 
     m_glWidget->setCameraView(new_eye, new_center, new_up, m_cameraProperties->getFOV());

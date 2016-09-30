@@ -574,22 +574,23 @@ osg::Vec3f entity::Canvas::getBoundingBoxCenter2D() const
 
 osg::BoundingBox entity::Canvas::getBoundingBox() const
 {
-    osg::BoundingBox result;
-    osg::BoundingBox bb_strokes = m_geodeStrokes->getBoundingBox();
-    osg::BoundingBox bb_photos = m_geodePhotos->getBoundingBox();
-    if (bb_strokes.valid() && bb_photos.valid()){
-        double xmin = std::min(bb_strokes.xMin(), bb_photos.xMin());
-        double ymin = std::min(bb_strokes.yMin(), bb_photos.yMin());
-        double zmin = std::min(bb_strokes.zMin(), bb_photos.zMin());
-        double xmax = std::max(bb_strokes.xMax(), bb_photos.xMax());
-        double ymax = std::max(bb_strokes.yMax(), bb_photos.yMax());
-        double zmax = std::max(bb_strokes.zMax(), bb_photos.zMax());
-        result.set(xmin,ymin,zmin, xmax,ymax,zmax);
-    }
-    else if (bb_strokes.valid()) result = bb_strokes;
-    else if (bb_photos.valid()) result = bb_photos;
+//    osg::BoundingBox result;
+    return m_toolFrame->getGeodeWire()->getBoundingBox();
+//    osg::BoundingBox bb_strokes = m_geodeStrokes->getBoundingBox();
+//    osg::BoundingBox bb_photos = m_geodePhotos->getBoundingBox();
+//    if (bb_strokes.valid() && bb_photos.valid()){
+//        double xmin = std::min(bb_strokes.xMin(), bb_photos.xMin());
+//        double ymin = std::min(bb_strokes.yMin(), bb_photos.yMin());
+//        double zmin = std::min(bb_strokes.zMin(), bb_photos.zMin());
+//        double xmax = std::max(bb_strokes.xMax(), bb_photos.xMax());
+//        double ymax = std::max(bb_strokes.yMax(), bb_photos.yMax());
+//        double zmax = std::max(bb_strokes.zMax(), bb_photos.zMax());
+//        result.set(xmin,ymin,zmin, xmax,ymax,zmax);
+//    }
+//    else if (bb_strokes.valid()) result = bb_strokes;
+//    else if (bb_photos.valid()) result = bb_photos;
 
-    return result;
+//    return result;
 }
 
 void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, double du, double dv)

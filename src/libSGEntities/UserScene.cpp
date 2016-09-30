@@ -1118,14 +1118,15 @@ void entity::UserScene::polygonAppend(float u, float v, QUndoStack *stack)
         /* close the polygon if the last point is close to the first point */
         if (dist <= cher::POLYGON_PROXIMITY_THRESHOLD){
             // remove the last point since it's "edit" point
-
+            poly->removeLastPoint();
             this->polygonFinish(stack);
             return;
         }
 
         /* otherwise, append it */
         qDebug("Appending point to a polygon");
-        poly->appendPoint(u, v);
+        if (poly->getNumPoints() == 0)
+            poly->appendPoint(u, v);
         poly->appendPoint(u, v); // so that we see the continuation of the polygon in edit mode
         this->updateWidgets();
     }
