@@ -109,6 +109,9 @@ public:
     void editPhotoDelete(entity::Photo* photo, entity::Canvas* canvas);
     void editPhotoPush(entity::Photo* photo, entity::Canvas* source, entity::Canvas* destination);
 
+    /*! A method to remove a given polygon from the canvas; called from EventHandler. */
+    void editPolygonDelete(entity::Polygon* poly, entity::Canvas* canvas);
+
     void editStrokesPush(osg::Camera *camera);
     void editStrokesMove(double u, double v, cher::EVENT event);
     void editStrokesScale(double u, double v, cher::EVENT event);

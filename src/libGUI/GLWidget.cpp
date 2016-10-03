@@ -271,7 +271,7 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     if (event->modifiers() & Qt::ShiftModifier){
         if (cher::maskMouse & cher::MOUSE_SELECT)
             this->setMouseMode(cher::SELECT_CANVAS);
-//        this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KEY_Control_L);
+        this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KEY_Control_L);
     }
 
     this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KeySymbol (*keydat));
@@ -283,7 +283,7 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
     if (event->key() == Qt::Key_Shift){
         if (cher::maskMouse & cher::MOUSE_SELECT)
             this->setMouseMode(cher::SELECT_ENTITY);
-//        this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KEY_Control_L);
+        this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KEY_Control_L);
     }
 
     QString keystr = event->text();

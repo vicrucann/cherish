@@ -442,6 +442,12 @@ void RootScene::editPhotoPush(entity::Photo *photo, entity::Canvas *source, enti
     m_saved = false;
 }
 
+void RootScene::editPolygonDelete(entity::Polygon *poly, entity::Canvas *canvas)
+{
+    m_userScene->editPolygonDelete(m_undoStack, poly, canvas);
+    m_saved = false;
+}
+
 void RootScene::editStrokesPush(osg::Camera* camera)
 {
     m_userScene->editStrokesPush(m_undoStack, camera);

@@ -718,6 +718,28 @@ void entity::UserScene::editPhotoTransparency(entity::Photo *photo, entity::Canv
     }
 }
 
+// TODO: replace all the geometries by Entity2D type, e.g. editEntityDelete(), EditEntityDeleteCommand etc.
+void entity::UserScene::editPolygonDelete(QUndoStack *stack, entity::Polygon *poly, entity::Canvas *canvas)
+{
+    if (!stack) qFatal("editPhotoDelete(): undo stack is NULL, it is not initialized. Editing is not possible.");
+    if (!poly){
+        qCritical("editPolygonDelete: poly is NULL");
+        return;
+    }
+    if (!canvas->containsEntity(poly)){
+        qCritical("editPolygonDelete: current canvas does not contain that polygon."
+                  "Deletion is not possible.");
+        return;
+    }
+
+    fur::EditEntityDeleteCommand* cmd = new fur::EditEntityDeleteCommand(this, canvas, poly);
+    if (!cmd){
+        qCritical("editPolygonDelete: undo/redo command is NULL");
+        return;
+    }
+    stack->push(cmd);
+}
+
 void entity::UserScene::editStrokesPush(QUndoStack *stack, osg::Camera *camera)
 {
     if (!stack) qFatal("editPhotoPush(): undo stack is NULL, it is not initialized. Editing is not possible.");
@@ -868,6 +890,11 @@ void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stro
         return;
     }
     stack->push(cmd);
+}
+
+bool entity::UserScene::isEntityCurrent() const
+{
+    return this->strokeValid() || this->polygonValid() || this->canvasEditValid() || canvasCloneValid();
 }
 
 bool entity::UserScene::isEmptyScene() const
@@ -1056,6 +1083,7 @@ void entity::UserScene::strokeAppend(float u, float v)
    set the shared pointer to zero and return*/
 void entity::UserScene::strokeFinish(QUndoStack* stack)
 {
+    if (!m_canvasCurrent.get()) return;
 //    m_canvasCurrent->updateFrame(m_canvasPrevious.get());
     entity::Stroke* stroke = m_canvasCurrent->getStrokeCurrent();
     if (this->strokeValid()){
@@ -1072,7 +1100,7 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
         }
     }
     else{
-        qWarning("strokeFinish(): stroke pointer is NULL, impossible to finish the stroke");
+        qInfo("strokeFinish(): stroke pointer is NULL, impossible to finish the stroke");
         return;
     }
     m_canvasCurrent->removeEntity(stroke); // remove the "current" copy
@@ -1147,6 +1175,7 @@ void entity::UserScene::polygonEdit(float u, float v)
 
 void entity::UserScene::polygonFinish(QUndoStack *stack)
 {
+    if (!m_canvasCurrent.get()) return;
     qDebug("redefining polygon");
     entity::Polygon* poly = m_canvasCurrent->getPolygonCurrent();
     if (this->polygonValid()){
@@ -1159,8 +1188,8 @@ void entity::UserScene::polygonFinish(QUndoStack *stack)
             stack->push(cmd);
         }
     }
-    else{
-        qWarning("polygonFinish(): polygon pointer is NULL, impossible to finish the polygon");
+    else {
+        qInfo("polygonFinish(): polygon pointer is NULL, impossible to finish the polygon");
         return;
     }
     m_canvasCurrent->removeEntity(poly);
@@ -1203,6 +1232,7 @@ void entity::UserScene::entitiesMoveAppend(double u, double v)
 
 void entity::UserScene::entitiesMoveFinish(QUndoStack *stack)
 {
+    if (!m_canvasCurrent.get()) return;
     /* move things back so that to perform this operation in undo/redo FW */
     m_canvasCurrent->moveEntitiesSelected(-m_du, -m_dv);
 
@@ -1265,6 +1295,7 @@ void entity::UserScene::entitiesScaleAppend(double u, double v)
 
 void entity::UserScene::entitiesScaleFinish(QUndoStack *stack)
 {
+    if (!m_canvasCurrent.get()) return;
     m_canvasCurrent->scaleEntitiesSelected(1/m_scaleX, 1/m_scaleX);
 
     fur::EditEntitiesScaleCommand* cmd =
@@ -1356,6 +1387,7 @@ void entity::UserScene::entitiesRotateAppend(double u, double v)
 
 void entity::UserScene::entitiesRotateFinish(QUndoStack *stack)
 {
+    if (!m_canvasCurrent.get()) return;
     m_canvasCurrent->rotateEntitiesSelected(-m_rotate);
 
     fur::EditEntitiesRotateCommand* cmd = new fur::EditEntitiesRotateCommand(this,
@@ -1428,6 +1460,7 @@ void entity::UserScene::canvasOffsetAppend(const osg::Vec3f &t)
 
 void entity::UserScene::canvasOffsetFinish(QUndoStack *stack)
 {
+    if (!m_canvasCurrent.get()) return;
     if (!this->canvasEditValid()){
         qWarning("canvasOffsetFinish: no canvas in edit mode, impossible to finish offset mode");
         return;
@@ -1555,6 +1588,7 @@ void entity::UserScene::canvasSeparateAppend(const osg::Vec3f &t)
 
 void entity::UserScene::canvasSeparateFinish(QUndoStack *stack)
 {
+    if (!m_canvasCurrent.get()) return;
     if (!this->canvasCloneValid()){
         qWarning("canvasCloneFinish: clone is not valid");
         return;
@@ -1611,6 +1645,7 @@ void entity::UserScene::canvasRotateAppend(const osg::Quat &r, const osg::Vec3f 
 
 void entity::UserScene::canvasRotateFinish(QUndoStack *stack)
 {
+    if (!m_canvasCurrent.get()) return;
     if (!this->canvasEditValid()){
         qWarning("canvasRotateFinish: no canvas in edit mode, impossible to finish offset mode");
         return;

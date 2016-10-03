@@ -199,6 +199,11 @@ int entity::Polygon::getNumPoints() const
     return static_cast<int>(verts->size());
 }
 
+bool entity::Polygon::isPolygon() const
+{
+    return m_lines->getMode() == GL_POLYGON;
+}
+
 void entity::Polygon::moveDelta(double du, double dv)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());

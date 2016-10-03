@@ -88,6 +88,9 @@ public:
     /*! \return number of vertices. */
     int getNumPoints() const;
 
+    /*! \return whether the geometry is of polygon type */
+    bool isPolygon() const;
+
 public:
     /*! A method to perform translation of the polygon in delta movement.
      * \param du is delta movement in X local axis direction, \param dv is delta movement in Y local axis direction. */

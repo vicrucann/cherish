@@ -386,3 +386,31 @@ void fur::EditPhotoPushCommand::redo()
     m_scene->addEntity(m_source.get(), m_photo.get());
 }
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+fur::UndoCommand::UndoCommand(entity::UserScene *scene, entity::Canvas *canvas, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_canvas(canvas)
+{
+}
+
+fur::EditEntityDeleteCommand::EditEntityDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, entity::Entity2D *entity)
+    : UndoCommand(scene, canvas)
+    , m_entity(entity)
+{
+    this->setText(QObject::tr("Delete entity %1 from %2")
+                  .arg(QString(entity->getName().c_str()))
+                  .arg(QString(canvas->getName().c_str())));
+}
+
+void fur::EditEntityDeleteCommand::undo()
+{
+    if (!m_scene->addEntity(m_canvas.get(), m_entity.get()))
+        qFatal("EditEntityDeleteCommand::undo() failed");
+}
+
+void fur::EditEntityDeleteCommand::redo()
+{
+    if (!m_scene->removeEntity(m_canvas.get(), m_entity.get()))
+        qFatal("EditEntityDeleteCommand: redo() failed");
+}

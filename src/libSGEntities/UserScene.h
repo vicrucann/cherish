@@ -36,6 +36,7 @@ class AddPhotoCommand;
 class EditCanvasDeleteCommand;
 class AddCanvasSeparationCommand;
 class EditPhotoDeleteCommand;
+class EditEntityDeleteCommand;
 class AddStrokeCommand;
 class AddPolygonCommand;
 class EditStrokesPushCommand;
@@ -433,6 +434,9 @@ public:
      * \param t is the new transparency level, in range from 0 to 1. */
     void editPhotoTransparency(entity::Photo* photo, entity::Canvas* canvas, float t);
 
+    /*! A method to remove polygon from the canvas and write this operarion onto undo/redo framework.  */
+    void editPolygonDelete(QUndoStack* stack, entity::Polygon* poly, entity::Canvas* canvas);
+
     /*! The method is to transfer a set of strokes from current canvas to previous. The transfer is projective, i.e. under
      * given camera view the whole sketching image does not change, although the set of strokes now belongs to the
      * previous canvas.
@@ -470,6 +474,9 @@ public:
      * \param stack  is the command stack for undo/redo framework
      * \param stroke is a stroke to delete from scene */
     void editStrokeDelete(QUndoStack* stack, entity::Stroke* stroke);
+
+    /*! \return whether there are any observer pointers that are not NULL */
+    bool isEntityCurrent() const;
 
 
     /*! \return A boolean value telling whether the scene is empty (true) or not (false) */
@@ -593,6 +600,7 @@ protected:
     friend class ::fur::EditCanvasDeleteCommand;
     friend class ::fur::AddCanvasSeparationCommand;
     friend class ::fur::EditPhotoDeleteCommand;
+    friend class ::fur::EditEntityDeleteCommand;
     friend class ::fur::AddStrokeCommand;
     friend class ::fur::AddPolygonCommand;
     friend class ::fur::EditStrokesPushCommand;

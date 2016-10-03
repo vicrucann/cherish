@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <iostream>
 #include <algorithm>
+#include <cstdint>
 
 #include "Canvas.h"
 #include "Settings.h"
@@ -574,24 +575,24 @@ osg::Vec3f entity::Canvas::getBoundingBoxCenter2D() const
 
 osg::BoundingBox entity::Canvas::getBoundingBox() const
 {
-    osg::BoundingBox result = m_toolFrame->getGeodeWire()->getBoundingBox();
-    osg::BoundingBox bb_strokes = m_geodeStrokes->getBoundingBox();
-    osg::BoundingBox bb_photos = m_geodePhotos->getBoundingBox();
-    osg::BoundingBox bb_polygons = m_geodePolygons->getBoundingBox();
+    osg::BoundingBox result;
+    /* run through all the geodes of groupData and fing max and min og each bound box */
+    float xmin=FLT_MAX, ymin=FLT_MAX, zmin=FLT_MAX, xmax=-FLT_MAX, ymax=-FLT_MAX, zmax=-FLT_MAX;
+    for (unsigned int i=0; i<m_groupData->getNumChildren(); ++i){
+        osg::Geode* gi = dynamic_cast<osg::Geode*>( m_groupData->getChild(i));
+        if (!gi) continue;
+        osg::BoundingBox bi = gi->getBoundingBox();
+        if (!bi.valid()) continue;
+        xmin = std::min(bi.xMin(), xmin);
+        ymin = std::min(bi.yMin(), ymin);
+        zmin = std::min(bi.zMin(), zmin);
+        xmax = std::max(bi.xMax(), xmax);
+        ymax = std::max(bi.yMax(), ymax);
+        zmax = std::max(bi.zMax(), zmax);
+        result.set(xmin, ymin, zmin, xmax, ymax, zmax);
+    }
 
-    if (!bb_strokes.valid()) bb_strokes = result;
-    if (!bb_photos.valid())   bb_photos = result;
-    if (!bb_polygons.valid()) bb_polygons = result;
-
-    auto xmin = std::min( {bb_strokes.xMin(), bb_photos.xMin(), bb_polygons.xMin()} );
-    auto ymin = std::min( {bb_strokes.yMin(), bb_photos.yMin(), bb_polygons.yMin()} );
-    auto zmin = std::min( {bb_strokes.zMin(), bb_photos.zMin(), bb_polygons.zMin()} );
-    auto xmax = std::max( {bb_strokes.xMax(), bb_photos.xMax(), bb_polygons.xMax()} );
-    auto ymax = std::max( {bb_strokes.yMax(), bb_photos.yMax(), bb_polygons.yMax()} );
-    auto zmax = std::max( {bb_strokes.zMax(), bb_photos.zMax(), bb_polygons.zMax()} );
-    result.set(xmin,ymin,zmin, xmax,ymax,zmax);
-
-    return result;
+    return result.valid()? result : this->getToolFrame()->getGeodeWire()->getBoundingBox();
 }
 
 void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, double du, double dv)
@@ -721,6 +722,7 @@ entity::Canvas *entity::Canvas::clone() const
 
     for (unsigned int i=0; i<this->getNumEntities(); ++i){
         entity::Entity2D* entcopy = this->getEntity(i);
+        if (!entcopy) continue;
         switch(entcopy->getEntityType()){
         case cher::ENTITY_STROKE:
         {
@@ -739,6 +741,20 @@ entity::Canvas *entity::Canvas::clone() const
         }
         case cher::ENTITY_PHOTO:
             break;
+        case cher::ENTITY_POLYGON:
+        {
+            entity::Polygon* poly = dynamic_cast<entity::Polygon*>(entcopy);
+            if (poly){
+                entity::Polygon* po = new entity::Polygon;
+                if (po){
+                    po->copyFrom(poly);
+                    po->redefineToPolygon();
+                    Q_ASSERT(po->isPolygon());
+                    if (!clone->addEntity(po)) qWarning("canvas clone: could not add polygon as drawable");
+                }
+            }
+            break;
+        }
         default:
             break;
         }
@@ -909,13 +925,13 @@ entity::Entity2D *entity::Canvas::getEntity(unsigned int i) const
     if (i<m_geodeStrokes->getNumChildren())
         return dynamic_cast<entity::Entity2D*> (m_geodeStrokes->getDrawable(i));
     /* requested entity is a photo */
-    else if (i<m_geodeStrokes->getNumChildren() + m_geodePhotos->getNumChildren()){
+    else if (i>=m_geodeStrokes->getNumChildren() &&  i<m_geodeStrokes->getNumChildren() + m_geodePhotos->getNumChildren()){
         Q_ASSERT(int(i)-int(m_geodeStrokes->getNumChildren()) >= 0 && int(i)-int(m_geodeStrokes->getNumChildren()) < int(m_geodeStrokes->getNumChildren()));
         return dynamic_cast<entity::Entity2D*>(m_geodePhotos->getDrawable(i-m_geodeStrokes->getNumChildren()));
     }
     /* rquested entity is a polygon */
     else {
-        return 0;
+        return dynamic_cast<entity::Entity2D*>(m_geodePolygons->getDrawable(i-m_geodeStrokes->getNumChildren()-m_geodePhotos->getNumChildren()));
     }
 }
 

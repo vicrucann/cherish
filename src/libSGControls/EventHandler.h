@@ -70,9 +70,10 @@ public:
     void doEditEntitiesRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
 protected:
-    entity::Stroke* getStroke(const StrokeIntersector::Intersection& result);
-    entity::Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
-    entity::Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
+    entity::Stroke*     getStroke(const StrokeIntersector::Intersection& result);
+    entity::Canvas*     getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
+    entity::Photo*      getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
+    entity::Polygon*    getPolygon(const osgUtil::LineSegmentIntersector::Intersection& result);
 
     template <typename T>
     cher::MOUSE_MODE getMouseMode(const T& result, cher::MOUSE_MODE mode_default) const;
