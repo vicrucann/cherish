@@ -18,7 +18,6 @@
 #include "Settings.h"
 #include "Entity2D.h"
 #include <osg/Geometry>
-#include <osg/Camera>
 #include <osg/MatrixTransform>
 #include <osgDB/ObjectWrapper>
 
@@ -27,7 +26,7 @@
 namespace entity {
 
 /*! \class Stroke
- * \brief Geometry class that defined strokes entered by used.
+ * \brief Geometry class that defined strokes entered by a user.
  * The creation and usage of this class must be followed after certain steps. Here's an example
  * of how to create a new stroke when user is drawing right away:
  *
@@ -35,10 +34,13 @@ namespace entity {
  * // create an empty stroke
  * entity::Stroke* original = new entity::Stroke;
  *
+ * // initialize the shader program
+ * original->initializeProgram(p); // e.g. Canvas::getProgramStroke()
+ *
  * // as user draws, add mouse coordinates, in an event loop:
  * original->addPoint(u,v);
  *
- * \\ after user is finished drawing, re-define the look
+ * \\ after user is finished drawing, re-define the look (shaderize as well)
  * original->redefineToCurve();
  * \endcode
  *
@@ -49,6 +51,7 @@ namespace entity {
  * entity::Stroke* copy = new entity::Stroke;
  *
  * // copy data points from the stroke that is already on the scene (which means it is shadered)
+ * // it also copies shader data
  * copy->copyFrom(original);
  *
  * // as before, we re-define the stroke to be shadered
@@ -79,8 +82,11 @@ public:
     void setIsShadered(bool shadered);
     bool getIsShadered() const;
 
+    void setProgram(ProgramStroke* p);
     ProgramStroke* getProgram() const;
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+    void initializeProgram(ProgramStroke* p);
 
     /*! A method to be used to copy the input stroke's data. It is assumed *this stroke is empty.
      * \param copy is the source stroke to copy from. */
@@ -141,9 +147,9 @@ protected:
 
 private:
     osg::ref_ptr<osg::DrawArrays>   m_lines; // saved to file
-    osg::ref_ptr<ProgramStroke>     m_program; // OPT: put program higher on scene graph so that to load it only once and then apply to all the strokes
+    osg::observer_ptr<ProgramStroke>m_program;
     osg::Vec4f                      m_color; // saved to file
-    bool                            m_isCurved;
+    bool                            m_isCurved; // saved to file
     bool                            m_isShadered;
 };
 }

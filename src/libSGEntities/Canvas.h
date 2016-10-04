@@ -3,10 +3,12 @@
 
 #include "Settings.h"
 #include "Stroke.h"
+#include "Polygon.h"
 #include "Photo.h"
 #include "ToolGlobal.h"
 #include "SelectedGroup.h"
 #include "ProtectedGroup.h"
+#include "libSGControls/ProgramStroke.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
@@ -43,6 +45,8 @@ public:
     /*! Method is called automatically from initializeSG(), or must be called when reading scene from file. */
     virtual void initializeMasks();
 
+    ProgramStroke* getProgramStroke() const;
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 public:
     META_Node(entity, Canvas)
@@ -69,6 +73,9 @@ public:
 
     void setGeodePhotos(osg::Geode* geode);
     const osg::Geode* getGeodePhotos() const;
+
+    void setGeodePolygons(osg::Geode* geode);
+    const osg::Geode* getGeodePolygons() const;
 
     void setCenter(const osg::Vec3f& center);
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
@@ -159,6 +166,15 @@ public:
 
     /*! \return a pointer on current stroke, editable, for example, to append a point to the stroke. */
     entity::Stroke* getStrokeCurrent() const;
+
+    /*! \param poly is the polygon to mark as current, i.e., for a continious editing and point addition. */
+    void setPolygonCurrent(entity::Polygon* poly);
+
+    /*! \param current is a boolean variable; if false then an observer point on current polygon turns NULL. */
+    void setPolygonCurrent(bool current);
+
+    /*! \return a pointer on current polygon, editable, for example, to append a point to the polygon. */
+    entity::Polygon* getPolygonCurrent() const;
 
     /*! \param entity is entity to add to entity::SelectedGroup. */
     void addEntitySelected(entity::Entity2D* entity);
@@ -264,6 +280,9 @@ public:
     /*! \return total number of strokes that canvas contains. */
     unsigned int getNumStrokes() const;
 
+    /*! \return total number of polygons that canvas contains */
+    unsigned int getNumPolygons() const;
+
     /*! \return pointer on a photo with the given index. */
     entity::Photo* getPhoto(int row) const;
 
@@ -291,19 +310,25 @@ protected:
     void setVerticesDefault(const osg::Vec3f& center);
     void setIntersection(entity::Canvas* against = 0);
 
+public:
+    void initializeProgramStroke();
+
 private:
-    osg::Matrix m_mR; /* part of m_transform */
-    osg::Matrix m_mT; /* part of m_transform */
+    osg::Matrix                 m_mR; /* part of m_transform */
+    osg::Matrix                 m_mT; /* part of m_transform */
     osg::ref_ptr<osg::MatrixTransform> m_transform; /* matrix transform in 3D space */
-    osg::ref_ptr<osg::Switch> m_switch; /* inisible or not, the whole canvas content */
-    osg::ref_ptr<osg::Group> m_groupData; /* keeps user canvas 2d entities such as strokes and photos */
-    osg::ref_ptr<osg::Geode> m_geodeStrokes; // contains all the strokes as children
-    osg::ref_ptr<osg::Geode> m_geodePhotos; // contains all the photos as children
+    osg::ref_ptr<osg::Switch>   m_switch; /* inisible or not, the whole canvas content */
+    osg::ref_ptr<osg::Group>    m_groupData; /* keeps user canvas 2d entities such as strokes and photos */
+    osg::ref_ptr<osg::Geode>    m_geodeStrokes; // contains all the strokes as children
+    osg::ref_ptr<osg::Geode>    m_geodePhotos; // contains all the photos as children
+    osg::ref_ptr<osg::Geode>    m_geodePolygons; // contains all the polygons as children
+    osg::ref_ptr<ProgramStroke> m_programStroke; /*!< Shader program for all the strokes of the canvas, is applied to m_geodeStrokes */
 
     /* construction geodes */
     osg::ref_ptr<entity::FrameTool> m_toolFrame;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
+    osg::observer_ptr<entity::Polygon> m_polygonCurrent; /* for polygon drawing, see UserScene::addPolygon */
     entity::SelectedGroup m_selectedGroup;
     osg::Vec3f m_center; /* 3D global - virtual plane parameter */
     osg::Vec3f m_normal; /* 3D global - virtual plane parameter*/

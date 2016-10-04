@@ -27,6 +27,23 @@
 #include "../libSGControls/EventHandler.h"
 #include "../libSGControls/ViewerCommand.h"
 
+/*! \class Viewer
+ * \brief An overridden osgViewer::Viewer class that avoids setting the CPU affinity to core 0 by overwriting setUpThreading() method.
+ */
+class Viewer : public osgViewer::Viewer {
+public:
+    virtual void setUpThreading()
+    {
+        if (_threadingModel ==  osgViewer::ViewerBase::SingleThreaded){
+            if (_threadsRunning) this->stopThreading();
+            else {
+                if (!_threadsRunning) this->startThreading();
+            }
+        }
+    }
+
+};
+
 class EventHandler;
 
 /*! \class GLWidget
@@ -107,8 +124,9 @@ protected:
     void dragMoveEvent(QDragMoveEvent* event);
     void dropEvent(QDropEvent* event);
 
-private:
+public:
     virtual void onHome();
+private:
     virtual void onResize(int w, int h);
 
     osgGA::EventQueue* getEventQueue() const; // for osg to process mouse and keyboard events
@@ -117,7 +135,7 @@ private:
 
     osg::ref_ptr<osg::GraphicsContext::Traits> m_traits;
     osg::ref_ptr<osgViewer::GraphicsWindowEmbedded> m_graphicsWindow;
-    osg::ref_ptr<osgViewer::Viewer> m_viewer;
+    osg::ref_ptr<Viewer> m_viewer;
     osg::observer_ptr<RootScene> m_RootScene;
 
     QTabletEvent::TabletDevice m_TabletDevice;

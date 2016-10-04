@@ -14,6 +14,7 @@ void BookmarksTest::testAddBookmark()
     qInfo("Prepare basic scene");
     qInfo("Add stroke");
     osg::ref_ptr<entity::Stroke> stroke = new entity::Stroke;
+    stroke->initializeProgram(m_canvas2->getProgramStroke());
     QVERIFY(stroke.get());
     stroke->appendPoint(0,0);
     stroke->appendPoint(0.5,0.5);

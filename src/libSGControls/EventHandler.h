@@ -26,12 +26,13 @@
 class GLWidget;
 
 /*! \class EventHandler
- * Class description
+ * \brief An OpenSceneGraph events that were passed from Qt's interface - GLWidget.
 */
 class EventHandler : public osgGA::GUIEventHandler {
 public:
     EventHandler(GLWidget* widget, RootScene* scene, cher::MOUSE_MODE mode = cher::SELECT_ENTITY);
 
+    /*! A method that handles all the events pass from GLWidget. */
     virtual bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     void setMode(cher::MOUSE_MODE mode);
@@ -44,7 +45,13 @@ public:
     template <typename T1, typename T2>
     void doSelectCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa);
 
+    /*! Method to process events for stroke sketching: left button push indicates beginning of a stroke, and
+     * left button release indicates an end of the stroke. */
     void doSketch(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
+    /*! Method to process events for polygon drawing: left mouse click indicates a new point, right mouse click indicates
+     * polygon completion. */
+    void doSketchPolygon(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     void doDeleteEntity(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
@@ -63,9 +70,10 @@ public:
     void doEditEntitiesRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
 protected:
-    entity::Stroke* getStroke(const StrokeIntersector::Intersection& result);
-    entity::Canvas* getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
-    entity::Photo* getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
+    entity::Stroke*     getStroke(const StrokeIntersector::Intersection& result);
+    entity::Canvas*     getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);
+    entity::Photo*      getPhoto(const osgUtil::LineSegmentIntersector::Intersection& result);
+    entity::Polygon*    getPolygon(const osgUtil::LineSegmentIntersector::Intersection& result);
 
     template <typename T>
     cher::MOUSE_MODE getMouseMode(const T& result, cher::MOUSE_MODE mode_default) const;

@@ -13,6 +13,8 @@ set(libGUI_SRCS
     CherishApplication.h
     MainWindow.cpp
     MainWindow.h
+    #CMainWindow.h
+    #CMainWindow.cpp
     GLWidget.h
     GLWidget.cpp
     ListWidget.h
@@ -30,9 +32,8 @@ set(libGUI_SRCS
 )
 
 qt5_wrap_ui(UI_GENERATED_SRCS
-    Widgets/MainWindowUI.ui
-    Widgets/QtOSGWindow.ui
     Widgets/CameraProperties.ui
+    #Widgets/CMainWindow.ui
 )
 
 add_library(libGUI STATIC

@@ -1,12 +1,14 @@
 #include <assert.h>
 #include <iostream>
 #include <algorithm>
+#include <cstdint>
 
 #include "Canvas.h"
 #include "Settings.h"
 #include "Stroke.h"
 #include "FindNodeVisitor.h"
 #include "Utilities.h"
+#include "MainWindow.h"
 
 #include <osg/Geode>
 #include <osg/Geometry>
@@ -16,6 +18,7 @@
 #include <osg/StateSet>
 #include <osg/Plane>
 #include <osg/BlendFunc>
+#include <osg/Point>
 
 #include <QtGlobal>
 #include <QDebug>
@@ -29,8 +32,12 @@ entity::Canvas::Canvas()
     , m_groupData(new osg::Group)
     , m_geodeStrokes(new osg::Geode)
     , m_geodePhotos(new osg::Geode)
+    , m_geodePolygons(new osg::Geode)
+
+    , m_programStroke(new ProgramStroke)
 
     , m_strokeCurrent(0)
+    , m_polygonCurrent(0)
 
     , m_center(osg::Vec3f(0.f,0.f,0.f)) // moves only when strokes are introduced so that to define it as centroid
     , m_normal(cher::NORMAL)
@@ -48,10 +55,14 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_groupData(cnv.m_groupData)
     , m_geodeStrokes(cnv.m_geodeStrokes)
     , m_geodePhotos(cnv.m_geodePhotos)
+    , m_geodePolygons(cnv.m_geodePolygons)
+
+    , m_programStroke(cnv.m_programStroke)
 
     , m_toolFrame(cnv.m_toolFrame)
 
     , m_strokeCurrent(0)
+    , m_polygonCurrent(0)
 
     , m_center(cnv.m_center)
     , m_normal(cnv.m_normal)
@@ -88,6 +99,7 @@ void entity::Canvas::initializeSG()
     m_switch->addChild(m_groupData.get(), true); // 1st child of m_switch
     m_groupData->addChild(m_geodeStrokes.get());
     m_groupData->addChild(m_geodePhotos.get());
+    m_groupData->addChild(m_geodePolygons.get());
     this->initializeTools(); // 2nd child of m_switch
 
     /* update internal parameters */
@@ -97,6 +109,9 @@ void entity::Canvas::initializeSG()
 
     /* traversal masks */
     this->initializeMasks();
+
+    /* shaders */
+    this->initializeProgramStroke();
 }
 
 void entity::Canvas::initializeStateMachine()
@@ -113,6 +128,33 @@ void entity::Canvas::initializeStateMachine()
     stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     this->setStateSet(stateset);
+
+    /* state sets for stroke and polygon geodes (will propagate to its children) */
+    osg::StateSet* ss_strokes = m_geodeStrokes->getOrCreateStateSet();
+    Q_ASSERT(ss_strokes);
+    osg::LineWidth* lw_strokes = new osg::LineWidth;
+    lw_strokes->setWidth(cher::STROKE_LINE_WIDTH);
+    ss_strokes->setAttributeAndModes(lw_strokes, osg::StateAttribute::ON);
+    ss_strokes->setAttributeAndModes(new osg::BlendFunc(), osg::StateAttribute::ON);
+    ss_strokes->setAttributeAndModes(new osg::Point(cher::STROKE_LINE_WIDTH));
+    ss_strokes->setTextureAttributeAndModes(0, new osg::Texture2D, osg::StateAttribute::OFF);
+    ss_strokes->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
+    ss_strokes->setMode(GL_BLEND, osg::StateAttribute::ON);
+    ss_strokes->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+    m_geodeStrokes->setStateSet(ss_strokes);
+
+    osg::StateSet* ss_poly = m_geodePolygons->getOrCreateStateSet();
+    Q_ASSERT(ss_poly);
+    osg::LineWidth* lw_poly = new osg::LineWidth;
+    lw_poly->setWidth(cher::POLYGON_LINE_WIDTH);
+    ss_poly->setAttributeAndModes(lw_poly, osg::StateAttribute::ON);
+    ss_poly->setAttributeAndModes(new osg::BlendFunc(), osg::StateAttribute::ON);
+    ss_poly->setAttributeAndModes(new osg::Point(cher::POLYGON_LINE_WIDTH));
+    ss_poly->setTextureAttributeAndModes(0, new osg::Texture2D, osg::StateAttribute::OFF);
+    ss_poly->setMode(GL_LINE_SMOOTH, osg::StateAttribute::ON);
+    ss_poly->setMode(GL_BLEND, osg::StateAttribute::ON);
+    ss_poly->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
+    m_geodePolygons->setStateSet(ss_poly);
 }
 
 void entity::Canvas::initializeMasks()
@@ -123,6 +165,11 @@ void entity::Canvas::initializeMasks()
         m_groupData->setNodeMask(cher::MASK_CANVASDATA_IN);
     if (m_toolFrame.get())
         m_toolFrame->setNodeMask(cher::MASK_CANVASFRAME_IN);
+}
+
+ProgramStroke *entity::Canvas::getProgramStroke() const
+{
+    return m_programStroke.get();
 }
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -204,6 +251,16 @@ void entity::Canvas::setGeodePhotos(osg::Geode *geode)
 const osg::Geode *entity::Canvas::getGeodePhotos() const
 {
     return m_geodePhotos.get();
+}
+
+void entity::Canvas::setGeodePolygons(osg::Geode *geode)
+{
+    m_geodePolygons = geode;
+}
+
+const osg::Geode *entity::Canvas::getGeodePolygons() const
+{
+    return m_geodePolygons.get();
 }
 
 void entity::Canvas::setCenter(const osg::Vec3f &center)
@@ -406,6 +463,27 @@ entity::Stroke *entity::Canvas::getStrokeCurrent() const
     return m_strokeCurrent.get();
 }
 
+// TODO replace set*Current by setEntityCurrent
+void entity::Canvas::setPolygonCurrent(entity::Polygon *poly)
+{
+    if (m_polygonCurrent.get() == poly)
+        return;
+    if (m_polygonCurrent.get()!=0)
+        this->setPolygonCurrent(false);
+    m_polygonCurrent = poly;
+}
+
+void entity::Canvas::setPolygonCurrent(bool current)
+{
+    if (!current)
+        m_polygonCurrent = NULL;
+}
+
+entity::Polygon *entity::Canvas::getPolygonCurrent() const
+{
+    return m_polygonCurrent.get();
+}
+
 /* whenever new entity is added to selection,
  * update the selection frame;
  * if the entity is the first, then create the selection frame and
@@ -498,21 +576,23 @@ osg::Vec3f entity::Canvas::getBoundingBoxCenter2D() const
 osg::BoundingBox entity::Canvas::getBoundingBox() const
 {
     osg::BoundingBox result;
-    osg::BoundingBox bb_strokes = m_geodeStrokes->getBoundingBox();
-    osg::BoundingBox bb_photos = m_geodePhotos->getBoundingBox();
-    if (bb_strokes.valid() && bb_photos.valid()){
-        double xmin = std::min(bb_strokes.xMin(), bb_photos.xMin());
-        double ymin = std::min(bb_strokes.yMin(), bb_photos.yMin());
-        double zmin = std::min(bb_strokes.zMin(), bb_photos.zMin());
-        double xmax = std::max(bb_strokes.xMax(), bb_photos.xMax());
-        double ymax = std::max(bb_strokes.yMax(), bb_photos.yMax());
-        double zmax = std::max(bb_strokes.zMax(), bb_photos.zMax());
-        result.set(xmin,ymin,zmin, xmax,ymax,zmax);
+    /* run through all the geodes of groupData and fing max and min og each bound box */
+    float xmin=FLT_MAX, ymin=FLT_MAX, zmin=FLT_MAX, xmax=-FLT_MAX, ymax=-FLT_MAX, zmax=-FLT_MAX;
+    for (unsigned int i=0; i<m_groupData->getNumChildren(); ++i){
+        osg::Geode* gi = dynamic_cast<osg::Geode*>( m_groupData->getChild(i));
+        if (!gi) continue;
+        osg::BoundingBox bi = gi->getBoundingBox();
+        if (!bi.valid()) continue;
+        xmin = std::min(bi.xMin(), xmin);
+        ymin = std::min(bi.yMin(), ymin);
+        zmin = std::min(bi.zMin(), zmin);
+        xmax = std::max(bi.xMax(), xmax);
+        ymax = std::max(bi.yMax(), ymax);
+        zmax = std::max(bi.zMax(), zmax);
+        result.set(xmin, ymin, zmin, xmax, ymax, zmax);
     }
-    else if (bb_strokes.valid()) result = bb_strokes;
-    else if (bb_photos.valid()) result = bb_photos;
 
-    return result;
+    return result.valid()? result : this->getToolFrame()->getGeodeWire()->getBoundingBox();
 }
 
 void entity::Canvas::moveEntities(std::vector<entity::Entity2D *>& entities, double du, double dv)
@@ -642,6 +722,7 @@ entity::Canvas *entity::Canvas::clone() const
 
     for (unsigned int i=0; i<this->getNumEntities(); ++i){
         entity::Entity2D* entcopy = this->getEntity(i);
+        if (!entcopy) continue;
         switch(entcopy->getEntityType()){
         case cher::ENTITY_STROKE:
         {
@@ -660,6 +741,20 @@ entity::Canvas *entity::Canvas::clone() const
         }
         case cher::ENTITY_PHOTO:
             break;
+        case cher::ENTITY_POLYGON:
+        {
+            entity::Polygon* poly = dynamic_cast<entity::Polygon*>(entcopy);
+            if (poly){
+                entity::Polygon* po = new entity::Polygon;
+                if (po){
+                    po->copyFrom(poly);
+                    po->redefineToPolygon();
+                    Q_ASSERT(po->isPolygon());
+                    if (!clone->addEntity(po)) qWarning("canvas clone: could not add polygon as drawable");
+                }
+            }
+            break;
+        }
         default:
             break;
         }
@@ -767,6 +862,23 @@ void entity::Canvas::setIntersection(entity::Canvas *against)
     m_toolFrame->setIntersection(P1,P2,P3,P4);
 }
 
+void entity::Canvas::initializeProgramStroke()
+{
+    if (!m_programStroke) throw std::runtime_error("initializeProgramStroke(): Stroke shader program is not initialized.");
+    if (!m_geodeStrokes) throw std::runtime_error("initializeProgramStroke() : Stroke geode is not initialized");
+
+    /* use shader program */
+    m_programStroke->initialize(m_geodeStrokes->getOrCreateStateSet(),
+                                MainWindow::instance().getCamera(),
+                                this->getTransform(),
+                                MainWindow::instance().getStrokeFogFactor());
+
+    /* set up program as state set attribute for stroke geode
+     * This allows us to turn on or off the shader if neeeded, and it also requries only 1 shader per canvas vs. 1 shader per stroke. */
+    m_geodeStrokes->getOrCreateStateSet()->setAttributeAndModes(m_programStroke.get(),
+                                                                osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+}
+
 const entity::FrameTool *entity::Canvas::getToolFrame() const
 {
     return m_toolFrame;
@@ -774,7 +886,7 @@ const entity::FrameTool *entity::Canvas::getToolFrame() const
 
 unsigned int entity::Canvas::getNumEntities() const
 {
-    return m_geodeStrokes->getNumChildren() + m_geodePhotos->getNumChildren();
+    return m_geodeStrokes->getNumChildren() + m_geodePhotos->getNumChildren() + m_geodePolygons->getNumChildren();
 }
 
 /* returnds total number of photos that belong to the canvas */
@@ -786,6 +898,11 @@ unsigned int entity::Canvas::getNumPhotos() const
 unsigned int entity::Canvas::getNumStrokes() const
 {
     return m_geodeStrokes->getNumChildren();
+}
+
+unsigned int entity::Canvas::getNumPolygons() const
+{
+    return m_geodePolygons->getNumChildren();
 }
 
 entity::Photo *entity::Canvas::getPhoto(int row) const
@@ -808,9 +925,13 @@ entity::Entity2D *entity::Canvas::getEntity(unsigned int i) const
     if (i<m_geodeStrokes->getNumChildren())
         return dynamic_cast<entity::Entity2D*> (m_geodeStrokes->getDrawable(i));
     /* requested entity is a photo */
-    else{
+    else if (i>=m_geodeStrokes->getNumChildren() &&  i<m_geodeStrokes->getNumChildren() + m_geodePhotos->getNumChildren()){
         Q_ASSERT(int(i)-int(m_geodeStrokes->getNumChildren()) >= 0 && int(i)-int(m_geodeStrokes->getNumChildren()) < int(m_geodeStrokes->getNumChildren()));
         return dynamic_cast<entity::Entity2D*>(m_geodePhotos->getDrawable(i-m_geodeStrokes->getNumChildren()));
+    }
+    /* rquested entity is a polygon */
+    else {
+        return dynamic_cast<entity::Entity2D*>(m_geodePolygons->getDrawable(i-m_geodeStrokes->getNumChildren()-m_geodePhotos->getNumChildren()));
     }
 }
 
@@ -825,6 +946,9 @@ bool entity::Canvas::addEntity(entity::Entity2D *entity)
         break;
     case cher::ENTITY_PHOTO:        
         result = m_geodePhotos->addDrawable(entity);
+        break;
+    case cher::ENTITY_POLYGON:
+        result = m_geodePolygons->addDrawable(entity);
         break;
     default:
         break;
@@ -846,6 +970,9 @@ bool entity::Canvas::removeEntity(entity::Entity2D *entity)
     case cher::ENTITY_PHOTO:
         result = m_geodePhotos->removeDrawable(entity);
         break;
+    case cher::ENTITY_POLYGON:
+        result = m_geodePolygons->removeDrawable(entity);
+        break;
     default:
         break;
     }
@@ -855,7 +982,7 @@ bool entity::Canvas::removeEntity(entity::Entity2D *entity)
 
 bool entity::Canvas::containsEntity(entity::Entity2D *entity) const
 {
-    return (m_geodeStrokes->containsDrawable(entity) || m_geodePhotos->containsDrawable(entity));
+    return (m_geodeStrokes->containsDrawable(entity) || m_geodePhotos->containsDrawable(entity) || m_geodePolygons->containsDrawable(entity));
 }
 
 REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
@@ -871,6 +998,7 @@ REGISTER_OBJECT_WRAPPER(Canvas_Wrapper
     ADD_OBJECT_SERIALIZER(GroupData, osg::Group, NULL);
     ADD_OBJECT_SERIALIZER(GeodeStrokes, osg::Geode, NULL);
     ADD_OBJECT_SERIALIZER(GeodePhotos, osg::Geode, NULL);
+    ADD_OBJECT_SERIALIZER(GeodePolygons, osg::Geode, NULL);
 
     ADD_VEC3F_SERIALIZER(Center, osg::Vec3f());
     ADD_VEC3F_SERIALIZER(Normal, osg::Vec3f());

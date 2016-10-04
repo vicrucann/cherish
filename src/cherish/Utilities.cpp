@@ -11,6 +11,14 @@ QColor Utilities::getQColor(const osg::Vec4f &color)
     return QColor(color.r()*255, color.g()*255, color.b()*255, color.a()*255);
 }
 
+osg::Vec4f Utilities::getOsgColor(const QColor &color)
+{
+    return osg::Vec4f(float(color.red())/255.f,
+                      float(color.green())/255.f,
+                      float(color.blue())/255.f,
+                      float(color.alpha())/255.f);
+}
+
 bool Utilities::areStrokesProjectable(const std::vector<entity::Stroke *> &strokes, entity::Canvas *source, entity::Canvas *target, osg::Camera *camera)
 {
     if (!target || !source || strokes.empty() || !camera) {
@@ -391,6 +399,9 @@ QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
 
     case cher::PEN_SKETCH:
         cur = QCursor(Data::sceneSketchPixmap(), 0, Data::sceneSketchPixmap().height());
+        break;
+    case cher::PEN_POLYGON:
+        cur = QCursor(Data::scenePolygonPixmap(), 0, Data::scenePolygonPixmap().height());
         break;
     case cher::PEN_DELETE:
         cur = QCursor(Data::editDeleteCursor(), 0, 0);

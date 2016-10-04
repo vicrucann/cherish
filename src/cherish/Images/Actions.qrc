@@ -76,5 +76,7 @@
         <file>edit-photo-transparency-off-24px.svg</file>
         <file>scene-newcanvas-separate-24px.svg</file>
         <file>scene-visibility-options.svg</file>
+        <file>viewer-allcanvas-24px.svg</file>
+        <file>scene-polygon-24px.svg</file>
     </qresource>
 </RCC>

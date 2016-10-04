@@ -72,6 +72,7 @@ public:
     void addCanvas(const osg::Vec3f& normal, const osg::Vec3f& center);
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
     void addStroke(float u, float v, cher::EVENT event);
+    void addPolygon(float u, float v, cher::EVENT event);
     void selectAllEntities();
     void addPhoto(const std::string& fname);
     void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov);
@@ -107,6 +108,9 @@ public:
 
     void editPhotoDelete(entity::Photo* photo, entity::Canvas* canvas);
     void editPhotoPush(entity::Photo* photo, entity::Canvas* source, entity::Canvas* destination);
+
+    /*! A method to remove a given polygon from the canvas; called from EventHandler. */
+    void editPolygonDelete(entity::Polygon* poly, entity::Canvas* canvas);
 
     void editStrokesPush(osg::Camera *camera);
     void editStrokesMove(double u, double v, cher::EVENT event);

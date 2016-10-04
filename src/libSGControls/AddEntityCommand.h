@@ -10,6 +10,7 @@
 #include "Canvas.h"
 #include "Photo.h"
 #include "Stroke.h"
+#include "Polygon.h"
 #include "Bookmarks.h"
 #include "SceneState.h"
 
@@ -19,7 +20,10 @@ class Bookmarks;
 }
 
 /*! \namespace fur
- * \brief Contains QUndoCommand - based classes that are defined within undo/redo framework. */
+ * \brief Contains QUndoCommand - based classes that are defined within undo/redo framework.
+ * All these classes are made friend classes for entity::UserScene (protected) so that to access add and remove entity
+ * functionality.
+*/
 namespace fur {
 
 
@@ -119,6 +123,26 @@ private:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::ref_ptr<entity::Stroke> m_stroke;
+};
+
+/*! \class AddPolygonCommand
+ * \brief QUndoCommand that perform addition of a entity::Polygon to entity::UserScene
+*/
+class AddPolygonCommand : public QUndoCommand
+{
+public:
+    /*! \param scene is the scene graph to add to, \param polygon is the entity::Polygon to be added to entity::UserScene, \param parent is normally 0. */
+    AddPolygonCommand(entity::UserScene* scene, entity::Polygon* polygon, QUndoCommand* parent = 0);
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+private:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    osg::ref_ptr<entity::Polygon> m_polygon;
 };
 
 } // namespace fur

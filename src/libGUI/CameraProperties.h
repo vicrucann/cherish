@@ -20,6 +20,8 @@ public:
     explicit CameraProperties(double fov=60.f, QWidget *parent = 0);
     ~CameraProperties();
 
+    float getFOV() const;
+
 signals:
     /*! Signal emitter when user changes FOV by using a slider. */
     void fovChangedBySlider(double);

@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     , m_viewStack(new QUndoStack(this))
     , m_glWidget(new GLWidget(m_rootScene.get(), m_viewStack))
     , m_cameraProperties( new CameraProperties(60.f, this) )
+    , m_colorDialog(new QColorDialog(this))
 {
     /* singleton check and setup */
     Q_ASSERT_X(m_instance == 0, "MainWindow ctor", "MainWindow is a singleton and cannot be created more than once");
@@ -83,11 +84,21 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     this->initializeToolbars();
     this->initializeCallbacks();
 
-    /* load UI forms */
-
     /* setup initial mode */
-//    this->onNewCanvasXZ();
     this->onSketch();
+
+    /* ui elements setup */
+//    m_colorDialog->setWindowFlags(Qt::FramelessWindowHint);
+    m_colorDialog->setOption(QColorDialog::ShowAlphaChannel);
+    m_colorDialog->setCurrentColor(Utilities::getQColor(cher::POLYGON_CLR_NORMALFILL));
+//    m_colorDialog->move(this->width(), this->height());
+
+    // test adding second window
+//    GLWidget* widget = new GLWidget(m_rootScene, m_viewStack, this);
+//    QMdiSubWindow* subwin2 = m_mdiArea->addSubWindow(widget);
+//    widget->showMaximized();
+//    subwin2->show();
+//    m_mdiArea->tileSubWindows();
 }
 
 MainWindow::~MainWindow()
@@ -128,6 +139,12 @@ bool MainWindow::getStrokeFogFactor() const
 QPixmap MainWindow::getScreenshot(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     return m_glWidget->getScreenShot(eye, center, up);
+}
+
+osg::Vec4f MainWindow::getCurrentColor() const
+{
+    QColor qc = m_colorDialog->currentColor();
+    return Utilities::getOsgColor(qc);
 }
 
 void MainWindow::onSetTabletActivity(bool active){
@@ -173,12 +190,8 @@ void MainWindow::onRequestBookmarkSet(int row)
         qWarning("onRequestBookmarkSet: state is NULL");
         return;
     }
-    m_rootScene->setSceneState(state);
-
+    this->setSceneState(state);
     m_glWidget->setCameraView(eye, center, up, fov);
-
-    // we only want to keep original screenshot
-//    m_rootScene->updateBookmark(m_bookmarkWidget, row);
 }
 
 void MainWindow::onDeleteBookmark(const QModelIndex &index)
@@ -272,6 +285,10 @@ void MainWindow::onBookmarkRemovedFromWidget(const QModelIndex &, int first, int
 void MainWindow::onMouseModeSet(cher::MOUSE_MODE mode)
 {
     QCursor cur = Utilities::getCursorFromMode(mode);
+    if (mode == cher::PEN_POLYGON)
+        m_colorDialog->show();
+    else
+        m_colorDialog->hide();
     if (cur.shape() != Qt::ArrowCursor) m_mdiArea->setCursor(cur);
 }
 
@@ -337,7 +354,7 @@ void MainWindow::onRequestSceneData(entity::SceneState *state)
 
 void MainWindow::onRequestSceneStateSet(entity::SceneState *state)
 {
-    m_rootScene->setSceneState(state);
+    this->setSceneState(state);
 }
 
 void MainWindow::onRequestSceneToolStatus(bool &visibility)
@@ -541,11 +558,40 @@ void MainWindow::onCameraAperture()
 {
     m_cameraProperties->show();
 //    CameraProperties properties(this);
-//    properties.exec();
+    //    properties.exec();
+}
+
+void MainWindow::onHomeView()
+{
+    m_glWidget->onHome();
+}
+
+void MainWindow::onViewAllCanvas()
+{
+    entity::Canvas* canvas = m_rootScene->getCanvasCurrent();
+    if (!canvas) return;
+    osg::Vec3f new_eye, new_center, new_up;
+    new_up = canvas->getGlobalAxisV();
+    float delta = 1;
+    osg::BoundingBox bb = canvas->getBoundingBox();
+    Q_ASSERT(bb.valid());
+    new_center = bb.center();
+    /* delta = BB_min * tan(FOV/2) */
+    Q_ASSERT(m_cameraProperties->getFOV() > 0);
+    delta = std::fabs(std::max(bb.xMax()-bb.xMin(), bb.yMax() - bb.yMin()) * 0.5f * std::tan(m_cameraProperties->getFOV() * 0.5));
+    new_eye = new_center + canvas->getNormal() * delta;
+
+    m_glWidget->setCameraView(new_eye, new_center, new_up, m_cameraProperties->getFOV());
 }
 
 void MainWindow::onSelect(){
     m_glWidget->setMouseMode(cher::SELECT_ENTITY);
+    this->onRequestUpdate();
+}
+
+void MainWindow::onSelect3d()
+{
+    m_glWidget->setMouseMode(cher::SELECT_CANVAS);
     this->onRequestUpdate();
 }
 
@@ -564,6 +610,12 @@ void MainWindow::onDelete()
 void MainWindow::onSketch()
 {
     m_glWidget->setMouseMode(cher::PEN_SKETCH);
+    this->onRequestUpdate();
+}
+
+void MainWindow::onPolygon()
+{
+    m_glWidget->setMouseMode(cher::PEN_POLYGON);
     this->onRequestUpdate();
 }
 
@@ -809,6 +861,12 @@ void MainWindow::initializeActions()
     m_actionCameraSettings = new QAction(Data::cameraApertureIcon(), tr("Camera settings"), this);
     this->connect(m_actionCameraSettings, SIGNAL(triggered(bool)), this, SLOT(onCameraAperture()));
 
+    m_actionHomeView = new QAction(Data::viewerHomeIcon(), tr("Home view"), this);
+    this->connect(m_actionHomeView, SIGNAL(triggered(bool)), this, SLOT(onHomeView()));
+
+    m_actionViewAllCanvas = new QAction(Data::viewerAllCanvas(), tr("Look at canvas"), this);
+    this->connect(m_actionViewAllCanvas, SIGNAL(triggered(bool)), this, SLOT(onViewAllCanvas()));
+
     // SCENE
 
     m_actionSketch = new QAction(Data::sceneSketchIcon(), tr("&Sketch"), this);
@@ -818,8 +876,14 @@ void MainWindow::initializeActions()
     this->connect(m_actionEraser, SIGNAL(triggered(bool)), this, SLOT(onDelete()));
     m_actionEraser->setShortcut(Qt::Key_Delete);
 
-    m_actionSelect = new QAction(Data::sceneSelectIcon(), tr("S&elect"), this);
+    m_actionSelect = new QAction(Data::sceneSelectIcon(), tr("S&elect 2D entity"), this);
     this->connect(m_actionSelect, SIGNAL(triggered(bool)), this, SLOT(onSelect()));
+
+    m_actionSelect3d = new QAction(Data::sceneSelect3DIcon(), tr("Select &canvas"), this);
+    this->connect(m_actionSelect3d, SIGNAL(triggered(bool)), this, SLOT(onSelect3d()));
+
+    m_actionPolygon = new QAction(Data::scenePolygonIcon(), tr("Draw polygon"), this);
+    this->connect(m_actionPolygon, SIGNAL(triggered(bool)), this, SLOT(onPolygon()));
 
     m_actionCanvasClone = new QAction(Data::sceneNewCanvasCloneIcon(), tr("Clone Current"), this);
     this->connect(m_actionCanvasClone, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasClone()));
@@ -889,6 +953,8 @@ void MainWindow::initializeMenus()
     menuCamera->addAction(m_actionPan);
     menuCamera->addAction(m_actionZoom);
     menuCamera->addSeparator();
+    menuCamera->addAction(m_actionHomeView);
+    menuCamera->addAction(m_actionViewAllCanvas);
     menuCamera->addAction(m_actionPrevView);
     menuCamera->addAction(m_actionNextView);
     menuCamera->addSeparator();
@@ -899,7 +965,9 @@ void MainWindow::initializeMenus()
     /* SCENE */
     QMenu* menuScene = m_menuBar->addMenu(tr("&Scene"));
     menuScene->addAction(m_actionSelect);
+    menuScene->addAction(m_actionSelect3d);
     menuScene->addAction(m_actionSketch);
+    menuScene->addAction(m_actionPolygon);
     menuScene->addAction(m_actionEraser);
     menuScene->addAction(m_actionCanvasEdit);
     menuScene->addSeparator();
@@ -969,7 +1037,9 @@ void MainWindow::initializeToolbars()
     this->addToolBar(Qt::LeftToolBarArea, tbInput);
     //QToolBar* tbInput = this->addToolBar(tr("Input"));
     tbInput->addAction(m_actionSelect);
+    tbInput->addAction(m_actionSelect3d);
     tbInput->addAction(m_actionSketch);
+    tbInput->addAction(m_actionPolygon);
     tbInput->addAction(m_actionEraser);
     tbInput->addAction(m_actionCanvasEdit);
 
@@ -1007,6 +1077,8 @@ void MainWindow::initializeToolbars()
     /* VIEWER bar */
     QToolBar* tbViewer = new QToolBar(tr("Viewer"));
     this->addToolBar(Qt::BottomToolBarArea, tbViewer);
+    tbViewer->addAction(m_actionHomeView);
+    tbViewer->addAction(m_actionViewAllCanvas);
     tbViewer->addAction(m_actionPrevView);
     tbViewer->addAction(m_actionNextView);
     tbViewer->addAction(m_actionBookmark);
@@ -1229,4 +1301,14 @@ bool MainWindow::importPhoto(QString &fileName)
     m_rootScene->addPhoto(fileName.toStdString());
     this->statusBar()->showMessage(tr("Image loaded to current canvas."));
     return true;
+}
+
+void MainWindow::setSceneState(const entity::SceneState *state)
+{
+    if (!state) throw std::runtime_error("setSceneState(): state is NULL");
+    m_rootScene->setSceneState(state);
+    m_actionTools->setChecked(state->getAxisFlag());
+
+    // we only want to keep original screenshot
+//    m_rootScene->updateBookmark(m_bookmarkWidget, row);
 }

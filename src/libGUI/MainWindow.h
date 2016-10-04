@@ -13,6 +13,7 @@
 #include <QToolButton>
 #include <QWidgetAction>
 #include <QFileSystemModel>
+#include <QColorDialog>
 
 #include <osg/ref_ptr>
 #include <osg/Camera>
@@ -47,6 +48,9 @@ public:
     osg::Camera* getCamera() const;
     bool getStrokeFogFactor() const;
     QPixmap getScreenshot(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+
+    /*! A method to obtain current color of the color dialog (for polygon drawing). */
+    osg::Vec4f getCurrentColor() const;
 
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
@@ -127,11 +131,15 @@ protected slots:
     void onCameraZoom();
     void onCameraPan();
     void onCameraAperture();
+    void onHomeView();
+    void onViewAllCanvas();
 
     void onSelect();
+    void onSelect3d();
     void onErase();
     void onDelete();
     void onSketch();
+    void onPolygon();
 
     void onNewCanvasClone();
     void onNewCanvasXY();
@@ -168,6 +176,7 @@ protected:
     bool        loadSceneFromFile();
 
     bool        importPhoto(QString& fileName);
+    void        setSceneState(const entity::SceneState* state);
 
     QMdiArea*       m_mdiArea;
 
@@ -199,10 +208,10 @@ protected:
     /* CAMERA actions */
     QAction * m_actionOrbit, * m_actionPan, * m_actionZoom
             , * m_actionPrevView, * m_actionNextView, * m_actionBookmark
-            , * m_actionCameraSettings;
+            , * m_actionCameraSettings, * m_actionHomeView, * m_actionViewAllCanvas;
 
     // SCENE actions
-    QAction * m_actionSketch, * m_actionEraser, * m_actionSelect
+    QAction * m_actionSketch, * m_actionEraser, * m_actionSelect, * m_actionSelect3d, * m_actionPolygon
             // New Canvas sub-menu
             , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasXZ
             , * m_actionCanvasOrtho, * m_actionCanvasSeparate
@@ -218,7 +227,8 @@ protected:
     // OPTION actions
     QAction* m_actionStrokeFogFactor;
 
-    CameraProperties* m_cameraProperties;
+    CameraProperties*   m_cameraProperties;
+    QColorDialog*       m_colorDialog;
 
     static MainWindow* m_instance;
 };

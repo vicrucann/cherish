@@ -9,145 +9,492 @@ Children 2 {
 entity::Bookmarks {
       UniqueID 2 
       Name "groupBookmarks" 
-Children 1 {
-entity::SceneState {
-          UniqueID 3 
-          CanvasDataFlags 3 {
-FALSE TRUE TRUE 
-}
-CanvasToolFlags 3 {
-TRUE TRUE TRUE 
-}
-PhotoTransparencies 1 {
-1 
-}
-}
-      }
-Eyes 1 {
--4.47294 7.55794 8.05299 
-}
-Centers 1 {
-0 0 0 
-}
-Ups 1 {
-0.456497 -0.508071 0.730393 
-}
-Names 1 {
-Bookmark0 
-}
-Fovs 1 {
-60 
-}
 }
     osg::Group {
-      UniqueID 4 
+      UniqueID 3 
       Name "groupCanvases" 
 Children 3 {
 entity::Canvas {
-          UniqueID 5 
+          UniqueID 4 
           Name "Canvas0" 
 Children 1 {
 osg::MatrixTransform {
-              UniqueID 6 
+              UniqueID 5 
               Name "Transform" 
 Children 1 {
 osg::Switch {
-                  UniqueID 7 
+                  UniqueID 6 
                   Name "Switch" 
 Children 1 {
 osg::Group {
-                      UniqueID 8 
+                      UniqueID 7 
                       NodeMask 0x10 
 Children 2 {
 osg::Geode {
-                          UniqueID 9 
-                        }
-                        osg::Geode {
-                          UniqueID 10 
-                          Drawables 1 {
-entity::Photo {
-                              UniqueID 11 
-                              Name "Photo0" 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 12 
-                                  Mode QUADS 
-Count 4 
+                          UniqueID 8 
+                          StateSet TRUE {
+osg::StateSet {
+                              UniqueID 9 
+                              AttributeList 1 {
+osg::Program {
+                                  UniqueID 10 
+                                  Name "ProgramStroke" 
+Shaders 3 {
+osg::Shader {
+                                      UniqueID 11 
+                                      Type VERTEX 
+ShaderSource 19 {
+"#version 330" 
+"" 
+"uniform mat4 ModelViewProjectionMatrix;" 
+"uniform mat4 CanvasMatrix;" 
+"" 
+"layout(location = 0) in vec4 Vertex;" 
+"layout(location = 1) in vec4 Color;" 
+"" 
+"out VertexData{" 
+"    vec4 mColor;" 
+"    vec4 mVertex; // to calculate distance to camera eye" 
+"} VertexOut;" 
+"" 
+"void main(void)" 
+"{" 
+"    VertexOut.mColor = Color;" 
+"    VertexOut.mVertex = CanvasMatrix * Vertex;" 
+"    gl_Position = ModelViewProjectionMatrix * Vertex;" 
+"}" 
 }
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 13 
-                                  Binding BIND_PER_VERTEX 
-vector 4 {
--1.66922 -1.61668 0 
-0.330776 -1.61668 0 
-0.330776 0.350368 0 
--1.66922 0.350368 0 
+}
+                                    osg::Shader {
+                                      UniqueID 12 
+                                      Type GEOMETRY 
+ShaderSource 258 {
+"#version 330" 
+"" 
+"uniform float Thickness;" 
+"uniform vec2 Viewport;" 
+"uniform float MiterLimit;" 
+"uniform int Segments;" 
+"uniform bool IsFogged;" 
+"uniform float FogMin;" 
+"uniform float FogMax;" 
+"uniform vec4 CameraEye;" 
+"" 
+"const int SegmentsMax = 30; // max_vertices = (SegmentsMax+1)*4;" 
+"const int SegmentsMin = 3; // min number of segments per curve" 
+"" 
+"layout(lines_adjacency) in;" 
+"layout(triangle_strip, max_vertices = 124) out;" 
+"" 
+"in VertexData{" 
+"    vec4 mColor;" 
+"    vec4 mVertex;" 
+"} VertexIn[4];" 
+"" 
+"out VertexData{" 
+"    vec2 mTexCoord; // fix before usage" 
+"    vec4 mColor;" 
+"} VertexOut;" 
+"" 
+"vec2 toScreenSpace(vec4 vertex)" 
+"{" 
+"    return vec2( vertex.xy / vertex.w ) * Viewport;" 
+"}" 
+"" 
+"float toZValue(vec4 vertex)" 
+"{" 
+"    return vertex.z / vertex.w;" 
+"}" 
+"" 
+"vec2 toBezier(float delta, int i, vec2 b0, vec2 b1, vec2 b2, vec2 b3)" 
+"{" 
+"    float t = delta * float(i);" 
+"    float t2 = t * t;" 
+"    float one_minus_t = 1.0 - t;" 
+"    float one_minus_t2 = one_minus_t * one_minus_t;" 
+"    return (b0 * one_minus_t2 * one_minus_t + b1 * 3.0 * t * one_minus_t2 + b2 * 3.0 * t2 * one_minus_t + b3 * t2 * t);" 
+"}" 
+"" 
+"vec4 toBezier3D(float delta, int i, vec4 B0, vec4 B1, vec4 B2, vec4 B3)" 
+"{" 
+"    float t = delta * float(i);" 
+"    float t2 = t * t;" 
+"    float one_minus_t = 1.0 - t;" 
+"    float one_minus_t2 = one_minus_t * one_minus_t;" 
+"    return (B0 * one_minus_t2 * one_minus_t + B1 * 3.0 * t * one_minus_t2 + B2 * 3.0 * t2 * one_minus_t + B3 * t2 * t);" 
+"}" 
+"" 
+"float getFogFactor(float d)" 
+"{" 
+"    if (d>=FogMax) return 0;" 
+"    if (d<=FogMin) return 1;" 
+"" 
+"    return (FogMax - d) / (FogMax - FogMin);" 
+"}" 
+"" 
+"void drawSegment(vec2 points[4], vec4 colors[4], float zValues[4])" 
+"{" 
+"    vec2 p0 = points[0];" 
+"    vec2 p1 = points[1];" 
+"    vec2 p2 = points[2];" 
+"    vec2 p3 = points[3];" 
+"" 
+"    /* perform naive culling */" 
+"    vec2 area = Viewport * 4;" 
+"    if( p1.x < -area.x || p1.x > area.x ) return;" 
+"    if( p1.y < -area.y || p1.y > area.y ) return;" 
+"    if( p2.x < -area.x || p2.x > area.x ) return;" 
+"    if( p2.y < -area.y || p2.y > area.y ) return;" 
+"" 
+"    /* determine the direction of each of the 3 segments (previous, current, next) */" 
+"    vec2 v0 = normalize( p1 - p0 );" 
+"    vec2 v1 = normalize( p2 - p1 );" 
+"    vec2 v2 = normalize( p3 - p2 );" 
+"" 
+"    /* determine the normal of each of the 3 segments (previous, current, next) */" 
+"    vec2 n0 = vec2( -v0.y, v0.x );" 
+"    vec2 n1 = vec2( -v1.y, v1.x );" 
+"    vec2 n2 = vec2( -v2.y, v2.x );" 
+"" 
+"    /* determine miter lines by averaging the normals of the 2 segments */" 
+"    vec2 miter_a = normalize( n0 + n1 );	// miter at start of current segment" 
+"    vec2 miter_b = normalize( n1 + n2 ); // miter at end of current segment" 
+"" 
+"    /* determine the length of the miter by projecting it onto normal and then inverse it */" 
+"    float an1 = dot(miter_a, n1);" 
+"    float bn1 = dot(miter_b, n2);" 
+"    if (an1==0) an1 = 1;" 
+"    if (bn1==0) bn1 = 1;" 
+"    float length_a = Thickness / an1;" 
+"    float length_b = Thickness / bn1;" 
+"" 
+"    /* prevent excessively long miters at sharp corners */" 
+"    if( dot( v0, v1 ) < -MiterLimit ) {" 
+"        miter_a = n1;" 
+"        length_a = Thickness;" 
+"" 
+"        /* close the gap */" 
+"        if( dot( v0, n1 ) > 0 ) {" 
+"            VertexOut.mTexCoord = vec2( 0, 0 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 + Thickness * n0 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 0 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 + Thickness * n1 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 0.5 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( p1 / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            EndPrimitive();" 
+"        }" 
+"        else {" 
+"            VertexOut.mTexCoord = vec2( 0, 1 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 - Thickness * n1 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 1 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 - Thickness * n0 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 0.5 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( p1 / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            EndPrimitive();" 
+"        }" 
+"    }" 
+"    if( dot( v1, v2 ) < -MiterLimit ) {" 
+"        miter_b = n1;" 
+"        length_b = Thickness;" 
+"    }" 
+"    // generate the triangle strip" 
+"    VertexOut.mTexCoord = vec2( 0, 0 );" 
+"    VertexOut.mColor = colors[1];" 
+"    gl_Position = vec4( ( p1 + length_a * miter_a ) / Viewport, zValues[1], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    VertexOut.mTexCoord = vec2( 0, 1 );" 
+"    VertexOut.mColor = colors[1];" 
+"    gl_Position = vec4( ( p1 - length_a * miter_a ) / Viewport, zValues[1], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    VertexOut.mTexCoord = vec2( 0, 0 );" 
+"    VertexOut.mColor = colors[2];" 
+"    gl_Position = vec4( ( p2 + length_b * miter_b ) / Viewport, zValues[2], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    VertexOut.mTexCoord = vec2( 0, 1 );" 
+"    VertexOut.mColor = colors[2];" 
+"    gl_Position = vec4( ( p2 - length_b * miter_b ) / Viewport, zValues[2], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    EndPrimitive();" 
+"}" 
+"" 
+"void main(void)" 
+"{" 
+"    /* cut segments number if larger than allowed */" 
+"    int nSegments = (Segments > SegmentsMax)? SegmentsMax : Segments;" 
+"    nSegments = (nSegments < SegmentsMin)? SegmentsMin: nSegments;" 
+"" 
+"    /* read the input */" 
+"    vec4 B[4], V[4], C[4];" 
+"    for (int i=0; i<4; ++i){" 
+"        B[i] = gl_in[i].gl_Position; // bezier points" 
+"        V[i] = VertexIn[i].mVertex; // vertex format" 
+"        C[i] = VertexIn[i].mColor; // attached colors" 
+"    }" 
+"" 
+"    /* adjust alpha channels wrt camera eye distance */" 
+"    if (IsFogged){" 
+"        for (int i=0; i<4; ++i){" 
+"            float d = distance(CameraEye, V[0]);" 
+"            float alpha = getFogFactor(d);" 
+"            C[i] = vec4(C[i].rgb, alpha);" 
+"        }" 
+"    }" 
+"" 
+"    /* get the 2d bezier control points */" 
+"    vec2 b0 = toScreenSpace( B[0] );" 
+"    vec2 b1 = toScreenSpace( B[1] );" 
+"    vec2 b2 = toScreenSpace( B[2] );" 
+"    vec2 b3 = toScreenSpace( B[3] );" 
+"" 
+"    /* use the points to build a bezier line */" 
+"    float delta = 1.0 / float(nSegments);" 
+"    vec4 P[4]; // interpolated 3D points of Bezier" 
+"    vec2 points[4]; // interpolated 2D points of Bezier" 
+"    vec4 colors[4]; // interpolated colors" 
+"    float zValues[4]; // stroke z-values" 
+"     int j = 0; // bezier segment index for color interpolation" 
+"    for (int i=0; i<=nSegments; ++i){" 
+"        /* first point */" 
+"        if (i==0){" 
+"            P[1] = toBezier3D(delta, i, B[0], B[1], B[2], B[3]);" 
+"            P[2] = toBezier3D(delta, i+1, B[0], B[1], B[2], B[3]);" 
+"            P[3] = toBezier3D(delta, i+2, B[0], B[1], B[2], B[3]);" 
+"            vec4 D = normalize(P[2] - P[1]);" 
+"            P[0] = P[1] + D * 0.01;" 
+"        }" 
+"        else if (i < nSegments-1){" 
+"            P[0] = P[1];" 
+"            P[1] = P[2];" 
+"            P[2] = P[3];" 
+"            P[3] = toBezier3D(delta, i+2, B[0], B[1], B[2], B[3]);" 
+"        }" 
+"        /* last point */" 
+"        else {" 
+"            P[0] = P[1];" 
+"            P[1] = P[2];" 
+"            P[2] = P[3];" 
+"            vec4 D = normalize(P[2] - P[1]);" 
+"            P[3] = P[2] + D * 0.01;" 
+"        }" 
+"" 
+"        {" 
+"            if (i==0) colors[1] = C[0];" 
+"            else colors[1] = colors[2];" 
+"" 
+"            /* fraction p{i} is located between fraction p{j} and p{j+1} */" 
+"            float pi = float(i+1) / float(nSegments);" 
+"            if (pi >= float(j+1)/3.f) j++;" 
+"            float pj = float(j)/3.f; // 4 bezier points means 3 segments between which points are plotted" 
+"            float pj1 = float(j+1)/3.f;" 
+"            float a = (pi-pj) / (pj1-pj);" 
+"            colors[2] = mix(C[j], C[j+1], a); // j <= 3" 
+"        }" 
+"" 
+"        /* stroke z-values */" 
+"        points[0] = toScreenSpace(P[0]);" 
+"        points[1] = toScreenSpace(P[1]);" 
+"        points[2] = toScreenSpace(P[2]);" 
+"        points[3] = toScreenSpace(P[3]);" 
+"" 
+"        zValues[0] = toZValue(P[0]);" 
+"        zValues[1] = toZValue(P[1]);" 
+"        zValues[2] = toZValue(P[2]);" 
+"        zValues[3] = toZValue(P[3]);" 
+"" 
+"        drawSegment(points, colors, zValues);" 
+"    }" 
+"" 
+"}" 
 }
 }
-                              }
-NormalArray TRUE {
-osg::Vec3Array {
+                                    osg::Shader {
+                                      UniqueID 13 
+                                      Type FRAGMENT 
+ShaderSource 11 {
+"#version 330" 
+"" 
+"in VertexData{" 
+"    vec2 mTexCoord;" 
+"    vec4 mColor;" 
+"} VertexIn;" 
+"" 
+"void main(void)" 
+"{" 
+"    gl_FragColor = VertexIn.mColor;" 
+"}" 
+}
+}
+                                  }
+GeometryVerticesOut GL_GEOMETRY_VERTICES_OUT_EXT 1 
+GeometryInputType GL_GEOMETRY_INPUT_TYPE_EXT 4 
+GeometryOutputType GL_GEOMETRY_OUTPUT_TYPE_EXT 5 
+FeedBackVaryingsName 0 {
+}
+FeedBackMode 35981 
+}
+                                Value OFF 
+}
+UniformList 10 {
+osg::Uniform {
                                   UniqueID 14 
-                                  Binding BIND_OVERALL 
-vector 1 {
-0 0 1 
+                                  Name "CameraEye" 
+Type FLOAT_VEC4 
+NumElements 1 
+Elements TRUE ArrayID 1 FloatArray 4 {
+                                    0 3.8637 1.71583e-015 1 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 15 
+                                    }
+                                  }
 }
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 15 
-                                  Binding BIND_OVERALL 
-vector 1 {
-1 1 1 1 
-}
-}
-                              }
-TexCoordArrayList 1 {
-osg::Vec2Array {
+                                Value OFF 
+osg::Uniform {
                                   UniqueID 16 
-                                  Binding BIND_PER_VERTEX 
-vector 4 {
-0 0 
-1 0 
-1 1 
-0 1 
+                                  Name "CanvasMatrix" 
+Type FLOAT_MAT4 
+NumElements 1 
+Elements TRUE ArrayID 2 FloatArray 16 {
+                                    1 0 0 0 
+                                    0 1 0 0 
+                                    0 0 1 0 
+                                    0 0.6 0 1 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 17 
+                                    }
+                                  }
 }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 18 
+                                  Name "FogMax" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 3 FloatArray 1 {
+                                    30 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 19 
+                                  Name "FogMin" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 4 FloatArray 1 {
+                                    4 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 20 
+                                  Name "IsFogged" 
+Type BOOL 
+NumElements 1 
+Elements TRUE ArrayID 5 IntArray 1 {
+                                    0 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 21 
+                                  Name "MiterLimit" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 6 FloatArray 1 {
+                                    0.75 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 22 
+                                  Name "ModelViewProjectionMatrix" 
+Type FLOAT_MAT4 
+NumElements 1 
+Elements TRUE ArrayID 7 FloatArray 16 {
+                                    -2.32529 0 0 0 
+                                    0 -1.65736e-015 -3.0825 -1 
+                                    0 3.73205 -1.3689e-015 -4.44089e-016 
+                                    0 -9.94418e-016 1.00362 3.2637 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 23 
+                                    }
+                                  }
 }
-                              }
-Texture TRUE {
-osg::Texture2D {
-                                  UniqueID 17 
-                                  WRAP_S CLAMP 
-WRAP_T CLAMP 
-WRAP_R CLAMP 
-MIN_FILTER LINEAR_MIPMAP_LINEAR 
-MAG_FILTER LINEAR 
-Swizzle RGBA 
-Image TRUE {
-ClassName osg::Image 
-                                    UniqueID 18 
-                                    FileName "C:/cygwin64/home/vr267/github/cherish/samples/test.bmp" 
-                                    WriteHint 0 2 
-                                    DataVariance STATIC 
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 24 
+                                  Name "Segments" 
+Type INT 
+NumElements 1 
+Elements TRUE ArrayID 8 IntArray 1 {
+                                    11 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 25 
+                                  Name "Thickness" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 9 FloatArray 1 {
+                                    4 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 26 
+                                  Name "Viewport" 
+Type FLOAT_VEC2 
+NumElements 1 
+Elements TRUE ArrayID 10 FloatArray 2 {
+                                    2836 1767 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 27 
+                                    }
+                                  }
 }
-TextureWidth 1024 
-TextureHeight 1024 
+                                Value OFF 
 }
-                              }
-Center -0.669224 -0.633155 0 
-Width 1 
-Height 0.983523 
 }
                           }
 }
+                        osg::Geode {
+                          UniqueID 28 
+                        }
                       }
 }
                   }
 ValueList 1 {
-FALSE 
+TRUE 
 }
 }
               }
@@ -169,757 +516,507 @@ MatrixTranslation {
           
 Transform TRUE {
 osg::MatrixTransform {
-              UniqueID 6 
+              UniqueID 5 
             }
           }
 Switch TRUE {
 osg::Switch {
-              UniqueID 7 
+              UniqueID 6 
             }
           }
 GroupData TRUE {
 osg::Group {
-              UniqueID 8 
+              UniqueID 7 
             }
           }
 GeodeStrokes TRUE {
 osg::Geode {
-              UniqueID 9 
+              UniqueID 8 
             }
           }
 GeodePhotos TRUE {
 osg::Geode {
-              UniqueID 10 
+              UniqueID 28 
             }
           }
 Center 0 0.6 0 
 Normal 0 0 1 
 }
         entity::Canvas {
-          UniqueID 19 
+          UniqueID 29 
           Name "Canvas1" 
 Children 1 {
 osg::MatrixTransform {
-              UniqueID 20 
+              UniqueID 30 
               Name "Transform" 
 Children 1 {
 osg::Switch {
-                  UniqueID 21 
+                  UniqueID 31 
                   Name "Switch" 
 Children 1 {
 osg::Group {
-                      UniqueID 22 
+                      UniqueID 32 
                       NodeMask 0x10 
 Children 2 {
 osg::Geode {
-                          UniqueID 23 
-                          Drawables 10 {
-entity::Stroke {
-                              UniqueID 24 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 25 
-                                  Mode LINES_ADJACENCY 
-Count 16 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 26 
-                                  Binding BIND_PER_VERTEX 
-vector 16 {
-0.153011 0.199158 0 
-0.175946 0.0899529 0 
-0.227272 -0.0159578 0 
-0.213987 -0.131236 0 
-0.213987 -0.131236 0 
-0.191388 -0.327336 0 
--0.0147724 -0.56066 0 
--0.0858462 -0.757942 0 
--0.0858462 -0.757942 0 
--0.147093 -0.927948 0 
--0.117563 -1.11745 0 
--0.100322 -1.27856 0 
--0.100322 -1.27856 0 
--0.088854 -1.38573 0 
-0.123048 -1.83383 0 
-0.0532217 -1.94813 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 27 
-                                  Binding BIND_PER_VERTEX 
-vector 16 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 26 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 27 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 25 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 28 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 29 
-                                  Mode LINES_ADJACENCY 
-Count 28 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 30 
-                                  Binding BIND_PER_VERTEX 
-vector 28 {
-0.21443 -1.36774 0 
-0.214216 -1.36777 0 
-0.172222 -1.37449 0 
-0.172008 -1.37453 0 
-0.172008 -1.37453 0 
-0.171979 -1.37453 0 
-0.139802 -1.3801 0 
-0.139772 -1.3801 0 
-0.139772 -1.3801 0 
-0.133584 -1.38027 0 
-0.0510035 -1.37788 0 
-0.0448133 -1.37793 0 
-0.0448133 -1.37793 0 
-0.0438266 -1.37793 0 
-0.0111019 -1.38088 0 
-0.0101237 -1.38101 0 
-0.0101237 -1.38101 0 
-0.0101234 -1.38101 0 
--0.0241313 -1.38703 0 
--0.0241316 -1.38703 0 
--0.0241316 -1.38703 0 
--0.0251153 -1.38716 0 
--0.0580823 -1.39009 0 
--0.0590727 -1.39015 0 
--0.0590727 -1.39015 0 
--0.0621438 -1.39033 0 
--0.123937 -1.39191 0 
--0.126912 -1.39269 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 31 
-                                  Binding BIND_PER_VERTEX 
-vector 28 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 30 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 31 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 29 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 32 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 33 
-                                  Mode LINES_ADJACENCY 
-Count 28 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 34 
-                                  Binding BIND_PER_VERTEX 
-vector 28 {
-0.188594 -1.23866 0 
-0.18848 -1.23869 0 
-0.184433 -1.23974 0 
-0.184318 -1.23977 0 
-0.184318 -1.23977 0 
-0.184268 -1.23978 0 
-0.146648 -1.24654 0 
-0.146598 -1.24655 0 
-0.146598 -1.24655 0 
-0.14319 -1.24677 0 
-0.0940225 -1.24632 0 
-0.0906247 -1.24597 0 
-0.0906247 -1.24597 0 
-0.0906247 -1.24597 0 
-0.0153278 -1.23367 0 
-0.0153278 -1.23367 0 
-0.0153278 -1.23367 0 
-0.0151995 -1.23368 0 
--0.00807732 -1.23819 0 
--0.00820559 -1.2382 0 
--0.00820559 -1.2382 0 
--0.00965607 -1.23832 0 
--0.0268019 -1.23722 0 
--0.0282559 -1.23729 0 
--0.0282559 -1.23729 0 
--0.0296845 -1.23735 0 
--0.0810075 -1.2508 0 
--0.082393 -1.25115 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
+                          UniqueID 33 
+                          StateSet TRUE {
+osg::StateSet {
+                              UniqueID 34 
+                              AttributeList 1 {
+osg::Program {
                                   UniqueID 35 
-                                  Binding BIND_PER_VERTEX 
-vector 28 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
+                                  Name "ProgramStroke" 
+Shaders 3 {
+osg::Shader {
+                                      UniqueID 36 
+                                      Type VERTEX 
+ShaderSource 19 {
+"#version 330" 
+"" 
+"uniform mat4 ModelViewProjectionMatrix;" 
+"uniform mat4 CanvasMatrix;" 
+"" 
+"layout(location = 0) in vec4 Vertex;" 
+"layout(location = 1) in vec4 Color;" 
+"" 
+"out VertexData{" 
+"    vec4 mColor;" 
+"    vec4 mVertex; // to calculate distance to camera eye" 
+"} VertexOut;" 
+"" 
+"void main(void)" 
+"{" 
+"    VertexOut.mColor = Color;" 
+"    VertexOut.mVertex = CanvasMatrix * Vertex;" 
+"    gl_Position = ModelViewProjectionMatrix * Vertex;" 
+"}" 
 }
 }
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 34 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 35 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 33 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
+                                    osg::Shader {
+                                      UniqueID 37 
+                                      Type GEOMETRY 
+ShaderSource 258 {
+"#version 330" 
+"" 
+"uniform float Thickness;" 
+"uniform vec2 Viewport;" 
+"uniform float MiterLimit;" 
+"uniform int Segments;" 
+"uniform bool IsFogged;" 
+"uniform float FogMin;" 
+"uniform float FogMax;" 
+"uniform vec4 CameraEye;" 
+"" 
+"const int SegmentsMax = 30; // max_vertices = (SegmentsMax+1)*4;" 
+"const int SegmentsMin = 3; // min number of segments per curve" 
+"" 
+"layout(lines_adjacency) in;" 
+"layout(triangle_strip, max_vertices = 124) out;" 
+"" 
+"in VertexData{" 
+"    vec4 mColor;" 
+"    vec4 mVertex;" 
+"} VertexIn[4];" 
+"" 
+"out VertexData{" 
+"    vec2 mTexCoord; // fix before usage" 
+"    vec4 mColor;" 
+"} VertexOut;" 
+"" 
+"vec2 toScreenSpace(vec4 vertex)" 
+"{" 
+"    return vec2( vertex.xy / vertex.w ) * Viewport;" 
+"}" 
+"" 
+"float toZValue(vec4 vertex)" 
+"{" 
+"    return vertex.z / vertex.w;" 
+"}" 
+"" 
+"vec2 toBezier(float delta, int i, vec2 b0, vec2 b1, vec2 b2, vec2 b3)" 
+"{" 
+"    float t = delta * float(i);" 
+"    float t2 = t * t;" 
+"    float one_minus_t = 1.0 - t;" 
+"    float one_minus_t2 = one_minus_t * one_minus_t;" 
+"    return (b0 * one_minus_t2 * one_minus_t + b1 * 3.0 * t * one_minus_t2 + b2 * 3.0 * t2 * one_minus_t + b3 * t2 * t);" 
+"}" 
+"" 
+"vec4 toBezier3D(float delta, int i, vec4 B0, vec4 B1, vec4 B2, vec4 B3)" 
+"{" 
+"    float t = delta * float(i);" 
+"    float t2 = t * t;" 
+"    float one_minus_t = 1.0 - t;" 
+"    float one_minus_t2 = one_minus_t * one_minus_t;" 
+"    return (B0 * one_minus_t2 * one_minus_t + B1 * 3.0 * t * one_minus_t2 + B2 * 3.0 * t2 * one_minus_t + B3 * t2 * t);" 
+"}" 
+"" 
+"float getFogFactor(float d)" 
+"{" 
+"    if (d>=FogMax) return 0;" 
+"    if (d<=FogMin) return 1;" 
+"" 
+"    return (FogMax - d) / (FogMax - FogMin);" 
+"}" 
+"" 
+"void drawSegment(vec2 points[4], vec4 colors[4], float zValues[4])" 
+"{" 
+"    vec2 p0 = points[0];" 
+"    vec2 p1 = points[1];" 
+"    vec2 p2 = points[2];" 
+"    vec2 p3 = points[3];" 
+"" 
+"    /* perform naive culling */" 
+"    vec2 area = Viewport * 4;" 
+"    if( p1.x < -area.x || p1.x > area.x ) return;" 
+"    if( p1.y < -area.y || p1.y > area.y ) return;" 
+"    if( p2.x < -area.x || p2.x > area.x ) return;" 
+"    if( p2.y < -area.y || p2.y > area.y ) return;" 
+"" 
+"    /* determine the direction of each of the 3 segments (previous, current, next) */" 
+"    vec2 v0 = normalize( p1 - p0 );" 
+"    vec2 v1 = normalize( p2 - p1 );" 
+"    vec2 v2 = normalize( p3 - p2 );" 
+"" 
+"    /* determine the normal of each of the 3 segments (previous, current, next) */" 
+"    vec2 n0 = vec2( -v0.y, v0.x );" 
+"    vec2 n1 = vec2( -v1.y, v1.x );" 
+"    vec2 n2 = vec2( -v2.y, v2.x );" 
+"" 
+"    /* determine miter lines by averaging the normals of the 2 segments */" 
+"    vec2 miter_a = normalize( n0 + n1 );	// miter at start of current segment" 
+"    vec2 miter_b = normalize( n1 + n2 ); // miter at end of current segment" 
+"" 
+"    /* determine the length of the miter by projecting it onto normal and then inverse it */" 
+"    float an1 = dot(miter_a, n1);" 
+"    float bn1 = dot(miter_b, n2);" 
+"    if (an1==0) an1 = 1;" 
+"    if (bn1==0) bn1 = 1;" 
+"    float length_a = Thickness / an1;" 
+"    float length_b = Thickness / bn1;" 
+"" 
+"    /* prevent excessively long miters at sharp corners */" 
+"    if( dot( v0, v1 ) < -MiterLimit ) {" 
+"        miter_a = n1;" 
+"        length_a = Thickness;" 
+"" 
+"        /* close the gap */" 
+"        if( dot( v0, n1 ) > 0 ) {" 
+"            VertexOut.mTexCoord = vec2( 0, 0 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 + Thickness * n0 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 0 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 + Thickness * n1 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 0.5 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( p1 / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            EndPrimitive();" 
+"        }" 
+"        else {" 
+"            VertexOut.mTexCoord = vec2( 0, 1 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 - Thickness * n1 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 1 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 - Thickness * n0 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 0.5 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( p1 / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            EndPrimitive();" 
+"        }" 
+"    }" 
+"    if( dot( v1, v2 ) < -MiterLimit ) {" 
+"        miter_b = n1;" 
+"        length_b = Thickness;" 
+"    }" 
+"    // generate the triangle strip" 
+"    VertexOut.mTexCoord = vec2( 0, 0 );" 
+"    VertexOut.mColor = colors[1];" 
+"    gl_Position = vec4( ( p1 + length_a * miter_a ) / Viewport, zValues[1], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    VertexOut.mTexCoord = vec2( 0, 1 );" 
+"    VertexOut.mColor = colors[1];" 
+"    gl_Position = vec4( ( p1 - length_a * miter_a ) / Viewport, zValues[1], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    VertexOut.mTexCoord = vec2( 0, 0 );" 
+"    VertexOut.mColor = colors[2];" 
+"    gl_Position = vec4( ( p2 + length_b * miter_b ) / Viewport, zValues[2], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    VertexOut.mTexCoord = vec2( 0, 1 );" 
+"    VertexOut.mColor = colors[2];" 
+"    gl_Position = vec4( ( p2 - length_b * miter_b ) / Viewport, zValues[2], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    EndPrimitive();" 
+"}" 
+"" 
+"void main(void)" 
+"{" 
+"    /* cut segments number if larger than allowed */" 
+"    int nSegments = (Segments > SegmentsMax)? SegmentsMax : Segments;" 
+"    nSegments = (nSegments < SegmentsMin)? SegmentsMin: nSegments;" 
+"" 
+"    /* read the input */" 
+"    vec4 B[4], V[4], C[4];" 
+"    for (int i=0; i<4; ++i){" 
+"        B[i] = gl_in[i].gl_Position; // bezier points" 
+"        V[i] = VertexIn[i].mVertex; // vertex format" 
+"        C[i] = VertexIn[i].mColor; // attached colors" 
+"    }" 
+"" 
+"    /* adjust alpha channels wrt camera eye distance */" 
+"    if (IsFogged){" 
+"        for (int i=0; i<4; ++i){" 
+"            float d = distance(CameraEye, V[0]);" 
+"            float alpha = getFogFactor(d);" 
+"            C[i] = vec4(C[i].rgb, alpha);" 
+"        }" 
+"    }" 
+"" 
+"    /* get the 2d bezier control points */" 
+"    vec2 b0 = toScreenSpace( B[0] );" 
+"    vec2 b1 = toScreenSpace( B[1] );" 
+"    vec2 b2 = toScreenSpace( B[2] );" 
+"    vec2 b3 = toScreenSpace( B[3] );" 
+"" 
+"    /* use the points to build a bezier line */" 
+"    float delta = 1.0 / float(nSegments);" 
+"    vec4 P[4]; // interpolated 3D points of Bezier" 
+"    vec2 points[4]; // interpolated 2D points of Bezier" 
+"    vec4 colors[4]; // interpolated colors" 
+"    float zValues[4]; // stroke z-values" 
+"     int j = 0; // bezier segment index for color interpolation" 
+"    for (int i=0; i<=nSegments; ++i){" 
+"        /* first point */" 
+"        if (i==0){" 
+"            P[1] = toBezier3D(delta, i, B[0], B[1], B[2], B[3]);" 
+"            P[2] = toBezier3D(delta, i+1, B[0], B[1], B[2], B[3]);" 
+"            P[3] = toBezier3D(delta, i+2, B[0], B[1], B[2], B[3]);" 
+"            vec4 D = normalize(P[2] - P[1]);" 
+"            P[0] = P[1] + D * 0.01;" 
+"        }" 
+"        else if (i < nSegments-1){" 
+"            P[0] = P[1];" 
+"            P[1] = P[2];" 
+"            P[2] = P[3];" 
+"            P[3] = toBezier3D(delta, i+2, B[0], B[1], B[2], B[3]);" 
+"        }" 
+"        /* last point */" 
+"        else {" 
+"            P[0] = P[1];" 
+"            P[1] = P[2];" 
+"            P[2] = P[3];" 
+"            vec4 D = normalize(P[2] - P[1]);" 
+"            P[3] = P[2] + D * 0.01;" 
+"        }" 
+"" 
+"        {" 
+"            if (i==0) colors[1] = C[0];" 
+"            else colors[1] = colors[2];" 
+"" 
+"            /* fraction p{i} is located between fraction p{j} and p{j+1} */" 
+"            float pi = float(i+1) / float(nSegments);" 
+"            if (pi >= float(j+1)/3.f) j++;" 
+"            float pj = float(j)/3.f; // 4 bezier points means 3 segments between which points are plotted" 
+"            float pj1 = float(j+1)/3.f;" 
+"            float a = (pi-pj) / (pj1-pj);" 
+"            colors[2] = mix(C[j], C[j+1], a); // j <= 3" 
+"        }" 
+"" 
+"        /* stroke z-values */" 
+"        points[0] = toScreenSpace(P[0]);" 
+"        points[1] = toScreenSpace(P[1]);" 
+"        points[2] = toScreenSpace(P[2]);" 
+"        points[3] = toScreenSpace(P[3]);" 
+"" 
+"        zValues[0] = toZValue(P[0]);" 
+"        zValues[1] = toZValue(P[1]);" 
+"        zValues[2] = toZValue(P[2]);" 
+"        zValues[3] = toZValue(P[3]);" 
+"" 
+"        drawSegment(points, colors, zValues);" 
+"    }" 
+"" 
+"}" 
 }
-                            entity::Stroke {
-                              UniqueID 36 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 37 
-                                  Mode LINES_ADJACENCY 
-Count 4 
 }
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 38 
-                                  Binding BIND_PER_VERTEX 
-vector 4 {
-0.118343 -1.72526 0 
-0.0496459 -1.37127 0 
-0.043202 -1.00477 0 
--0.0262916 -0.65092 0 
+                                    osg::Shader {
+                                      UniqueID 38 
+                                      Type FRAGMENT 
+ShaderSource 11 {
+"#version 330" 
+"" 
+"in VertexData{" 
+"    vec2 mTexCoord;" 
+"    vec4 mColor;" 
+"} VertexIn;" 
+"" 
+"void main(void)" 
+"{" 
+"    gl_FragColor = VertexIn.mColor;" 
+"}" 
 }
 }
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
+                                  }
+GeometryVerticesOut GL_GEOMETRY_VERTICES_OUT_EXT 1 
+GeometryInputType GL_GEOMETRY_INPUT_TYPE_EXT 4 
+GeometryOutputType GL_GEOMETRY_OUTPUT_TYPE_EXT 5 
+FeedBackVaryingsName 0 {
+}
+FeedBackMode 35981 
+}
+                                Value OFF 
+}
+UniformList 10 {
+osg::Uniform {
                                   UniqueID 39 
-                                  Binding BIND_PER_VERTEX 
-vector 4 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
+                                  Name "CameraEye" 
+Type FLOAT_VEC4 
+NumElements 1 
+Elements TRUE ArrayID 11 FloatArray 4 {
+                                    0 3.8637 1.71583e-015 1 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 40 
+                                    }
+                                  }
 }
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 38 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 39 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 37 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 40 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
+                                Value OFF 
+osg::Uniform {
                                   UniqueID 41 
-                                  Mode LINES_ADJACENCY 
-Count 20 
+                                  Name "CanvasMatrix" 
+Type FLOAT_MAT4 
+NumElements 1 
+Elements TRUE ArrayID 12 FloatArray 16 {
+                                    -1.03473e-013 0 1 0 
+                                    0 1 0 0 
+                                    -1 0 -1.03473e-013 0 
+                                    0 0.6 0 1 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 42 
+                                    }
+                                  }
 }
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 42 
-                                  Binding BIND_PER_VERTEX 
-vector 20 {
-0.140389 -1.035 0 
-0.140177 -1.03504 0 
-0.110475 -1.04093 0 
-0.11026 -1.04095 0 
-0.11026 -1.04095 0 
-0.108554 -1.04116 0 
-0.0603225 -1.04471 0 
-0.0586063 -1.04479 0 
-0.0586063 -1.04479 0 
-0.0553198 -1.04495 0 
--0.00700292 -1.04664 0 
--0.0102853 -1.04687 0 
--0.0102853 -1.04687 0 
--0.0108086 -1.04691 0 
--0.0510828 -1.05248 0 
--0.0516049 -1.05253 0 
--0.0516049 -1.05253 0 
--0.0516049 -1.05253 0 
--0.096024 -1.05893 0 
--0.096024 -1.05893 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
+                                Value OFF 
+osg::Uniform {
                                   UniqueID 43 
-                                  Binding BIND_PER_VERTEX 
-vector 20 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 42 
+                                  Name "FogMax" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 13 FloatArray 1 {
+                                    30 
+                                  }
                                 }
-                                osg::Vec4Array {
-                                  UniqueID 43 
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 44 
+                                  Name "FogMin" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 14 FloatArray 1 {
+                                    4 
+                                  }
                                 }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 41 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 44 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
+                                Value OFF 
+osg::Uniform {
                                   UniqueID 45 
-                                  Mode LINES_ADJACENCY 
-Count 8 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
+                                  Name "IsFogged" 
+Type BOOL 
+NumElements 1 
+Elements TRUE ArrayID 15 IntArray 1 {
+                                    0 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
                                   UniqueID 46 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0.0418443 -1.95476 0 
-0.500969 -1.43854 0 
-0.0421132 -0.891251 0 
--0.046319 -0.459305 0 
--0.046319 -0.459305 0 
--0.0786098 -0.301581 0 
--0.0459473 0.0332696 0 
-0.149829 0.214309 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
+                                  Name "MiterLimit" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 16 FloatArray 1 {
+                                    0.75 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
                                   UniqueID 47 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
+                                  Name "ModelViewProjectionMatrix" 
+Type FLOAT_MAT4 
+NumElements 1 
+Elements TRUE ArrayID 17 FloatArray 16 {
+                                    2.40605e-013 3.73205 -1.3689e-015 -4.44089e-016 
+                                    0 -1.65736e-015 -3.0825 -1 
+                                    2.32529 -3.86166e-013 1.41644e-028 4.59511e-029 
+                                    0 -9.94418e-016 1.00362 3.2637 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 48 
+                                    }
+                                  }
 }
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 46 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 47 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 45 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 48 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
+                                Value OFF 
+osg::Uniform {
                                   UniqueID 49 
-                                  Mode LINES_ADJACENCY 
-Count 8 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
+                                  Name "Segments" 
+Type INT 
+NumElements 1 
+Elements TRUE ArrayID 18 IntArray 1 {
+                                    11 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
                                   UniqueID 50 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0.121848 -0.343527 0 
-0.116435 -0.34334 0 
-0.0753684 -0.337198 0 
-0.0700593 -0.336126 0 
-0.0700593 -0.336126 0 
-0.0483131 -0.331734 0 
--0.0824186 -0.294814 0 
--0.104175 -0.299156 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
+                                  Name "Thickness" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 19 FloatArray 1 {
+                                    4 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
                                   UniqueID 51 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
+                                  Name "Viewport" 
+Type FLOAT_VEC2 
+NumElements 1 
+Elements TRUE ArrayID 20 FloatArray 2 {
+                                    2836 1767 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 52 
+                                    }
+                                  }
 }
+                                Value OFF 
 }
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 50 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 51 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 49 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 52 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 53 
-                                  Mode LINES_ADJACENCY 
-Count 8 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 54 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0.164444 -0.245545 0 
-0.123276 -0.240851 0 
-0.025879 -0.167137 0 
--0.0119937 -0.15033 0 
--0.0119937 -0.15033 0 
--0.0119937 -0.15033 0 
--0.0804655 -0.132007 0 
--0.0804655 -0.132007 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 55 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 54 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 55 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 53 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 56 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 57 
-                                  Mode LINES_ADJACENCY 
-Count 8 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 58 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
--0.0124839 -0.533996 0 
--0.0035305 -0.352916 0 
-0.017749 -0.218269 0 
-0.0869441 -0.0207375 0 
-0.0869441 -0.0207375 0 
-0.102153 0.0226799 0 
-0.107917 0.106558 0 
-0.136339 0.146358 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 59 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 58 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 59 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 57 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 60 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 61 
-                                  Mode LINES_ADJACENCY 
-Count 8 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 62 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0.191286 -0.0897914 0 
-0.183679 -0.0912413 0 
-0.154421 -0.0768682 0 
-0.147253 -0.0739372 0 
-0.147253 -0.0739372 0 
-0.119497 -0.0625883 0 
-0.0412979 -0.000979781 0 
-0.0118047 -0.00639361 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 63 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 62 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 63 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 61 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
 }
                           }
 }
                         osg::Geode {
-                          UniqueID 64 
+                          UniqueID 53 
                         }
                       }
 }
@@ -933,7 +1030,7 @@ Matrix {
                 -1.03473e-013 0 1 0 
                 0 1 0 0 
                 -1 0 -1.03473e-013 0 
-                -0.421853 0.6 -4.36503e-014 1 
+                0 0.6 0 1 
               }
               
 }
@@ -949,191 +1046,511 @@ MatrixTranslation {
             1 0 0 0 
             0 1 0 0 
             0 0 1 0 
-            -0.421853 0.6 -4.36503e-014 1 
+            0 0.6 0 1 
           }
           
 Transform TRUE {
 osg::MatrixTransform {
-              UniqueID 20 
+              UniqueID 30 
             }
           }
 Switch TRUE {
 osg::Switch {
-              UniqueID 21 
+              UniqueID 31 
             }
           }
 GroupData TRUE {
 osg::Group {
-              UniqueID 22 
+              UniqueID 32 
             }
           }
 GeodeStrokes TRUE {
 osg::Geode {
-              UniqueID 23 
+              UniqueID 33 
             }
           }
 GeodePhotos TRUE {
 osg::Geode {
-              UniqueID 64 
+              UniqueID 53 
             }
           }
-Center -0.421853 0.6 -4.36503e-014 
+Center 0 0.6 0 
 Normal -1 0 -1.03473e-013 
 }
         entity::Canvas {
-          UniqueID 65 
+          UniqueID 54 
           Name "Canvas2" 
 Children 1 {
 osg::MatrixTransform {
-              UniqueID 66 
+              UniqueID 55 
               Name "Transform" 
 Children 1 {
 osg::Switch {
-                  UniqueID 67 
+                  UniqueID 56 
                   Name "Switch" 
 Children 1 {
 osg::Group {
-                      UniqueID 68 
+                      UniqueID 57 
                       NodeMask 0x10 
 Children 2 {
 osg::Geode {
-                          UniqueID 69 
-                          Drawables 10 {
+                          UniqueID 58 
+                          StateSet TRUE {
+osg::StateSet {
+                              UniqueID 59 
+                              AttributeList 1 {
+osg::Program {
+                                  UniqueID 60 
+                                  Name "ProgramStroke" 
+Shaders 3 {
+osg::Shader {
+                                      UniqueID 61 
+                                      Type VERTEX 
+ShaderSource 19 {
+"#version 330" 
+"" 
+"uniform mat4 ModelViewProjectionMatrix;" 
+"uniform mat4 CanvasMatrix;" 
+"" 
+"layout(location = 0) in vec4 Vertex;" 
+"layout(location = 1) in vec4 Color;" 
+"" 
+"out VertexData{" 
+"    vec4 mColor;" 
+"    vec4 mVertex; // to calculate distance to camera eye" 
+"} VertexOut;" 
+"" 
+"void main(void)" 
+"{" 
+"    VertexOut.mColor = Color;" 
+"    VertexOut.mVertex = CanvasMatrix * Vertex;" 
+"    gl_Position = ModelViewProjectionMatrix * Vertex;" 
+"}" 
+}
+}
+                                    osg::Shader {
+                                      UniqueID 62 
+                                      Type GEOMETRY 
+ShaderSource 258 {
+"#version 330" 
+"" 
+"uniform float Thickness;" 
+"uniform vec2 Viewport;" 
+"uniform float MiterLimit;" 
+"uniform int Segments;" 
+"uniform bool IsFogged;" 
+"uniform float FogMin;" 
+"uniform float FogMax;" 
+"uniform vec4 CameraEye;" 
+"" 
+"const int SegmentsMax = 30; // max_vertices = (SegmentsMax+1)*4;" 
+"const int SegmentsMin = 3; // min number of segments per curve" 
+"" 
+"layout(lines_adjacency) in;" 
+"layout(triangle_strip, max_vertices = 124) out;" 
+"" 
+"in VertexData{" 
+"    vec4 mColor;" 
+"    vec4 mVertex;" 
+"} VertexIn[4];" 
+"" 
+"out VertexData{" 
+"    vec2 mTexCoord; // fix before usage" 
+"    vec4 mColor;" 
+"} VertexOut;" 
+"" 
+"vec2 toScreenSpace(vec4 vertex)" 
+"{" 
+"    return vec2( vertex.xy / vertex.w ) * Viewport;" 
+"}" 
+"" 
+"float toZValue(vec4 vertex)" 
+"{" 
+"    return vertex.z / vertex.w;" 
+"}" 
+"" 
+"vec2 toBezier(float delta, int i, vec2 b0, vec2 b1, vec2 b2, vec2 b3)" 
+"{" 
+"    float t = delta * float(i);" 
+"    float t2 = t * t;" 
+"    float one_minus_t = 1.0 - t;" 
+"    float one_minus_t2 = one_minus_t * one_minus_t;" 
+"    return (b0 * one_minus_t2 * one_minus_t + b1 * 3.0 * t * one_minus_t2 + b2 * 3.0 * t2 * one_minus_t + b3 * t2 * t);" 
+"}" 
+"" 
+"vec4 toBezier3D(float delta, int i, vec4 B0, vec4 B1, vec4 B2, vec4 B3)" 
+"{" 
+"    float t = delta * float(i);" 
+"    float t2 = t * t;" 
+"    float one_minus_t = 1.0 - t;" 
+"    float one_minus_t2 = one_minus_t * one_minus_t;" 
+"    return (B0 * one_minus_t2 * one_minus_t + B1 * 3.0 * t * one_minus_t2 + B2 * 3.0 * t2 * one_minus_t + B3 * t2 * t);" 
+"}" 
+"" 
+"float getFogFactor(float d)" 
+"{" 
+"    if (d>=FogMax) return 0;" 
+"    if (d<=FogMin) return 1;" 
+"" 
+"    return (FogMax - d) / (FogMax - FogMin);" 
+"}" 
+"" 
+"void drawSegment(vec2 points[4], vec4 colors[4], float zValues[4])" 
+"{" 
+"    vec2 p0 = points[0];" 
+"    vec2 p1 = points[1];" 
+"    vec2 p2 = points[2];" 
+"    vec2 p3 = points[3];" 
+"" 
+"    /* perform naive culling */" 
+"    vec2 area = Viewport * 4;" 
+"    if( p1.x < -area.x || p1.x > area.x ) return;" 
+"    if( p1.y < -area.y || p1.y > area.y ) return;" 
+"    if( p2.x < -area.x || p2.x > area.x ) return;" 
+"    if( p2.y < -area.y || p2.y > area.y ) return;" 
+"" 
+"    /* determine the direction of each of the 3 segments (previous, current, next) */" 
+"    vec2 v0 = normalize( p1 - p0 );" 
+"    vec2 v1 = normalize( p2 - p1 );" 
+"    vec2 v2 = normalize( p3 - p2 );" 
+"" 
+"    /* determine the normal of each of the 3 segments (previous, current, next) */" 
+"    vec2 n0 = vec2( -v0.y, v0.x );" 
+"    vec2 n1 = vec2( -v1.y, v1.x );" 
+"    vec2 n2 = vec2( -v2.y, v2.x );" 
+"" 
+"    /* determine miter lines by averaging the normals of the 2 segments */" 
+"    vec2 miter_a = normalize( n0 + n1 );	// miter at start of current segment" 
+"    vec2 miter_b = normalize( n1 + n2 ); // miter at end of current segment" 
+"" 
+"    /* determine the length of the miter by projecting it onto normal and then inverse it */" 
+"    float an1 = dot(miter_a, n1);" 
+"    float bn1 = dot(miter_b, n2);" 
+"    if (an1==0) an1 = 1;" 
+"    if (bn1==0) bn1 = 1;" 
+"    float length_a = Thickness / an1;" 
+"    float length_b = Thickness / bn1;" 
+"" 
+"    /* prevent excessively long miters at sharp corners */" 
+"    if( dot( v0, v1 ) < -MiterLimit ) {" 
+"        miter_a = n1;" 
+"        length_a = Thickness;" 
+"" 
+"        /* close the gap */" 
+"        if( dot( v0, n1 ) > 0 ) {" 
+"            VertexOut.mTexCoord = vec2( 0, 0 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 + Thickness * n0 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 0 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 + Thickness * n1 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 0.5 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( p1 / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            EndPrimitive();" 
+"        }" 
+"        else {" 
+"            VertexOut.mTexCoord = vec2( 0, 1 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 - Thickness * n1 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 1 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( ( p1 - Thickness * n0 ) / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            VertexOut.mTexCoord = vec2( 0, 0.5 );" 
+"            VertexOut.mColor = colors[1];" 
+"            gl_Position = vec4( p1 / Viewport, zValues[1], 1.0 );" 
+"            EmitVertex();" 
+"" 
+"            EndPrimitive();" 
+"        }" 
+"    }" 
+"    if( dot( v1, v2 ) < -MiterLimit ) {" 
+"        miter_b = n1;" 
+"        length_b = Thickness;" 
+"    }" 
+"    // generate the triangle strip" 
+"    VertexOut.mTexCoord = vec2( 0, 0 );" 
+"    VertexOut.mColor = colors[1];" 
+"    gl_Position = vec4( ( p1 + length_a * miter_a ) / Viewport, zValues[1], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    VertexOut.mTexCoord = vec2( 0, 1 );" 
+"    VertexOut.mColor = colors[1];" 
+"    gl_Position = vec4( ( p1 - length_a * miter_a ) / Viewport, zValues[1], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    VertexOut.mTexCoord = vec2( 0, 0 );" 
+"    VertexOut.mColor = colors[2];" 
+"    gl_Position = vec4( ( p2 + length_b * miter_b ) / Viewport, zValues[2], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    VertexOut.mTexCoord = vec2( 0, 1 );" 
+"    VertexOut.mColor = colors[2];" 
+"    gl_Position = vec4( ( p2 - length_b * miter_b ) / Viewport, zValues[2], 1.0 );" 
+"    EmitVertex();" 
+"" 
+"    EndPrimitive();" 
+"}" 
+"" 
+"void main(void)" 
+"{" 
+"    /* cut segments number if larger than allowed */" 
+"    int nSegments = (Segments > SegmentsMax)? SegmentsMax : Segments;" 
+"    nSegments = (nSegments < SegmentsMin)? SegmentsMin: nSegments;" 
+"" 
+"    /* read the input */" 
+"    vec4 B[4], V[4], C[4];" 
+"    for (int i=0; i<4; ++i){" 
+"        B[i] = gl_in[i].gl_Position; // bezier points" 
+"        V[i] = VertexIn[i].mVertex; // vertex format" 
+"        C[i] = VertexIn[i].mColor; // attached colors" 
+"    }" 
+"" 
+"    /* adjust alpha channels wrt camera eye distance */" 
+"    if (IsFogged){" 
+"        for (int i=0; i<4; ++i){" 
+"            float d = distance(CameraEye, V[0]);" 
+"            float alpha = getFogFactor(d);" 
+"            C[i] = vec4(C[i].rgb, alpha);" 
+"        }" 
+"    }" 
+"" 
+"    /* get the 2d bezier control points */" 
+"    vec2 b0 = toScreenSpace( B[0] );" 
+"    vec2 b1 = toScreenSpace( B[1] );" 
+"    vec2 b2 = toScreenSpace( B[2] );" 
+"    vec2 b3 = toScreenSpace( B[3] );" 
+"" 
+"    /* use the points to build a bezier line */" 
+"    float delta = 1.0 / float(nSegments);" 
+"    vec4 P[4]; // interpolated 3D points of Bezier" 
+"    vec2 points[4]; // interpolated 2D points of Bezier" 
+"    vec4 colors[4]; // interpolated colors" 
+"    float zValues[4]; // stroke z-values" 
+"     int j = 0; // bezier segment index for color interpolation" 
+"    for (int i=0; i<=nSegments; ++i){" 
+"        /* first point */" 
+"        if (i==0){" 
+"            P[1] = toBezier3D(delta, i, B[0], B[1], B[2], B[3]);" 
+"            P[2] = toBezier3D(delta, i+1, B[0], B[1], B[2], B[3]);" 
+"            P[3] = toBezier3D(delta, i+2, B[0], B[1], B[2], B[3]);" 
+"            vec4 D = normalize(P[2] - P[1]);" 
+"            P[0] = P[1] + D * 0.01;" 
+"        }" 
+"        else if (i < nSegments-1){" 
+"            P[0] = P[1];" 
+"            P[1] = P[2];" 
+"            P[2] = P[3];" 
+"            P[3] = toBezier3D(delta, i+2, B[0], B[1], B[2], B[3]);" 
+"        }" 
+"        /* last point */" 
+"        else {" 
+"            P[0] = P[1];" 
+"            P[1] = P[2];" 
+"            P[2] = P[3];" 
+"            vec4 D = normalize(P[2] - P[1]);" 
+"            P[3] = P[2] + D * 0.01;" 
+"        }" 
+"" 
+"        {" 
+"            if (i==0) colors[1] = C[0];" 
+"            else colors[1] = colors[2];" 
+"" 
+"            /* fraction p{i} is located between fraction p{j} and p{j+1} */" 
+"            float pi = float(i+1) / float(nSegments);" 
+"            if (pi >= float(j+1)/3.f) j++;" 
+"            float pj = float(j)/3.f; // 4 bezier points means 3 segments between which points are plotted" 
+"            float pj1 = float(j+1)/3.f;" 
+"            float a = (pi-pj) / (pj1-pj);" 
+"            colors[2] = mix(C[j], C[j+1], a); // j <= 3" 
+"        }" 
+"" 
+"        /* stroke z-values */" 
+"        points[0] = toScreenSpace(P[0]);" 
+"        points[1] = toScreenSpace(P[1]);" 
+"        points[2] = toScreenSpace(P[2]);" 
+"        points[3] = toScreenSpace(P[3]);" 
+"" 
+"        zValues[0] = toZValue(P[0]);" 
+"        zValues[1] = toZValue(P[1]);" 
+"        zValues[2] = toZValue(P[2]);" 
+"        zValues[3] = toZValue(P[3]);" 
+"" 
+"        drawSegment(points, colors, zValues);" 
+"    }" 
+"" 
+"}" 
+}
+}
+                                    osg::Shader {
+                                      UniqueID 63 
+                                      Type FRAGMENT 
+ShaderSource 11 {
+"#version 330" 
+"" 
+"in VertexData{" 
+"    vec2 mTexCoord;" 
+"    vec4 mColor;" 
+"} VertexIn;" 
+"" 
+"void main(void)" 
+"{" 
+"    gl_FragColor = VertexIn.mColor;" 
+"}" 
+}
+}
+                                  }
+GeometryVerticesOut GL_GEOMETRY_VERTICES_OUT_EXT 1 
+GeometryInputType GL_GEOMETRY_INPUT_TYPE_EXT 4 
+GeometryOutputType GL_GEOMETRY_OUTPUT_TYPE_EXT 5 
+FeedBackVaryingsName 0 {
+}
+FeedBackMode 35981 
+}
+                                Value OFF 
+}
+UniformList 10 {
+osg::Uniform {
+                                  UniqueID 64 
+                                  Name "CameraEye" 
+Type FLOAT_VEC4 
+NumElements 1 
+Elements TRUE ArrayID 21 FloatArray 4 {
+                                    0 3.8637 1.71583e-015 1 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 65 
+                                    }
+                                  }
+}
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 66 
+                                  Name "CanvasMatrix" 
+Type FLOAT_MAT4 
+NumElements 1 
+Elements TRUE ArrayID 22 FloatArray 16 {
+                                    1 0 0 0 
+                                    0 -1.03473e-013 1 0 
+                                    0 -1 -1.03473e-013 0 
+                                    0 0 0 1 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 67 
+                                    }
+                                  }
+}
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 68 
+                                  Name "FogMax" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 23 FloatArray 1 {
+                                    30 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 69 
+                                  Name "FogMin" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 24 FloatArray 1 {
+                                    4 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 70 
+                                  Name "IsFogged" 
+Type BOOL 
+NumElements 1 
+Elements TRUE ArrayID 25 IntArray 1 {
+                                    0 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 71 
+                                  Name "MiterLimit" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 26 FloatArray 1 {
+                                    0.75 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 72 
+                                  Name "ModelViewProjectionMatrix" 
+Type FLOAT_MAT4 
+NumElements 1 
+Elements TRUE ArrayID 27 FloatArray 16 {
+                                    -2.32529 0 0 0 
+                                    0 3.73205 3.17586e-013 1.03029e-013 
+                                    0 -3.84508e-013 3.0825 1 
+                                    0 0 2.85312 3.8637 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 73 
+                                    }
+                                  }
+}
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 74 
+                                  Name "Segments" 
+Type INT 
+NumElements 1 
+Elements TRUE ArrayID 28 IntArray 1 {
+                                    11 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 75 
+                                  Name "Thickness" 
+Type FLOAT 
+NumElements 1 
+Elements TRUE ArrayID 29 FloatArray 1 {
+                                    4 
+                                  }
+                                }
+                                Value OFF 
+osg::Uniform {
+                                  UniqueID 76 
+                                  Name "Viewport" 
+Type FLOAT_VEC2 
+NumElements 1 
+Elements TRUE ArrayID 30 FloatArray 2 {
+                                    2836 1767 
+                                  }
+                                  UpdateCallback TRUE {
+osg::UniformCallback {
+                                      UniqueID 77 
+                                    }
+                                  }
+}
+                                Value OFF 
+}
+}
+                          }
+Drawables 2 {
 entity::Stroke {
-                              UniqueID 70 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 71 
-                                  Mode LINES_ADJACENCY 
-Count 8 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 72 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0.898307 -0.183405 0 
-0.469297 0.358105 0 
--0.149119 0.000849124 0 
--0.58985 -0.0115219 0 
--0.58985 -0.0115219 0 
--0.750782 -0.0160392 0 
--1.07493 0.0740607 0 
--1.21937 0.298205 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 73 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 72 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 73 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 71 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 74 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 75 
-                                  Mode LINES_ADJACENCY 
-Count 16 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 76 
-                                  Binding BIND_PER_VERTEX 
-vector 16 {
--1.2039 0.298718 0 
--1.09237 0.302414 0 
--0.979181 0.334644 0 
--0.867939 0.301616 0 
--0.867939 0.301616 0 
--0.678706 0.245431 0 
--0.484566 0.00201448 0 
--0.302554 -0.102118 0 
--0.302554 -0.102118 0 
--0.145708 -0.191853 0 
-0.0460442 -0.195552 0 
-0.207711 -0.206444 0 
-0.207711 -0.206444 0 
-0.315249 -0.21369 0 
-0.793249 -0.0825047 0 
-0.893743 -0.171052 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 77 
-                                  Binding BIND_PER_VERTEX 
-vector 16 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 76 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 77 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 75 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
                               UniqueID 78 
                               Name "Stroke" 
 DataVariance DYNAMIC 
@@ -1141,42 +1558,30 @@ PrimitiveSetList 1 {
 osg::DrawArrays {
                                   UniqueID 79 
                                   Mode LINES_ADJACENCY 
-Count 28 
+Count 16 
 }
                               }
 VertexArray TRUE {
 osg::Vec3Array {
                                   UniqueID 80 
                                   Binding BIND_PER_VERTEX 
-vector 28 {
-0.349995 0.0881345 0 
-0.349992 0.0879177 0 
-0.349347 0.0453943 0 
-0.349344 0.0451775 0 
-0.349344 0.0451775 0 
-0.349344 0.045148 0 
-0.34926 0.0124927 0 
-0.349256 0.0124636 0 
-0.349256 0.0124636 0 
-0.348348 0.00634006 0 
-0.331713 -0.0745828 0 
-0.330685 -0.0806873 0 
-0.330685 -0.0806873 0 
-0.330521 -0.0816603 0 
-0.327766 -0.114402 0 
-0.327724 -0.115388 0 
-0.327724 -0.115388 0 
-0.327724 -0.115388 0 
-0.327725 -0.150168 0 
-0.327725 -0.150168 0 
-0.327725 -0.150168 0 
-0.327683 -0.151159 0 
-0.324862 -0.184135 0 
-0.324749 -0.185121 0 
-0.324749 -0.185121 0 
-0.324398 -0.188178 0 
-0.315261 -0.249312 0 
-0.315519 -0.252378 0 
+vector 16 {
+0.608159 -0.272441 0 
+0.631559 -0.237342 0 
+0.498738 0.0721855 0 
+0.481606 0.110734 0 
+0.481606 0.110734 0 
+0.449384 0.183233 0 
+0.273632 0.227212 0 
+0.257794 0.231428 0 
+0.257794 0.231428 0 
+0.022897 0.293966 0 
+-0.24143 0.114673 0 
+-0.481606 0.151747 0 
+-0.481606 0.151747 0 
+-0.61625 0.172531 0 
+-0.814618 0.339233 0 
+-0.953837 0.339233 0 
 }
 }
                               }
@@ -1184,19 +1589,7 @@ ColorArray TRUE {
 osg::Vec4Array {
                                   UniqueID 81 
                                   Binding BIND_PER_VERTEX 
-vector 28 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
+vector 16 {
 0 0.168627 0.211765 1 
 0 0.168627 0.211765 1 
 0 0.168627 0.211765 1 
@@ -1248,34 +1641,34 @@ osg::Vec3Array {
                                   UniqueID 84 
                                   Binding BIND_PER_VERTEX 
 vector 28 {
-0.21839 0.0850189 0 
-0.2184 0.0849015 0 
-0.218742 0.0807331 0 
-0.218744 0.0806154 0 
-0.218744 0.0806154 0 
-0.218744 0.0805648 0 
-0.218901 0.0423417 0 
-0.218895 0.0422915 0 
-0.218895 0.0422915 0 
-0.218528 0.0388956 0 
-0.20958 -0.00945248 0 
-0.208648 -0.0127386 0 
-0.208648 -0.0127386 0 
-0.208648 -0.0127386 0 
-0.183507 -0.0847722 0 
-0.183507 -0.0847722 0 
-0.183507 -0.0847722 0 
-0.183494 -0.0849003 0 
-0.183905 -0.108606 0 
-0.183893 -0.108734 0 
-0.183893 -0.108734 0 
-0.18376 -0.110183 0 
-0.179712 -0.12688 0 
-0.179526 -0.128324 0 
-0.179526 -0.128324 0 
-0.179344 -0.129743 0 
-0.183707 -0.182618 0 
-0.183817 -0.184044 0 
+-0.434734 0.557186 0 
+-0.434734 0.557186 0 
+-0.489808 0.413056 0 
+-0.489808 0.413056 0 
+-0.489808 0.413056 0 
+-0.511963 0.365636 0 
+-0.627709 0.144224 0 
+-0.646828 0.0955009 0 
+-0.646828 0.0955009 0 
+-0.649967 0.0875016 0 
+-0.671155 0.0125708 0 
+-0.672607 0.00410126 0 
+-0.672607 0.00410126 0 
+-0.672937 0.00217638 0 
+-0.678366 -0.057225 0 
+-0.678466 -0.0591754 0 
+-0.678466 -0.0591754 0 
+-0.678466 -0.0591754 0 
+-0.678466 -0.109562 0 
+-0.678466 -0.109562 0 
+-0.678466 -0.109562 0 
+-0.678466 -0.109562 0 
+-0.650343 -0.19979 0 
+-0.650343 -0.19979 0 
+-0.650343 -0.19979 0 
+-0.26186 -0.827976 0 
+0.0902156 -0.720065 0 
+0.476918 -0.720065 0 
 }
 }
                               }
@@ -1331,380 +1724,10 @@ osg::DrawArrays {
 Color 0 0.168627 0.211765 1 
 IsCurved TRUE 
 }
-                            entity::Stroke {
-                              UniqueID 86 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 87 
-                                  Mode LINES_ADJACENCY 
-Count 20 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 88 
-                                  Binding BIND_PER_VERTEX 
-vector 20 {
-0.00946715 0.0727743 0 
-0.00947173 0.072558 0 
-0.010128 0.0422856 0 
-0.0101161 0.0420696 0 
-0.0101161 0.0420696 0 
-0.0100221 0.0403539 0 
-0.00517515 -0.00776458 0 
-0.00496122 -0.00946951 0 
-0.00496122 -0.00946951 0 
-0.00455156 -0.0127343 0 
--0.00456922 -0.0744091 0 
--0.00491008 -0.0776818 0 
--0.00491008 -0.0776818 0 
--0.00496443 -0.0782036 0 
--0.00644388 -0.118835 0 
--0.00648391 -0.119358 0 
--0.00648391 -0.119358 0 
--0.00648391 -0.119358 0 
--0.00786707 -0.164214 0 
--0.00786707 -0.164214 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 89 
-                                  Binding BIND_PER_VERTEX 
-vector 20 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 88 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 89 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 87 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 90 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 91 
-                                  Mode LINES_ADJACENCY 
-Count 4 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 92 
-                                  Binding BIND_PER_VERTEX 
-vector 4 {
-0.685498 -0.0683557 0 
-0.324968 -0.0747765 0 
--0.037125 -0.0177171 0 
--0.39766 -0.0249464 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 93 
-                                  Binding BIND_PER_VERTEX 
-vector 4 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 92 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 93 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 91 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 94 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 95 
-                                  Mode LINES_ADJACENCY 
-Count 8 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 96 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
--0.674789 0.174139 0 
--0.67591 0.16884 0 
--0.689063 0.129455 0 
--0.691038 0.124412 0 
--0.691038 0.124412 0 
--0.699125 0.103753 0 
--0.758106 -0.0186199 0 
--0.757594 -0.0407993 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 97 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 96 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 97 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 95 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 98 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 99 
-                                  Mode LINES_ADJACENCY 
-Count 8 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 100 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
--0.763924 0.233044 0 
--0.775669 0.193309 0 
--0.865122 0.110133 0 
--0.888228 0.0757391 0 
--0.888228 0.0757391 0 
--0.888228 0.0757391 0 
--0.91812 0.0114696 0 
--0.91812 0.0114696 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 101 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 100 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 101 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 99 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 102 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 103 
-                                  Mode LINES_ADJACENCY 
-Count 8 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 104 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
--0.912686 0.286427 0 
--0.912574 0.278684 0 
--0.931792 0.252353 0 
--0.935919 0.2458 0 
--0.935919 0.2458 0 
--0.951899 0.220427 0 
--1.02611 0.154065 0 
--1.02588 0.12408 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 105 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 104 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 105 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 103 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
-                            entity::Stroke {
-                              UniqueID 106 
-                              Name "Stroke" 
-DataVariance DYNAMIC 
-PrimitiveSetList 1 {
-osg::DrawArrays {
-                                  UniqueID 107 
-                                  Mode LINES_ADJACENCY 
-Count 8 
-}
-                              }
-VertexArray TRUE {
-osg::Vec3Array {
-                                  UniqueID 108 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
--0.510432 0.0088813 0 
--0.687232 0.0490268 0 
--0.816168 0.0932797 0 
--0.99875 0.195605 0 
--0.99875 0.195605 0 
--1.03888 0.218096 0 
--1.1205 0.238284 0 
--1.15478 0.273162 0 
-}
-}
-                              }
-ColorArray TRUE {
-osg::Vec4Array {
-                                  UniqueID 109 
-                                  Binding BIND_PER_VERTEX 
-vector 8 {
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-0 0.168627 0.211765 1 
-}
-}
-                              }
-VertexAttribArrayList 2 {
-osg::Vec3Array {
-                                  UniqueID 108 
-                                }
-                                osg::Vec4Array {
-                                  UniqueID 109 
-                                }
-                              }
-Lines TRUE {
-osg::DrawArrays {
-                                  UniqueID 107 
-                                }
-                              }
-Color 0 0.168627 0.211765 1 
-IsCurved TRUE 
-}
                           }
 }
                         osg::Geode {
-                          UniqueID 110 
+                          UniqueID 86 
                         }
                       }
 }
@@ -1732,27 +1755,27 @@ MatrixRotation {
           
 Transform TRUE {
 osg::MatrixTransform {
-              UniqueID 66 
+              UniqueID 55 
             }
           }
 Switch TRUE {
 osg::Switch {
-              UniqueID 67 
+              UniqueID 56 
             }
           }
 GroupData TRUE {
 osg::Group {
-              UniqueID 68 
+              UniqueID 57 
             }
           }
 GeodeStrokes TRUE {
 osg::Geode {
-              UniqueID 69 
+              UniqueID 58 
             }
           }
 GeodePhotos TRUE {
 osg::Geode {
-              UniqueID 110 
+              UniqueID 86 
             }
           }
 Normal 0 -1 -1.03473e-013 
@@ -1762,7 +1785,7 @@ Normal 0 -1 -1.03473e-013
   }
 GroupCanvases TRUE {
 osg::Group {
-      UniqueID 4 
+      UniqueID 3 
     }
   }
 Bookmarks TRUE {
@@ -1771,7 +1794,5 @@ entity::Bookmarks {
     }
   }
 IdCanvas 3 
-IdPhoto 1 
-IdBookmark 1 
 FilePath "C:/cygwin64/home/vr267/github/cherish/samples/test-local.osgt" 
 }

@@ -22,10 +22,6 @@ EventHandler::EventHandler(GLWidget *widget, RootScene* scene, cher::MOUSE_MODE 
 {
 }
 
-// handle() has to be re-defined, for more info, check
-// OpenSceneGraph beginner's guide or
-// OpenSceneGraph 3.0 Cookbook
-// and search for custom event handler examples
 bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     /* if it's mouse navigation mode, don't process event
@@ -50,6 +46,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             break;
         case cher::PEN_DELETE:
             this->doDeleteEntity(ea, aa);
+            break;
+        case cher::PEN_POLYGON:
+            this->doSketchPolygon(ea, aa);
             break;
         default:
             break;
@@ -126,9 +125,11 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
 
 void EventHandler::setMode(cher::MOUSE_MODE mode)
 {
+    entity::Canvas* cnv = m_scene->getCanvasCurrent();
+    if (cnv) this->finishAll();
     m_mode = mode;
 
-    entity::Canvas* cnv = m_scene->getCanvasCurrent();
+
 
     // TODO: move the below content to GLWidget's function
     switch (m_mode){
@@ -141,9 +142,11 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     case cher::PEN_ERASE:
     case cher::PEN_DELETE:
     case cher::SELECT_ENTITY:
+        /* if mode is only for current canvas, disable all other canvases from usage */
         m_scene->setCanvasesButCurrent(false);
         break;
     default:
+        /* if selection within 3D, enable all the canvases for selection */
         m_scene->setCanvasesButCurrent(true);
         break;
     }
@@ -214,6 +217,42 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
     }
 }
 
+void EventHandler::doSketchPolygon(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::MOVE)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK)
+           ))
+        return;
+
+    double u=0, v=0;
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        /* new point for a polygon */
+        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+            return;
+        m_scene->addPolygon(u,v, cher::EVENT_PRESSED);
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+            return;
+        m_scene->addPolygon(u,v, cher::EVENT_RELEASED);
+        break;
+    case osgGA::GUIEventAdapter::MOVE:
+        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+            return;
+        m_scene->addPolygon(u,v, cher::EVENT_DRAGGED);
+        break;
+    case osgGA::GUIEventAdapter::DOUBLECLICK:
+        /* close the polygon */
+        m_scene->addPolygon(0,0, cher::EVENT_OFF);
+        break;
+    default:
+        break;
+    }
+}
+
 /* Deletes an entity within a current canvas - stroke or image.
  * If it's left mouse drag-and-drop, then it searches for strokes to delete;
  * If it's right mouse release, then it searches for images to delete.
@@ -228,14 +267,15 @@ void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         return;
 
     if (ea.getEventType()==osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON){
-        qDebug("searching for photo to delete");
-        osgUtil::LineSegmentIntersector::Intersection result_photo;
-        bool inter_photo = this->getIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
-                (ea,aa,cher::MASK_CANVAS_IN, result_photo);
-        if (!inter_photo) return;
-        entity::Photo* photo = this->getPhoto(result_photo);
-        if (!photo) return;
-        m_scene->editPhotoDelete(photo, m_scene->getCanvasCurrent());
+        qDebug("searching for photo or polygon to delete");
+        osgUtil::LineSegmentIntersector::Intersection result_geom;
+        bool inter_geom = this->getIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
+                (ea,aa,cher::MASK_CANVAS_IN, result_geom);
+        if (!inter_geom) return;
+        entity::Photo* photo = this->getPhoto(result_geom);
+        if (photo) m_scene->editPhotoDelete(photo, m_scene->getCanvasCurrent());
+        entity::Polygon* polygon = this->getPolygon(result_geom);
+        if (polygon) m_scene->editPolygonDelete(polygon, m_scene->getCanvasCurrent());
     }
     else{
         /* see if there is a stroke */
@@ -603,6 +643,11 @@ entity::Photo *EventHandler::getPhoto(const osgUtil::LineSegmentIntersector::Int
     return dynamic_cast<entity::Photo*>(result.drawable.get());
 }
 
+entity::Polygon *EventHandler::getPolygon(const osgUtil::LineSegmentIntersector::Intersection &result)
+{
+    return dynamic_cast<entity::Polygon*>(result.drawable.get());
+}
+
 template <typename T>
 cher::MOUSE_MODE EventHandler::getMouseMode(const T &result, cher::MOUSE_MODE mode_default) const
 {
@@ -784,10 +829,16 @@ void EventHandler::setDrawableColorFromMode(osg::Drawable *draw)
  */
 void EventHandler::finishAll()
 {
+    if (!m_scene.get()) return;
+    if (!m_scene->getUserScene()) return;
+    if (!m_scene->getUserScene()->isEntityCurrent()) return;
     switch (m_mode)
     {
     case cher::PEN_SKETCH:
         m_scene->addStroke(0,0, cher::EVENT_OFF);
+        break;
+    case cher::PEN_POLYGON:
+        m_scene->addPolygon(0,0, cher::EVENT_OFF);
         break;
     case cher::CANVAS_OFFSET:
         m_scene->editCanvasOffset(osg::Vec3f(0,0,0), cher::EVENT_OFF);

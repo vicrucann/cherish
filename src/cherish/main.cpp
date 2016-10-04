@@ -11,6 +11,7 @@
 
 #include "CherishApplication.h"
 #include "MainWindow.h"
+#include "CMainWindow.h"
 #include "Settings.h"
 #include "Data.h"
 

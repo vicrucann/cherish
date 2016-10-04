@@ -59,6 +59,7 @@ enum ENTITY_TYPE
 {
     ENTITY_STROKE
     , ENTITY_PHOTO
+    , ENTITY_POLYGON
 };
 
 enum APPMODE{
@@ -75,6 +76,7 @@ enum MOUSE_MODE
     PEN_SKETCH,
     PEN_ERASE,
     PEN_DELETE,
+    PEN_POLYGON,
 
     MOUSE_SELECT = 0x100,
     SELECT_ENTITY = 0x110,
@@ -146,8 +148,14 @@ const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
 const float STROKE_MINL = 0.05f;
 const float STROKE_LINE_WIDTH = 4.f;
 const int STROKE_SEGMENTS_NUMBER = 11;
-const float STROKE_FOG_MIN = 8.f;
-const float STROKE_FOG_MAX = 70.f;
+const float STROKE_FOG_MIN = 4.f;
+const float STROKE_FOG_MAX = 30.f;
+
+const float POLYGON_LINE_WIDTH = 4.f;
+const osg::Vec4f POLYGON_CLR_PHANTOM = solarized::base1;
+const osg::Vec4f POLYGON_CLR_NORMALFILL = solarized::base2;
+const osg::Vec4f POLYGON_CLR_SELECTEDFILL = solarized::green;
+const float POLYGON_PROXIMITY_THRESHOLD = 0.1f;
 
 const osg::Vec4 PHOTO_CLR_SELECTED = solarized::red; // texture frame colors
 const osg::Vec4f PHOTO_CLR_REST = osg::Vec4f(1.f,1.f,1.f,1.0f); // white filter

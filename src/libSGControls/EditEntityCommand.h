@@ -21,6 +21,23 @@ class Bookmarks;
 
 namespace fur{
 
+/*! \class UndoCommand
+ * \brief Base virtual class for undo/redo commands.
+ */
+class UndoCommand : public QUndoCommand
+{
+public:
+    UndoCommand(entity::UserScene* scene, entity::Canvas* canvas,  QUndoCommand* parent = 0);
+
+    virtual void undo() = 0;
+    virtual void redo() = 0;
+
+protected:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_canvas;
+
+};
+
 /*! \class EditCanvasOffsetCommand
  * \brief QUndoCommand that performs offset of a canvas.
 */
@@ -101,6 +118,18 @@ protected:
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::ref_ptr<entity::Photo> m_photo;
     osg::observer_ptr<entity::Bookmarks> m_bookmarks;
+};
+
+class EditEntityDeleteCommand : public UndoCommand
+{
+public:
+    EditEntityDeleteCommand(entity::UserScene* scene, entity::Canvas* canvas, entity::Entity2D* entity);
+
+    void undo();
+    void redo();
+
+private:
+    osg::ref_ptr<entity::Entity2D> m_entity;
 };
 
 /*! \class EditStrokesPushCommand

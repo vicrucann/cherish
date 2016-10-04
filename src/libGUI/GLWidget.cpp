@@ -34,7 +34,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
 
     , m_traits(new osg::GraphicsContext::Traits)
     , m_graphicsWindow(new osgViewer::GraphicsWindowEmbedded(m_traits.get()))
-    , m_viewer(new osgViewer::Viewer)
+    , m_viewer(new Viewer)
     , m_RootScene(root)
     , m_TabletDevice(QTabletEvent::Stylus) // http://doc.qt.io/qt-5/qtabletevent.html#TabletDevice-enum
 
@@ -56,7 +56,8 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     osg::Camera* camera = new osg::Camera;
     camera->setViewport(0,0,this->width(), this->height());
     camera->setProjectionMatrixAsPerspective(30.f, ratio, 1.f, 1000.f);
-    camera->setViewMatrixAsLookAt(center-look*(radius*3.f), center, up);
+    osg::Vec3f eye = center-look*(radius*3.f);
+    camera->setViewMatrixAsLookAt(eye, center, up);
     camera->setGraphicsContext(m_graphicsWindow.get());
     camera->setClearColor(cher::BACKGROUND_CLR);
     camera->setName("Camera");
@@ -64,6 +65,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     /* manipulator settings */
     m_manipulator->setAllowThrow(false);
     m_manipulator->getTransformation(m_eye, m_center, m_up);
+    m_manipulator->setHomePosition(eye,center,up);
 
     /* viewer settings */
     m_viewer->setCamera(camera);
@@ -266,10 +268,9 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
     default:
         break;
     }
-    if (event->modifiers() & Qt::ControlModifier){
+    if (event->modifiers() & Qt::ShiftModifier){
         if (cher::maskMouse & cher::MOUSE_SELECT)
             this->setMouseMode(cher::SELECT_CANVAS);
-        qDebug("Qt ctrl ON");
         this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KEY_Control_L);
     }
 
@@ -279,10 +280,9 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
 void GLWidget::keyReleaseEvent(QKeyEvent *event)
 {
     /* http://stackoverflow.com/questions/20746488/how-to-catch-ctrl-key-release */
-    if (event->key() == Qt::Key_Control){
+    if (event->key() == Qt::Key_Shift){
         if (cher::maskMouse & cher::MOUSE_SELECT)
             this->setMouseMode(cher::SELECT_ENTITY);
-        qDebug("Qt ctrl OFF");
         this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KEY_Control_L);
     }
 

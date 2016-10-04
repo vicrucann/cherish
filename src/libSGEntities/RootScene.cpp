@@ -196,6 +196,7 @@ bool RootScene::loadSceneFromFile()
         cnv->initializeTools();
         cnv->initializeStateMachine();
         cnv->initializeMasks();
+        cnv->initializeProgramStroke();
 
         /* photo textures */
         for (size_t j=0; j<cnv->getNumPhotos(); ++j){
@@ -211,6 +212,7 @@ bool RootScene::loadSceneFromFile()
                 qWarning("Could not read stroke");
                 continue;
             }
+            stroke->initializeProgram(cnv->getProgramStroke());
             if (!stroke->redefineToCurve(cnv->getTransform()))
                 qWarning("Could not redefine stroke as curve");
         }
@@ -264,6 +266,12 @@ void RootScene::addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std:
 void RootScene::addStroke(float u, float v, cher::EVENT event)
 {
     m_userScene->addStroke(m_undoStack, u, v, event);
+    m_saved = false;
+}
+
+void RootScene::addPolygon(float u, float v, cher::EVENT event)
+{
+    m_userScene->addPolygon(m_undoStack, u, v, event);
     m_saved = false;
 }
 
@@ -431,6 +439,12 @@ void RootScene::editPhotoDelete(entity::Photo *photo, entity::Canvas *canvas)
 void RootScene::editPhotoPush(entity::Photo *photo, entity::Canvas *source, entity::Canvas *destination)
 {
     m_userScene->editPhotoPush(m_undoStack, photo, source, destination);
+    m_saved = false;
+}
+
+void RootScene::editPolygonDelete(entity::Polygon *poly, entity::Canvas *canvas)
+{
+    m_userScene->editPolygonDelete(m_undoStack, poly, canvas);
     m_saved = false;
 }
 

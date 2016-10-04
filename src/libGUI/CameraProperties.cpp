@@ -32,6 +32,11 @@ CameraProperties::~CameraProperties()
 {
 }
 
+float CameraProperties::getFOV() const
+{
+    return float(m_ui->m_sliderFOV->value());
+}
+
 void CameraProperties::onOrthoChecked(bool val)
 {
     qDebug("CameraProperties: onOrthoChecked");

@@ -265,7 +265,7 @@ void CanvasTest::testStructure(entity::Canvas *canvas)
     QVERIFY(groupData);
     QCOMPARE(int(groupData->getNodeMask()), int(cher::MASK_CANVASDATA_IN));
     QCOMPARE(switchC->getChild(0), groupData);
-    QCOMPARE(static_cast<int>(groupData->getNumChildren()), 2);
+    QCOMPARE(static_cast<int>(groupData->getNumChildren()), 3);
     QVERIFY(switchC->getChildValue(groupData));
 
     qInfo("Test frame tools");
@@ -282,6 +282,9 @@ void CanvasTest::testStructure(entity::Canvas *canvas)
     const osg::Geode* geodePhotos = canvas->getGeodePhotos();
     QVERIFY(geodePhotos);
     QCOMPARE(groupData->getChild(1), geodePhotos);
+    const osg::Geode* geodePolygons = canvas->getGeodePolygons();
+    QVERIFY(geodePolygons);
+    QCOMPARE(groupData->getChild(2), geodePolygons);
 
     qInfo("Test visibility setting for frame tool");
     canvas->setVisibilityFrameInternal(false);

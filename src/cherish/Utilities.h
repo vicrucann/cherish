@@ -25,6 +25,8 @@ public:
      * Description */
     static QColor getQColor(const osg::Vec4f& color);
 
+    static osg::Vec4f getOsgColor(const QColor& color);
+
     static bool areStrokesProjectable(const std::vector<entity::Stroke *> &strokes, entity::Canvas *source, entity::Canvas *target, osg::Camera* camera);
 
     static bool getViewProjectionWorld(osgGA::GUIActionAdapter& aa,

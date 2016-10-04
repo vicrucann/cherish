@@ -172,3 +172,27 @@ void fur::AddCanvasSeparationCommand::moveEntities(entity::Canvas *from, entity:
     to->updateFrame(0);
     from->updateFrame(0);
 }
+
+fur::AddPolygonCommand::AddPolygonCommand(entity::UserScene *scene, entity::Polygon *polygon, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_canvas(scene->getCanvasCurrent())
+    , m_polygon(polygon)
+{
+    this->setText(QObject::tr("Add new polygon to %1")
+                  .arg(QString( m_canvas->getName().c_str() ) ) );
+}
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+void fur::AddPolygonCommand::undo()
+{
+    if (!m_scene->removeEntity(m_canvas.get(), m_polygon.get()))
+        qCritical("undo(): problem while removing stroke from a canvas");
+}
+
+void fur::AddPolygonCommand::redo()
+{
+    if (!m_scene->addEntity(m_canvas.get(), m_polygon.get()))
+        qCritical("redo(): problem while adding stroke to a canvas");
+}
+#endif /* DOXYGEN_SHOULD_SKIP_THIS */

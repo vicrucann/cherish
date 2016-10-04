@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CMainWindow</class>
+ <widget class="QMainWindow" name="CMainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="m_actionNew"/>
+    <addaction name="m_actionOpen"/>
+    <addaction name="separator"/>
+    <addaction name="m_actionSave"/>
+    <addaction name="m_actionSave_As"/>
+    <addaction name="m_actionExport"/>
+    <addaction name="separator"/>
+    <addaction name="m_actionImportImage"/>
+    <addaction name="m_actionImageBase"/>
+    <addaction name="separator"/>
+    <addaction name="m_actionClose"/>
+    <addaction name="m_actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuCamera">
+    <property name="title">
+     <string>Camera</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuScene">
+    <property name="title">
+     <string>Scene</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>Options</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuCamera"/>
+   <addaction name="menuScene"/>
+   <addaction name="menuOptions"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="m_actionNew">
+   <property name="icon">
+    <iconset resource="../../cherish/Images/Actions.qrc">
+     <normaloff>:/file-newscene-24px.svg</normaloff>:/file-newscene-24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>New...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="m_actionOpen">
+   <property name="icon">
+    <iconset resource="../../cherish/Images/Actions.qrc">
+     <normaloff>:/file-open-24px.svg</normaloff>:/file-open-24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Open...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="m_actionSave">
+   <property name="icon">
+    <iconset resource="../../cherish/Images/Actions.qrc">
+     <normaloff>:/file-save-24px.svg</normaloff>:/file-save-24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Save...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="m_actionSave_As">
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="m_actionExport">
+   <property name="icon">
+    <iconset resource="../../cherish/Images/Actions.qrc">
+     <normaloff>:/file-export-24px.svg</normaloff>:/file-export-24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Export...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="m_actionImportImage">
+   <property name="icon">
+    <iconset resource="../../cherish/Images/Actions.qrc">
+     <normaloff>:/file-image-24px.svg</normaloff>:/file-image-24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Import Image...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="m_actionImageBase">
+   <property name="icon">
+    <iconset resource="../../cherish/Images/Actions.qrc">
+     <normaloff>:/control-images-24px.svg</normaloff>:/control-images-24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Image Base...</string>
+   </property>
+  </action>
+  <action name="m_actionClose">
+   <property name="icon">
+    <iconset resource="../../cherish/Images/Actions.qrc">
+     <normaloff>:/file-close-24px.svg</normaloff>:/file-close-24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Close</string>
+   </property>
+  </action>
+  <action name="m_actionExit">
+   <property name="icon">
+    <iconset resource="../../cherish/Images/Actions.qrc">
+     <normaloff>:/file-exit-24px.svg</normaloff>:/file-exit-24px.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../../cherish/Images/Actions.qrc"/>
+ </resources>
+ <connections/>
+</ui>
