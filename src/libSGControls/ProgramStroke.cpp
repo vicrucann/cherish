@@ -12,10 +12,7 @@
 #include "CanvasTransformCallback.h"
 
 ProgramStroke::ProgramStroke()
-    : osg::Program()
-    , m_state(0)
-    , m_camera(0)
-    , m_transform(0)
+    : ProgramEntity2D()
     , m_isFogged(false)
 {
     this->setName("ProgramStroke");
@@ -23,17 +20,8 @@ ProgramStroke::ProgramStroke()
 
 void ProgramStroke::initialize(osg::StateSet *state, osg::Camera *camera, osg::MatrixTransform *t, bool isFogged)
 {
-    m_state = state;
-    m_camera = camera;
-    m_transform = t;
+    ProgramEntity2D::initialize(state, camera, t);
     m_isFogged = isFogged;
-
-    if (!this->addPresetShaders())
-        qCritical("Could not add necessary shaders");
-    if (!this->addPresetUniforms())
-        qCritical("Could not add necessary uniforms");
-
-    qInfo("Stroke shader was successfully initialized");
 }
 
 
@@ -41,26 +29,6 @@ void ProgramStroke::updateIsFogged(bool f)
 {
     m_isFogged = f;
     this->addUniform<bool>("IsFogged", osg::Uniform::BOOL, m_isFogged);
-}
-
-void ProgramStroke::updateTransform(osg::MatrixTransform *t)
-{
-    m_transform = t;
-    /* canvas matrix transform */
-    if (!this->addUniformCanvasMatrix())
-    {
-        qWarning("Could not update CanvasMatrix uniform");
-    }
-}
-
-osg::MatrixTransform *ProgramStroke::getTransform() const
-{
-    return m_transform.get();
-}
-
-osg::Camera *ProgramStroke::getCamera() const
-{
-    return m_camera.get();
 }
 
 bool ProgramStroke::getIsFogged() const
@@ -186,43 +154,4 @@ bool ProgramStroke::addPresetUniforms()
 
         return true;
     }
-}
-
-bool ProgramStroke::addUniformCanvasMatrix()
-{
-    /* canvas matrix transform */
-    if (!this->addUniform<CanvasTransformCallback>("CanvasMatrix",
-                                                   osg::Uniform::FLOAT_MAT4,
-                                                   new CanvasTransformCallback(m_transform.get()) ))
-    {
-        qWarning("Could not add CameraEye uniform");
-        return false;
-    }
-    return true;
-}
-
-template <typename T>
-bool ProgramStroke::addUniform(const std::string &name, osg::Uniform::Type type, T *updateCallback)
-{
-    if (!m_state.get() || !updateCallback){
-        qCritical("State or callback is NULL");
-        return false;
-    }
-    osg::Uniform* uniform = m_state->getOrCreateUniform(name, type);
-    uniform->setUpdateCallback(updateCallback);
-
-    return true;
-}
-
-template <typename T>
-bool ProgramStroke::addUniform(const std::string &name, osg::Uniform::Type type, T value)
-{
-    if (!m_state.get()){
-        qCritical("State is nULL");
-        return false;
-    }
-    osg::Uniform* uniform = m_state->getOrCreateUniform(name, type);
-    uniform->set(value);
-
-    return true;
 }
