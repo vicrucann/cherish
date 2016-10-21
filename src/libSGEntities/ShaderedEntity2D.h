@@ -7,6 +7,7 @@
 #include <osg/MatrixTransform>
 
 #include "Entity2D.h"
+#include "libSGControls/ProgramEntity2D.h"
 
 namespace entity{
 
@@ -17,9 +18,12 @@ public:
     ShaderedEntity2D(unsigned int drawing, osg::Geometry::AttributeBinding binding,
                      const std::string& name, const osg::Vec4f& color);
 
+    /*! Copy constructor to be used only for serializatiob purposes. */
+    ShaderedEntity2D(const entity::ShaderedEntity2D& copy, const osg::CopyOp& copyop);
+
     /*! A method tok be called after it is initialized. It initializes the program that entity is going to use
      * for shadering. */
-    virtual void initializeProgram(osg::Program* p, unsigned int mode);
+    virtual void initializeProgram(ProgramEntity2D* p, unsigned int mode = GL_LINE_STRIP);
 
     /*! A method to be used to copy the input geometry data. It is assumed *this is empty.
      * \param copy is the source geometry to copy from. */
@@ -36,7 +40,7 @@ public:
      * finished with sketching and now the entity's look can be re-defined as it will appear on the scene permanately.
      * \param t is the Canvas matrix transform. If none is provided, the transform of the current canvas is taken.
      * \return true upon success. */
-    virtual bool redefineToShape(osg::MatrixTransform* t = 0);
+    virtual bool redefineToShape(osg::MatrixTransform* t = 0) = 0;
 
     /*! \return number of vertices. */
     int getNumPoints() const;
@@ -75,13 +79,16 @@ public:
     void setIsShadered(bool shadered);
     bool getIsShadered() const;
 
+    virtual void setProgram(ProgramEntity2D* p);
+    virtual ProgramEntity2D* getProgram() const;
+
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
 protected:
-    osg::ref_ptr<osg::DrawArrays>   m_lines;
-    osg::observer_ptr<osg::Program> m_program;
-    bool                            m_isShadered;
-    osg::Vec4f                      m_color;
+    osg::ref_ptr<osg::DrawArrays>       m_lines;
+    osg::observer_ptr<ProgramEntity2D>  m_program;
+    bool                                m_isShadered;
+    osg::Vec4f                          m_color;
 };
 
 } // namespace entity

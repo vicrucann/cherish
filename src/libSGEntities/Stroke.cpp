@@ -17,71 +17,18 @@
 const GLenum STROKE_PHANTOM_TYPE = GL_LINE_STRIP;
 
 entity::Stroke::Stroke()
-    : entity::Entity2D()
-    , m_lines(new osg::DrawArrays(STROKE_PHANTOM_TYPE))
-    , m_program(0)
-    , m_color(cher::STROKE_CLR_NORMAL)
+    : entity::ShaderedEntity2D(STROKE_PHANTOM_TYPE, osg::Geometry::BIND_PER_VERTEX, "Stroke", cher::STROKE_CLR_NORMAL)
     , m_isCurved(false)
-    , m_isShadered(false)
 {
-    osg::Vec4Array* colors = new osg::Vec4Array;
-    colors->push_back(m_color);
-    osg::Vec3Array* verts = new osg::Vec3Array;
-
-    this->addPrimitiveSet(m_lines.get());
-    this->setVertexArray(verts);
-    this->setColorArray(colors);
-    this->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
-
-    this->setDataVariance(osg::Object::DYNAMIC);
-    this->setUseDisplayList(false);
-    this->setUseVertexBufferObjects(true);
-    this->setName("Stroke");
-
-    qDebug("New stroke ctor complete");
 }
 
 entity::Stroke::Stroke(const entity::Stroke& copy, const osg::CopyOp& copyop)
-    : entity::Entity2D(copy, copyop)
-    , m_lines(copy.m_lines)
-    , m_program(copy.m_program)
-    , m_color(copy.m_color)
+    : entity::ShaderedEntity2D(copy, copyop)
     , m_isCurved(copy.m_isCurved)
-    , m_isShadered(copy.m_isShadered)
 {
-    qDebug("stroke copy ctor done");
 }
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-void entity::Stroke::setLines(osg::DrawArrays* lines)
-{
-    m_lines = lines;
-}
-
-const osg::DrawArrays*entity::Stroke::getLines() const
-{
-    return m_lines.get();
-}
-
-void entity::Stroke::setColor(const osg::Vec4f& color)
-{
-    m_color = color;
-    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
-    for (unsigned int i=0; i<colors->size(); ++i){
-        (*colors)[i] = m_color;
-    }
-    //(*colors)[0] = color;
-//    colors->front() = m_color;
-    colors->dirty();
-    this->dirtyDisplayList();
-    this->dirtyBound();
-}
-
-const osg::Vec4f&entity::Stroke::getColor() const
-{
-    return m_color;
-}
 
 void entity::Stroke::setIsCurved(bool curved)
 {
@@ -92,131 +39,24 @@ bool entity::Stroke::getIsCurved() const
 {
     return m_isCurved;
 }
-
-void entity::Stroke::setIsShadered(bool shadered)
-{
-    m_isShadered = shadered;
-}
-
-bool entity::Stroke::getIsShadered() const
-{
-    return m_isShadered;
-}
-
-void entity::Stroke::setProgram(ProgramStroke *p)
-{
-    m_program = p;
-}
-
-ProgramStroke *entity::Stroke::getProgram() const
-{
-    return m_program.get();
-}
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-void entity::Stroke::initializeProgram(ProgramStroke *p)
+bool entity::Stroke::copyFrom(const entity::ShaderedEntity2D *copy)
 {
-    /* save program pointer, to be used later when redefineToCurve() */
-    if (!p) throw std::runtime_error("initializeProgram(): ProgramStroke is NULL");
-    m_program = p;
-
-    /* initial values for geometries */
-    osg::Vec3Array* points = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    if (!points) throw std::runtime_error("initializeProgram(): points are  NULL");
-    m_lines->set(STROKE_PHANTOM_TYPE, 0, points->size());
-
-    /* to disable Stroke shader program, e.g., if it is phantom stroke, override with an empty program
-     * The OFF option would not work for the already established program (that is attached to Canvas::m_geodeStrokes), for
-     * more details see: http://forum.openscenegraph.org/viewtopic.php?t=11783&view=previous */
-    this->getOrCreateStateSet()->setAttributeAndModes(new osg::Program, osg::StateAttribute::PROTECTED);
-    m_isShadered = false;
-}
-
-bool entity::Stroke::copyFrom(const entity::Stroke *copy)
-{
-    if (!copy){
-        qWarning("Copy stroke is NULL");
+    const entity::Stroke* stroke = dynamic_cast<const entity::Stroke*>(copy);
+    if (!stroke){
+        qWarning("Could not dynamic cast to Stroke, no copy will be done");
         return false;
     }
 
-    if (this->getColor() != cher::STROKE_CLR_NORMAL ||
-            !this->getLines() ||
-            static_cast<int>(this->getLines()->getMode()) != STROKE_PHANTOM_TYPE) {
-        qWarning("stroke::copyFrom() : stroke parameters check failed");
-        return false;
-    }
-
-    if (this->getNumPoints() != 0 || copy->getNumPoints() == 0){
-        qWarning("stroke::copyFrom() : stroke size check failed");
-        return false;
-    }
-
-    if (copy->getIsShadered() && copy->getNumPoints() % 4 != 0){
-        qWarning("Copy stroke vertex number must be divadable to 4");
-        return false;
-    }
-
-    for (int i=0; i<copy->getNumPoints(); i++){
-        osg::Vec2f p = copy->getPoint(i);
-        this->appendPoint(p.x(), p.y());
-    }
-    this->setProgram(copy->getProgram());
-    this->setIsCurved(copy->getIsCurved());
-    this->redefineToCurve(copy->getProgram()->getTransform());
-
-    if (copy->getIsCurved() == this->getIsCurved() &&
-            copy->getIsShadered() == this->getIsShadered() &&
-            copy->getNumPoints() != this->getNumPoints()){
-        qWarning("Stroke copy failed : number of points mismatch");
-        return false;
-    }
+    this->setIsCurved(stroke->getIsCurved());
+    if (!entity::ShaderedEntity2D::copyFrom(copy))
+        qCritical("Stroke copy has failed");
 
     return true;
 }
 
-
-
-void entity::Stroke::appendPoint(const float u, const float v)
-{
-    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
-    colors->push_back(cher::STROKE_CLR_NORMAL);
-    colors->dirty();
-
-    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    verts->push_back(osg::Vec3f(u,v,0.f));
-    unsigned int sz = verts->size();
-
-    m_lines->setFirst(0);
-    m_lines->setCount(sz);
-
-    verts->dirty();
-    this->dirtyBound();
-    // read more: http://forum.openscenegraph.org/viewtopic.php?t=2190&postdays=0&postorder=asc&start=15
-}
-
-osg::Vec2f entity::Stroke::getPoint(unsigned int i) const
-{
-    const osg::Vec3Array* verts = static_cast<const osg::Vec3Array*>(this->getVertexArray());
-    if (!verts){
-        qWarning("Stroke vertices are not initialized. Cannot obtain a point.");
-        return osg::Vec2f(0.f, 0.f);
-    }
-    unsigned int sz = verts->size();
-    if (i>=sz){
-        qWarning("Stroke's index is out of range. Cannot obtain  a point");
-        return osg::Vec2f(0.f, 0.f);
-    }
-    osg::Vec3f p = (*verts)[i];
-    if (std::fabs(p.z()) > cher::EPSILON){
-        qWarning("Stroke::getPoint : unexpected value of z-coordinate");
-        qInfo() << p.z();
-        return osg::Vec2f(0.f, 0.f);
-    }
-
-    return osg::Vec2f(p.x(), p.y());
-}
-
-bool entity::Stroke::redefineToCurve(osg::MatrixTransform *t, float tolerance)
+bool entity::Stroke::redefineToShape(osg::MatrixTransform *t)
 {
     if (m_isCurved && m_isShadered) return true;
 
@@ -235,6 +75,7 @@ bool entity::Stroke::redefineToCurve(osg::MatrixTransform *t, float tolerance)
         }
 
         /* set up auto threshold if necessary */
+        float tolerance = -1.f;
         if (tolerance < 0.f){
             /* auto threshold helps to avoid under-fitting or over-fitting of the curve
          * depending on the scale of drawn stroke. */
@@ -323,14 +164,6 @@ bool entity::Stroke::redefineToShader(osg::MatrixTransform *t)
     return true;
 }
 
-int entity::Stroke::getNumPoints() const
-{
-    const osg::Vec3Array* verts = static_cast<const osg::Vec3Array*>(this->getVertexArray());
-    Q_ASSERT(verts);
-
-    return static_cast<int>(verts->size());
-}
-
 float entity::Stroke::getLength() const
 {
     osg::BoundingBox bb = this->getBoundingBox();
@@ -348,54 +181,19 @@ bool entity::Stroke::isLengthy() const
     return this->getLength()>cher::STROKE_MINL;
 }
 
-void entity::Stroke::moveDelta(double du, double dv)
-{
-    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    for (unsigned int i=0; i<verts->size(); ++i){
-        osg::Vec3f vi = (*verts)[i];
-        (*verts)[i] = osg::Vec3f(du+vi.x(), dv+vi.y(), 0);
-    }
-    verts->dirty();
-    this->dirtyBound();
-}
-
-void entity::Stroke::scale(double scaleX, double scaleY, osg::Vec3f center)
-{
-    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    for (unsigned int i=0; i<verts->size(); ++i){
-        osg::Vec3f vi = (*verts)[i] - center;
-        (*verts)[i] = center + osg::Vec3f(scaleX*vi.x(), scaleY*vi.y(), 0);
-    }
-    verts->dirty();
-    this->dirtyBound();
-}
-
-void entity::Stroke::scale(double scale, osg::Vec3f center)
-{
-    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    for (unsigned int i=0; i<verts->size(); ++i){
-        osg::Vec3f vi = (*verts)[i] - center;
-        (*verts)[i] = center + osg::Vec3f(scale*vi.x(), scale*vi.y(), 0);
-    }
-    verts->dirty();
-    this->dirtyBound();
-}
-
-void entity::Stroke::rotate(double theta, osg::Vec3f center)
-{
-    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    for (unsigned int i=0; i<verts->size(); ++i){
-        osg::Vec3f vi = (*verts)[i] - center;
-        (*verts)[i] = center + osg::Vec3f(vi.x() * std::cos(theta) - vi.y() * std::sin(theta),
-                                          vi.x() * std::sin(theta) + vi.y() * std::cos(theta), 0);
-    }
-    verts->dirty();
-    this->dirtyBound();
-}
-
 cher::ENTITY_TYPE entity::Stroke::getEntityType() const
 {
     return cher::ENTITY_STROKE;
+}
+
+ProgramStroke *entity::Stroke::getProgram() const
+{
+    return dynamic_cast<ProgramStroke*>(m_program.get());
+}
+
+void entity::Stroke::appendPoint(const float u, const float v)
+{
+    entity::ShaderedEntity2D::appendPoint(u,v, cher::STROKE_CLR_NORMAL);
 }
 
 osg::Vec3Array *entity::Stroke::getCurvePoints(const osg::Vec3Array *bezierPts) const

@@ -75,7 +75,7 @@ void StrokeTest::testAddStroke()
     QVERIFY(!stroke->getIsShadered());
 
     qInfo("Shaderize phantom and test against it");
-    QVERIFY(stroke->redefineToCurve());
+    QVERIFY(stroke->redefineToShape());
     verts =  static_cast<osg::Vec3Array*>(stroke->getVertexArray());
     QVERIFY(verts);
     verts_clone = static_cast<osg::Vec3Array*>(stroke_clone->getVertexArray());
@@ -117,7 +117,7 @@ void StrokeTest::testCloneShaderedStroke()
     original->appendPoint(1, 1);
     original->appendPoint(0, 1);
 
-    QVERIFY(original->redefineToCurve());
+    QVERIFY(original->redefineToShape());
     canvas->setStrokeCurrent(false);
 
     qInfo("Create stroke by copying the original");
@@ -168,7 +168,7 @@ void StrokeTest::testReadWrite()
 
     qInfo("Shaderize the stroke");
 
-    QVERIFY(original->redefineToCurve());
+    QVERIFY(original->redefineToShape());
     canvas->setStrokeCurrent(false);
 
     qInfo("Test stroke parameters");
@@ -248,7 +248,7 @@ void StrokeTest::testCopyPaste()
     original->appendPoint(0.8, 0.9);
 
     qInfo("Shaderize the stroke");
-    QVERIFY(original->redefineToCurve());
+    QVERIFY(original->redefineToShape());
     canvas->setStrokeCurrent(false);
 
     qInfo("Test stroke parameters");
@@ -339,7 +339,7 @@ void StrokeTest::testFogSwitch()
     s1->appendPoint(0.8, 0.9);
 
     qInfo("Shaderize the stroke");
-    QVERIFY(s1->redefineToCurve(m_canvas0->getTransform()));
+    QVERIFY(s1->redefineToShape(m_canvas0->getTransform()));
     QVERIFY(s1->getProgram());
     bool f0 = this->m_actionStrokeFogFactor->isChecked();
     QCOMPARE(s1->getProgram()->getIsFogged(), this->m_actionStrokeFogFactor->isChecked());
@@ -354,7 +354,7 @@ void StrokeTest::testFogSwitch()
     s2->appendPoint(0.8, 0.9);
 
     qInfo("Shaderize the stroke");
-    QVERIFY(s2->redefineToCurve(m_canvas1->getTransform()));
+    QVERIFY(s2->redefineToShape(m_canvas1->getTransform()));
     QVERIFY(s2->getProgram());
     QCOMPARE(s2->getProgram()->getIsFogged(), this->m_actionStrokeFogFactor->isChecked());
 

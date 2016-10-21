@@ -1091,7 +1091,7 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
             osg::ref_ptr<entity::Stroke> stroke_clone = new entity::Stroke;
             Q_ASSERT(stroke_clone.get());
             if (stroke_clone->copyFrom(stroke)){
-                stroke_clone->redefineToCurve();
+                stroke_clone->redefineToShape();
                 Q_ASSERT(stroke_clone->getIsCurved());
                 fur::AddStrokeCommand* cmd = new fur::AddStrokeCommand(this, stroke_clone);
                 stack->push(cmd);

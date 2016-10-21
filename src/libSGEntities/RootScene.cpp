@@ -213,7 +213,7 @@ bool RootScene::loadSceneFromFile()
                 continue;
             }
             stroke->initializeProgram(cnv->getProgramStroke());
-            if (!stroke->redefineToCurve(cnv->getTransform()))
+            if (!stroke->redefineToShape(cnv->getTransform()))
                 qWarning("Could not redefine stroke as curve");
         }
     }
@@ -497,7 +497,7 @@ void RootScene::copyToBuffer()
             continue;
         }
         stroke->copyFrom(&copy);
-        stroke->redefineToCurve(copy.getProgram()->getTransform());
+        stroke->redefineToShape(copy.getProgram()->getTransform());
         m_buffer.push_back(stroke);
     }
 }

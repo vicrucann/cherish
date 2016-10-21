@@ -29,7 +29,16 @@ entity::ShaderedEntity2D::ShaderedEntity2D(unsigned int drawing, AttributeBindin
     qDebug() << "New empty entity created of type: " << QString(this->getName().c_str());
 }
 
-void entity::ShaderedEntity2D::initializeProgram(osg::Program *p, unsigned int mode)
+entity::ShaderedEntity2D::ShaderedEntity2D(const entity::ShaderedEntity2D &copy, const osg::CopyOp &copyop)
+    : entity::Entity2D(copy, copyop)
+    , m_lines(copy.m_lines)
+    , m_program(copy.m_program)
+    , m_isShadered(copy.m_isShadered)
+    , m_color(copy.m_color)
+{
+}
+
+void entity::ShaderedEntity2D::initializeProgram(ProgramEntity2D *p, unsigned int mode)
 {
     /* save program pointer to be used later */
     if (!p) throw std::runtime_error("initializeProgram(): ProgramStroke is NULL");
@@ -49,14 +58,16 @@ void entity::ShaderedEntity2D::initializeProgram(osg::Program *p, unsigned int m
 
 bool entity::ShaderedEntity2D::copyFrom(const entity::ShaderedEntity2D *copy)
 {
-    if (!copy) return false;
+    if (!copy || !this->getLines()) return false;
+    if (this->getNumPoints() != 0 || copy->getNumPoints() == 0) return false;
 
     for (int i=0; i<copy->getNumPoints(); i++){
         osg::Vec2f p = copy->getPoint(i);
         this->appendPoint(p.x(), p.y(), copy->getColor());
     }
 
-    this->redefineToShape();
+    this->setProgram(copy->getProgram());
+    this->redefineToShape(copy->getProgram()->getTransform());
 
     return true;
 }
@@ -101,40 +112,40 @@ osg::Vec2f entity::ShaderedEntity2D::getPoint(unsigned int i) const
     return osg::Vec2f(p.x(), p.y());
 }
 
-bool entity::ShaderedEntity2D::redefineToShape(osg::MatrixTransform *t)
-{
-    // if shader is connected, it means this function was already called
-    if (m_isShadered) return true;
+//bool entity::ShaderedEntity2D::redefineToShape(osg::MatrixTransform *t)
+//{
+//    // if shader is connected, it means this function was already called
+//    if (m_isShadered) return true;
 
-    if (this->redefineToShader(t==0? MainWindow::instance().getCanvasCurrent()->getTransform() : t)){
-        m_isShadered = true;
-        qDebug("Redefined to shader successfully");
-    }
-    else
-    {
-        qCritical("Could not re-define to shader, update graphics drivers so that it supports OpenGL 3.3");
-        m_isShadered = false;
-    }
+//    if (this->redefineToShader(t==0? MainWindow::instance().getCanvasCurrent()->getTransform() : t)){
+//        m_isShadered = true;
+//        qDebug("Redefined to shader successfully");
+//    }
+//    else
+//    {
+//        qCritical("Could not re-define to shader, update graphics drivers so that it supports OpenGL 3.3");
+//        m_isShadered = false;
+//    }
 
-    /* if necessary, update the sizing */
-    osg::Vec3Array* finalPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    if (finalPts){
-        m_lines->setFirst(0);
-        m_lines->setCount(finalPts->size());
-        finalPts->dirty();
-        osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
-        if (colors){
-            colors->resize(finalPts->size(), m_color);
-            colors->dirty();
-        }
-    }
-    else
-        qCritical("Unable to update geometry correctly");
+//    /* if necessary, update the sizing */
+//    osg::Vec3Array* finalPts = static_cast<osg::Vec3Array*>(this->getVertexArray());
+//    if (finalPts){
+//        m_lines->setFirst(0);
+//        m_lines->setCount(finalPts->size());
+//        finalPts->dirty();
+//        osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+//        if (colors){
+//            colors->resize(finalPts->size(), m_color);
+//            colors->dirty();
+//        }
+//    }
+//    else
+//        qCritical("Unable to update geometry correctly");
 
-    this->dirtyBound();
+//    this->dirtyBound();
 
-    return true;
-}
+//    return true;
+//}
 
 int entity::ShaderedEntity2D::getNumPoints() const
 {
@@ -227,5 +238,15 @@ void entity::ShaderedEntity2D::setIsShadered(bool shadered)
 bool entity::ShaderedEntity2D::getIsShadered() const
 {
     return m_isShadered;
+}
+
+void entity::ShaderedEntity2D::setProgram(ProgramEntity2D *p)
+{
+    m_program = p;
+}
+
+ProgramEntity2D *entity::ShaderedEntity2D::getProgram() const
+{
+    return m_program.get();
 }
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
