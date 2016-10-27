@@ -748,7 +748,7 @@ entity::Canvas *entity::Canvas::clone() const
                 entity::Polygon* po = new entity::Polygon;
                 if (po){
                     po->copyFrom(poly);
-                    po->redefineToPolygon();
+                    po->redefineToShape();
                     Q_ASSERT(po->isPolygon());
                     if (!clone->addEntity(po)) qWarning("canvas clone: could not add polygon as drawable");
                 }

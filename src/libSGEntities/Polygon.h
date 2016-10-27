@@ -3,6 +3,7 @@
 
 #include "Settings.h"
 #include "Entity2D.h"
+#include "ShaderedEntity2D.h"
 
 #include <osg/Geometry>
 #include <osgDB/ObjectWrapper>
@@ -42,7 +43,7 @@ namespace entity {
  * \endcode
 */
 
-class Polygon : public entity::Entity2D
+class Polygon : public entity::ShaderedEntity2D
 {
 public:
     /*! Constructor that creates an empty polygon. */
@@ -53,23 +54,9 @@ public:
 
     META_Node(entity, Polygon)
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-    /* functions to be used by OSG serialization only (though getters might be used) */
-    void setLines(osg::DrawArrays* lines);
-    const osg::DrawArrays* getLines() const;
-
-    void setColor(const osg::Vec4f& color);
-    const osg::Vec4f& getColor() const;
-
-#endif /* DOXYGEN_SHOULD_SKIP_THIS */
-
     /*! A method to be used to copy the input polygon's data. It is assumed *this polygon is empty.
      * \param copy is the source polygon to copy from. */
-    bool copyFrom(const entity::Polygon* copy);
-
-    /*! A method to add a point to the end of a polygon. It is normally used when constructing a polygon in-motion while sketching.
-     * \param u is local U coordinate, \param v is local V coordinate. */
-    void appendPoint(const float u, const float v);
+    virtual bool copyFrom(const entity::ShaderedEntity2D* copy);
 
     /*! A method that overwrites the coordinates of the last point of the polygon. */
     void editLastPoint(float u, float v);
@@ -77,45 +64,27 @@ public:
     /*! A method to remove the last point from the polygon. */
     void removeLastPoint();
 
-    /*! \param i is the point index. \return point coordinates at the specified index. */
-    osg::Vec2f getPoint(unsigned int i) const;
-
     /*! A method changes the geometry from line adjacency to polygon type thus allowing opacity of a region. It should be
      * called on completion of polygon draw (e.g., when phantom last point is very clone to its first point) from event handler.
      * \return true upon success. */
-    void redefineToPolygon();
-
-    /*! \return number of vertices. */
-    int getNumPoints() const;
+    virtual bool redefineToShape(osg::MatrixTransform *t = 0);
 
     /*! \return whether the geometry is of polygon type */
     bool isPolygon() const;
 
+    virtual void appendPoint(const float u, const float v);
+
 public:
-    /*! A method to perform translation of the polygon in delta movement.
-     * \param du is delta movement in X local axis direction, \param dv is delta movement in Y local axis direction. */
-    void moveDelta(double du, double dv);
-
-    /*! A method to scale the polygon around a fixed point.
-     * \param scaleX is scaling factor along U local axis, \param scaleY is scaling factor along V local axis,
-     * \param center is the local 2D center around which to scale. */
-    void scale(double scaleX, double scaleY, osg::Vec3f center);
-
-    /*! A method to uniformely scale the polygon around a fixed point.
-     * \param scale is scaling factor, \param center is the local 2D center around which to scale. */
-    void scale(double scale, osg::Vec3f center);
-
-    /*! A method to rotate the polygon around a fixed point.
-     * \param theta is angle in radians, \param center is the local 2D center around which to rotate. */
-    void rotate(double theta, osg::Vec3f center);
 
     /*! A re-defined method of entity::Entity2D to obtain entity type.
      * \return entity type */
     cher::ENTITY_TYPE getEntityType() const;
 
+protected:
+
+    bool redefineToShader(osg::MatrixTransform *t);
+
 private:
-    osg::ref_ptr<osg::DrawArrays>       m_lines; // saved to file
-    osg::Vec4f                          m_color; // saved to file
 };
 } // namespace entity
 

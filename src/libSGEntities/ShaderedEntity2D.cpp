@@ -67,7 +67,8 @@ bool entity::ShaderedEntity2D::copyFrom(const entity::ShaderedEntity2D *copy)
     }
 
     this->setProgram(copy->getProgram());
-    this->redefineToShape(copy->getProgram()->getTransform());
+    if (copy->getProgram())
+        this->redefineToShape(copy->getProgram()->getTransform());
 
     return true;
 }

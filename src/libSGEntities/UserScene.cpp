@@ -1182,7 +1182,7 @@ void entity::UserScene::polygonFinish(QUndoStack *stack)
         osg::ref_ptr<entity::Polygon> poly_clone = new entity::Polygon;
         Q_ASSERT(poly_clone);
         if (poly_clone->copyFrom(poly)){
-            poly_clone->redefineToPolygon();
+            poly_clone->redefineToShape();
             fur::AddPolygonCommand* cmd = new fur::AddPolygonCommand(this, poly_clone);
             Q_ASSERT(cmd);
             stack->push(cmd);
