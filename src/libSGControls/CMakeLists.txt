@@ -41,6 +41,8 @@ set (libSGControls_SRCS
     ProgramEntity2D.cpp
     ProgramStroke.h
     ProgramStroke.cpp
+    ProgramPolygon.h
+    ProgramPolygon.cpp
 )
 
 add_library(libSGControls

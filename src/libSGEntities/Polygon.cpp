@@ -98,8 +98,14 @@ cher::ENTITY_TYPE entity::Polygon::getEntityType() const
     return cher::ENTITY_POLYGON;
 }
 
+ProgramPolygon *entity::Polygon::getProgram() const
+{
+    return dynamic_cast<ProgramPolygon*>(m_program.get());
+}
+
 bool entity::Polygon::redefineToShader(osg::MatrixTransform *t)
 {
+    if (!m_program) return false;
     if (m_program.get())
         m_program->updateTransform(t);
 
@@ -117,8 +123,8 @@ bool entity::Polygon::redefineToShader(osg::MatrixTransform *t)
     this->setVertexAttribArray(1, colors, osg::Array::BIND_PER_VERTEX);
 
     /* apply shader to the state set */
-    //Q_ASSERT(this->getOrCreateStateSet());
-    //this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
+    Q_ASSERT(this->getOrCreateStateSet());
+    this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
 
     m_isShadered = true;
     return true;

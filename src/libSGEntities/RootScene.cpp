@@ -197,6 +197,7 @@ bool RootScene::loadSceneFromFile()
         cnv->initializeStateMachine();
         cnv->initializeMasks();
         cnv->initializeProgramStroke();
+        cnv->initializeProgramPolygon();
 
         /* photo textures */
         for (size_t j=0; j<cnv->getNumPhotos(); ++j){

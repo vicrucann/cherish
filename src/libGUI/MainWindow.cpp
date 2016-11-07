@@ -768,6 +768,15 @@ void MainWindow::onStrokeFogFactor()
             if (s->getProgram())
                 s->getProgram()->updateIsFogged(factor);
         }
+        for (unsigned int j=0; j<cnv->getNumPolygons(); ++j){
+            entity::Polygon* p = cnv->getPolygon(j);
+            if (!p){
+                qWarning("Polygon is NULL");
+                continue;
+            }
+            if (p->getProgram())
+                p->getProgram()->updateIsFogged(factor);
+        }
     }
 }
 

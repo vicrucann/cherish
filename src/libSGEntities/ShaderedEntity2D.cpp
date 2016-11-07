@@ -41,7 +41,7 @@ entity::ShaderedEntity2D::ShaderedEntity2D(const entity::ShaderedEntity2D &copy,
 void entity::ShaderedEntity2D::initializeProgram(ProgramEntity2D *p, unsigned int mode)
 {
     /* save program pointer to be used later */
-    if (!p) throw std::runtime_error("initializeProgram(): ProgramStroke is NULL");
+    if (!p) throw std::runtime_error("initializeProgram(): Program is NULL");
     m_program = p;
 
     /* initial values for geometries */

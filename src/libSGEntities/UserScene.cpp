@@ -1126,6 +1126,7 @@ void entity::UserScene::polygonStart()
         return;
     }
     entity::Polygon* poly = new entity::Polygon;
+    poly->initializeProgram(m_canvasCurrent->getProgramPolygon());
     m_canvasCurrent->setPolygonCurrent(poly);
     m_canvasCurrent->addEntity(poly);
 

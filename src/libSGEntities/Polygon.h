@@ -4,6 +4,7 @@
 #include "Settings.h"
 #include "Entity2D.h"
 #include "ShaderedEntity2D.h"
+#include "libSGControls/ProgramPolygon.h"
 
 #include <osg/Geometry>
 #include <osgDB/ObjectWrapper>
@@ -79,6 +80,8 @@ public:
     /*! A re-defined method of entity::Entity2D to obtain entity type.
      * \return entity type */
     cher::ENTITY_TYPE getEntityType() const;
+
+    virtual ProgramPolygon* getProgram() const;
 
 protected:
 
