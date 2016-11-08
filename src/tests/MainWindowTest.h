@@ -12,6 +12,8 @@ class MainWindowTest : public BaseGuiTest
 
 private slots:
     void testToolsOnOff();
+    void testUndoRedoSketch();
+    void testUndoRedoCanvasMove();
 };
 
 #endif // MAINWINDOWTEST_H

@@ -704,8 +704,12 @@ bool entity::Canvas::attachFrame()
 
 void entity::Canvas::setModeEdit(bool on)
 {
-    m_toolFrame->setEditable(on);
     m_edit = on;
+}
+
+void entity::Canvas::setFrameEditable(bool on)
+{
+    m_toolFrame->setEditable(on);
 }
 
 bool entity::Canvas::getModeEdit() const

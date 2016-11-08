@@ -528,6 +528,7 @@ void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& tr
 
     switch (event){
     case cher::EVENT_OFF:
+        qDebug("event off for canvas offset");
         this->canvasOffsetFinish(stack);
         break;
     case cher::EVENT_PRESSED:
@@ -543,6 +544,7 @@ void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& tr
         if (!this->canvasEditValid())
             break;
         this->canvasOffsetAppend(translate);
+        qDebug("event release for canvas offset");
         this->canvasOffsetFinish(stack);
         break;
     default:
@@ -1463,11 +1465,12 @@ void entity::UserScene::canvasOffsetFinish(QUndoStack *stack)
 {
     if (!m_canvasCurrent.get()) return;
     if (!this->canvasEditValid()){
-        qWarning("canvasOffsetFinish: no canvas in edit mode, impossible to finish offset mode");
+        m_canvasCurrent->setFrameEditable(false);
         return;
     }
     m_canvasCurrent->setModeEdit(false);
     m_canvasCurrent->translate(osg::Matrix::translate(-m_deltaT.x(), -m_deltaT.y(), -m_deltaT.z()));
+    qDebug("canvas offset command created");
     fur::EditCanvasOffsetCommand* cmd = new fur::EditCanvasOffsetCommand(this, m_deltaT);
     stack->push(cmd);
     m_deltaT = osg::Vec3f(0.f,0.f,0.f);

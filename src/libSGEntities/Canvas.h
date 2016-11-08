@@ -255,8 +255,14 @@ public:
     bool attachFrame();
 
     /*! Method to switch the normal canvas mode to edit mode, used for editing canvas position and rotation.
-     * \param on is true when the canvas is in the process of editing, and false otherwise. */
+     * \param on is true when the canvas is in the process of editing, and false otherwise.
+     * \sa setFrameEditable(). */
     void setModeEdit(bool on);
+
+    /*! Method to change canvas frame appereance to the editable frame.
+     * \param on is true when the canvas is about to be edited, false otherwise.
+     * \sa setModeEdit(). */
+    void setFrameEditable(bool on);
 
     /*! \return canvas edit mode. \sa setModeEdit() */
     bool getModeEdit() const;
