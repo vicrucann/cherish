@@ -575,10 +575,14 @@ void MainWindow::onViewAllCanvas()
     float delta = 1;
     osg::BoundingBox bb = canvas->getBoundingBox();
     Q_ASSERT(bb.valid());
-    new_center = bb.center();
-    /* delta = BB_min * tan(FOV/2) */
+    Utilities::getGlobalFromLocal(bb.center(), canvas->getTransform()->getMatrix(), new_center);
+//    new_center = bb.center();
+    /* delta = BB_max * tan(FOV/2) */
     Q_ASSERT(m_cameraProperties->getFOV() > 0);
-    delta = std::fabs(std::max(bb.xMax()-bb.xMin(), bb.yMax() - bb.yMin()) * 0.5f * std::tan(m_cameraProperties->getFOV() * 0.5));
+    auto bb_dx = std::fabs(bb.xMax()-bb.xMin());
+    auto bb_dy = std::fabs(bb.yMax()-bb.yMin());
+    auto half_max = std::max(bb_dx, bb_dy) * 0.5f;
+    delta = std::fabs(half_max * std::tan(m_cameraProperties->getFOV() * 0.5));
     new_eye = new_center + canvas->getNormal() * delta;
 
     m_glWidget->setCameraView(new_eye, new_center, new_up, m_cameraProperties->getFOV());
