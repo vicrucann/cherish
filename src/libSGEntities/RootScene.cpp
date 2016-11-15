@@ -146,7 +146,8 @@ bool RootScene::writeScenetoFile()
     }
 
     /* re-apply the saved scene state */
-    Q_ASSERT(this->setSceneState(state));
+    bool stateset = this->setSceneState(state);
+    Q_ASSERT(stateset);
 
     m_saved = result;
     return result;
@@ -154,7 +155,37 @@ bool RootScene::writeScenetoFile()
 
 bool RootScene::exportSceneToFile(const std::string &name)
 {
-    return osgDB::writeNodeFile(*this, name);
+    if (name == "") return false;
+
+    /* save current scene state */
+    osg::ref_ptr<entity::SceneState> state = new entity::SceneState;
+    state->stripDataFrom(this);
+    Q_ASSERT(!state->isEmpty());
+
+    /* for each canvas, detach its tools */
+    for (int i=0; i<m_userScene->getNumCanvases(); ++i){
+        entity::Canvas* canvas = m_userScene->getCanvas(i);
+        if (!canvas) continue;
+        canvas->detachFrame();
+    }
+
+    Q_ASSERT(m_userScene->getGroupCanvases());
+    bool result = osgDB::writeNodeFile(*(m_userScene->getGroupCanvases()), name);
+
+    /* for each canvas, attach its tools back */
+    for (int i=0; i<m_userScene->getNumCanvases(); ++i){
+        entity::Canvas* canvas = m_userScene->getCanvas(i);
+        if (!canvas) continue;
+        if (!canvas->attachFrame()){
+            qCritical("RootScene::writeSceneToFile: could not attach the tools back");
+            result = false;
+        }
+    }
+
+    bool stateset = this->setSceneState(state);
+    Q_ASSERT(stateset);
+
+    return result;
 }
 
 bool RootScene::loadSceneFromFile()
