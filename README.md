@@ -22,7 +22,7 @@ Continious integration:
 [![Coverity Status](https://scan.coverity.com/projects/9322/badge.svg)](https://scan.coverity.com/projects/vicrucann-cherish)
 
 Documentation:
-* Development documentaion: [![Doxygen documentation]](https://codedocs.xyz/vicrucann/cherish.svg)
+* Development documentaion: [![Documentation](https://codedocs.xyz/vicrucann/cherish.svg)](https://codedocs.xyz/vicrucann/cherish/)
 
 **Cherish** can be built on a range of platforms, e.g., Windows, Linux, Mac. This is the list of libaraies and tools that are used for the system compillation and build:
 
