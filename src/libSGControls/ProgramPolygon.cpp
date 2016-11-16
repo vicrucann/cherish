@@ -111,6 +111,10 @@ bool ProgramPolygon::addPresetUniforms()
         qCritical("Could not initialize fog min factor");
         return false;
     }
+    if (!this->addUniform<osg::Vec4f>("FogColor", osg::Uniform::FLOAT_VEC4, cher::BACKGROUND_CLR)){
+        qCritical("Could not initialize fog color uniform");
+        return false;
+    }
 
     return true;
 }
