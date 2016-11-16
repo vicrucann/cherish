@@ -21,6 +21,9 @@ Continious integration:
 * Coverity scan for defect detection: 
 [![Coverity Status](https://scan.coverity.com/projects/9322/badge.svg)](https://scan.coverity.com/projects/vicrucann-cherish)
 
+Documentation:
+* Development documentaion: [![Documentation](https://codedocs.xyz/vicrucann/cherish.svg)](https://codedocs.xyz/vicrucann/cherish/)
+
 **Cherish** can be built on a range of platforms, e.g., Windows, Linux, Mac. This is the list of libaraies and tools that are used for the system compillation and build:
 
 * [CMake](https://cmake.org/) (>=2.8.11)
@@ -91,6 +94,7 @@ For any questions and requests, feel free to contact Victoria Rudakova - victori
 
 Other contributors:
 
+* Bhavani Ananthabhotla: user feedback and research
 * [Ying Yang](http://graphics.cs.yale.edu/site/people/ying-yang): sub-parts functionality
 * [Goze Akoglu](http://ipch.yale.edu/people/kiraz-goze-akogluhttp://ipch.yale.edu/people/kiraz-goze-akoglu): user testing and feedback
 * [Eleni Kotoula](http://ipch.yale.edu/people/eleni-kotoula): user testing and feedback

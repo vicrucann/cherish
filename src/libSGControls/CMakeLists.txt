@@ -37,8 +37,12 @@ set (libSGControls_SRCS
     CameraEyeCallback.cpp
     CanvasTransformCallback.h
     CanvasTransformCallback.cpp
+    ProgramEntity2D.h
+    ProgramEntity2D.cpp
     ProgramStroke.h
     ProgramStroke.cpp
+    ProgramPolygon.h
+    ProgramPolygon.cpp
 )
 
 add_library(libSGControls

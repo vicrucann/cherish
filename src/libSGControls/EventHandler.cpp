@@ -154,10 +154,10 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     if (cnv) {
         if ((cher::maskMouse & m_mode) == cher::MOUSE_CANVAS){
             m_scene->getCanvasCurrent()->unselectAll();
-            m_scene->getCanvasCurrent()->setModeEdit(true);
+            m_scene->getCanvasCurrent()->setFrameEditable(true);
         }
         else{
-            m_scene->getCanvasCurrent()->setModeEdit(false);
+            m_scene->getCanvasCurrent()->setFrameEditable(false);
         }
         m_scene->getCanvasCurrent()->updateFrame(m_scene->getCanvasPrevious());
     }

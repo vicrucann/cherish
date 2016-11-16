@@ -528,6 +528,7 @@ void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& tr
 
     switch (event){
     case cher::EVENT_OFF:
+        qDebug("event off for canvas offset");
         this->canvasOffsetFinish(stack);
         break;
     case cher::EVENT_PRESSED:
@@ -543,6 +544,7 @@ void entity::UserScene::editCanvasOffset(QUndoStack* stack, const osg::Vec3f& tr
         if (!this->canvasEditValid())
             break;
         this->canvasOffsetAppend(translate);
+        qDebug("event release for canvas offset");
         this->canvasOffsetFinish(stack);
         break;
     default:
@@ -1091,7 +1093,7 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
             osg::ref_ptr<entity::Stroke> stroke_clone = new entity::Stroke;
             Q_ASSERT(stroke_clone.get());
             if (stroke_clone->copyFrom(stroke)){
-                stroke_clone->redefineToCurve();
+                stroke_clone->redefineToShape();
                 Q_ASSERT(stroke_clone->getIsCurved());
                 fur::AddStrokeCommand* cmd = new fur::AddStrokeCommand(this, stroke_clone);
                 stack->push(cmd);
@@ -1126,6 +1128,7 @@ void entity::UserScene::polygonStart()
         return;
     }
     entity::Polygon* poly = new entity::Polygon;
+    poly->initializeProgram(m_canvasCurrent->getProgramPolygon());
     m_canvasCurrent->setPolygonCurrent(poly);
     m_canvasCurrent->addEntity(poly);
 
@@ -1182,7 +1185,7 @@ void entity::UserScene::polygonFinish(QUndoStack *stack)
         osg::ref_ptr<entity::Polygon> poly_clone = new entity::Polygon;
         Q_ASSERT(poly_clone);
         if (poly_clone->copyFrom(poly)){
-            poly_clone->redefineToPolygon();
+            poly_clone->redefineToShape();
             fur::AddPolygonCommand* cmd = new fur::AddPolygonCommand(this, poly_clone);
             Q_ASSERT(cmd);
             stack->push(cmd);
@@ -1462,11 +1465,12 @@ void entity::UserScene::canvasOffsetFinish(QUndoStack *stack)
 {
     if (!m_canvasCurrent.get()) return;
     if (!this->canvasEditValid()){
-        qWarning("canvasOffsetFinish: no canvas in edit mode, impossible to finish offset mode");
+        m_canvasCurrent->setFrameEditable(false);
         return;
     }
     m_canvasCurrent->setModeEdit(false);
     m_canvasCurrent->translate(osg::Matrix::translate(-m_deltaT.x(), -m_deltaT.y(), -m_deltaT.z()));
+    qDebug("canvas offset command created");
     fur::EditCanvasOffsetCommand* cmd = new fur::EditCanvasOffsetCommand(this, m_deltaT);
     stack->push(cmd);
     m_deltaT = osg::Vec3f(0.f,0.f,0.f);

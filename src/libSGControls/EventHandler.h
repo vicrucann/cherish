@@ -27,6 +27,11 @@ class GLWidget;
 
 /*! \class EventHandler
  * \brief An OpenSceneGraph events that were passed from Qt's interface - GLWidget.
+ * Event handler is where all the mouse events are processed. Examples: sketching, canvas position editing,
+ * polygon drawing, deletion of entities. The EventHandler, after the mouse info extracted, then sends
+ * according signals to the UserScene, which, in turn, register the scene changed through the undo/redo
+ * commands. Note, some of the keyboard event are processed through the GLWidget and are not passed to the event
+ * handler. However, all the mouses events are meant to be passed and processed to the EventHandler.
 */
 class EventHandler : public osgGA::GUIEventHandler {
 public:

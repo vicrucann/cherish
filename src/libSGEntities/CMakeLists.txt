@@ -27,6 +27,8 @@ set (libSGEntities_SRCS
     UserScene.cpp
     Entity2D.h
     Entity2D.cpp
+    ShaderedEntity2D.h
+    ShaderedEntity2D.cpp
     Polygon.h
     Polygon.cpp
     ToolGlobal.h

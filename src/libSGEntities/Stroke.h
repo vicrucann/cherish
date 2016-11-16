@@ -22,6 +22,7 @@
 #include <osgDB/ObjectWrapper>
 
 #include "libSGControls/ProgramStroke.h"
+#include "ShaderedEntity2D.h"
 
 namespace entity {
 
@@ -41,7 +42,7 @@ namespace entity {
  * original->addPoint(u,v);
  *
  * \\ after user is finished drawing, re-define the look (shaderize as well)
- * original->redefineToCurve();
+ * original->redefineToShape();
  * \endcode
  *
  * The below example provides details on how to copy/clone a stroke that is already present on the
@@ -55,10 +56,10 @@ namespace entity {
  * copy->copyFrom(original);
  *
  * // as before, we re-define the stroke to be shadered
- * copy->redefineToCurve();
+ * copy->redefineToShape();
  * \endcode
 */
-class Stroke : public entity::Entity2D {
+class Stroke : public entity::ShaderedEntity2D {
 public:
     /*! Constructor that creates an empty stroke. */
     Stroke();
@@ -70,40 +71,17 @@ public:
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
     /* functions to be used by OSG serialization only */
-    void setLines(osg::DrawArrays* lines);
-    const osg::DrawArrays* getLines() const;
-
-    void setColor(const osg::Vec4f& color);
-    const osg::Vec4f& getColor() const;
-
     void setIsCurved(bool curved);
-    bool getIsCurved() const;
-
-    void setIsShadered(bool shadered);
-    bool getIsShadered() const;
-
-    void setProgram(ProgramStroke* p);
-    ProgramStroke* getProgram() const;
+    bool getIsCurved() const;   
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
 
-    void initializeProgram(ProgramStroke* p);
-
-    /*! A method to be used to copy the input stroke's data. It is assumed *this stroke is empty.
-     * \param copy is the source stroke to copy from. */
-    bool copyFrom(const entity::Stroke* copy);
-
-    /*! A method to add a point to the end of a stroke. It is normally used when constructing a stroke in-motion while sketching.
-     * \param u is local U coordinate, \param v is local V coordinate. */
-    void appendPoint(const float u, const float v);
-
-    /*! \param i is the point index. \return point coordinates at the specified index. */
-    osg::Vec2f getPoint(unsigned int i) const;
+    virtual bool copyFrom(const entity::ShaderedEntity2D* copy);
 
     /*! A method that fits the stroke's points to a set of curve using Schneider's algorithm.
      * \param t is the Canvas matrix transform. If none is provided, the transform of the current canvas is taken.
      * \param tolerance is the threshold fitting.
      * \return true upon success. */
-    bool redefineToCurve(osg::MatrixTransform* t = 0, float tolerance = -1.f);
+    virtual bool redefineToShape(osg::MatrixTransform* t = 0);
 
 protected:
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
@@ -111,46 +89,28 @@ protected:
     bool redefineToShader(osg::MatrixTransform* t);
 
 public:
-    /*! \return number of vertices. */
-    int getNumPoints() const;
-
     /*! \return length of the stroke, which is measured as a largest dimention of the bounding box around the stroke. */
     float getLength() const;
 
     /*! \return true if the stroke is longer than allowed threshold, false otherwise. */
     bool isLengthy() const;
 
-    /*! A method to perform translation of the stroke in delta movement.
-     * \param du is delta movement in X local axis direction, \param dv is delta movement in Y local axis direction. */
-    void moveDelta(double du, double dv);
-
-    /*! A method to scale the stroke around a fixed point.
-     * \param scaleX is scaling factor along U local axis, \param scaleY is scaling factor along V local axis,
-     * \param center is the local 2D center around which to scale. */
-    void scale(double scaleX, double scaleY, osg::Vec3f center);
-
-    /*! A method to uniformely scale the stroke around a fixed point.
-     * \param scale is scaling factor, \param center is the local 2D center around which to scale. */
-    void scale(double scale, osg::Vec3f center);
-
-    /*! A method to rotate the stroke around a fixed point.
-     * \param theta is angle in radians, \param center is the local 2D center around which to rotate. */
-    void rotate(double theta, osg::Vec3f center);
-
     /*! A re-defined method of entity::Entity2D to obtain entity type.
      * \return entity type */
     cher::ENTITY_TYPE getEntityType() const;
+
+    virtual ProgramStroke* getProgram() const;
+
+    /*! A method to add a point to the end of the entity. It is normally used when constructing an emtity in-motion while sketching.
+     * \param u is local U coordinate, \param v is local V coordinate. */
+    virtual void appendPoint(const float u, const float v);
 
 protected:
 
     osg::Vec3Array* getCurvePoints(const osg::Vec3Array* bezierPts) const;
 
 private:
-    osg::ref_ptr<osg::DrawArrays>   m_lines; // saved to file
-    osg::observer_ptr<ProgramStroke>m_program;
-    osg::Vec4f                      m_color; // saved to file
-    bool                            m_isCurved; // saved to file
-    bool                            m_isShadered;
+    bool                                m_isCurved; // saved to file
 };
 }
 

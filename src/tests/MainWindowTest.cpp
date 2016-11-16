@@ -102,5 +102,78 @@ void MainWindowTest::testToolsOnOff()
     QCOMPARE(m_actionTools->isChecked(), true);
 }
 
+void MainWindowTest::testUndoRedoSketch()
+{
+    qInfo("Add few strokes to the current canvas");
+    entity::Canvas* canvas = m_scene->getCanvasCurrent();
+    QVERIFY(canvas);
+
+    entity::UserScene* scene = this->m_rootScene->getUserScene();
+    QVERIFY(scene);
+    QUndoStack* stack = this->m_undoStack;
+    QVERIFY(stack);
+    QCOMPARE(stack->count(), 3);
+
+    qInfo("Create a stroke using UserScene API");
+    scene->addStroke(stack, 0,0, cher::EVENT_PRESSED);
+    scene->addStroke(stack, 1,0, cher::EVENT_DRAGGED);
+    scene->addStroke(stack, 1,1, cher::EVENT_DRAGGED);
+    scene->addStroke(stack, 0,1, cher::EVENT_RELEASED);
+
+    entity::Stroke* stroke = canvas->getStroke(0);
+    QVERIFY(stroke);
+
+    qInfo("Test stroke params");
+    QVERIFY(canvas->containsEntity(stroke));
+    QVERIFY(canvas->getGeodeStrokes());
+    QCOMPARE(int(canvas->getNumStrokes()), 1);
+
+    qInfo("Test undo stack parameters");
+    QCOMPARE(stack->count(), 4);
+    QCOMPARE(stack->canUndo(), true);
+    QCOMPARE(stack->canRedo(), false);
+
+    qInfo("Perform the undo, i.e. remove the stroke");
+    stack->undo();
+    QCOMPARE(stack->count(), 4);
+    QCOMPARE(stack->index(), 3);
+    QCOMPARE(stack->canUndo(), true);
+    QCOMPARE(stack->canRedo(), true);
+
+    qInfo("Test scene params after the undo");
+    QCOMPARE(int(canvas->getNumStrokes()), 0);
+}
+
+void MainWindowTest::testUndoRedoCanvasMove()
+{
+    qInfo("Simulate canvas move along the normal and test undo/redo commands of the move");
+
+    qInfo("Test some initial params");
+    entity::Canvas* canvas = m_scene->getCanvasCurrent();
+    QVERIFY(canvas);
+
+    QUndoStack* stack = this->m_undoStack;
+    QVERIFY(stack);
+    QCOMPARE(stack->count(), 3);
+
+    qInfo("Canvas offset through the UserScene API, along y-axis");
+    m_scene->editCanvasOffset(stack, osg::Vec3f(0,1,0), cher::EVENT_PRESSED);
+    m_scene->editCanvasOffset(stack, osg::Vec3f(0,2,0), cher::EVENT_DRAGGED);
+    m_scene->editCanvasOffset(stack, osg::Vec3f(0,1,0), cher::EVENT_DRAGGED);
+    m_scene->editCanvasOffset(stack, osg::Vec3f(0,2.5, 0), cher::EVENT_RELEASED);
+
+    qInfo("Test stack params after the offset is done");
+    QCOMPARE(stack->count(), 4);
+    QCOMPARE(stack->canUndo(), true);
+    QCOMPARE(stack->canRedo(), false);
+
+    qInfo("Perform the undo and check stack params");
+    stack->undo();
+    QCOMPARE(stack->count(), 4);
+    QCOMPARE(stack->index(), 3);
+    QCOMPARE(stack->canUndo(), true);
+    QCOMPARE(stack->canRedo(), true);
+}
+
 QTEST_MAIN(MainWindowTest)
 #include "MainWindowTest.moc"

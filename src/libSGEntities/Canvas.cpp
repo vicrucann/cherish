@@ -35,6 +35,7 @@ entity::Canvas::Canvas()
     , m_geodePolygons(new osg::Geode)
 
     , m_programStroke(new ProgramStroke)
+    , m_programPolygon(new ProgramPolygon)
 
     , m_strokeCurrent(0)
     , m_polygonCurrent(0)
@@ -58,6 +59,7 @@ entity::Canvas::Canvas(const entity::Canvas& cnv, const osg::CopyOp& copyop)
     , m_geodePolygons(cnv.m_geodePolygons)
 
     , m_programStroke(cnv.m_programStroke)
+    , m_programPolygon(cnv.m_programPolygon)
 
     , m_toolFrame(cnv.m_toolFrame)
 
@@ -112,6 +114,7 @@ void entity::Canvas::initializeSG()
 
     /* shaders */
     this->initializeProgramStroke();
+    this->initializeProgramPolygon();
 }
 
 void entity::Canvas::initializeStateMachine()
@@ -170,6 +173,11 @@ void entity::Canvas::initializeMasks()
 ProgramStroke *entity::Canvas::getProgramStroke() const
 {
     return m_programStroke.get();
+}
+
+ProgramPolygon *entity::Canvas::getProgramPolygon() const
+{
+    return m_programPolygon.get();
 }
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -696,8 +704,12 @@ bool entity::Canvas::attachFrame()
 
 void entity::Canvas::setModeEdit(bool on)
 {
-    m_toolFrame->setEditable(on);
     m_edit = on;
+}
+
+void entity::Canvas::setFrameEditable(bool on)
+{
+    m_toolFrame->setEditable(on);
 }
 
 bool entity::Canvas::getModeEdit() const
@@ -748,7 +760,7 @@ entity::Canvas *entity::Canvas::clone() const
                 entity::Polygon* po = new entity::Polygon;
                 if (po){
                     po->copyFrom(poly);
-                    po->redefineToPolygon();
+                    po->redefineToShape();
                     Q_ASSERT(po->isPolygon());
                     if (!clone->addEntity(po)) qWarning("canvas clone: could not add polygon as drawable");
                 }
@@ -879,6 +891,23 @@ void entity::Canvas::initializeProgramStroke()
                                                                 osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
 }
 
+void entity::Canvas::initializeProgramPolygon()
+{
+    if (!m_programPolygon) throw std::runtime_error("initializeProgramPolygon(): Polygon shader program is not initialized.");
+    if (!m_geodePolygons) throw std::runtime_error("initializeProgramPolygon() : Polygon geode is not initialized");
+
+    /* use shader program */
+    m_programPolygon->initialize(m_geodePolygons->getOrCreateStateSet(),
+                                 MainWindow::instance().getCamera(),
+                                 this->getTransform(),
+                                 MainWindow::instance().getStrokeFogFactor());
+
+    /* set up program as state set attribute for stroke geode
+     * This allows us to turn on or off the shader if neeeded, and it also requries only 1 shader per canvas vs. 1 shader per stroke. */
+    m_geodePolygons->getOrCreateStateSet()->setAttributeAndModes(m_programPolygon.get(),
+                                                                 osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+}
+
 const entity::FrameTool *entity::Canvas::getToolFrame() const
 {
     return m_toolFrame;
@@ -915,6 +944,12 @@ entity::Stroke *entity::Canvas::getStroke(int i) const
 {
     if (i<0 || i>=static_cast<int>(this->getNumStrokes())) return NULL;
     return dynamic_cast<entity::Stroke*>(m_geodeStrokes->getChild(i));
+}
+
+entity::Polygon *entity::Canvas::getPolygon(int i) const
+{
+    if (i<0 || i>=static_cast<int>(this->getNumPolygons())) return NULL;
+    return dynamic_cast<entity::Polygon*>(m_geodePolygons->getChild(i));
 }
 
 entity::Entity2D *entity::Canvas::getEntity(unsigned int i) const

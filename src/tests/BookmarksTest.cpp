@@ -23,7 +23,7 @@ void BookmarksTest::testAddBookmark()
     QVERIFY(m_canvas2->addEntity(stroke));
 
     qInfo("Re-define the stroke look");
-    QVERIFY(stroke->redefineToCurve());
+    QVERIFY(stroke->redefineToShape());
 
     qInfo("Check bookmark widget is empty");
     QCOMPARE( m_bookmarkWidget->count(), 0);

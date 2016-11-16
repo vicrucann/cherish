@@ -9,6 +9,7 @@
 #include "SelectedGroup.h"
 #include "ProtectedGroup.h"
 #include "libSGControls/ProgramStroke.h"
+#include "libSGControls/ProgramPolygon.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
@@ -46,6 +47,7 @@ public:
     virtual void initializeMasks();
 
     ProgramStroke* getProgramStroke() const;
+    ProgramPolygon* getProgramPolygon() const;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 public:
@@ -253,8 +255,14 @@ public:
     bool attachFrame();
 
     /*! Method to switch the normal canvas mode to edit mode, used for editing canvas position and rotation.
-     * \param on is true when the canvas is in the process of editing, and false otherwise. */
+     * \param on is true when the canvas is in the process of editing, and false otherwise.
+     * \sa setFrameEditable(). */
     void setModeEdit(bool on);
+
+    /*! Method to change canvas frame appereance to the editable frame.
+     * \param on is true when the canvas is about to be edited, false otherwise.
+     * \sa setModeEdit(). */
+    void setFrameEditable(bool on);
 
     /*! \return canvas edit mode. \sa setModeEdit() */
     bool getModeEdit() const;
@@ -289,6 +297,9 @@ public:
     /*! \return pointer on a stroke with the given index */
     entity::Stroke* getStroke(int i) const;
 
+    /*! \return non-const pointer on a polygon with the given index */
+    entity::Polygon* getPolygon(int i) const;
+
     /*! Method to iterate throught all the entities: both strokes and photos
      * \param i is the index of desired entity
      * \return const pointer on entity. */
@@ -312,6 +323,7 @@ protected:
 
 public:
     void initializeProgramStroke();
+    void initializeProgramPolygon();
 
 private:
     osg::Matrix                 m_mR; /* part of m_transform */
@@ -323,6 +335,7 @@ private:
     osg::ref_ptr<osg::Geode>    m_geodePhotos; // contains all the photos as children
     osg::ref_ptr<osg::Geode>    m_geodePolygons; // contains all the polygons as children
     osg::ref_ptr<ProgramStroke> m_programStroke; /*!< Shader program for all the strokes of the canvas, is applied to m_geodeStrokes */
+    osg::ref_ptr<ProgramPolygon> m_programPolygon; /*!< Shader program for all the polygons of the canvas, is applied to m_geodePolygons */
 
     /* construction geodes */
     osg::ref_ptr<entity::FrameTool> m_toolFrame;
