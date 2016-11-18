@@ -2,7 +2,7 @@
 
 This is an example of a generic scene graph that is generated every time the **Cherish** application is run: 
 
-![Scene graph](cherish-SG.png)
+![Scene graph](https://github.com/vicrucann/cherish/blob/master/docs/cherish-SG.png)
 
 The `RootScene` class is a memeber of the `MainWindow` - the main UI element of **Cherish**.
 
