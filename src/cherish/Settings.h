@@ -9,22 +9,21 @@
 #include <QDebug>
 #include <QtGlobal>
 
-/*
- * SETTINGS is a configuration variables file for Dureu3d
+/*!
+ * SETTINGS is a configuration variables file for Cherish.
  * Contains settings such as
  * - default color schemes (based on Solarized scheme)
- * - default entoty sizes
- * - etc (more to add)
- *
- * Victoria Rudakova 2015 <victoria.rudakova@yale.edu>
+ * - default entity sizes
+ * - cursor modes and entity types
+ * - canvas traversal masks
+ * - standard naming conventions for entities
 */
 
 /* Debug macros */
 
 #define outLogVec(msg, x, y, z) qDebug() << msg << ": " << x << " " << y << " " << z;
 
-/* The color scheme settings are based on
- * colorscehem solarized
+/*! The color scheme settings are based on color scheme solarized
  * For more info see <http://ethanschoonover.com/solarized>
  */
 namespace  solarized {
@@ -49,12 +48,15 @@ const osg::Vec4 cyan = osg::Vec4(float(42)/255.0f, float(161)/255.0f, float(152)
 const osg::Vec4 green = osg::Vec4(float(133)/255.0f, float(153)/255.0f, float(0)/255.0f, 1.0f);
 } // solarized
 
+/*! Cherish constants and other settings */
 namespace cher{
 
+// global constants
 const double PI = 3.14159265359;
 const double EPSILON = 0.00001;
 const osg::Vec3f CENTER = osg::Vec3f(0.f,0.f,0.f);
 
+// main entity types
 enum ENTITY_TYPE
 {
     ENTITY_STROKE
@@ -62,14 +64,7 @@ enum ENTITY_TYPE
     , ENTITY_POLYGON
 };
 
-enum APPMODE{
-    SCREEN_MAX = 0,
-    SCREEN_MIN = 1,
-    SCREEN_FULL = 2,
-    SCREEN_VIRTUAL = 3,
-    SCREEN_DETACHED = 4
-};
-
+// mouse modes
 enum MOUSE_MODE
 {
     MOUSE_PEN = 0x000,
@@ -110,6 +105,7 @@ enum MOUSE_MODE
     maskAction = 0xf,
 };
 
+// cherish events
 enum EVENT {
     EVENT_OFF,
     EVENT_PRESSED,
@@ -117,6 +113,7 @@ enum EVENT {
     EVENT_RELEASED
 };
 
+// canvas traversal masks
 enum TraversalMask{
     MASK_CANVAS_IN = 0x110, /* sees all canvas data */
     MASK_CANVAS_OUT = 0x001, /* does not see any of canvas data */
@@ -125,11 +122,14 @@ enum TraversalMask{
     MASK_ALL_IN = ~0x0
 };
 
+// general widget settings
 const osg::Vec4 BACKGROUND_CLR = solarized::base3;
 const int CURSOR_SIZE = 18;
 
+// canvas normal settings
 const osg::Vec3f NORMAL = osg::Vec3f(0.f,0.f,1.f);
 
+// canvas color settings
 const osg::Vec4 CANVAS_CLR_CURRENT = solarized::magenta;
 const osg::Vec4 CANVAS_CLR_INTERSECTION = osg::Vec4(solarized::violet.x(), solarized::violet.y(), solarized::violet.z(), 0.5);
 const osg::Vec4 CANVAS_CLR_PREVIOUS = solarized::violet;
@@ -138,11 +138,13 @@ const osg::Vec4 CANVAS_CLR_SELECTED = solarized::red;
 const osg::Vec4 CANVAS_CLR_EDIT = solarized::cyan;
 const osg::Vec4 CANVAS_CLR_ROTAXIS = solarized::orange;
 
+// bookmark tool settings
 const osg::Vec4 BOOKMARK_CLR = solarized::green;
 const float BOOKMARK_X = 10;
 const float BOOKMARK_Y = BOOKMARK_X;
 const float BOOKMARK_Z = BOOKMARK_X;
 
+// stroke settings
 const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
 const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
 const float STROKE_MINL = 0.05f;
@@ -151,15 +153,18 @@ const int STROKE_SEGMENTS_NUMBER = 11;
 const float STROKE_FOG_MIN = 4.f;
 const float STROKE_FOG_MAX = 30.f;
 
+// polygon settings
 const float POLYGON_LINE_WIDTH = 4.f;
 const osg::Vec4f POLYGON_CLR_PHANTOM = solarized::base1;
 const osg::Vec4f POLYGON_CLR_NORMALFILL = solarized::base2;
 const osg::Vec4f POLYGON_CLR_SELECTEDFILL = solarized::green;
 const float POLYGON_PROXIMITY_THRESHOLD = 0.1f;
 
+// photo selected colors
 const osg::Vec4 PHOTO_CLR_SELECTED = solarized::red; // texture frame colors
 const osg::Vec4f PHOTO_CLR_REST = osg::Vec4f(1.f,1.f,1.f,1.0f); // white filter
 
+// canvas settings
 const float CANVAS_MINW = 1.2f; // half width
 const float CANVAS_MINH = 1.0f; // half height
 const float CANVAS_MINB = 0.1f; // bound
@@ -170,18 +175,16 @@ const float CANVAS_AXIS = 0.5f; // loxal axis size
 const float CANVAS_EDITAXIS = CANVAS_AXIS*0.5;
 const float CANVAS_LINE_WIDTH = 1.5f;
 
+// photo settings
 const float PHOTO_MINW = 1; // half width
 const float PHOTO_MINH = 1; // half height
 const float PHOTO_TRANSPARECY_DELTA = 0.2f;
 
+// global axis settings
 const float AXES_SIZE = 100.f;
 const osg::Vec4 AXES_CLR_X = solarized::blue;
 const osg::Vec4 AXES_CLR_Y = solarized::cyan;
 const osg::Vec4 AXES_CLR_Z = solarized::red;
-
-const float ERASER_MIN = 0.05f; // eraser diameter
-const float ERASER_MID = 0.2f;
-const float ERASER_MAX = 0.4f;
 
 // entity "names"
 const std::string NAME_CANVAS = "Canvas";
@@ -191,17 +194,10 @@ const std::string NAME_GEOMETRY = "Geometry";
 const std::string NAME_PHOTO = "Photo";
 const std::string NAME_BOOKMARK = "Bookmark";
 
-const float HUD_LEFT = -60.f;
-const float HUD_RIGHT = 60.f;
-const float HUD_TOP = 40.f;
-const float HUD_BOTTOM = -40.f;
-const float HUD_TEXT_SIZE = 1.5f;
-const float HUD_TEXT_POSX = HUD_LEFT + 2.f;
-const float HUD_TEXT_POSY = HUD_BOTTOM + 15.f;
-const float HUD_TEXT_POSZ = 0.f;
-
+// variable that helps to adapt to high DPI monitors
 extern double DPI_SCALING;
 
+// cherish default sizing
 const size_t APP_SCREENSHOT_HEIGHT = 150;
 const size_t APP_WIDGET_BUTTON = 16;
 const size_t APP_WIDGET_LINEWIDTH = 4;
@@ -209,10 +205,11 @@ const size_t APP_WIDGET_GAP = 6;
 const size_t APP_WIDGET_WIDTH = APP_SCREENSHOT_HEIGHT*1.5+APP_WIDGET_BUTTON*4;
 const size_t APP_WIDGET_ICONSIZE_W = 100;
 const size_t APP_WIDGET_ICONSIZE_H = 80;
-//const size_t APP_MAINWINDOW_ICONSIZE = 24;
 
+// photo format, used for drag and drop functionality
 const QString MIME_PHOTO = "image/cherish";
 
+// CanvasPhotoWidget roles
 const int DelegateVisibilityRole = Qt::UserRole + 1;
 const int DelegateChildRole = Qt::UserRole + 2;
 const int DelegateBGColor = Qt::UserRole + 3;

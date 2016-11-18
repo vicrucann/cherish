@@ -16,28 +16,21 @@
 #include "Data.h"
 
 
-/*! \mainpage Cultural Heritage data representation by means of image manipualtion and 3D sketching
+/*! \mainpage Cherish - Tool for Cultural Heritage Data Representation Image and Sketching Manipulation.
  *
  * \section Description
  *
- * This documentation site covers both API and user documentation.
+ * This documentation site covers the cherish API mainly. For the user documentation, try to check if [Cherish site](http://vicrucann.github.io/cherish/) is upgraded.
  *
- * For the API, go to "Classes".
+ * To start, you may browse the content and hierarchy of `Classes`. For other non-API documentation files, check `Related Pages`.
+ * The codes are separated into different folders: `cherish`, `libGUI`, `libSGControls`, `libSGEntities`, `libNumerics` and `tests`.
  *
- * For user documentation files, go to "Related Pages".
- *
- * The codes are separated into different folders: cherish, libGUI, libSGControls, libSGEntities and tests.
- *
- * "cherish" folder contains main.cpp, as well as settings, utility functions and image data.
- *
- * "libGUI" contains all the elements related to user interface and its elements.
- *
- * "libSGControls" contains codes such as event handling, manipulators and anything related to undo/redo framework.
- *
- * "libSGEntities" contains geometry-based and group-based OpenSceneGraph elements that are elements of a scene graph.
- *
- * "tests" contains batteries of different basic unit tests.
- *
+ * * `cherish` folder contains `main.cpp`, as well as settings, utility functions, shader and image data.
+ * * `libGUI` contains classes related to user interface, widgets and its content.
+ * * `libSGControls` is responsible for event handling, mouse manipulators,anything related to undo/redo framework, shader programs, geometry intersectors, callbacks.
+ * * `libSGEntities` contains geometry-based and group-based OpenSceneGraph elements that are elements of a scene graph.
+ * * `libNumerics` contain outside numerical libraries and codes, e.g. curve fitting algorithm.
+ * * `tests` contains batteries of different basic unit tests.
  */
 
 int main(int argc, char** argv)

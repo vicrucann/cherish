@@ -8,7 +8,7 @@ class QIcon;
 class QPixmap;
 
 /*! \class Data
- * Class description
+ * \brief Class that contains access to cherish resources such as action and GUI icons.
 */
 class Data
 {
