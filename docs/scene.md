@@ -4,7 +4,13 @@ This is an example of a generic scene graph that is generated every time the **C
 
 ![MD format](/images/cherish-SG.png)
 
-\image html cherish-SG.png
+\image html /docs/images/cherish-SG.png
+
+\image html docs/images/cherish-SG.png
+
+\image html images/cherish-SG.png
+
+\image html https://github.com/vicrucann/cherish/blob/master/docs/images/cherish-SG.png
 
 The `RootScene` class is a memeber of the `MainWindow` - the main UI element of **Cherish**.
 
