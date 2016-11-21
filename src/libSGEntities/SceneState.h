@@ -12,7 +12,7 @@ namespace entity{
 /*! \class SceneState
  * \brief A class to describe the current state of the scene, e.g., state of switches.
  *
- * It is mostly used when dealing with Bookmarks and taking bookmark snapshots from GlWidget.
+ * It is mostly used when dealing with entity::Bookmarks and taking bookmark snapshots from GlWidget.
  * The scene state helps to preserve and use later values like switches values that define
  * visibility flags for data, construction tools; and also photo transparencies.
  *
@@ -22,7 +22,9 @@ namespace entity{
 class SceneState : public osg::Group
 {
 public:
+    /*! Default constructor. Creates an empty scene state. */
     SceneState();
+
     /*! Constructor by copy.
      * This method is used solely by OSG serializer and should never be called from within the
      * application.

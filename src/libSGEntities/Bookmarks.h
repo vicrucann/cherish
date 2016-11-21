@@ -36,21 +36,26 @@ namespace entity {
  * The need for the class to inherit osg::Group class is so that to include the
  * bookmarks into saving to file procedure which is done by OpenSceneGraph.
  *
- * Scene graph wise, the Bookmarks is an osg::Group node that contains STL data for camera
+ * Scene graph wise, the entity::Bookmarks is an osg::Group node that contains STL data for camera
  * positions and names. Also
- * osg::Group helps to maintain the SceneState as its children for each corresponding
+ * osg::Group helps to maintain the entity::SceneState as its children for each corresponding
  * bookmark without the need of direct serialization of each scene state.
  *
  * The need to inherit QObject class is so that to use signals and slots functionality.
  * The signals and slots are connected to the BookmarkWidget and thus it assures
  * a simultaneous update whether the bookmark changed are made directly from the widget,
  * or trigerred by scene graph functions (e.g., on reload the scene from file).
+ *
+ * Note: there can only be one entity::Bookmarks object in a scene graph, a child of entity::UserScene. This
+ * class servers as a container for a list of entity::SceneState -s and a list of camera parameters for each
+ * scene state.
 */
 class Bookmarks : public QObject, public osg::Group
 {
     Q_OBJECT
 
 public:
+    /*! Default constructor. Creates an empty bookmark group. */
     Bookmarks();
 
     /*! Constructor by copy.
