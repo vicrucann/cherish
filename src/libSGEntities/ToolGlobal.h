@@ -13,6 +13,7 @@
 #include <osg/Camera>
 
 #include "Settings.h"
+#include "ProtectedGroup.h"
 
 namespace entity {
 
@@ -29,7 +30,7 @@ namespace entity {
  *
  *
 */
-class ToolGlobal : public osg::Group
+class ToolGlobal : public osg::ProtectedGroup
 {
 public:
     /*! Default constructor.

@@ -9,7 +9,7 @@
 
 
 entity::ToolGlobal::ToolGlobal(int nVerts, osg::Array::Binding colorBind, osg::PrimitiveSet *primitiveSet, float linewidth)
-    : osg::Group()
+    : osg::ProtectedGroup()
     , m_switch(new osg::Switch)
     , m_geodeWire(new osg::Geode)
     , m_geomWire(new osg::Geometry)

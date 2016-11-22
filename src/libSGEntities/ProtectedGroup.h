@@ -1,5 +1,5 @@
-#ifndef PRIVATEGROUP_H
-#define PRIVATEGROUP_H
+#ifndef PROTECTEDGROUP_H
+#define PROTECTEDGROUP_H
 
 #include <osg/Group>
 
@@ -10,6 +10,9 @@ namespace osg{
 /*! \class ProtectedGroup
  * \brief A convinience class that inherits full functionality of osg::Group except
  * the methods that allow direct scene modification such as addition and deletion of children.
+ * The protected methods are only allowed to be used within the inhereted classes, but not by the
+ * user, i.e. the direct scene modification is prohibited by API.
+ *
  */
 class ProtectedGroup : public osg::Group
 {
@@ -37,4 +40,4 @@ protected:
 }; // class
 } // namespace
 
-#endif // PRIVATEGROUP_H
+#endif // PROTECTEDGROUP_H
