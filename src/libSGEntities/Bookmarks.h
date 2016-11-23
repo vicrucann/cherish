@@ -4,11 +4,6 @@
 #include <osg/Group>
 #include <osgDB/ObjectWrapper>
 
-/* Osg + Qt model of booksmarks
- * osg::Group is used in order to perform correct serialization, while
- * QListModel is used for display at the corresponding BookmarkWidget
-*/
-
 #include <vector>
 #include <list>
 #include <string>
@@ -94,6 +89,8 @@ public:
     /*! \param row is the index of SceneState
      * \return Pointer on the corresponding SceneState. */
     const entity::SceneState* getSceneState(int row) const;
+
+    /*! A method to extract scene state given a row index of the BookmarkWidget. */
     entity::SceneState* getSceneState(int row);
 
     /*! A method that performs an addition of a bookmark to the data structure. It also requests
@@ -140,12 +137,29 @@ signals:
      * \param state is the pointer on SceneState to be updated */
     void requestSceneData(entity::SceneState* state);
 
+    /*! A signal is sent whenever it is requested to change current state with the requested state associated with
+     * certain bookmark.
+     * \param state is the requested state that will be applied to the scene. */
     void requestSceneStateSet(entity::SceneState* state);
 
 public slots:
+    /*! A slot is called whenever user performs a click on a bookmark from GUI. The slot sets up the requested bookmark and its
+     * corresponding scene state.
+     * \param index is the row index of the clicked bookmark on BookmarkWidget. */
     void onClicked(const QModelIndex& index);
+
+    /*! A slot is called when user does editing of the bookmark's name from GUI. It edits the corresponding name of the bookrmark.
+     * \param item is the pointer on the BookmarkWidget item from which the row index is derived to get the indexation for internal
+     * vectors of Bookmarks. */
     void onItemChanged(QListWidgetItem* item);
+
+    /*! A slot is called whenever user performs a change of order of the bookmarks from GUI. */
     void onRowsMoved(const QModelIndex&, int start, int end, const QModelIndex&, int row);
+
+    /*! A slot is called whenever the rows are removed, e.g. by user from GUI or when closing current file.
+     * \param first is the index of the first bookmark to remove
+     * \param last is the index of the last bookmark to remove. The removal is done from the first till the last
+     * item inclusive. */
     void onRowsRemoved(const QModelIndex&, int first, int last);
 
 private:
