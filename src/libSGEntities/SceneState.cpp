@@ -1,14 +1,14 @@
 #include "SceneState.h"
 
 entity::SceneState::SceneState()
-    : osg::Group()
+    : osg::ProtectedGroup()
     , m_axisFlag(true)
     , m_bookmarksFlag(true)
 {
 }
 
 entity::SceneState::SceneState(const entity::SceneState &parent, osg::CopyOp copyop)
-    : osg::Group(parent, copyop)
+    : osg::ProtectedGroup(parent, copyop)
     , m_axisFlag(parent.m_axisFlag)
     , m_bookmarksFlag(parent.m_bookmarksFlag)
     , m_canvasDataFlags(parent.m_canvasDataFlags)

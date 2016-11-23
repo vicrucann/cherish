@@ -5,6 +5,8 @@
 #include <osg/Group>
 #include <RootScene.h>
 
+#include "ProtectedGroup.h"
+
 class RootScene;
 
 namespace entity{
@@ -16,10 +18,12 @@ namespace entity{
  * The scene state helps to preserve and use later values like switches values that define
  * visibility flags for data, construction tools; and also photo transparencies.
  *
- * It inherits osg::Group so that to be able to take advantage of OSG serialization since
+ * It inherits osg::ProtectedGroup so that to be able to take advantage of OSG serialization since
  * the scene state is saved together with each bookmark data.
+ *
+ * The SceneState does not form any scene graphs, i.e., no children are added.
 */
-class SceneState : public osg::Group
+class SceneState : public osg::ProtectedGroup
 {
 public:
     /*! Default constructor. Creates an empty scene state. */
