@@ -9,21 +9,21 @@
 #include <QDebug>
 #include <QtGlobal>
 
-/*!
- * SETTINGS is a configuration variables file for Cherish.
+/*! \file Settings.h
+ * \brief Settings is a configuration variables file for Cherish: enums, consts, defaults.
  * Contains settings such as
- * - default color schemes (based on Solarized scheme)
- * - default entity sizes
- * - cursor modes and entity types
- * - canvas traversal masks
- * - standard naming conventions for entities
+ * * default color schemes (based on Solarized scheme)
+ * * default entity sizes
+ * * cursor modes and entity types
+ * * canvas traversal masks
+ * * standard naming conventions for entities
 */
 
 /* Debug macros */
-
 #define outLogVec(msg, x, y, z) qDebug() << msg << ": " << x << " " << y << " " << z;
 
-/*! The color scheme settings are based on color scheme solarized
+/*! \addtogroup solarized
+ * The color scheme settings are based on color scheme solarized.
  * For more info see <http://ethanschoonover.com/solarized>
  */
 namespace  solarized {
@@ -64,7 +64,7 @@ enum ENTITY_TYPE
     , ENTITY_POLYGON
 };
 
-// mouse modes
+/*! Enum class for mouse modes */
 enum MOUSE_MODE
 {
     MOUSE_PEN = 0x000,
@@ -105,7 +105,7 @@ enum MOUSE_MODE
     maskAction = 0xf,
 };
 
-// cherish events
+/*! Enum class for cherish events. */
 enum EVENT {
     EVENT_OFF,
     EVENT_PRESSED,
@@ -113,7 +113,7 @@ enum EVENT {
     EVENT_RELEASED
 };
 
-// canvas traversal masks
+/*! Enum class for canvas traversal masks. */
 enum TraversalMask{
     MASK_CANVAS_IN = 0x110, /* sees all canvas data */
     MASK_CANVAS_OUT = 0x001, /* does not see any of canvas data */
