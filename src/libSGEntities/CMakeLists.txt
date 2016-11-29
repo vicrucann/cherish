@@ -39,6 +39,8 @@ set (libSGEntities_SRCS
     SelectedGroup.cpp
     SceneState.h
     SceneState.cpp
+    SVMData.h
+    SVMData.cpp
 )
 
 add_library(libSGEntities
