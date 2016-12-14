@@ -767,10 +767,6 @@ bool EventHandler::getRaytracePlaneIntersection(const osgGA::GUIEventAdapter &ea
     return true;
 }
 
-/* Defines the mouse mode depending on location of mouse over the canvas frame;
- * Used in entity select, entity move, entity scale, entity rotate, etc.
- * Returns true if no need to exit the parent function, false otherwise
-*/
 template <typename TResult, typename TIntersector>
 bool EventHandler::setSubMouseMode(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, cher::MOUSE_MODE modeDefault, bool selected)
 {

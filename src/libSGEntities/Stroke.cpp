@@ -8,10 +8,7 @@
 #include <osg/StateSet>
 #include <osg/Camera>
 
-#include "ModelViewProjectionMatrixCallback.h"
-#include "ViewportVectorCallback.h"
-#include "CameraEyeCallback.h"
-#include "CanvasTransformCallback.h"
+#include "CameraCallbacks.h"
 #include "CurveFitting/libPathFitter/OsgPathFitter.h"
 
 const GLenum STROKE_PHANTOM_TYPE = GL_LINE_STRIP;

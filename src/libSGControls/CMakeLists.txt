@@ -29,14 +29,8 @@ set (libSGControls_SRCS
     LogFileHandler.h
     FindNodeVisitor.h
     FindNodeVisitor.cpp
-    ModelViewProjectionMatrixCallback.h
-    ModelViewProjectionMatrixCallback.cpp
-    ViewportVectorCallback.h
-    ViewportVectorCallback.cpp
-    CameraEyeCallback.h
-    CameraEyeCallback.cpp
-    CanvasTransformCallback.h
-    CanvasTransformCallback.cpp
+    CameraCallbacks.h
+    CameraCallbacks.cpp
     ProgramEntity2D.h
     ProgramEntity2D.cpp
     ProgramStroke.h

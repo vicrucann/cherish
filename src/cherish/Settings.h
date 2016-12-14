@@ -100,9 +100,18 @@ enum MOUSE_MODE
     CANVAS_ROTATE_VPLUS,
     CANVAS_ROTATE_VMINUS,
 
+    MOUSE_SVM = 0x500,
+    SVM_IDLE = 0x510,
+    SVM_HOVER_WIRE = 0x520,
+    SVM_DRAG_WIRE,
+    SVM_HOVER_POINT = 0x530,
+    SVM_DRAG_POINT,
+
     maskMouse = 0xff00,
     maskEntity = 0xff0,
     maskAction = 0xf,
+
+    maskDrag = 0x001
 };
 
 /*! Enum class for cherish events. */
