@@ -9,8 +9,6 @@
 class CanvasNormalProjector : public VirtualPlaneIntersector<entity::Canvas>
 {
 public:
-    typedef std::tuple<osg::Vec3f, bool> Projection;
-
     CanvasNormalProjector(entity::Canvas* canvas);
 
     /*! Algorithm:
@@ -21,7 +19,7 @@ public:
      * Ray and normal are skew lines in 3d space, so we only need
      * to extract the projection point of the ray into the normal.
     */
-    Projection getProjection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa);
+    Intersection3D getProjection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa);
 
 protected:
     bool getProjection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, osg::Vec3f& XC);

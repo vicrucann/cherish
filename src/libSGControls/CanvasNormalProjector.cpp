@@ -5,7 +5,7 @@ CanvasNormalProjector::CanvasNormalProjector(entity::Canvas *canvas)
 {
 }
 
-CanvasNormalProjector::Projection CanvasNormalProjector::getProjection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+VirtualPlaneIntersector<entity::Canvas>::Intersection3D CanvasNormalProjector::getProjection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
     osg::Vec3f XC = osg::Vec3f(0,0,0);
     bool success = this->getProjection(ea,aa,XC);
