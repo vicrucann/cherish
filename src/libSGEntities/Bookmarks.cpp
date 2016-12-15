@@ -1,5 +1,4 @@
 #include "Bookmarks.h"
-#include <assert.h>
 
 #include <QDir>
 #include <QDebug>
@@ -189,9 +188,8 @@ std::string entity::Bookmarks::getBookmarkName(int row) const
 
 int entity::Bookmarks::getNumBookmarks() const
 {
-    assert(m_eyes.size() == m_ups.size() && m_ups.size() == m_centers.size()
+    Q_ASSERT(m_eyes.size() == m_ups.size() && m_ups.size() == m_centers.size()
            && m_centers.size() == m_names.size() && m_names.size() == m_fovs.size());
-//    assert(m_eyes.size() == this->getNumChildren());
     return m_eyes.size();
 }
 

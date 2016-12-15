@@ -1139,7 +1139,7 @@ void entity::UserScene::polygonAppend(float u, float v, QUndoStack *stack)
 {
     if (this->polygonValid()){
         entity::Polygon* poly = m_canvasCurrent->getPolygonCurrent();
-        Q_ASSERT(poly);
+        Q_CHECK_PTR(poly);
         float dist = 10.f;
         if (poly->getNumPoints() >= 3){
             osg::Vec2f p0 = poly->getPoint(0);
@@ -1183,11 +1183,11 @@ void entity::UserScene::polygonFinish(QUndoStack *stack)
     entity::Polygon* poly = m_canvasCurrent->getPolygonCurrent();
     if (this->polygonValid()){
         osg::ref_ptr<entity::Polygon> poly_clone = new entity::Polygon;
-        Q_ASSERT(poly_clone);
+        Q_CHECK_PTR(poly_clone);
         if (poly_clone->copyFrom(poly)){
             poly_clone->redefineToShape();
             fur::AddPolygonCommand* cmd = new fur::AddPolygonCommand(this, poly_clone);
-            Q_ASSERT(cmd);
+            Q_CHECK_PTR(cmd);
             stack->push(cmd);
         }
     }

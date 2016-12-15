@@ -150,11 +150,10 @@ bool entity::Stroke::redefineToShader(osg::MatrixTransform *t)
     /* set shader attributes */
     this->setVertexAttribArray(0, bezierPts, osg::Array::BIND_PER_VERTEX);
     osg::Vec4Array* colors = dynamic_cast<osg::Vec4Array*>(this->getColorArray());
-    Q_ASSERT(colors);
+    Q_CHECK_PTR(colors);
     this->setVertexAttribArray(1, colors, osg::Array::BIND_PER_VERTEX);
 
     /* apply shader to the state set */
-    Q_ASSERT(this->getOrCreateStateSet());
     this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
 
     m_isShadered = true;

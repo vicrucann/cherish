@@ -1,6 +1,5 @@
 #include "EventHandler.h"
 #include <iostream>
-#include <assert.h>
 #include <cerrno>
 #include <tuple>
 

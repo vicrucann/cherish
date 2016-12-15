@@ -153,6 +153,14 @@ const float BOOKMARK_X = 10;
 const float BOOKMARK_Y = BOOKMARK_X;
 const float BOOKMARK_Z = BOOKMARK_X;
 
+// bookmark SVM data settings
+const float SVMDATA_HALFWIDTH = 0.25f;
+const osg::Vec4f SVMDATA_CLR_POINTS = solarized::green;
+const osg::Vec4f SVMDATA_CLR_WIRE = solarized::base01;
+const osg::Vec4f SVMDATA_CLR_WIREHOVER = solarized::magenta;
+const osg::Vec4f SVMDATA_CLR_POINTSHOVER = solarized::yellow;
+const osg::Vec4f SVMDATA_CLR_DRAG = solarized::orange;
+
 // stroke settings
 const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
 const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
@@ -202,6 +210,8 @@ const std::string NAME_STROKE = "Stroke";
 const std::string NAME_GEOMETRY = "Geometry";
 const std::string NAME_PHOTO = "Photo";
 const std::string NAME_BOOKMARK = "Bookmark";
+const std::string NAME_SVM_WIRE = "SVMWire";
+const std::string NAME_SVM_POINTS = "SVMPoints";
 
 // variable that helps to adapt to high DPI monitors
 extern double DPI_SCALING;

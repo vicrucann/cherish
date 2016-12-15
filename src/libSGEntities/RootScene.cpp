@@ -3,7 +3,6 @@
 #include "iostream"
 #include <sstream>
 #include <stdlib.h>
-#include <assert.h>
 
 #include <QtGlobal>
 #include <QDebug>
@@ -169,7 +168,7 @@ bool RootScene::exportSceneToFile(const std::string &name)
         canvas->detachFrame();
     }
 
-    Q_ASSERT(m_userScene->getGroupCanvases());
+    Q_CHECK_PTR(m_userScene->getGroupCanvases());
     bool result = osgDB::writeNodeFile(*(m_userScene->getGroupCanvases()), name);
 
     /* for each canvas, attach its tools back */

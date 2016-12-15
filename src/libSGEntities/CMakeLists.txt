@@ -41,6 +41,8 @@ set (libSGEntities_SRCS
     SceneState.cpp
     SVMData.h
     SVMData.cpp
+    DraggableWire.h
+    DraggableWire.cpp
 )
 
 add_library(libSGEntities

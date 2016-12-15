@@ -151,7 +151,7 @@ osg::Vec2f entity::ShaderedEntity2D::getPoint(unsigned int i) const
 int entity::ShaderedEntity2D::getNumPoints() const
 {
     const osg::Vec3Array* verts = static_cast<const osg::Vec3Array*>(this->getVertexArray());
-    Q_ASSERT(verts);
+    Q_CHECK_PTR(verts);
 
     return static_cast<int>(verts->size());
 }

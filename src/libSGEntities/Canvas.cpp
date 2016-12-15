@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
@@ -134,7 +133,7 @@ void entity::Canvas::initializeStateMachine()
 
     /* state sets for stroke and polygon geodes (will propagate to its children) */
     osg::StateSet* ss_strokes = m_geodeStrokes->getOrCreateStateSet();
-    Q_ASSERT(ss_strokes);
+    Q_CHECK_PTR(ss_strokes);
     osg::LineWidth* lw_strokes = new osg::LineWidth;
     lw_strokes->setWidth(cher::STROKE_LINE_WIDTH);
     ss_strokes->setAttributeAndModes(lw_strokes, osg::StateAttribute::ON);
@@ -147,7 +146,7 @@ void entity::Canvas::initializeStateMachine()
     m_geodeStrokes->setStateSet(ss_strokes);
 
     osg::StateSet* ss_poly = m_geodePolygons->getOrCreateStateSet();
-    Q_ASSERT(ss_poly);
+    Q_CHECK_PTR(ss_poly);
     osg::LineWidth* lw_poly = new osg::LineWidth;
     lw_poly->setWidth(cher::POLYGON_LINE_WIDTH);
     ss_poly->setAttributeAndModes(lw_poly, osg::StateAttribute::ON);
