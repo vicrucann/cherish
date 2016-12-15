@@ -9,10 +9,14 @@
 #include <osg/LineWidth>
 #include <osg/MatrixTransform>
 
+#include "SVMData.h"
+
+
 namespace entity {
 
 class DraggableWire : protected osg::MatrixTransform
 {
+    friend class SVMData;
 public:
     /*! A constructor - initializes the scene graph and sets default wire colors */
     DraggableWire();
