@@ -64,33 +64,6 @@ protected:
     virtual bool getIntersection3D(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa,
                                    const osg::Vec3f& center, const osg::Plane& plane, osg::Vec3f& P);
 
-    /*! A method to obtain two matrices - VPW and its invertse given the action adapter.
-     * \param aa is OSG-based variable from which camera, view and other matrices can be derived.
-     * \param VPW is the output View-Projection-World matrix
-     * \param invVPW is the ourput inverse of View-Projection-World matrix.
-     * \return true if both matrices were obtained without an error. */
-    bool getViewProjectionWorld(osgGA::GUIActionAdapter &aa, osg::Matrix &VPW, osg::Matrix &invVPW);
-
-    /*! A method to obtain far and near points of the screen point that cast a projection ray.
-     * \param x - x-coordinate of the screen
-     * \param y - y-coordinate of the screen
-     * \param invVPW - inverse matrix of View-Projection-World matrix
-     * \param near is the result 3D point on the near point on the cast ray
-     * \param far is the result 3D point as the far point on the cast ray.
-     * \return true if the points were obtained successfully.
-     * \sa getViewProjectionWorld(). */
-    void getFarNear(double x, double y, const osg::Matrix &invVPW, osg::Vec3f &near, osg::Vec3f &far);
-
-    /*! A method to obtain intersection point between a given plane and a line (ray).
-     * \param plane is the given plane
-     * \param center is an arbitrary point on the plane that represents the plane's center.
-     * \param nearPoint is the 3D near point of the ray that was cast from a screen point
-     * \param farPoint is the 3D far point of the ray that was cast from a screen point
-     * \param P is the result point that represents intersection of the plane and a ray that is given by far and near points
-     * \return true if the point was obtained without any errors
-     * \sa getFarNear() */
-    bool getRayPlaneIntersection(const osg::Plane &plane, const osg::Vec3f &center, const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, osg::Vec3f &P);
-
 protected:
     Geometry* m_geometry;
 };
