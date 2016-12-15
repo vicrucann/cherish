@@ -29,7 +29,7 @@ Documentation:
 * [CMake](https://cmake.org/) (>=2.8.11)
 * [Qt](http://www.qt.io/) (>=5.4; in case if you are planning to use Wacom tablet, the recommended Qt version is 5.4 or 5.5 due to a [tablet bug](https://bugreports.qt.io/browse/QTBUG-53628) in the stable versions older than 5.5.1)
 * [OpenSceneGraph](http://www.openscenegraph.org/) (>=3.4.0)
-* [Doxygen](www.doxygen.org/) (not mandatory; only used for documentation build)
+* [Doxygen](www.doxygen.org/) (not mandatory; only used for documentation build). Note: the development documentation of a master branch can be [viewed online](https://codedocs.xyz/vicrucann/cherish/).
 * [Git](https://git-scm.com/) (not mandatory; only used for development)
 * C++ compiler with C++11 support, e.g., `gcc` (>=4.8.1), Visual Studio (>=2013), clang (>=3.0).
 * Graphics card supporting OpenGL (>=3.3), otherwise the shaders will not work
@@ -67,7 +67,7 @@ build/ $ make
 
 ### Compilation using Qt Creator
 
-Assuming the project is checked out from git repository, use Qt Creator to open the project by opening the file `cherish/src/CMakeLists.txt`.
+Assuming the project is checked out from git repository and yout Qt Creator is configured to be used with an appropriate compiler and CMake, use Qt Creator to open the project by opening the file `cherish/src/CMakeLists.txt`.
 
 Follow the steps of Qt Creator to finish the build using CMake. After the build is complete, compile the project by running `<Ctrl>+B`, or run from the menu: "Build" -> "Build All".
 
