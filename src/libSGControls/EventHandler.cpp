@@ -2,6 +2,7 @@
 #include <iostream>
 #include <assert.h>
 #include <cerrno>
+#include <tuple>
 
 #include <osgViewer/View>
 #include <osgUtil/LineSegmentIntersector>
@@ -12,6 +13,8 @@
 
 #include "Utilities.h"
 #include "LineIntersector.h"
+#include "VirtualPlaneIntersector.h"
+#include "CanvasNormalProjector.h"
 
 EventHandler::EventHandler(GLWidget *widget, RootScene* scene, cher::MOUSE_MODE mode)
     : osgGA::GUIEventHandler()
@@ -684,86 +687,48 @@ cher::MOUSE_MODE EventHandler::getMouseMode(const T &result, cher::MOUSE_MODE mo
 bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                                                  double &u, double &v)
 {
-    /* get view-projection-world matrix and its inverse*/
-    osg::Matrix VPW, invVPW;
-    if (!Utilities::getViewProjectionWorld(aa, VPW, invVPW))
-        return false;
+    osg::ref_ptr<VirtualPlaneIntersector<entity::Canvas> > vpi =
+            new VirtualPlaneIntersector<entity::Canvas>(m_scene->getCanvasCurrent());
 
-    /* get far and near in global 3D coords */
-    osg::Vec3f nearPoint, farPoint;
-    Utilities::getFarNear(ea.getX(), ea.getY(), invVPW, nearPoint, farPoint);
-
-    /* get intersection point in global 3D coords */
-    osg::Vec3f P;
-    const osg::Plane plane = m_scene->getCanvasCurrent()->getPlane();
-    const osg::Vec3f center = m_scene->getCanvasCurrent()->getCenter();
-    if (!Utilities::getRayPlaneIntersection(plane, center, nearPoint, farPoint, P)){
+    bool success;
+    std::tie(u,v,success) = vpi->getIntersection2D(ea, aa);
+    if (!success)
+    {
         this->finishAll();
         return false;
     }
-
-    /* get model matrix and its inverse */
-    osg::Matrix M, invM;
-    if (!Utilities::getModel(m_scene->getCanvasCurrent(), M, invM))
-        return false;
-
-    /* obtain intersection in local 2D point */
-    osg::Vec3f p;
-    if (!Utilities::getLocalFromGlobal(P, invM, p))
-        return false;
-
-    u=p.x();
-    v=p.y();
     return true;
 }
 
-/* Algorithm:
- * Cast the ray into 3D space
- * Make sure the ray is not parallel to the normal
- * The new offset point will be located on the projected point
- * between the ray and canvas normal.
- * Ray and normal are skew lines in 3d space, so we only need
- * to extract the projection point of the ray into the normal.
-*/
 bool EventHandler::getRaytraceNormalProjection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, osg::Vec3f& XC)
 {
-    osg::Matrix VPW, invVPW;
-    if (!Utilities::getViewProjectionWorld(aa, VPW, invVPW))
-        return false;
+    osg::ref_ptr<CanvasNormalProjector> cnp = new CanvasNormalProjector(m_scene->getCanvasCurrent());
+    bool success;
+    std::tie(XC, success) = cnp->getProjection(ea, aa);
 
-    osg::Vec3f nearPoint, farPoint;
-    Utilities::getFarNear(ea.getX(), ea.getY(), invVPW, nearPoint, farPoint);
-
-    osg::Vec3f C = m_scene->getCanvasCurrent()->getCenter();
-    osg::Vec3f N = m_scene->getCanvasCurrent()->getNormal();
-
-    osg::Vec3f X1;
-    if (!Utilities::getSkewLinesProjection(C, farPoint, nearPoint, N, X1)){
+    if (!success){
         this->finishAll();
         return false;
     }
-    XC = X1 - C;
     return true;
 }
 
 bool EventHandler::getRaytracePlaneIntersection(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, const osg::Vec3f &axis, osg::Vec3f &P)
 {
-    /* get view-projection-world matrix and its inverse*/
-    osg::Matrix VPW, invVPW;
-    if (!Utilities::getViewProjectionWorld(aa, VPW, invVPW))
-        return false;
 
-    /* get far and near in global 3D coords */
-    osg::Vec3f nearPoint, farPoint;
-    Utilities::getFarNear(ea.getX(), ea.getY(), invVPW, nearPoint, farPoint);
+    osg::ref_ptr<VirtualPlaneIntersector<entity::Canvas> > vpi =
+            new VirtualPlaneIntersector<entity::Canvas>(m_scene->getCanvasCurrent());
 
-    /* get intersection point in global 3D coords */
+    bool success;
     const osg::Vec3f center = m_scene->getCanvasCurrent()->getCenter();
     const osg::Plane plane(axis, center);
-    if (!Utilities::getRayPlaneIntersection(plane, center, nearPoint, farPoint, P)){
+    std::tie(P, success) = vpi->getIntersection3D(ea, aa, plane);
+    if (!success)
+    {
         this->finishAll();
         return false;
     }
+
     return true;
 }
 

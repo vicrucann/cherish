@@ -12,6 +12,10 @@ include_directories(
 )
 
 set (libSGControls_SRCS
+    VirtualPlaneIntersector.h
+    VirtualPlaneIntersector.cpp
+    CanvasNormalProjector.h
+    CanvasNormalProjector.cpp
     EventHandler.h
     EventHandler.cpp
     Manipulator.h

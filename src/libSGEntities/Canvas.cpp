@@ -170,6 +170,16 @@ void entity::Canvas::initializeMasks()
         m_toolFrame->setNodeMask(cher::MASK_CANVASFRAME_IN);
 }
 
+osg::Matrix entity::Canvas::getMatrix() const
+{
+    return m_transform->getMatrix();
+}
+
+osg::Vec3f entity::Canvas::getCenter3D() const
+{
+    return this->getCenter();
+}
+
 ProgramStroke *entity::Canvas::getProgramStroke() const
 {
     return m_programStroke.get();

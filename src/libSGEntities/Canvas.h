@@ -46,6 +46,12 @@ public:
     /*! Method is called automatically from initializeSG(), or must be called when reading scene from file. */
     virtual void initializeMasks();
 
+    /*! \return model matrix of the canvas, i.e., local to global matrix.  */
+    osg::Matrix getMatrix() const;
+
+    /*! \sa Canvas::getCenter(). */
+    osg::Vec3f getCenter3D() const;
+
     ProgramStroke* getProgramStroke() const;
     ProgramPolygon* getProgramPolygon() const;
 
