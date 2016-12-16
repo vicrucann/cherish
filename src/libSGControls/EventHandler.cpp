@@ -20,7 +20,6 @@ EventHandler::EventHandler(GLWidget *widget, RootScene* scene, cher::MOUSE_MODE 
     , m_glWidget(widget)
     , m_mode(mode)
     , m_scene(scene)
-    , m_photo(0)
 {
 }
 
@@ -677,12 +676,6 @@ cher::MOUSE_MODE EventHandler::getMouseMode(const T &result, cher::MOUSE_MODE mo
     return mode_default;
 }
 
-/* Algorithm:
- * use ray-tracking techinique
- * calcualte near and far point in global 3D
- * intersect that segment with plane of canvas - 3D intersection point
- * extract local 3D coords so that to create a stroke (or apprent that point to a current stroke)
- */
 bool EventHandler::getRaytraceCanvasIntersection(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa,
                                                  double &u, double &v)
 {
@@ -758,10 +751,6 @@ bool EventHandler::setSubMouseMode(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
     return result;
 }
 
-/* sets colors of canvas frame drawables to colors:
- * gray color when mouse is not hovering anything
- * cyan color over the drawable which get the hovering
-*/
 void EventHandler::setDrawableColorFromMode(osg::Drawable *draw)
 {
     if (!draw) {
@@ -827,7 +816,6 @@ void EventHandler::finishAll()
     default:
         break;
     }
-    m_photo = 0;
 }
 
 void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
