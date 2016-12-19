@@ -1,46 +1,46 @@
-#include "LineIntersector.h"
+#include "PolyLineIntersector.h"
 
 #include "Utilities.h"
 
-LineIntersector::LineIntersector()
+PolyLineIntersector::PolyLineIntersector()
     : osgUtil::LineSegmentIntersector(MODEL, 0.f, 0.f)
     , m_offset(0.05f)
 {
     m_hitIndices.clear();
 }
 
-LineIntersector::LineIntersector(const osg::Vec3 &start, const osg::Vec3 &end)
+PolyLineIntersector::PolyLineIntersector(const osg::Vec3 &start, const osg::Vec3 &end)
     : osgUtil::LineSegmentIntersector(start, end)
     , m_offset(0.05f)
 {
     m_hitIndices.clear();
 }
 
-LineIntersector::LineIntersector(osgUtil::Intersector::CoordinateFrame cf, double x, double y)
+PolyLineIntersector::PolyLineIntersector(osgUtil::Intersector::CoordinateFrame cf, double x, double y)
     : osgUtil::LineSegmentIntersector(cf, x, y)
     , m_offset(0.05f)
 {
     m_hitIndices.clear();
 }
 
-LineIntersector::LineIntersector(osgUtil::Intersector::CoordinateFrame cf, const osg::Vec3d &start, const osg::Vec3d &end)
+PolyLineIntersector::PolyLineIntersector(osgUtil::Intersector::CoordinateFrame cf, const osg::Vec3d &start, const osg::Vec3d &end)
     : osgUtil::LineSegmentIntersector(cf, start, end)
     , m_offset(0.05f)
 {
-
+    m_hitIndices.clear();
 }
 
-void LineIntersector::setOffset(float offset)
+void PolyLineIntersector::setOffset(float offset)
 {
     m_offset = offset;
 }
 
-float LineIntersector::getOffset() const
+float PolyLineIntersector::getOffset() const
 {
     return m_offset;
 }
 
-void LineIntersector::getHitIndices(int &first, int &last) const
+void PolyLineIntersector::getHitIndices(int &first, int &last) const
 {
     if (m_hitIndices.empty()){
         first = -1;
@@ -52,11 +52,11 @@ void LineIntersector::getHitIndices(int &first, int &last) const
     }
 }
 
-osgUtil::Intersector *LineIntersector::clone(osgUtil::IntersectionVisitor &iv)
+osgUtil::Intersector *PolyLineIntersector::clone(osgUtil::IntersectionVisitor &iv)
 {
     if ( _coordinateFrame==MODEL && iv.getModelMatrix()==0 )
     {
-        osg::ref_ptr<LineIntersector> cloned = new LineIntersector( _start, _end );
+        osg::ref_ptr<PolyLineIntersector> cloned = new PolyLineIntersector( _start, _end );
         cloned->_parent = this;
         cloned->m_offset = m_offset;
         return cloned.release();
@@ -86,13 +86,13 @@ osgUtil::Intersector *LineIntersector::clone(osgUtil::IntersectionVisitor &iv)
     }
 
     osg::Matrix inverse = osg::Matrix::inverse(matrix);
-    osg::ref_ptr<LineIntersector> cloned = new LineIntersector( _start*inverse, _end*inverse );
+    osg::ref_ptr<PolyLineIntersector> cloned = new PolyLineIntersector( _start*inverse, _end*inverse );
     cloned->_parent = this;
     cloned->m_offset = m_offset;
     return cloned.release();
 }
 
-void LineIntersector::intersect(osgUtil::IntersectionVisitor &iv, osg::Drawable *drawable)
+void PolyLineIntersector::intersect(osgUtil::IntersectionVisitor &iv, osg::Drawable *drawable)
 {
     osg::BoundingBox bb = drawable->getBoundingBox();
     bb.xMin() -= m_offset; bb.xMax() += m_offset;
@@ -106,23 +106,35 @@ void LineIntersector::intersect(osgUtil::IntersectionVisitor &iv, osg::Drawable 
     osg::Geometry* geometry = drawable->asGeometry();
     if (geometry)
     {
+        if (!this->isRightPrimitive(geometry)) return;
+
         osg::Vec3Array* vertices = dynamic_cast<osg::Vec3Array*>(geometry->getVertexArray());
         if (!vertices) return;
-        if (vertices->size() == 2){
-            double distance = Utilities::getSkewLinesDistance(s,e,(*vertices)[1], (*vertices)[0]);
 
-            if (m_offset>=distance){
-                Intersection hit;
-                hit.ratio = distance;
-                hit.nodePath = iv.getNodePath();
-                hit.drawable = drawable;
-                hit.matrix = iv.getModelMatrix();
-                hit.localIntersectionPoint = (*vertices)[0];
-                m_hitIndices.push_back(0);
-                insertIntersection(hit);
-            }
+        for (unsigned int i=0; i<vertices->size(); ++i)
+        {
+            int j = (i==0)? vertices->size()-1 : i-1;
+            double distance = Utilities::getSkewLinesDistance(s,e,(*vertices)[i], (*vertices)[j]);
+            if (m_offset<distance) continue;
+
+            Intersection hit;
+            hit.ratio = distance;
+            hit.nodePath = iv.getNodePath();
+            hit.drawable = drawable;
+            hit.matrix = iv.getModelMatrix();
+            hit.localIntersectionPoint = (*vertices)[i];
+            m_hitIndices.push_back(i);
+            insertIntersection(hit);
         }
     }
 }
 
-
+bool PolyLineIntersector::isRightPrimitive(const osg::Geometry *geometry)
+{
+    const osg::Geometry::PrimitiveSetList& primitives = geometry->getPrimitiveSetList();
+    for (const auto& p : primitives){
+        if (p->getMode() == GL_LINE_LOOP || p->getMode() == GL_LINE_STRIP)
+            return true;
+    }
+    return false;
+}

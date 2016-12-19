@@ -28,6 +28,10 @@ set (libSGControls_SRCS
     StrokeIntersector.cpp
     LineIntersector.h
     LineIntersector.cpp
+    PolyLineIntersector.h
+    PolyLineIntersector.cpp
+    PointIntersector.h
+    PointIntersector.cpp
     ViewerCommand.h
     ViewerCommand.cpp
     LogFileHandler.h

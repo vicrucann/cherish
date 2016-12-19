@@ -15,13 +15,20 @@
 #include <osg/ref_ptr>
 #include <osg/observer_ptr>
 
+#include "../libGUI/GLWidget.h"
 #include "Settings.h"
 #include "Canvas.h"
 #include "Photo.h"
+#include "SVMData.h"
+#include "DraggableWire.h"
 #include "UserScene.h"
 #include "RootScene.h"
 #include "StrokeIntersector.h"
-#include "../libGUI/GLWidget.h"
+#include "LineIntersector.h"
+#include "PolyLineIntersector.h"
+#include "PointIntersector.h"
+#include "VirtualPlaneIntersector.h"
+#include "CanvasNormalProjector.h"
 
 class GLWidget;
 
@@ -98,6 +105,18 @@ protected:
     /*! A method to rotate a set of entities within a canvas. */
     void doEditEntitiesRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
+    /* A method for idle mode of SVM (Single View Metrology) related activity. */
+    void doIdleMouse(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
+
+    /*! A method for hover mode over entity::SVMData. */
+    void doHoverWire(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
+
+    /*! A method for point hovering over entity::SVMData */
+    void doHoverPoint(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
+
+    /*! A method for point dragging related to entity::SVMData. */
+    void doDragPoint(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
+
 protected:
     /*! A method to obtain entity::Stroke type from intersection result. */
     entity::Stroke*     getStroke(const StrokeIntersector::Intersection& result);
@@ -111,6 +130,12 @@ protected:
     /*! A method to obtain entity::Polygon type from intersection result. */
     entity::Polygon*    getPolygon(const osgUtil::LineSegmentIntersector::Intersection& result);
 
+    /*! A method to obtain entity::DraggableWire type from intersection result. */
+    entity::DraggableWire* getDraggableWire(const LineIntersector::Intersection& result);
+
+    /*! A method to obtain a selected point index of an entity::DraggableWire type from intersection result. */
+    int getSelectedPoint(const PointIntersector::Intersection& result);
+
     /*! A method to update a mouse mode based on type of geometry caught in an intersection.
      * This method is mainly used when we deal with a entity::SelectedGroup within a canvas. I.e.,
      * a group of geomtries that were selected by a user, and that group is now modifyable by methods of
@@ -120,7 +145,13 @@ protected:
      * contain any known componenents, or if they are empty.
      * \return new mouse mode to set. */
     template <typename T>
-    cher::MOUSE_MODE getMouseMode(const T& result, cher::MOUSE_MODE mode_default) const;
+    cher::MOUSE_MODE getMouseModeFromName(const T& result, cher::MOUSE_MODE mode_default) const;
+
+    /*! A method to update a provided mouse mode based on the current mouse event. Normally, it is used
+     * to determine whether a drag event is happening or not.
+     * \param mode is the input mouse mode
+     * \return the updated mouse mode (bitwise operator used to update corresponding flags). */
+    cher::MOUSE_MODE getMouseModeFromEvent(cher::MOUSE_MODE mode, const osgGA::GUIEventAdapter& ea);
 
     /*! A template method to obtain intersection given an intersector type as a template.
      * \param mask is used when only certain parts of scene graph should be taken into account by an intersector.
@@ -159,12 +190,19 @@ protected:
      * Used in entity select, entity move, entity scale, entity rotate, etc. modes.
      * \return true if no need to exit the parent function, false otherwise */
     template <typename TResult, typename TIntersector>
-    bool setSubMouseMode(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, cher::MOUSE_MODE modeDefault, bool selected = true);
+    bool setCanvasMouseMode(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, cher::MOUSE_MODE modeDefault, bool selected = true);
+
+    template <typename TResult, typename TIntersector>
+    std::tuple<bool, TResult> setSVMMouseMode(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa, cher::MOUSE_MODE modeDefault);
 
     /*! A method to set colors of canvas frame drawables to:
      * * gray color when mouse is not hovering anything
      * * cyan color over the drawable which gets the hovering. */
     void setDrawableColorFromMode(osg::Drawable* draw);
+
+    void updateWireGeometry(const PolyLineIntersector::Intersection& intersection);
+    void updatePointGeometry(const PointIntersector::Intersection& intersection);
+    void updateDragPointGeometry(const std::tuple<double, double, bool>& intersection, const osgGA::GUIEventAdapter& ea);
 
     /*! A method which is called whenever it is necessary to shut the current mode's operation.
      * E.g., for sketching, it would mean forcing a mouse release imitation and completion of a current stroke.
@@ -178,6 +216,8 @@ protected:
     GLWidget*                           m_glWidget;     /*!< A pointer on a current GLWidget; used to make sure the mouse mode is set up within GUI (i.e., cursor change). */
     cher::MOUSE_MODE                    m_mode;         /*!< A current mouse mode which dictates what actions are performed based on mouse events. */
     osg::observer_ptr<RootScene>        m_scene;        /*!< A pointer on a scene; ofter used to extract scene elements such as current canvas. */
+
+    osg::observer_ptr<entity::DraggableWire> m_selection;
 };
 
 #endif // EVENTHANDLER

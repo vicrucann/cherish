@@ -128,6 +128,7 @@ enum TraversalMask{
     MASK_CANVAS_OUT = 0x001, /* does not see any of canvas data */
     MASK_CANVASDATA_IN = 0x010, /* sees only geodeData geometries */
     MASK_CANVASFRAME_IN = 0x100, /* sees only canvas frame drawables */
+    MASK_SVMDATA_IN = 0x1000, /* sees only entity::SVMData */
     MASK_ALL_IN = ~0x0
 };
 

@@ -8,6 +8,7 @@
 #include <osgGA/GUIActionAdapter>
 
 #include "Canvas.h"
+#include "DraggableWire.h"
 
 /*! \class VirtualPlaneIntersector
  * \brief Class that allows calculation of a local intersection point between the raycast and

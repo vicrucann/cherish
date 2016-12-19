@@ -11,15 +11,13 @@
 #include <QDebug>
 
 #include "Utilities.h"
-#include "LineIntersector.h"
-#include "VirtualPlaneIntersector.h"
-#include "CanvasNormalProjector.h"
 
 EventHandler::EventHandler(GLWidget *widget, RootScene* scene, cher::MOUSE_MODE mode)
     : osgGA::GUIEventHandler()
     , m_glWidget(widget)
     , m_mode(mode)
     , m_scene(scene)
+    , m_selection(0)
 {
 }
 
@@ -110,7 +108,23 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             break;
         }
         break;
+    case cher::MOUSE_SVM:
+        switch(m_mode){
+        case cher::SVM_HOVER_WIRE:
+        case cher::SVM_DRAG_WIRE:
+            this->doHoverWire(ea, aa);
+            break;
+        }
+        break;
+    case cher::SVM_HOVER_POINT:
+        this->doHoverPoint(ea, aa);
+        break;
+    case cher::SVM_DRAG_POINT:
+        this->doDragPoint(ea, aa);
+        break;
+    case cher::SVM_IDLE:
     default:
+        this->doIdleMouse(ea, aa);
         break;
     }
 
@@ -296,7 +310,7 @@ void EventHandler::doEditCanvas(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
     if (!canvas) return;
 
     /* check if it is offset or rotate or normal mode */
-    if (!this->setSubMouseMode<LineIntersector::Intersection, LineIntersector>(
+    if (!this->setCanvasMouseMode<LineIntersector::Intersection, LineIntersector>(
                 ea, aa, cher::MOUSE_CANVAS, true))
         return;
 
@@ -309,7 +323,7 @@ void EventHandler::doEditCanvasOffset(const osgGA::GUIEventAdapter &ea, osgGA::G
     if (!canvas) return;
 
     /* check if it is offset or rotate or normal mode */
-    if (!this->setSubMouseMode<LineIntersector::Intersection, LineIntersector>(
+    if (!this->setCanvasMouseMode<LineIntersector::Intersection, LineIntersector>(
                 ea, aa, cher::MOUSE_CANVAS, true))
         return;
 
@@ -347,7 +361,7 @@ void EventHandler::doEditCanvasRotate(const osgGA::GUIEventAdapter &ea, osgGA::G
     if (!canvas) return;
 
     /* check if it is offset or rotate or normal mode */
-    if (!this->setSubMouseMode<LineIntersector::Intersection, LineIntersector>(
+    if (!this->setCanvasMouseMode<LineIntersector::Intersection, LineIntersector>(
                 ea, aa, cher::MOUSE_CANVAS, true))
         return;
 
@@ -483,7 +497,7 @@ void EventHandler::doEditEntitiesMove(const osgGA::GUIEventAdapter &ea, osgGA::G
 //    if (!this->setSubSelectionType(ea, aa)) return;
     entity::Canvas* canvas = m_scene->getCanvasCurrent();
     if (!canvas) return;
-    if (!this->setSubMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
+    if (!this->setCanvasMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
                 ea, aa, cher::SELECT_ENTITY, canvas->isEntitiesSelected()))
         return;
 
@@ -531,7 +545,7 @@ void EventHandler::doEditEntitiesScale(const osgGA::GUIEventAdapter &ea, osgGA::
 //    if (!this->setSubSelectionType(ea, aa)) return;
     entity::Canvas* canvas = m_scene->getCanvasCurrent();
     if (!canvas) return;
-    if (!this->setSubMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
+    if (!this->setCanvasMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
                 ea, aa, cher::SELECT_ENTITY, canvas->isEntitiesSelected()))
         return;
 
@@ -579,7 +593,7 @@ void EventHandler::doEditEntitiesRotate(const osgGA::GUIEventAdapter &ea, osgGA:
 //    if (!this->setSubSelectionType(ea, aa)) return;
     entity::Canvas* canvas = m_scene->getCanvasCurrent();
     if (!canvas) return;
-    if (!this->setSubMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
+    if (!this->setCanvasMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
                 ea, aa, cher::SELECT_ENTITY, canvas->isEntitiesSelected()))
         return;
 
@@ -623,6 +637,62 @@ void EventHandler::doEditEntitiesRotate(const osgGA::GUIEventAdapter &ea, osgGA:
     }
 }
 
+void EventHandler::doIdleMouse(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (ea.getEventType() != osgGA::GUIEventAdapter::MOVE)
+        return;
+
+    bool isModeSame = true;
+    PolyLineIntersector::Intersection intersection;
+    std::tie(isModeSame, intersection) = this->setSVMMouseMode<PolyLineIntersector::Intersection, PolyLineIntersector>(ea, aa, cher::SVM_IDLE);
+    this->updateWireGeometry(intersection);
+}
+
+void EventHandler::doHoverWire(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (ea.getEventType() != osgGA::GUIEventAdapter::MOVE)
+        return;
+
+    bool isModeSame = true;
+    PolyLineIntersector::Intersection intersectionLine;
+    std::tie(isModeSame, intersectionLine) = this->setSVMMouseMode<PolyLineIntersector::Intersection, PolyLineIntersector>(ea, aa, cher::SVM_IDLE);
+    this->updateWireGeometry(intersectionLine);
+    if (!isModeSame) return;
+
+    PointIntersector::Intersection intersectionPoint;
+    std::tie(isModeSame, intersectionPoint) =
+            this->setSVMMouseMode<PointIntersector::Intersection, PointIntersector>(ea, aa, cher::SVM_HOVER_WIRE);
+    this->updatePointGeometry(intersectionPoint);
+}
+
+void EventHandler::doHoverPoint(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if ( !(ea.getEventType() == osgGA::GUIEventAdapter::MOVE ||
+           (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)) )
+        return;
+
+    bool isModeSame = true;
+    PointIntersector::Intersection intersectionPoint;
+    std::tie(isModeSame, intersectionPoint) =
+            this->setSVMMouseMode<PointIntersector::Intersection, PointIntersector>(ea, aa, cher::SVM_HOVER_WIRE);
+    this->updatePointGeometry(intersectionPoint);
+}
+
+void EventHandler::doDragPoint(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           ))
+        return;
+
+    /* obtain new location of the dragging point and edit the selection */
+    osg::ref_ptr<VirtualPlaneIntersector<entity::DraggableWire> > vpi =
+            new VirtualPlaneIntersector<entity::DraggableWire>(m_selection.get());
+    auto intersection = vpi->getIntersection2D(ea, aa);
+    this->updateDragPointGeometry(intersection, ea);
+}
+
 entity::Stroke *EventHandler::getStroke(const StrokeIntersector::Intersection &result)
 {
     return dynamic_cast<entity::Stroke*>(result.drawable.get());
@@ -649,8 +719,29 @@ entity::Polygon *EventHandler::getPolygon(const osgUtil::LineSegmentIntersector:
     return dynamic_cast<entity::Polygon*>(result.drawable.get());
 }
 
+entity::DraggableWire *EventHandler::getDraggableWire(const osgUtil::LineSegmentIntersector::Intersection &result)
+{
+    if (!result.drawable.get()) return NULL;
+    osg::Group* group = result.drawable->getParent(0);
+    if (!group) return NULL;
+    osg::Group* parent = group->getParent(0);
+    return parent? dynamic_cast<entity::DraggableWire*>(parent) : NULL;
+}
+
+int EventHandler::getSelectedPoint(const PointIntersector::Intersection &result)
+{
+    if (!result.drawable.get()) return -1;
+    return result.primitiveIndex;
+}
+
+cher::MOUSE_MODE EventHandler::getMouseModeFromEvent(cher::MOUSE_MODE mode, const osgGA::GUIEventAdapter &ea)
+{
+    return static_cast<cher::MOUSE_MODE>( (ea.getEventType() == osgGA::GUIEventAdapter::DRAG)?
+                                              (mode | cher::maskDrag) : mode);
+}
+
 template <typename T>
-cher::MOUSE_MODE EventHandler::getMouseMode(const T &result, cher::MOUSE_MODE mode_default) const
+cher::MOUSE_MODE EventHandler::getMouseModeFromName(const T &result, cher::MOUSE_MODE mode_default) const
 {
     std::string name = result.drawable->getName();
     if (name == "Pickable")
@@ -673,6 +764,10 @@ cher::MOUSE_MODE EventHandler::getMouseMode(const T &result, cher::MOUSE_MODE mo
         return cher::CANVAS_ROTATE_UPLUS;
     else if (name == "RotateY2")
         return cher::CANVAS_ROTATE_UMINUS;
+    else if (name == "Wire")
+        return cher::SVM_HOVER_WIRE;
+    else if (name == "Point")
+        return cher::SVM_HOVER_POINT;
     return mode_default;
 }
 
@@ -725,7 +820,7 @@ bool EventHandler::getRaytracePlaneIntersection(const osgGA::GUIEventAdapter &ea
 }
 
 template <typename TResult, typename TIntersector>
-bool EventHandler::setSubMouseMode(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, cher::MOUSE_MODE modeDefault, bool selected)
+bool EventHandler::setCanvasMouseMode(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, cher::MOUSE_MODE modeDefault, bool selected)
 {
     bool result = true;
     if (ea.getEventType() == osgGA::GUIEventAdapter::MOVE){
@@ -736,7 +831,7 @@ bool EventHandler::setSubMouseMode(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
 
             /* if mouse is hovering over certain drawable, set the corresponding mode */
             if (inter_occured){
-                cher::MOUSE_MODE mode = this->getMouseMode<TResult>(result_drawable, modeDefault);
+                cher::MOUSE_MODE mode = this->getMouseModeFromName<TResult>(result_drawable, modeDefault);
                 result = mode == m_mode;
                 m_glWidget->setMouseMode(mode);
             }
@@ -766,6 +861,59 @@ void EventHandler::setDrawableColorFromMode(osg::Drawable *draw)
     (*colors)[0] = solarized::cyan;
     geom->dirtyDisplayList();
     geom->dirtyBound();
+}
+
+void EventHandler::updateWireGeometry(const osgUtil::LineSegmentIntersector::Intersection &intersection)
+{
+    if (intersection.drawable.get()){
+        if (!m_selection.get()){
+            entity::DraggableWire* wire = this->getDraggableWire(intersection);
+            if (!wire) return;
+            wire->select();
+            m_selection = wire;
+        }
+    }
+    else {
+        if (m_selection.get()){
+            m_selection->unselect();
+            m_selection = 0;
+        }
+    }
+}
+
+void EventHandler::updatePointGeometry(const osgUtil::LineSegmentIntersector::Intersection &intersection)
+{
+    if (intersection.drawable.get()){
+        // pick a point
+        if (!m_selection.get()){
+            entity::DraggableWire* wire = this->getDraggableWire(intersection);
+            if (!wire) return;
+            wire->select();
+        }
+        if (!m_selection->getGeode()->containsDrawable(intersection.drawable.get())) return;
+        int index = this->getSelectedPoint(intersection);
+        if (! (m_mode & cher::maskDrag))
+            m_selection->pick(index);
+        else
+            m_selection->drag();
+    }
+    else {
+        // unpick the point
+        if (m_selection.get()){
+            m_selection->unpick();
+        }
+    }
+}
+
+void EventHandler::updateDragPointGeometry(const std::tuple<double, double, bool> &intersection, const osgGA::GUIEventAdapter &ea)
+{
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE || !std::get<2>(intersection)){
+        m_selection->dragStop();
+        m_mode = cher::SVM_HOVER_POINT;
+    }
+    else {
+        m_selection->editPick(std::get<0>(intersection), std::get<1>(intersection));
+    }
 }
 
 /* If any entity is in edit mode,
@@ -822,7 +970,7 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
 {
     entity::Canvas* canvas = m_scene->getCanvasCurrent();
     if (!canvas) return;
-    if (!this->setSubMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
+    if (!this->setCanvasMouseMode<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(
                 ea, aa, cher::SELECT_ENTITY, canvas->isEntitiesSelected()))
         return;
 //    if (!this->setSubSelectionType(ea, aa)) return;
@@ -928,4 +1076,27 @@ bool EventHandler::getIntersection(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
 
     resultIntersection = intersector->getFirstIntersection();
     return true;
+}
+
+template <typename TResult, typename TIntersector>
+std::tuple<bool, TResult> EventHandler::setSVMMouseMode(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, cher::MOUSE_MODE modeDefault)
+{
+    bool isModeSame = true;
+    TResult intersection;
+    bool inter_occured = this->getIntersection<TResult, TIntersector>(ea,aa, cher::MASK_SVMDATA_IN, intersection);
+
+    /* if mouse is hovering over certain drawable, set the corresponding mode */
+    if (inter_occured){
+        cher::MOUSE_MODE mode = this->getMouseModeFromName<TResult>(intersection, modeDefault);
+        mode = this->getMouseModeFromEvent(mode, ea);
+        isModeSame = (mode == m_mode);
+        m_mode = mode;
+    }
+    /* if not, or if the mouse left the drawable area, make sure it is in entity select mode */
+    else{
+        isModeSame = m_mode == modeDefault;
+        m_mode = modeDefault;
+    }
+
+    return std::make_tuple(isModeSame, intersection);
 }

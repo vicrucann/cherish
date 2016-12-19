@@ -55,6 +55,16 @@ osg::Plane entity::DraggableWire::getPlane() const
     return osg::Plane(P1, P2, P3);
 }
 
+osg::Matrix entity::DraggableWire::getMatrix() const
+{
+    return osg::MatrixTransform::getMatrix();
+}
+
+osg::ObserverSet *entity::DraggableWire::getOrCreateObserverSet()
+{
+    return osg::MatrixTransform::getOrCreateObserverSet();
+}
+
 const osg::Geode *entity::DraggableWire::getGeode() const
 {
     return m_geode;

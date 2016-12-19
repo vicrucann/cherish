@@ -92,3 +92,4 @@ bool VirtualPlaneIntersector<Geometry>::getIntersection3D(const osgGA::GUIEventA
 // provide the template definitions
 // see more on this: https://isocpp.org/wiki/faq/templates#separate-template-fn-defn-from-decl
 template class VirtualPlaneIntersector<entity::Canvas>;
+template class VirtualPlaneIntersector<entity::DraggableWire>;
