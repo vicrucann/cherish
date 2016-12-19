@@ -114,17 +114,19 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         case cher::SVM_DRAG_WIRE:
             this->doHoverWire(ea, aa);
             break;
+        case cher::SVM_HOVER_POINT:
+            this->doHoverPoint(ea, aa);
+            break;
+        case cher::SVM_DRAG_POINT:
+            this->doDragPoint(ea, aa);
+            break;
+        case cher::SVM_IDLE:
+        default:
+            this->doIdleMouse(ea, aa);
+            break;
         }
         break;
-    case cher::SVM_HOVER_POINT:
-        this->doHoverPoint(ea, aa);
-        break;
-    case cher::SVM_DRAG_POINT:
-        this->doDragPoint(ea, aa);
-        break;
-    case cher::SVM_IDLE:
     default:
-        this->doIdleMouse(ea, aa);
         break;
     }
 
