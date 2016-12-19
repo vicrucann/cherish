@@ -88,6 +88,8 @@ public:
     static const QIcon& viewerNextIcon();
     static const QIcon& viewerPreviousIcon();
     static const QIcon& viewerBookmarkIcon();
+    static const QIcon& viewerBookmarkNewIcon();
+    static const QIcon& viewerBookmarkEditIcon();
     static const QIcon& viewerRightIcon();
     static const QIcon& viewerTopIcon();
     static const QIcon& viewerTwoscreenIcon();

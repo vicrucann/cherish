@@ -165,6 +165,8 @@ protected slots:
     void onStrokesPush();
 
     void onBookmark();
+    void onBookmarkNew();
+    void onBookmarkEdit();
 
     void onStrokeFogFactor();
 
@@ -207,7 +209,7 @@ protected:
 
     /* CAMERA actions */
     QAction * m_actionOrbit, * m_actionPan, * m_actionZoom
-            , * m_actionPrevView, * m_actionNextView, * m_actionBookmark
+            , * m_actionPrevView, * m_actionNextView, * m_actionBookmark, * m_actionBookmarkNew, * m_actionBookmarkEdit
             , * m_actionCameraSettings, * m_actionHomeView, * m_actionViewAllCanvas;
 
     // SCENE actions
