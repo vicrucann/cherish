@@ -30,6 +30,9 @@ public:
     /*! Method to set up world to local matrix transform for a "Floor" wire. */
     void setTransformFloor(osg::Matrix m);
 
+    /*! Method to set up visibility of geometries. */
+    void setVisibility(bool visibility);
+
 private:
     osg::ref_ptr<osg::Switch>   m_switch;
     entity::DraggableWire*      m_wire1;

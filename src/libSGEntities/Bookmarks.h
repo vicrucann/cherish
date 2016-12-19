@@ -93,6 +93,9 @@ public:
     /*! A method to extract scene state given a row index of the BookmarkWidget. */
     entity::SceneState* getSceneState(int row);
 
+    /*! A method to obtain lastly added child of a scene state. */
+    entity::SceneState* getLastSceneState();
+
     /*! A method that performs an addition of a bookmark to the data structure. It also requests
      * a screenshot of the bookmark from GLWidget, and SceneState to add as a child to the bookmakr
      * which strips its data from the current state of RootScene.

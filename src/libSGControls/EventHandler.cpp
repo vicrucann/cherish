@@ -146,9 +146,6 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     if (cnv) this->finishAll();
     m_mode = mode;
 
-
-
-    // TODO: move the below content to GLWidget's function
     switch (m_mode){
     case cher::ENTITY_ROTATE:
     case cher::ENTITY_SCALE:

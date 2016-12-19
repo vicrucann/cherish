@@ -75,7 +75,15 @@ public:
     void addPolygon(float u, float v, cher::EVENT event);
     void selectAllEntities();
     void addPhoto(const std::string& fname);
+
+    /*! A method to add a new camera position as a bookmark to the BookmarkWidget, and also to the scene graph as entity::SceneState. */
     void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov);
+
+    /*! A method to suplement a last added entity::SceneState with entity::SVMData as a child.
+     * Used to create a new bookmark using correspondence between four points in two different planes
+     * This method requires presense of at least two canvases on the screen. */
+    bool addSVMData();
+
     void addBookmarkTool(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);

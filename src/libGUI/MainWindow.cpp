@@ -750,12 +750,24 @@ void MainWindow::onBookmark()
     double fov;
     m_glWidget->getCameraView(eye, center, up, fov);
     m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
-    this->statusBar()->showMessage(tr("Current camera view is saved as a bookmark"));
+    this->statusBar()->showMessage(tr("Current camera view is saved as a bookmark."));
 }
 
 void MainWindow::onBookmarkNew()
 {
+    /* create initial camera position, add it to scene graph and tools */
+    osg::Vec3d eye, center, up;
+    double fov;
+    m_glWidget->getCameraView(eye, center, up, fov);
+    m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
 
+    /* create corresponding SVM data connected to the bookmark */
+    m_rootScene->addSVMData();
+
+    /* set mouse in SVM mode, provide the selected SVMData to EventHandler.
+     * The camera position will be updated from EventHandler. */
+
+    this->statusBar()->showMessage(tr("New camera view added through SVM method."));
 }
 
 void MainWindow::onBookmarkEdit()

@@ -208,6 +208,15 @@ void entity::SceneState::resetTransparency(int index, float t)
     m_photoTransparencies[index] = t;
 }
 
+bool entity::SceneState::addSVMData(const osg::Matrix &wall, const osg::Matrix &floor)
+{
+    osg::ref_ptr< entity::SVMData> svm = new entity::SVMData();
+    Q_CHECK_PTR(svm.get());
+    svm->setTransformWall(wall);
+    svm->setTransformFloor(floor);
+    return this->addChild(svm);
+}
+
 REGISTER_OBJECT_WRAPPER(SceneState_Wrapper
                         , new entity::SceneState
                         , entity::SceneState

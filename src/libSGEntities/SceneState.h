@@ -6,6 +6,7 @@
 #include <RootScene.h>
 
 #include "ProtectedGroup.h"
+#include "SVMData.h"
 
 class RootScene;
 
@@ -21,7 +22,8 @@ namespace entity{
  * It inherits osg::ProtectedGroup so that to be able to take advantage of OSG serialization since
  * the scene state is saved together with each bookmark data.
  *
- * The SceneState does not form any scene graphs, i.e., no children are added.
+ * The SceneState normally does not form any scene graphs, i.e., no children are added. However, when
+ * later entity::SVMData added, the user can add them as a child when using SVM methods.
 */
 class SceneState : public osg::ProtectedGroup
 {
@@ -127,6 +129,8 @@ public:
      * \param index is specified index  which needs to be reset
      * \param t is the new transparency value */
     void resetTransparency(int index, float t);
+
+    bool addSVMData(const osg::Matrix& wall, const osg::Matrix& floor);
 
 private:
     bool m_axisFlag;  /*!< Boolean flag indicating whether global axis visibility is on (true) or off (false). */

@@ -323,6 +323,22 @@ void RootScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const
     m_userScene->addBookmark(widget, eye, center, up, fov);
 }
 
+bool RootScene::addSVMData()
+{
+    /* extract the lastly added bookmark (entity::SceneState) */
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    entity::SceneState* ss = m_userScene->getBookmarksModel()->getLastSceneState();
+    if (!ss) return false;
+
+    /* take current and previous canvases to create SVMData */
+    entity::Canvas* wall = m_userScene->getCanvasCurrent();
+    entity::Canvas* floor = m_userScene->getCanvasPrevious();
+    if (!wall || !floor) return false;
+
+    /*! Add the svm data with the given canvas parameters */
+    return ss->addSVMData(wall->getMatrix(), floor->getMatrix());
+}
+
 void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     if (!m_bookmarkTools) {
