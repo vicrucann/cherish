@@ -48,6 +48,11 @@ public:
      * occured or not. */
     virtual Intersection3D getIntersection3D(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
+    /*! A convinience method to obtain global intersection point between the raycast and a
+     * virtual plane given the plane equation.
+     * \ param plane is the virtual plane equation. That means, only Geometry's center is used.
+     * \return A tuple of a form (osg::Vec3f, bool), where the first variable is the global intersection
+     * coordinates, and the last variable denotes whther the intersection has occured or not. */
     virtual Intersection3D getIntersection3D(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa, const osg::Plane& plane);
 
 protected:

@@ -54,4 +54,5 @@ add_library(libSGControls
 target_link_libraries( libSGControls
     ${QT_LIBRARIES}
     ${OPENSCENEGRAPH_LIBRARIES}
+    libSGEntities
 )
