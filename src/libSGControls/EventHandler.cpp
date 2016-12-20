@@ -737,8 +737,7 @@ entity::DraggableWire *EventHandler::getDraggableWire(const PolyLineIntersector:
     osg::Group* group = result.drawable->getParent(0);
     if (!group) return NULL;
     osg::Group* parent = group->getParent(0);
-    entity::DraggableWire* wire = dynamic_cast<entity::DraggableWire*>(parent);
-    return parent? dynamic_cast<entity::DraggableWire*>(parent) : NULL;
+    return parent? static_cast<entity::DraggableWire*>(parent) : NULL;
 }
 
 int EventHandler::getSelectedPoint(const PointIntersector::Intersection &result)
