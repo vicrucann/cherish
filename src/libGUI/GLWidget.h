@@ -68,14 +68,14 @@ public:
     /*! Method to return manipulator's camera parameters. */
     void getCameraView(osg::Vec3d& eye, osg::Vec3d& center, osg::Vec3d& up, double& fov) const;
 
-    /*! \param mode is the mouse mode to set up for the GLWidget. */
+    /*! \param mode is the mouse mode to set up for the GLWidget and whole application. */
     void setMouseMode(const cher::MOUSE_MODE& mode);
 
 signals:
     /*! Signal is emitted on double click to automatically switch the mouse mode. */
     void autoSwitchMode(cher::MOUSE_MODE mode);
 
-    /*! Signal is emitted when mouse mode was set. */
+    /*! Signal is emitted when mouse mode was set. It is connected to MainWindow::onMouseModeSet(). */
     void mouseModeSet(cher::MOUSE_MODE mode);
 
     /*! Signal is emitted when FOV was changed. */

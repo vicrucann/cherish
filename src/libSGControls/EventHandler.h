@@ -105,16 +105,16 @@ protected:
     /*! A method to rotate a set of entities within a canvas. */
     void doEditEntitiesRotate(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
-    /* A method for idle mode of SVM (Single View Metrology) related activity. */
+    /* A method for idle mode of SVM (Single View Metrology) related activity. PolyLineIntersector is used. */
     void doIdleMouse(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
 
-    /*! A method for hover mode over entity::SVMData. */
+    /*! A method for hover mode over entity::SVMData. PolyLineIntersector and PointIntersector are used. */
     void doHoverWire(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
 
-    /*! A method for point hovering over entity::SVMData */
+    /*! A method for point hovering over entity::SVMData. PointIntersector is used. */
     void doHoverPoint(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
 
-    /*! A method for point dragging related to entity::SVMData. */
+    /*! A method for point dragging related to entity::SVMData. VirtualPlaneIntersector is used. */
     void doDragPoint(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
 
 protected:
@@ -131,7 +131,7 @@ protected:
     entity::Polygon*    getPolygon(const osgUtil::LineSegmentIntersector::Intersection& result);
 
     /*! A method to obtain entity::DraggableWire type from intersection result. */
-    entity::DraggableWire* getDraggableWire(const LineIntersector::Intersection& result);
+    entity::DraggableWire* getDraggableWire(const PolyLineIntersector::Intersection& result);
 
     /*! A method to obtain a selected point index of an entity::DraggableWire type from intersection result. */
     int getSelectedPoint(const PointIntersector::Intersection& result);

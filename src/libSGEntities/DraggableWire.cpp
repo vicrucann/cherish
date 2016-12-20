@@ -18,7 +18,7 @@ entity::DraggableWire::DraggableWire()
     m_wire->setUseDisplayList(false);
     m_wire->setName(cher::NAME_SVM_WIRE);
     m_points->setUseDisplayList(false);
-    m_points->setName(cher::NAME_SVM_WIRE);
+    m_points->setName(cher::NAME_SVM_POINTS);
 
     osg::Vec3Array* verts = new osg::Vec3Array;
     verts->push_back(osg::Vec3f(cher::SVMDATA_HALFWIDTH, cher::SVMDATA_HALFWIDTH, 0.f));
@@ -53,16 +53,6 @@ osg::Plane entity::DraggableWire::getPlane() const
     osg::Vec3f P2 = osg::Vec3f(1,1,0) * this->getMatrix();
     osg::Vec3f P3 = osg::Vec3f(0,1,0) * this->getMatrix();
     return osg::Plane(P1, P2, P3);
-}
-
-osg::Matrix entity::DraggableWire::getMatrix() const
-{
-    return osg::MatrixTransform::getMatrix();
-}
-
-osg::ObserverSet *entity::DraggableWire::getOrCreateObserverSet()
-{
-    return osg::MatrixTransform::getOrCreateObserverSet();
 }
 
 const osg::Geode *entity::DraggableWire::getGeode() const

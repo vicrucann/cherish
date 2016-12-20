@@ -159,6 +159,14 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
         /* if mode is only for current canvas, disable all other canvases from usage */
         m_scene->setCanvasesButCurrent(false);
         break;
+    case cher::SVM_DRAG_POINT:
+    case cher::SVM_DRAG_WIRE:
+    case cher::SVM_HOVER_POINT:
+    case cher::SVM_HOVER_WIRE:
+    case cher::SVM_IDLE:
+        /* if it is SVM mode, no canvases can be available for selection at all */
+        m_scene->setAllCanvases(false);
+        break;
     default:
         /* if selection within 3D, enable all the canvases for selection */
         m_scene->setCanvasesButCurrent(true);
@@ -652,12 +660,15 @@ void EventHandler::doHoverWire(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
     if (ea.getEventType() != osgGA::GUIEventAdapter::MOVE)
         return;
 
+    std::cout << "hover-wire" << std::endl;
+
     bool isModeSame = true;
     PolyLineIntersector::Intersection intersectionLine;
     std::tie(isModeSame, intersectionLine) = this->setSVMMouseMode<PolyLineIntersector::Intersection, PolyLineIntersector>(ea, aa, cher::SVM_IDLE);
     this->updateWireGeometry(intersectionLine);
     if (!isModeSame) return;
 
+    std::cout << "trying for a point" << std::endl;
     PointIntersector::Intersection intersectionPoint;
     std::tie(isModeSame, intersectionPoint) =
             this->setSVMMouseMode<PointIntersector::Intersection, PointIntersector>(ea, aa, cher::SVM_HOVER_WIRE);
@@ -669,6 +680,8 @@ void EventHandler::doHoverPoint(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
     if ( !(ea.getEventType() == osgGA::GUIEventAdapter::MOVE ||
            (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)) )
         return;
+
+    std::cout << "hover-point" << std::endl;
 
     bool isModeSame = true;
     PointIntersector::Intersection intersectionPoint;
@@ -718,12 +731,13 @@ entity::Polygon *EventHandler::getPolygon(const osgUtil::LineSegmentIntersector:
     return dynamic_cast<entity::Polygon*>(result.drawable.get());
 }
 
-entity::DraggableWire *EventHandler::getDraggableWire(const osgUtil::LineSegmentIntersector::Intersection &result)
+entity::DraggableWire *EventHandler::getDraggableWire(const PolyLineIntersector::Intersection &result)
 {
     if (!result.drawable.get()) return NULL;
     osg::Group* group = result.drawable->getParent(0);
     if (!group) return NULL;
     osg::Group* parent = group->getParent(0);
+    entity::DraggableWire* wire = dynamic_cast<entity::DraggableWire*>(parent);
     return parent? dynamic_cast<entity::DraggableWire*>(parent) : NULL;
 }
 
@@ -743,6 +757,8 @@ template <typename T>
 cher::MOUSE_MODE EventHandler::getMouseModeFromName(const T &result, cher::MOUSE_MODE mode_default) const
 {
     std::string name = result.drawable->getName();
+    std::cout << "name=" << name << std::endl;
+    // TODO : register the string names as const in Settings
     if (name == "Pickable")
         return cher::SELECT_ENTITY;
     else if (name == "Center")
@@ -763,9 +779,9 @@ cher::MOUSE_MODE EventHandler::getMouseModeFromName(const T &result, cher::MOUSE
         return cher::CANVAS_ROTATE_UPLUS;
     else if (name == "RotateY2")
         return cher::CANVAS_ROTATE_UMINUS;
-    else if (name == "Wire")
+    else if (name == cher::NAME_SVM_WIRE)
         return cher::SVM_HOVER_WIRE;
-    else if (name == "Point")
+    else if (name == cher::NAME_SVM_POINTS)
         return cher::SVM_HOVER_POINT;
     return mode_default;
 }
@@ -862,12 +878,15 @@ void EventHandler::setDrawableColorFromMode(osg::Drawable *draw)
     geom->dirtyBound();
 }
 
-void EventHandler::updateWireGeometry(const osgUtil::LineSegmentIntersector::Intersection &intersection)
+void EventHandler::updateWireGeometry(const PolyLineIntersector::Intersection &intersection)
 {
     if (intersection.drawable.get()){
         if (!m_selection.get()){
             entity::DraggableWire* wire = this->getDraggableWire(intersection);
-            if (!wire) return;
+            if (!wire) {
+                std::cerr << "Could not dynamic_cast<> to DraggableWire" << std::endl;
+                return;
+            }
             wire->select();
             m_selection = wire;
         }
@@ -880,16 +899,22 @@ void EventHandler::updateWireGeometry(const osgUtil::LineSegmentIntersector::Int
     }
 }
 
-void EventHandler::updatePointGeometry(const osgUtil::LineSegmentIntersector::Intersection &intersection)
+void EventHandler::updatePointGeometry(const PointIntersector::Intersection &intersection)
 {
     if (intersection.drawable.get()){
         // pick a point
         if (!m_selection.get()){
             entity::DraggableWire* wire = this->getDraggableWire(intersection);
-            if (!wire) return;
+            if (!wire) {
+                std::cerr << "Could not dynamic_cast<> to DraggableWire" << std::endl;
+                return;
+            }
             wire->select();
         }
-        if (!m_selection->getGeode()->containsDrawable(intersection.drawable.get())) return;
+        if (!m_selection->getGeode()->containsDrawable(intersection.drawable.get())) {
+            std::cerr << "Selected wire does not contain that drawable" << std::endl;
+            return;
+        }
         int index = this->getSelectedPoint(intersection);
         if (! (m_mode & cher::maskDrag))
             m_selection->pick(index);
@@ -1087,6 +1112,7 @@ std::tuple<bool, TResult> EventHandler::setSVMMouseMode(const osgGA::GUIEventAda
     /* if mouse is hovering over certain drawable, set the corresponding mode */
     if (inter_occured){
         cher::MOUSE_MODE mode = this->getMouseModeFromName<TResult>(intersection, modeDefault);
+
         mode = this->getMouseModeFromEvent(mode, ea);
         isModeSame = (mode == m_mode);
         m_mode = mode;

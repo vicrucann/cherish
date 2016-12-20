@@ -766,6 +766,7 @@ void MainWindow::onBookmarkNew()
 
     /* set mouse in SVM mode, provide the selected SVMData to EventHandler.
      * The camera position will be updated from EventHandler. */
+    m_glWidget->setMouseMode(cher::SVM_IDLE);
 
     this->statusBar()->showMessage(tr("New camera view added through SVM method."));
 }

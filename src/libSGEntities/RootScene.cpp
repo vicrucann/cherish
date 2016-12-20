@@ -335,8 +335,9 @@ bool RootScene::addSVMData()
     entity::Canvas* floor = m_userScene->getCanvasPrevious();
     if (!wall || !floor) return false;
 
-    /*! Add the svm data with the given canvas parameters */
-    return ss->addSVMData(wall->getMatrix(), floor->getMatrix());
+    /* Add the svm data with the given canvas parameters */
+    bool added = ss->addSVMData(wall->getMatrix(), floor->getMatrix());
+    return added;
 }
 
 void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
@@ -431,6 +432,11 @@ bool RootScene::setCanvasPrevious(entity::Canvas* cnv)
 void RootScene::setCanvasesButCurrent(bool enable)
 {
     m_userScene->setCanvasesButCurrent(enable);
+}
+
+void RootScene::setAllCanvases(bool enable)
+{
+    m_userScene->setAllCanvases(enable);
 }
 
 entity::Canvas* RootScene::getCanvasCurrent() const

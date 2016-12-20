@@ -217,6 +217,14 @@ bool entity::SceneState::addSVMData(const osg::Matrix &wall, const osg::Matrix &
     return this->addChild(svm);
 }
 
+entity::SVMData *entity::SceneState::getSVMData()
+{
+    if (this->getNumChildren() == 0) return NULL;
+    osg::Node* node = this->getChild(0);
+    Q_CHECK_PTR(node);
+    return dynamic_cast<entity::SVMData*>(node);
+}
+
 REGISTER_OBJECT_WRAPPER(SceneState_Wrapper
                         , new entity::SceneState
                         , entity::SceneState

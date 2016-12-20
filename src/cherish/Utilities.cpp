@@ -427,6 +427,14 @@ QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
     case cher::CREATE_CANVASSEPARATE:
         cur = QCursor(Data::sceneCanvasCloneCursor());
         break;
+
+    case cher::SVM_DRAG_POINT:
+    case cher::SVM_DRAG_WIRE:
+    case cher::SVM_HOVER_POINT:
+    case cher::SVM_HOVER_WIRE:
+    case cher::SVM_IDLE:
+        cur = Qt::CrossCursor;
+        break;
     default:
         break;
     }

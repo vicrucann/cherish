@@ -130,7 +130,13 @@ public:
      * \param t is the new transparency value */
     void resetTransparency(int index, float t);
 
+    /*! A method to create a new instance of entity::SVMData and add it as a child to the scene state.
+     * \param wall is matrix transform for the current canvas,
+     * \param floor is matrix transdorm for the previous canvas. */
     bool addSVMData(const osg::Matrix& wall, const osg::Matrix& floor);
+
+    /*! \return modifiable pointer on entity::SVMData. */
+    entity::SVMData* getSVMData();
 
 private:
     bool m_axisFlag;  /*!< Boolean flag indicating whether global axis visibility is on (true) or off (false). */

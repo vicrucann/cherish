@@ -2,8 +2,7 @@
 #define ROOTSCENE
 
 /* RootScene
- * It contains all the entities that will appear on the scene.
- * It includes both user scene and utility entities (axis).
+ *
  */
 
 #include <iostream>
@@ -39,7 +38,11 @@ class Bookmarks;
 }
 
 /*! \class RootScene
- * Class description
+ * \brief Contains all the entities that will appear on the scene:
+ * both user scene and utility entities (i.e. global axis).
+ *
+ * This class also represents an intersface for entity::UserScene.
+ *
 */
 class RootScene : public osg::ProtectedGroup {
 public:
@@ -103,7 +106,15 @@ public:
 
     bool setCanvasCurrent(entity::Canvas* cnv);
     bool setCanvasPrevious(entity::Canvas* cnv);
+
+    /*! A method to set up traversal masks for all the canvases but current.
+     * \sa entity::UserScene::setCanvasesButCurrent(), RootScene::setAllCanvases(). */
     void setCanvasesButCurrent(bool enable);
+
+    /*! A method to set up traversal masks for all the canvases.
+     * \sa entity::UserScene::setAllCanvases(), entity::UserScene::setCanvasesButCurrent(). */
+    void setAllCanvases(bool enable);
+
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
     entity::Bookmarks* getBookmarksModel() const;

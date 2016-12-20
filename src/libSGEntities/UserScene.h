@@ -68,7 +68,7 @@ namespace entity {
  *               |             |-> Canvas1
  *               |             |-> Canvas2      [current]
  *               |             |-> ... (other canvases)
- *               |-> groupBookmarks -> SceneState0  [ bookmark0 ]
+ *               |-> groupBookmarks -> SceneState0  [ bookmark0 ] -> SVMData
  *                                 |-> SceneState1  [ bookmark1 ]
  *
 
@@ -300,6 +300,10 @@ public:
      * \sa EventHandler::setMode()
 */
     void setCanvasesButCurrent(bool enabled);
+
+    /*! A method to set the traversal masks for all the canvases. \param enabled is a flag to indicate whether
+     * all the canvases will be available for selection (intersectors) or not. */
+    void setAllCanvases(bool enabled);
 
     /*! \return The state of traversal masks of all the canvases except the current. True indicates the
      * traversal masks are on (traversal is performed), false indicated the traversal masks are off.
@@ -616,26 +620,26 @@ protected:
     bool removeEntity(entity::Canvas* canvas, entity::Entity2D* entity);
 
 private:
-    osg::ref_ptr<osg::Group> m_groupCanvases; /*!< Group that contains all the bookmarks. */
-    osg::ref_ptr<entity::Bookmarks> m_groupBookmarks; /*!< Pointer on Bookmarks data structure, it is one of the direct children of UserScene. */
-    osg::observer_ptr<entity::Canvas> m_canvasCurrent; /*!< Observer pointer on current canvas. */
-    osg::observer_ptr<entity::Canvas> m_canvasPrevious; /*!< Observer pointer on previous canvas. */
-    osg::ref_ptr<entity::Canvas> m_canvasClone; /*!< Smart pointer for clone and separation canvas operations. */
+    osg::ref_ptr<osg::Group>            m_groupCanvases;    /*!< Group that contains all the bookmarks. */
+    osg::ref_ptr<entity::Bookmarks>     m_groupBookmarks;   /*!< Pointer on Bookmarks data structure, it is one of the direct children of UserScene. */
+    osg::observer_ptr<entity::Canvas>   m_canvasCurrent;    /*!< Observer pointer on current canvas. */
+    osg::observer_ptr<entity::Canvas>   m_canvasPrevious;   /*!< Observer pointer on previous canvas. */
+    osg::ref_ptr<entity::Canvas>        m_canvasClone;      /*!< Smart pointer for clone and separation canvas operations. */
 
-    osg::Vec3f m_deltaT;    /*!< Temporarly variable for edit operations: translate canvas. */
-    osg::Quat m_deltaR;     /*!< Temporarly variable for for edit operation: rotate canvas. */
-    double m_u              /*!< Temporarly variable for edit operations: move, scale, rotate of 2D entities. */
-        ,  m_v;             /*!< Temporarly variable for edit operations: move, scale, rotate of 2D entities. */
-    bool m_inits;           /*!< Temporarly variable for defining if initialization of operations was performed or not. */
-    double m_du             /*!< Temporarly variable for edit operations: move, scale, rotate of 2D entities. */
-        ,  m_dv;            /*!< Temporarly variable for edit operations: move, scale, rotate of 2D entities. */
-    double m_scaleX         /*!< Temporarly variable for edit operations: scale of 2D entities. */
-        ,  m_scaleY;        /*!< Temporarly variable for edit operations: scale of 2D entities. */
-    double m_rotate;        /*!< Temporarly variable for edit operations: rotate of 2D entities. */
-    unsigned int m_idCanvas;    /*!< Naming convention identification number for canvases. */
-    unsigned int m_idPhoto;     /*!< Naming convention identification number for photos. */
-    unsigned int m_idBookmark;  /*!< Naming convention identification number for bookmarks. */
-    std::string m_filePath;     /*!< File path where the scene is saved to. */
+    osg::Vec3f      m_deltaT;    /*!< Temporarly variable for edit operations: translate canvas. */
+    osg::Quat       m_deltaR;     /*!< Temporarly variable for for edit operation: rotate canvas. */
+    double          m_u              /*!< Temporarly variable for edit operations: move, scale, rotate of 2D entities. */
+        ,           m_v;             /*!< Temporarly variable for edit operations: move, scale, rotate of 2D entities. */
+    bool            m_inits;           /*!< Temporarly variable for defining if initialization of operations was performed or not. */
+    double          m_du             /*!< Temporarly variable for edit operations: move, scale, rotate of 2D entities. */
+        ,           m_dv;            /*!< Temporarly variable for edit operations: move, scale, rotate of 2D entities. */
+    double          m_scaleX         /*!< Temporarly variable for edit operations: scale of 2D entities. */
+        ,           m_scaleY;        /*!< Temporarly variable for edit operations: scale of 2D entities. */
+    double          m_rotate;        /*!< Temporarly variable for edit operations: rotate of 2D entities. */
+    unsigned int    m_idCanvas;    /*!< Naming convention identification number for canvases. */
+    unsigned int    m_idPhoto;     /*!< Naming convention identification number for photos. */
+    unsigned int    m_idBookmark;  /*!< Naming convention identification number for bookmarks. */
+    std::string     m_filePath;     /*!< File path where the scene is saved to. */
 };
 
 }
