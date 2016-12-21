@@ -13,7 +13,7 @@
 
 namespace entity {
 
-class DraggableWire : protected osg::MatrixTransform
+class DraggableWire : public osg::MatrixTransform
 {
     friend class SVMData;
 public:
@@ -25,14 +25,6 @@ public:
 
     /*! \return a plane that describes the position of all the points of the wire. */
     osg::Plane getPlane() const;
-
-    /*! This method is made public to access the wire's transformation matrix. */
-    using osg::MatrixTransform::getMatrix;
-
-    /*! A method that allows creation of osg::observer_ptr<>. Since we use protected inheritance,
-     * we had to make this method public. Only used to creata an instance which is managed
-     * by osg::observer_ptr<>. */    
-    using osg::MatrixTransform::getOrCreateObserverSet;
 
     /*! \return const pointer on geode node which contains all the drawables (wire and points). */
     const osg::Geode* getGeode() const;
