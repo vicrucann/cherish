@@ -5,6 +5,7 @@
 #include <string>
 
 #include <osg/Vec4>
+#include <QColor>
 #include <QVariant>
 #include <QDebug>
 #include <QtGlobal>
@@ -47,6 +48,26 @@ const osg::Vec4 blue = osg::Vec4(float(38)/255.0f, float(139)/255.0f, float(210)
 const osg::Vec4 cyan = osg::Vec4(float(42)/255.0f, float(161)/255.0f, float(152)/255.0f, 1.0f);
 const osg::Vec4 green = osg::Vec4(float(133)/255.0f, float(153)/255.0f, float(0)/255.0f, 1.0f);
 } // solarized
+
+namespace molokai {
+const QColor orangeSoft(QString("#EFC090"));
+const QColor orange(QString("#FD971F"));
+
+const QColor violetSoft(QString("#D197D9"));
+const QColor violet(QString("#AE81FF"));
+
+const QColor greenSoft(QString("#D9E577"));
+const QColor green(QString("#A6E22E"));
+
+const QColor blueSoft(QString("#79ABFF"));
+const QColor blue(QString("#1E90FF"));
+
+const QColor cherrySoft(QColor("#BCA3A3"));
+const QColor cherry(QColor("#960050"));
+const QColor cherryBright(QColor("#F92672"));
+
+const QColor yellowSoft(QColor("#FFE792"));
+} // molokai
 
 /*! Cherish constants and other settings */
 namespace cher{
@@ -156,11 +177,13 @@ const float BOOKMARK_Z = BOOKMARK_X;
 
 // bookmark SVM data settings
 const float SVMDATA_HALFWIDTH = 0.25f;
-const osg::Vec4f SVMDATA_CLR_POINTS = solarized::green;
-const osg::Vec4f SVMDATA_CLR_WIRE = solarized::base01;
-const osg::Vec4f SVMDATA_CLR_WIREHOVER = solarized::magenta;
-const osg::Vec4f SVMDATA_CLR_POINTSHOVER = solarized::yellow;
-const osg::Vec4f SVMDATA_CLR_DRAG = solarized::orange;
+const std::vector<QColor> SVMDATA_CLR_POINTS = {
+                                        molokai::orangeSoft, molokai::violetSoft, molokai::greenSoft, molokai::blueSoft };
+const QColor SVMDATA_CLR_WIRE =         molokai::cherrySoft;
+const QColor SVMDATA_CLR_WIREHOVER =    molokai::cherry;
+const std::vector<QColor> SVMDATA_CLR_POINTSHOVER =  {
+                                        molokai::orange, molokai::violet, molokai::green, molokai::blue};
+const QColor SVMDATA_CLR_DRAG =         molokai::cherryBright;
 
 // stroke settings
 const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;

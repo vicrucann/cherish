@@ -3,6 +3,7 @@
 #include <QtGlobal>
 #include <QDebug>
 #include "Settings.h"
+#include "Utilities.h"
 
 entity::DraggableWire::DraggableWire()
     : osg::MatrixTransform()
@@ -30,7 +31,7 @@ entity::DraggableWire::DraggableWire()
     m_wire->addPrimitiveSet(new osg::DrawArrays(GL_LINE_LOOP, 0, verts->size()));
     m_wire->setVertexArray(verts);
     m_wire->setColorArray(clrWire, osg::Array::BIND_PER_VERTEX);
-    this->setColorWire(cher::SVMDATA_CLR_WIRE);
+    this->setColorWire(Utilities::getOsgColor( cher::SVMDATA_CLR_WIRE));
 
     osg::Vec4Array* clrPts = new osg::Vec4Array(4);
     m_points->addPrimitiveSet(new osg::DrawArrays(GL_POINTS, 0, verts->size()));
@@ -74,14 +75,14 @@ void entity::DraggableWire::editPick(double u, double v)
 
 void entity::DraggableWire::unselect()
 {
-    this->setColorWire(cher::SVMDATA_CLR_WIRE);
+    this->setColorWire(Utilities::getOsgColor(cher::SVMDATA_CLR_WIRE));
     this->setColorPointsDefaults();
     m_selectedPoint = -1;
 }
 
 void entity::DraggableWire::select()
 {
-    this->setColorWire(cher::SVMDATA_CLR_WIREHOVER);
+    this->setColorWire(Utilities::getOsgColor(cher::SVMDATA_CLR_WIREHOVER));
     m_selectedPoint = -1;
 }
 
@@ -90,7 +91,8 @@ void entity::DraggableWire::pick(int index)
     if (index<0 || index > 3) return;
     this->select();
     for (int i=0; i<4; ++i){
-        osg::Vec4f clr = i==index? cher::SVMDATA_CLR_POINTSHOVER : cher::SVMDATA_CLR_POINTS;
+        osg::Vec4f clr = i==index? Utilities::getOsgColor(cher::SVMDATA_CLR_POINTSHOVER[i])
+                                 : Utilities::getOsgColor(cher::SVMDATA_CLR_POINTS[i]);
         this->setColorPoint(i, clr);
     }
     m_selectedPoint = index;
@@ -105,7 +107,7 @@ void entity::DraggableWire::unpick()
 void entity::DraggableWire::drag()
 {
     if (m_selectedPoint < 0 || m_selectedPoint>3) return;
-    this->setColorPointWire(m_selectedPoint, cher::SVMDATA_CLR_DRAG);
+    this->setColorPointWire(m_selectedPoint, Utilities::getOsgColor(cher::SVMDATA_CLR_DRAG));
 }
 
 void entity::DraggableWire::dragStop()
@@ -116,10 +118,10 @@ void entity::DraggableWire::dragStop()
 
 void entity::DraggableWire::setColorPointsDefaults()
 {
-    this->setColorPoint(0, cher::SVMDATA_CLR_POINTS);
-    this->setColorPoint(1, cher::SVMDATA_CLR_POINTS);
-    this->setColorPoint(2, cher::SVMDATA_CLR_POINTS);
-    this->setColorPoint(3, cher::SVMDATA_CLR_POINTS);
+    this->setColorPoint(0, Utilities::getOsgColor(cher::SVMDATA_CLR_POINTS[0]));
+    this->setColorPoint(1, Utilities::getOsgColor(cher::SVMDATA_CLR_POINTS[1]));
+    this->setColorPoint(2, Utilities::getOsgColor(cher::SVMDATA_CLR_POINTS[2]));
+    this->setColorPoint(3, Utilities::getOsgColor(cher::SVMDATA_CLR_POINTS[3]));
 
     m_selectedPoint = -1;
 }
