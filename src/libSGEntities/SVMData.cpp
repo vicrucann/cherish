@@ -5,6 +5,9 @@
 #include <osg/StateSet>
 #include <osg/Point>
 
+#include "QtGlobal"
+#include "QDebug"
+
 entity::SVMData::SVMData()
     : osg::ProtectedGroup()
     , m_switch(new osg::Switch)
@@ -34,4 +37,22 @@ void entity::SVMData::setVisibility(bool visibility)
 {
     m_switch->setChildValue(m_wire1, visibility);
     m_switch->setChildValue(m_wire2, visibility);
+}
+
+entity::SVMData *entity::SVMData::getParentSVM(entity::DraggableWire *wire)
+{
+    Q_CHECK_PTR(wire);
+    if (wire->getNumParents() != 1){
+        qWarning("DraggableWire must have one parents");
+        return NULL;
+    }
+
+    osg::Switch* sw = wire->getParent(0)->asSwitch();
+    if (!sw){
+        qWarning("Could not obtain switch of SVMData.");
+        return NULL;
+    }
+
+    Q_CHECK_PTR(sw->getParent(0));
+    return dynamic_cast<entity::SVMData*>(sw->getParent(0));
 }

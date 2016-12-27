@@ -340,6 +340,16 @@ bool RootScene::addSVMData()
     return added;
 }
 
+void RootScene::hideSVMData(entity::DraggableWire *wire)
+{
+    entity::SVMData* svm = entity::SVMData::getParentSVM(wire);
+    if (!svm){
+        qWarning("Could not obtain SVMData for hiding");
+        return;
+    }
+    svm->setVisibility(false);
+}
+
 void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     if (!m_bookmarkTools) {

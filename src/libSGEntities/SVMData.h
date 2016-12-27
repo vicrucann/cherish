@@ -33,6 +33,8 @@ public:
     /*! Method to set up visibility of geometries. */
     void setVisibility(bool visibility);
 
+    static entity::SVMData* getParentSVM(entity::DraggableWire* wire);
+
 private:
     osg::ref_ptr<osg::Switch>   m_switch;
     entity::DraggableWire*      m_wire1;

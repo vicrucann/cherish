@@ -1,10 +1,6 @@
 #ifndef ROOTSCENE
 #define ROOTSCENE
 
-/* RootScene
- *
- */
-
 #include <iostream>
 #include <string>
 #include <string>
@@ -24,6 +20,8 @@
 #include "../libGUI/ListWidget.h"
 #include "ToolGlobal.h"
 #include "SceneState.h"
+#include "SVMData.h"
+#include "DraggableWire.h"
 
 #include <QUndoStack>
 #include <QModelIndex>
@@ -86,6 +84,10 @@ public:
      * Used to create a new bookmark using correspondence between four points in two different planes
      * This method requires presense of at least two canvases on the screen. */
     bool addSVMData();
+
+    /*! A method to hide all the visible SVMData from scene.
+     * \param wire is the wire of entity::SVMData to hide. */
+    void hideSVMData(entity::DraggableWire* wire);
 
     void addBookmarkTool(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void updateBookmark(BookmarkWidget* widget, int row);

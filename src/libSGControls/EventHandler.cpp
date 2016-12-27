@@ -646,6 +646,16 @@ void EventHandler::doEditEntitiesRotate(const osgGA::GUIEventAdapter &ea, osgGA:
 
 void EventHandler::doIdleMouse(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    /* if click was performed outside of the SVMData, then
+     * change the mouse mode and stop editing the SVMData. Also, obtain camera position. */
+    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH){
+        std::cout << "Updating camera position" << std::endl;
+        /* selection is default color and is no longer tracked within EH. */
+        m_selection->unselect();
+        m_scene->hideSVMData(m_selection.get());
+        m_selection = 0;
+    }
+
     if (ea.getEventType() != osgGA::GUIEventAdapter::MOVE)
         return;
 
