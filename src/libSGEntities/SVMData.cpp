@@ -39,6 +39,12 @@ void entity::SVMData::setVisibility(bool visibility)
     m_switch->setChildValue(m_wire2, visibility);
 }
 
+bool entity::SVMData::getVisibility() const
+{
+    Q_ASSERT(m_switch->getChildValue(m_wire1) == m_switch->getChildValue(m_wire2));
+    return m_switch->getChildValue(m_wire1);
+}
+
 entity::SVMData *entity::SVMData::getParentSVM(entity::DraggableWire *wire)
 {
     Q_CHECK_PTR(wire);

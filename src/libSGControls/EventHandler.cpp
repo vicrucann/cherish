@@ -158,6 +158,7 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     case cher::SELECT_ENTITY:
         /* if mode is only for current canvas, disable all other canvases from usage */
         m_scene->setCanvasesButCurrent(false);
+        m_scene->hideAndUpdateSVMData();
         break;
     case cher::SVM_DRAG_POINT:
     case cher::SVM_DRAG_WIRE:
@@ -170,6 +171,7 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     default:
         /* if selection within 3D, enable all the canvases for selection */
         m_scene->setCanvasesButCurrent(true);
+        m_scene->hideAndUpdateSVMData();
         break;
     }
 
@@ -648,12 +650,9 @@ void EventHandler::doIdleMouse(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
 {
     /* if click was performed outside of the SVMData, then
      * change the mouse mode and stop editing the SVMData. Also, obtain camera position. */
-    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH){
-        std::cout << "Updating camera position" << std::endl;
-        /* selection is default color and is no longer tracked within EH. */
-        m_selection->unselect();
-        m_scene->hideSVMData(m_selection.get());
-        m_selection = 0;
+    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+        m_glWidget->setMouseMode(m_glWidget->getMousePrevious());
+        return;
     }
 
     if (ea.getEventType() != osgGA::GUIEventAdapter::MOVE)

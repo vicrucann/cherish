@@ -87,7 +87,7 @@ public:
 
     /*! A method to hide all the visible SVMData from scene.
      * \param wire is the wire of entity::SVMData to hide. */
-    void hideSVMData(entity::DraggableWire* wire);
+    void hideAndUpdateSVMData();
 
     void addBookmarkTool(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void updateBookmark(BookmarkWidget* widget, int row);

@@ -340,14 +340,21 @@ bool RootScene::addSVMData()
     return added;
 }
 
-void RootScene::hideSVMData(entity::DraggableWire *wire)
+void RootScene::hideAndUpdateSVMData()
 {
-    entity::SVMData* svm = entity::SVMData::getParentSVM(wire);
-    if (!svm){
-        qWarning("Could not obtain SVMData for hiding");
-        return;
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    int num = m_userScene->getBookmarks()->getNumBookmarks();
+    for (int i=0; i<num; ++i){
+        entity::SceneState* ss = m_userScene->getBookmarksModel()->getSceneState(i);
+        entity::SVMData* svm = ss->getSVMData();
+        if (!svm) continue;
+        bool vis = svm->getVisibility();
+        if (!vis) continue;
+        /* if the wire is present and about to be hidden, update the corresponding camera position. */
+
+        /* hide the wires */
+        svm->setVisibility(false);
     }
-    svm->setVisibility(false);
 }
 
 void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)

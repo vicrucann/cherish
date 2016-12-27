@@ -33,6 +33,9 @@ public:
     /*! Method to set up visibility of geometries. */
     void setVisibility(bool visibility);
 
+    /*! \return whether the wire geometries are visible (true) or not (false). */
+    bool getVisibility() const;
+
     static entity::SVMData* getParentSVM(entity::DraggableWire* wire);
 
 private:
