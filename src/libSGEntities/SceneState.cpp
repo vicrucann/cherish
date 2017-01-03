@@ -1,14 +1,14 @@
 #include "SceneState.h"
 
 entity::SceneState::SceneState()
-    : osg::Group()
+    : osg::ProtectedGroup()
     , m_axisFlag(true)
     , m_bookmarksFlag(true)
 {
 }
 
 entity::SceneState::SceneState(const entity::SceneState &parent, osg::CopyOp copyop)
-    : osg::Group(parent, copyop)
+    : osg::ProtectedGroup(parent, copyop)
     , m_axisFlag(parent.m_axisFlag)
     , m_bookmarksFlag(parent.m_bookmarksFlag)
     , m_canvasDataFlags(parent.m_canvasDataFlags)
@@ -206,6 +206,23 @@ void entity::SceneState::resetTransparency(int index, float t)
         return;
     }
     m_photoTransparencies[index] = t;
+}
+
+bool entity::SceneState::addSVMData(const osg::Matrix &wall, const osg::Matrix &floor)
+{
+    osg::ref_ptr< entity::SVMData> svm = new entity::SVMData();
+    Q_CHECK_PTR(svm.get());
+    svm->setTransformWall(wall);
+    svm->setTransformFloor(floor);
+    return this->addChild(svm);
+}
+
+entity::SVMData *entity::SceneState::getSVMData()
+{
+    if (this->getNumChildren() == 0) return NULL;
+    osg::Node* node = this->getChild(0);
+    Q_CHECK_PTR(node);
+    return dynamic_cast<entity::SVMData*>(node);
 }
 
 REGISTER_OBJECT_WRAPPER(SceneState_Wrapper

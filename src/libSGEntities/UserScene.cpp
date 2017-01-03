@@ -18,7 +18,7 @@ entity::UserScene::UserScene()
     , m_groupBookmarks(new entity::Bookmarks)
     , m_canvasCurrent(NULL)
     , m_canvasPrevious(NULL)
-    , m_canvasClone(0)
+    , m_canvasClone(NULL)
     , m_deltaT(osg::Vec3f(0.f,0.f,0.f))
     , m_deltaR(osg::Quat(0,0,0,1))
     , m_u(0)
@@ -45,7 +45,7 @@ entity::UserScene::UserScene(const entity::UserScene& scene, const osg::CopyOp& 
     , m_groupBookmarks(scene.m_groupBookmarks)
     , m_canvasCurrent(scene.m_canvasCurrent)
     , m_canvasPrevious(scene.m_canvasPrevious)
-    , m_canvasClone(0)
+    , m_canvasClone(NULL)
     , m_deltaT(scene.m_deltaT)
     , m_deltaR(scene.m_deltaR)
     , m_u(scene.m_u)
@@ -429,6 +429,16 @@ void entity::UserScene::setCanvasesButCurrent(bool enabled)
             else
                 cnv->setNodeMask(cher::MASK_CANVAS_OUT); // see EventHandler when we set iv.setTraversalMask(~0x1);
         }
+    }
+}
+
+void entity::UserScene::setAllCanvases(bool enabled)
+{
+    for (int i=0; i<this->getNumCanvases(); ++i){
+        entity::Canvas* cnv = this->getCanvas(i);
+        if (!cnv) continue;
+        if (enabled)    cnv->setNodeMask(cher::MASK_CANVAS_IN);
+        else            cnv->setNodeMask(cher::MASK_CANVAS_OUT);
     }
 }
 
@@ -1139,7 +1149,7 @@ void entity::UserScene::polygonAppend(float u, float v, QUndoStack *stack)
 {
     if (this->polygonValid()){
         entity::Polygon* poly = m_canvasCurrent->getPolygonCurrent();
-        Q_ASSERT(poly);
+        Q_CHECK_PTR(poly);
         float dist = 10.f;
         if (poly->getNumPoints() >= 3){
             osg::Vec2f p0 = poly->getPoint(0);
@@ -1183,11 +1193,11 @@ void entity::UserScene::polygonFinish(QUndoStack *stack)
     entity::Polygon* poly = m_canvasCurrent->getPolygonCurrent();
     if (this->polygonValid()){
         osg::ref_ptr<entity::Polygon> poly_clone = new entity::Polygon;
-        Q_ASSERT(poly_clone);
+        Q_CHECK_PTR(poly_clone);
         if (poly_clone->copyFrom(poly)){
             poly_clone->redefineToShape();
             fur::AddPolygonCommand* cmd = new fur::AddPolygonCommand(this, poly_clone);
-            Q_ASSERT(cmd);
+            Q_CHECK_PTR(cmd);
             stack->push(cmd);
         }
     }

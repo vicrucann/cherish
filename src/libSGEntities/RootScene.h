@@ -1,11 +1,6 @@
 #ifndef ROOTSCENE
 #define ROOTSCENE
 
-/* RootScene
- * It contains all the entities that will appear on the scene.
- * It includes both user scene and utility entities (axis).
- */
-
 #include <iostream>
 #include <string>
 #include <string>
@@ -25,6 +20,8 @@
 #include "../libGUI/ListWidget.h"
 #include "ToolGlobal.h"
 #include "SceneState.h"
+#include "SVMData.h"
+#include "DraggableWire.h"
 
 #include <QUndoStack>
 #include <QModelIndex>
@@ -39,7 +36,11 @@ class Bookmarks;
 }
 
 /*! \class RootScene
- * Class description
+ * \brief Contains all the entities that will appear on the scene:
+ * both user scene and utility entities (i.e. global axis).
+ *
+ * This class also represents an intersface for entity::UserScene.
+ *
 */
 class RootScene : public osg::ProtectedGroup {
 public:
@@ -75,7 +76,19 @@ public:
     void addPolygon(float u, float v, cher::EVENT event);
     void selectAllEntities();
     void addPhoto(const std::string& fname);
+
+    /*! A method to add a new camera position as a bookmark to the BookmarkWidget, and also to the scene graph as entity::SceneState. */
     void addBookmark(BookmarkWidget* widget, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov);
+
+    /*! A method to suplement a last added entity::SceneState with entity::SVMData as a child.
+     * Used to create a new bookmark using correspondence between four points in two different planes
+     * This method requires presense of at least two canvases on the screen. */
+    bool addSVMData();
+
+    /*! A method to hide all the visible SVMData from scene.
+     * \param wire is the wire of entity::SVMData to hide. */
+    void hideAndUpdateSVMData();
+
     void addBookmarkTool(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
@@ -95,7 +108,15 @@ public:
 
     bool setCanvasCurrent(entity::Canvas* cnv);
     bool setCanvasPrevious(entity::Canvas* cnv);
+
+    /*! A method to set up traversal masks for all the canvases but current.
+     * \sa entity::UserScene::setCanvasesButCurrent(), RootScene::setAllCanvases(). */
     void setCanvasesButCurrent(bool enable);
+
+    /*! A method to set up traversal masks for all the canvases.
+     * \sa entity::UserScene::setAllCanvases(), entity::UserScene::setCanvasesButCurrent(). */
+    void setAllCanvases(bool enable);
+
     entity::Canvas* getCanvasCurrent() const;
     entity::Canvas* getCanvasPrevious() const;
     entity::Bookmarks* getBookmarksModel() const;

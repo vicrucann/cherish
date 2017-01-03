@@ -3,7 +3,6 @@
 #include "iostream"
 #include <sstream>
 #include <stdlib.h>
-#include <assert.h>
 
 #include <QtGlobal>
 #include <QDebug>
@@ -169,7 +168,7 @@ bool RootScene::exportSceneToFile(const std::string &name)
         canvas->detachFrame();
     }
 
-    Q_ASSERT(m_userScene->getGroupCanvases());
+    Q_CHECK_PTR(m_userScene->getGroupCanvases());
     bool result = osgDB::writeNodeFile(*(m_userScene->getGroupCanvases()), name);
 
     /* for each canvas, attach its tools back */
@@ -324,6 +323,40 @@ void RootScene::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const
     m_userScene->addBookmark(widget, eye, center, up, fov);
 }
 
+bool RootScene::addSVMData()
+{
+    /* extract the lastly added bookmark (entity::SceneState) */
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    entity::SceneState* ss = m_userScene->getBookmarksModel()->getLastSceneState();
+    if (!ss) return false;
+
+    /* take current and previous canvases to create SVMData */
+    entity::Canvas* wall = m_userScene->getCanvasCurrent();
+    entity::Canvas* floor = m_userScene->getCanvasPrevious();
+    if (!wall || !floor) return false;
+
+    /* Add the svm data with the given canvas parameters */
+    bool added = ss->addSVMData(wall->getMatrix(), floor->getMatrix());
+    return added;
+}
+
+void RootScene::hideAndUpdateSVMData()
+{
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    int num = m_userScene->getBookmarks()->getNumBookmarks();
+    for (int i=0; i<num; ++i){
+        entity::SceneState* ss = m_userScene->getBookmarksModel()->getSceneState(i);
+        entity::SVMData* svm = ss->getSVMData();
+        if (!svm) continue;
+        bool vis = svm->getVisibility();
+        if (!vis) continue;
+        /* if the wire is present and about to be hidden, update the corresponding camera position. */
+
+        /* hide the wires */
+        svm->setVisibility(false);
+    }
+}
+
 void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     if (!m_bookmarkTools) {
@@ -416,6 +449,11 @@ bool RootScene::setCanvasPrevious(entity::Canvas* cnv)
 void RootScene::setCanvasesButCurrent(bool enable)
 {
     m_userScene->setCanvasesButCurrent(enable);
+}
+
+void RootScene::setAllCanvases(bool enable)
+{
+    m_userScene->setAllCanvases(enable);
 }
 
 entity::Canvas* RootScene::getCanvasCurrent() const

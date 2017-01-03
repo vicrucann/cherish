@@ -1,15 +1,17 @@
 #include "ToolGlobal.h"
+
+#include <QtGlobal>
+#include <QDebug>
+
 #include <osg/LineWidth>
 #include <osg/BlendFunc>
 #include <osg/LineStipple>
-
-#include <assert.h>
 
 #include "Settings.h"
 
 
 entity::ToolGlobal::ToolGlobal(int nVerts, osg::Array::Binding colorBind, osg::PrimitiveSet *primitiveSet, float linewidth)
-    : osg::Group()
+    : osg::ProtectedGroup()
     , m_switch(new osg::Switch)
     , m_geodeWire(new osg::Geode)
     , m_geomWire(new osg::Geometry)
@@ -38,7 +40,7 @@ entity::ToolGlobal::ToolGlobal(int nVerts, osg::Array::Binding colorBind, osg::P
 void entity::ToolGlobal::setVertices(const std::vector<osg::Vec3f> &source)
 {
     osg::Vec3Array* vertices = static_cast<osg::Vec3Array*>(m_geomWire->getVertexArray());
-    assert(vertices->size() == source.size());
+    Q_ASSERT(vertices->size() == source.size());
     for (size_t i=0; i<vertices->size(); ++i)
         (*vertices)[i] = source[i];
     this->updateGeometry();
@@ -52,7 +54,7 @@ const osg::Vec3Array *entity::ToolGlobal::getVertices() const
 void entity::ToolGlobal::setColor(const osg::Vec4f &color)
 {
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(m_geomWire->getColorArray());
-    assert(colors->size()>0);
+    Q_ASSERT(colors->size()>0);
     (*colors)[0] = color;
     this->updateGeometry();
 }
@@ -60,7 +62,8 @@ void entity::ToolGlobal::setColor(const osg::Vec4f &color)
 const osg::Vec4f &entity::ToolGlobal::getColor() const
 {
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(m_geomWire->getColorArray());
-    assert(colors->size()>0);
+    Q_CHECK_PTR(colors);
+    Q_ASSERT(colors->size()>0);
     return (*colors)[0];
 }
 
@@ -474,7 +477,8 @@ void entity::FrameTool::setIntersection(const osg::Vec3f &P1, const osg::Vec3f &
 {
     if (P1.isNaN() || P2.isNaN() || P3.isNaN() || P4.isNaN()) return;
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_geomIntersect->getVertexArray());
-    assert(verts->size() == 4);
+    Q_CHECK_PTR(verts);
+    Q_ASSERT(verts->size() == 4);
     (*verts)[0] = P1;
     (*verts)[1] = P2;
     (*verts)[2] = P3;
@@ -486,7 +490,8 @@ void entity::FrameTool::setIntersection(const osg::Vec3f &P1, const osg::Vec3f &
 void entity::FrameTool::setColorIntersection(const osg::Vec4f &colorIntersect)
 {
     osg::Vec4Array* colorInter = static_cast<osg::Vec4Array*>(m_geomIntersect->getColorArray());
-    assert(colorInter->size() > 0);
+    Q_CHECK_PTR(colorInter);
+    Q_ASSERT(colorInter->size() > 0);
     (*colorInter)[0] = colorIntersect;
     this->updateGeometry(m_geomIntersect);
 }
@@ -596,7 +601,8 @@ void entity::FrameTool::initLineGeometry(osg::Geometry *geom, float lineWidth, c
 void entity::FrameTool::setQuadGeometry(osg::Geometry *geom, const osg::Vec3f &P, float szX, float szY, float theta, const osg::Vec3f &center)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geom->getVertexArray());
-    assert(verts->size() == 4);
+    Q_CHECK_PTR(verts);
+    Q_ASSERT(verts->size() == 4);
     (*verts)[0] = P;
     (*verts)[1] = P + osg::Vec3(-szX, 0.f, 0.f);
     (*verts)[2] = P + osg::Vec3(-szX, -szY, 0.f);
@@ -615,7 +621,8 @@ void entity::FrameTool::setQuadGeometry(osg::Geometry *geom, const osg::Vec3f &P
 void entity::FrameTool::setLineGeometry(osg::Geometry *geom, const osg::Vec3f &P1, const osg::Vec3f &P2)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geom->getVertexArray());
-    assert(verts->size() == 2);
+    Q_CHECK_PTR(verts);
+    Q_ASSERT(verts->size() == 2);
     (*verts)[0] = P1;
     (*verts)[1] = P2;
     this->updateGeometry(geom);
@@ -624,7 +631,8 @@ void entity::FrameTool::setLineGeometry(osg::Geometry *geom, const osg::Vec3f &P
 void entity::FrameTool::setColorGeometry(osg::Geometry *geom, const osg::Vec4f &color)
 {
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(geom->getColorArray());
-    assert(colors->size() > 0);
+    Q_CHECK_PTR(colors);
+    Q_ASSERT(colors->size() > 0);
     (*colors)[0] = color;
     this->updateGeometry(geom);
 }
@@ -632,6 +640,7 @@ void entity::FrameTool::setColorGeometry(osg::Geometry *geom, const osg::Vec4f &
 void entity::FrameTool::moveDeltaWireGeometry(osg::Geometry * geometry, double du, double dv)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+    Q_CHECK_PTR(verts);
     for (unsigned int i=0; i<verts->size(); ++i){
         osg::Vec3f vi = (*verts)[i];
         (*verts)[i] = osg::Vec3f(du+vi.x(), dv+vi.y(), 0);
@@ -643,6 +652,7 @@ void entity::FrameTool::moveDeltaWireGeometry(osg::Geometry * geometry, double d
 void entity::FrameTool::scaleWireGeometry(osg::Geometry *geometry, double scaleX, double scaleY, osg::Vec3f center)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+    Q_CHECK_PTR(verts);
     for (unsigned int i=0; i<verts->size(); ++i){
         osg::Vec3f vi = (*verts)[i] - center;
         (*verts)[i] = center + osg::Vec3f(scaleX*vi.x(), scaleY*vi.y(), 0);
@@ -654,6 +664,7 @@ void entity::FrameTool::scaleWireGeometry(osg::Geometry *geometry, double scaleX
 void entity::FrameTool::scaleWireGeometry(osg::Geometry *geometry, double scale, osg::Vec3f center)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+    Q_CHECK_PTR(verts);
     for (unsigned int i=0; i<verts->size(); ++i){
         osg::Vec3f vi = (*verts)[i] - center;
         (*verts)[i] = center + osg::Vec3f(scale*vi.x(), scale*vi.y(), 0);
@@ -665,6 +676,7 @@ void entity::FrameTool::scaleWireGeometry(osg::Geometry *geometry, double scale,
 void entity::FrameTool::rotateWireGeometry(osg::Geometry *geometry, double theta, osg::Vec3f center)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
+    Q_CHECK_PTR(verts);
     for (unsigned int i=0; i<verts->size(); ++i){
         osg::Vec3f vi = (*verts)[i] - center;
         (*verts)[i] = center + osg::Vec3f(vi.x() * std::cos(theta) - vi.y() * std::sin(theta),

@@ -5,6 +5,9 @@
 #include <osg/Group>
 #include <RootScene.h>
 
+#include "ProtectedGroup.h"
+#include "SVMData.h"
+
 class RootScene;
 
 namespace entity{
@@ -12,17 +15,22 @@ namespace entity{
 /*! \class SceneState
  * \brief A class to describe the current state of the scene, e.g., state of switches.
  *
- * It is mostly used when dealing with Bookmarks and taking bookmark snapshots from GlWidget.
+ * It is mostly used when dealing with entity::Bookmarks and taking bookmark snapshots from GlWidget.
  * The scene state helps to preserve and use later values like switches values that define
  * visibility flags for data, construction tools; and also photo transparencies.
  *
- * It inherits osg::Group so that to be able to take advantage of OSG serialization since
+ * It inherits osg::ProtectedGroup so that to be able to take advantage of OSG serialization since
  * the scene state is saved together with each bookmark data.
+ *
+ * The SceneState normally does not form any scene graphs, i.e., no children are added. However, when
+ * later entity::SVMData added, the user can add them as a child when using SVM methods.
 */
-class SceneState : public osg::Group
+class SceneState : public osg::ProtectedGroup
 {
 public:
+    /*! Default constructor. Creates an empty scene state. */
     SceneState();
+
     /*! Constructor by copy.
      * This method is used solely by OSG serializer and should never be called from within the
      * application.
@@ -121,6 +129,14 @@ public:
      * \param index is specified index  which needs to be reset
      * \param t is the new transparency value */
     void resetTransparency(int index, float t);
+
+    /*! A method to create a new instance of entity::SVMData and add it as a child to the scene state.
+     * \param wall is matrix transform for the current canvas,
+     * \param floor is matrix transdorm for the previous canvas. */
+    bool addSVMData(const osg::Matrix& wall, const osg::Matrix& floor);
+
+    /*! \return modifiable pointer on entity::SVMData. */
+    entity::SVMData* getSVMData();
 
 private:
     bool m_axisFlag;  /*!< Boolean flag indicating whether global axis visibility is on (true) or off (false). */

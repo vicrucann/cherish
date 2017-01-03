@@ -4,11 +4,6 @@
 #include <osg/Group>
 #include <osgDB/ObjectWrapper>
 
-/* Osg + Qt model of booksmarks
- * osg::Group is used in order to perform correct serialization, while
- * QListModel is used for display at the corresponding BookmarkWidget
-*/
-
 #include <vector>
 #include <list>
 #include <string>
@@ -36,21 +31,26 @@ namespace entity {
  * The need for the class to inherit osg::Group class is so that to include the
  * bookmarks into saving to file procedure which is done by OpenSceneGraph.
  *
- * Scene graph wise, the Bookmarks is an osg::Group node that contains STL data for camera
+ * Scene graph wise, the entity::Bookmarks is an osg::Group node that contains STL data for camera
  * positions and names. Also
- * osg::Group helps to maintain the SceneState as its children for each corresponding
+ * osg::Group helps to maintain the entity::SceneState as its children for each corresponding
  * bookmark without the need of direct serialization of each scene state.
  *
  * The need to inherit QObject class is so that to use signals and slots functionality.
  * The signals and slots are connected to the BookmarkWidget and thus it assures
  * a simultaneous update whether the bookmark changed are made directly from the widget,
  * or trigerred by scene graph functions (e.g., on reload the scene from file).
+ *
+ * Note: there can only be one entity::Bookmarks object in a scene graph, a child of entity::UserScene. This
+ * class servers as a container for a list of entity::SceneState -s and a list of camera parameters for each
+ * scene state.
 */
 class Bookmarks : public QObject, public osg::Group
 {
     Q_OBJECT
 
 public:
+    /*! Default constructor. Creates an empty bookmark group. */
     Bookmarks();
 
     /*! Constructor by copy.
@@ -89,7 +89,12 @@ public:
     /*! \param row is the index of SceneState
      * \return Pointer on the corresponding SceneState. */
     const entity::SceneState* getSceneState(int row) const;
+
+    /*! A method to extract scene state given a row index of the BookmarkWidget. */
     entity::SceneState* getSceneState(int row);
+
+    /*! A method to obtain lastly added child of a scene state. */
+    entity::SceneState* getLastSceneState();
 
     /*! A method that performs an addition of a bookmark to the data structure. It also requests
      * a screenshot of the bookmark from GLWidget, and SceneState to add as a child to the bookmakr
@@ -135,12 +140,29 @@ signals:
      * \param state is the pointer on SceneState to be updated */
     void requestSceneData(entity::SceneState* state);
 
+    /*! A signal is sent whenever it is requested to change current state with the requested state associated with
+     * certain bookmark.
+     * \param state is the requested state that will be applied to the scene. */
     void requestSceneStateSet(entity::SceneState* state);
 
 public slots:
+    /*! A slot is called whenever user performs a click on a bookmark from GUI. The slot sets up the requested bookmark and its
+     * corresponding scene state.
+     * \param index is the row index of the clicked bookmark on BookmarkWidget. */
     void onClicked(const QModelIndex& index);
+
+    /*! A slot is called when user does editing of the bookmark's name from GUI. It edits the corresponding name of the bookrmark.
+     * \param item is the pointer on the BookmarkWidget item from which the row index is derived to get the indexation for internal
+     * vectors of Bookmarks. */
     void onItemChanged(QListWidgetItem* item);
+
+    /*! A slot is called whenever user performs a change of order of the bookmarks from GUI. */
     void onRowsMoved(const QModelIndex&, int start, int end, const QModelIndex&, int row);
+
+    /*! A slot is called whenever the rows are removed, e.g. by user from GUI or when closing current file.
+     * \param first is the index of the first bookmark to remove
+     * \param last is the index of the last bookmark to remove. The removal is done from the first till the last
+     * item inclusive. */
     void onRowsRemoved(const QModelIndex&, int first, int last);
 
 private:

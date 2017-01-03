@@ -8,7 +8,7 @@ class QIcon;
 class QPixmap;
 
 /*! \class Data
- * Class description
+ * \brief Class that contains access to cherish resources such as action and GUI icons.
 */
 class Data
 {
@@ -88,6 +88,8 @@ public:
     static const QIcon& viewerNextIcon();
     static const QIcon& viewerPreviousIcon();
     static const QIcon& viewerBookmarkIcon();
+    static const QIcon& viewerBookmarkNewIcon();
+    static const QIcon& viewerBookmarkEditIcon();
     static const QIcon& viewerRightIcon();
     static const QIcon& viewerTopIcon();
     static const QIcon& viewerTwoscreenIcon();

@@ -750,7 +750,30 @@ void MainWindow::onBookmark()
     double fov;
     m_glWidget->getCameraView(eye, center, up, fov);
     m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
-    this->statusBar()->showMessage(tr("Current camera view is saved as a bookmark"));
+    this->statusBar()->showMessage(tr("Current camera view is saved as a bookmark."));
+}
+
+void MainWindow::onBookmarkNew()
+{
+    /* create initial camera position, add it to scene graph and tools */
+    osg::Vec3d eye, center, up;
+    double fov;
+    m_glWidget->getCameraView(eye, center, up, fov);
+    m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
+
+    /* create corresponding SVM data connected to the bookmark */
+    m_rootScene->addSVMData();
+
+    /* set mouse in SVM mode.
+     * The camera position will be updated from EventHandler. */
+    m_glWidget->setMouseMode(cher::SVM_IDLE);
+
+    this->statusBar()->showMessage(tr("New camera view added through SVM method."));
+}
+
+void MainWindow::onBookmarkEdit()
+{
+
 }
 
 void MainWindow::onStrokeFogFactor()
@@ -871,6 +894,12 @@ void MainWindow::initializeActions()
     m_actionBookmark = new QAction(Data::viewerBookmarkIcon(), tr("Bookmark view"), this);
     this->connect(m_actionBookmark, SIGNAL(triggered(bool)), this, SLOT(onBookmark()));
 
+    m_actionBookmarkNew = new QAction(Data::viewerBookmarkNewIcon(), tr("Create new bookmark..."), this);
+    this->connect(m_actionBookmarkNew, SIGNAL(triggered(bool)), this, SLOT(onBookmarkNew()));
+
+    m_actionBookmarkEdit = new QAction(Data::viewerBookmarkEditIcon(), tr("Edit existing bookmark"), this);
+    this->connect(m_actionBookmarkEdit, SIGNAL(triggered(bool)), this, SLOT(onBookmarkEdit()));
+
     m_actionCameraSettings = new QAction(Data::cameraApertureIcon(), tr("Camera settings"), this);
     this->connect(m_actionCameraSettings, SIGNAL(triggered(bool)), this, SLOT(onCameraAperture()));
 
@@ -972,6 +1001,8 @@ void MainWindow::initializeMenus()
     menuCamera->addAction(m_actionNextView);
     menuCamera->addSeparator();
     menuCamera->addAction(m_actionBookmark);
+    menuCamera->addAction(m_actionBookmarkNew);
+    menuCamera->addAction(m_actionBookmarkEdit);
     menuCamera->addSeparator();
     menuCamera->addAction(m_actionCameraSettings);
 
@@ -1095,6 +1126,7 @@ void MainWindow::initializeToolbars()
     tbViewer->addAction(m_actionPrevView);
     tbViewer->addAction(m_actionNextView);
     tbViewer->addAction(m_actionBookmark);
+    tbViewer->addAction(m_actionBookmarkNew);
     tbViewer->addAction(m_actionCameraSettings);
 
     /* OPTIONS bar */

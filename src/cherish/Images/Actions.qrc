@@ -78,5 +78,7 @@
         <file>scene-visibility-options.svg</file>
         <file>viewer-allcanvas-24px.svg</file>
         <file>scene-polygon-24px.svg</file>
+        <file>viewer-bookmarkedit-24px.svg</file>
+        <file>viewer-bookmarknew-24px.svg</file>
     </qresource>
 </RCC>

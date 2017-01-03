@@ -1,5 +1,4 @@
 #include "Bookmarks.h"
-#include <assert.h>
 
 #include <QDir>
 #include <QDebug>
@@ -14,6 +13,9 @@ entity::Bookmarks::Bookmarks()
     , m_row(0)
 {
     this->setName("Bookmarks");
+    // TODO make sure this mask transfers after the scene is saved to file,
+    // and then opened from the file.
+    this->setNodeMask(cher::MASK_SVMDATA_IN); /* when using SVM methods */
 }
 
 entity::Bookmarks::Bookmarks(const Bookmarks &parent, osg::CopyOp copyop)
@@ -94,6 +96,13 @@ entity::SceneState *entity::Bookmarks::getSceneState(int row)
         return 0;
     }
     return dynamic_cast<entity::SceneState*>(this->getChild(row));
+}
+
+entity::SceneState *entity::Bookmarks::getLastSceneState()
+{
+    int num = this->getNumBookmarks();
+    if (num <= 0) return 0;
+    return this->getSceneState(num-1);
 }
 
 void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const std::string &name, const double &fov)
@@ -189,9 +198,8 @@ std::string entity::Bookmarks::getBookmarkName(int row) const
 
 int entity::Bookmarks::getNumBookmarks() const
 {
-    assert(m_eyes.size() == m_ups.size() && m_ups.size() == m_centers.size()
+    Q_ASSERT(m_eyes.size() == m_ups.size() && m_ups.size() == m_centers.size()
            && m_centers.size() == m_names.size() && m_names.size() == m_fovs.size());
-//    assert(m_eyes.size() == this->getNumChildren());
     return m_eyes.size();
 }
 

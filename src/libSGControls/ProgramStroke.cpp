@@ -6,10 +6,7 @@
 #include <osg/Shader>
 
 #include "Settings.h"
-#include "ModelViewProjectionMatrixCallback.h"
-#include "ViewportVectorCallback.h"
-#include "CameraEyeCallback.h"
-#include "CanvasTransformCallback.h"
+#include "CameraCallbacks.h"
 
 ProgramStroke::ProgramStroke()
     : ProgramEntity2D()

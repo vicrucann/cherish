@@ -439,6 +439,20 @@ const QIcon &Data::viewerBookmarkIcon()
     return icon;
 }
 
+const QIcon &Data::viewerBookmarkNewIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-bookmarknew-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/viewer-bookmarknew-24px.svg");
+    return icon;
+}
+
+const QIcon &Data::viewerBookmarkEditIcon()
+{
+    Q_ASSERT_X(!QPixmap(":/viewer-bookmarkedit-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");
+    static QIcon icon(":/viewer-bookmarkedit-24px.svg");
+    return icon;
+}
+
 const QIcon &Data::viewerRightIcon()
 {
     Q_ASSERT_X(!QPixmap(":/viewer-right-24px.svg").isNull(), Q_FUNC_INFO, "Required resource not available");

@@ -40,6 +40,8 @@ set(CHERISH_SRC
     ${CMAKE_SOURCE_DIR}/libSGControls/ViewerCommand.cpp
     ${CMAKE_SOURCE_DIR}/libSGControls/Manipulator.h
     ${CMAKE_SOURCE_DIR}/libSGControls/Manipulator.cpp
+    ${CMAKE_SOURCE_DIR}/libSGControls/VirtualPlaneIntersector.h
+    ${CMAKE_SOURCE_DIR}/libSGControls/VirtualPlaneIntersector.cpp
     ${CMAKE_SOURCE_DIR}/libSGControls/EventHandler.h
     ${CMAKE_SOURCE_DIR}/libSGControls/EventHandler.cpp
     ${CMAKE_SOURCE_DIR}/libNumerics/CurveFitting/libPathFitter/OsgPathFitter.h

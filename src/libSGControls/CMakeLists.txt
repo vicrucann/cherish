@@ -12,6 +12,10 @@ include_directories(
 )
 
 set (libSGControls_SRCS
+    VirtualPlaneIntersector.h
+    VirtualPlaneIntersector.cpp
+    CanvasNormalProjector.h
+    CanvasNormalProjector.cpp
     EventHandler.h
     EventHandler.cpp
     Manipulator.h
@@ -24,19 +28,17 @@ set (libSGControls_SRCS
     StrokeIntersector.cpp
     LineIntersector.h
     LineIntersector.cpp
+    PolyLineIntersector.h
+    PolyLineIntersector.cpp
+    PointIntersector.h
+    PointIntersector.cpp
     ViewerCommand.h
     ViewerCommand.cpp
     LogFileHandler.h
     FindNodeVisitor.h
     FindNodeVisitor.cpp
-    ModelViewProjectionMatrixCallback.h
-    ModelViewProjectionMatrixCallback.cpp
-    ViewportVectorCallback.h
-    ViewportVectorCallback.cpp
-    CameraEyeCallback.h
-    CameraEyeCallback.cpp
-    CanvasTransformCallback.h
-    CanvasTransformCallback.cpp
+    CameraCallbacks.h
+    CameraCallbacks.cpp
     ProgramEntity2D.h
     ProgramEntity2D.cpp
     ProgramStroke.h
@@ -52,4 +54,5 @@ add_library(libSGControls
 target_link_libraries( libSGControls
     ${QT_LIBRARIES}
     ${OPENSCENEGRAPH_LIBRARIES}
+    libSGEntities
 )

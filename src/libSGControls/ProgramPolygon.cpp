@@ -6,9 +6,7 @@
 #include <osg/Shader>
 
 #include "Settings.h"
-#include "ModelViewProjectionMatrixCallback.h"
-#include "CameraEyeCallback.h"
-#include "CanvasTransformCallback.h"
+#include "CameraCallbacks.h"
 
 ProgramPolygon::ProgramPolygon()
     : ProgramEntity2D()

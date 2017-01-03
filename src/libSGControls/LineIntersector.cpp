@@ -110,6 +110,7 @@ void LineIntersector::intersect(osgUtil::IntersectionVisitor &iv, osg::Drawable 
         if (!vertices) return;
         if (vertices->size() == 2){
             double distance = Utilities::getSkewLinesDistance(s,e,(*vertices)[1], (*vertices)[0]);
+
             if (m_offset>=distance){
                 Intersection hit;
                 hit.ratio = distance;

@@ -3,7 +3,7 @@
 #include <QtGlobal>
 #include <QDebug>
 
-#include "CanvasTransformCallback.h"
+#include "CameraCallbacks.h"
 
 ProgramEntity2D::ProgramEntity2D()
     : osg::Program()

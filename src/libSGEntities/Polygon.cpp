@@ -40,7 +40,7 @@ bool entity::Polygon::copyFrom(const ShaderedEntity2D *copy)
 void entity::Polygon::editLastPoint(float u, float v)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    Q_ASSERT(verts != 0);
+    Q_CHECK_PTR(verts);
     (*verts)[verts->size()-1] = osg::Vec3f(u, v, 0.f);
 
     verts->dirty();
@@ -50,12 +50,12 @@ void entity::Polygon::editLastPoint(float u, float v)
 void entity::Polygon::removeLastPoint()
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    Q_ASSERT(verts != 0);
+    Q_CHECK_PTR(verts);
     verts->pop_back();
     verts->dirty();
 
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
-    Q_ASSERT(colors);
+    Q_CHECK_PTR(colors);
     colors->pop_back();
     colors->dirty();
 
@@ -75,7 +75,7 @@ bool entity::Polygon::redefineToShape(osg::MatrixTransform *t)
     }
 
     osg::ref_ptr<osg::Vec3Array> points = static_cast<osg::Vec3Array*>(this->getVertexArray());
-    Q_ASSERT(points);
+    Q_CHECK_PTR(points);
     points->dirty();
     osg::Vec4f color = MainWindow::instance().getCurrentColor();
     this->setColor(color);
@@ -119,7 +119,7 @@ bool entity::Polygon::redefineToShader(osg::MatrixTransform *t)
     /* set shader attributes */
     this->setVertexAttribArray(0, points, osg::Array::BIND_PER_VERTEX);
     osg::Vec4Array* colors = dynamic_cast<osg::Vec4Array*>(this->getColorArray());
-    Q_ASSERT(colors);
+    Q_CHECK_PTR(colors);
     this->setVertexAttribArray(1, colors, osg::Array::BIND_PER_VERTEX);
 
     /* apply shader to the state set */

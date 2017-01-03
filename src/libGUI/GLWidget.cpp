@@ -41,6 +41,7 @@ GLWidget::GLWidget(RootScene *root, QUndoStack *stack, QWidget *parent, Qt::Wind
     , m_DeviceDown(false)
     , m_DeviceActive(false)
     , m_mouseMode(cher::PEN_SKETCH)
+    , m_mousePrevious(cher::PEN_SKETCH)
 
     , m_manipulator(new Manipulator(m_mouseMode))
     , m_EH(new EventHandler(this, m_RootScene.get(), m_mouseMode))
@@ -158,10 +159,17 @@ void GLWidget::getCameraView(osg::Vec3d &eye, osg::Vec3d &center, osg::Vec3d &up
 
 void GLWidget::setMouseMode(const cher::MOUSE_MODE &mode)
 {
+    qDebug() << "Chaning mouse mode to " << mode;
+    m_mousePrevious = m_mouseMode;
     m_mouseMode = mode;
     m_manipulator->setMode(m_mouseMode);
     m_EH->setMode(m_mouseMode);
     emit this->mouseModeSet(m_mouseMode);
+}
+
+cher::MOUSE_MODE GLWidget::getMousePrevious() const
+{
+    return m_mousePrevious;
 }
 
 void GLWidget::setTabletActivity(bool active)
