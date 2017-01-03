@@ -74,6 +74,13 @@ if( CMAKE_BUILD_TYPE MATCHES "^[Rr]elease$" )
 endif()
 add_definitions( -DQT_COMPILING_QSTRING_COMPAT_CPP)
 
+## Third party libs, i.e. Eigen
+message(STATUS "Trying to include Eigen library")
+set(EIGEN3_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/third_party/eigen)
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+find_package(Eigen3 3.2.0 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIR})
+message(STATUS "EIGEN: " ${EIGEN3_VERSION} " (internal)")
 
 ## Required Qt packages
 find_package(Qt5Core 5.4 REQUIRED)
