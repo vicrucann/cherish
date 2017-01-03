@@ -1,6 +1,7 @@
 #include "HomographyMatrix.h"
 
-bool HomographyMatrix::solve()
+std::vector<double> HomographyMatrix::solve()
 {
-    return true;
+    std::vector<double> result(9);
+    return result;
 }
