@@ -1122,7 +1122,7 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
 
 bool entity::UserScene::strokeValid() const
 {
-    if (!m_canvasCurrent) throw std::runtime_error("There is no current canvas on the scene");
+    if (!m_canvasCurrent) return false;
     return m_canvasCurrent->getStrokeCurrent();
 }
 
