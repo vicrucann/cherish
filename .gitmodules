@@ -7,3 +7,6 @@
 [submodule "src/libNumerics/CurveFitting"]
 	path = src/libNumerics/CurveFitting
 	url = https://github.com/vicrucann/CurveFitting.git
+[submodule "src/third_party/eigen"]
+	path = src/third_party/eigen
+	url = https://github.com/RLovelett/eigen.git
