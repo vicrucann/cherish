@@ -51,6 +51,12 @@ public:
     /*! A method to indicate color changes from state drag to state hover over point. */
     void dragStop();
 
+    /*! \return i-th point coordinates in local coordinate system. */
+    osg::Vec3f getPoint2D(int i) const;
+
+    /*! \return i-th point coordinates in global coordinate system. */
+    osg::Vec3f getPoint3D(int i) const;
+
 protected:
     /*! A method to set up default colors to all the points. */
     void setColorPointsDefaults();

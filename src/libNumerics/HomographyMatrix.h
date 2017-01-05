@@ -1,8 +1,9 @@
 #ifndef HOMOGRAPHYMATRIX_H
 #define HOMOGRAPHYMATRIX_H
 
-#include "osg/Matrix"
 #include "vector"
+#include "Eigen/Dense"
+#include "SVMData.h"
 
 /*! \class HomographyMatrix
  * \brief Extracts the homography matrix given image-to-world correspondences.
@@ -11,7 +12,7 @@ class HomographyMatrix
 {
 public:
 
-    static std::vector<double> solve();
+    static Eigen::Matrix3f solve(entity::SVMData* svm);
 };
 
 #endif // HOMOGRAPHYMATRIX_H

@@ -45,6 +45,24 @@ bool entity::SVMData::getVisibility() const
     return m_switch->getChildValue(m_wire1);
 }
 
+osg::Vec3f entity::SVMData::getLocalWall(int i) const
+{
+    if (i<0 || i>3){
+        qCritical("Index exceeds limits");
+    }
+
+    return m_wire1->getPoint2D(i);
+}
+
+osg::Vec3f entity::SVMData::getGlobalFloor(int i) const
+{
+    if (i<0 || i>3){
+        qCritical("Index exceeds limits");
+    }
+
+    return m_wire2->getPoint3D(i);
+}
+
 entity::SVMData *entity::SVMData::getParentSVM(entity::DraggableWire *wire)
 {
     Q_CHECK_PTR(wire);

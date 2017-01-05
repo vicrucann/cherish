@@ -36,6 +36,12 @@ public:
     /*! \return whether the wire geometries are visible (true) or not (false). */
     bool getVisibility() const;
 
+    /*! \return i-th point local coordinates [u, v, 0] of the first wire (wall). */
+    osg::Vec3f getLocalWall(int i) const;
+
+    /*! \return i-th point global coordinates [X, Y, Z] of the second wire (floor). */
+    osg::Vec3f getGlobalFloor(int i) const;
+
     static entity::SVMData* getParentSVM(entity::DraggableWire* wire);
 
 private:
