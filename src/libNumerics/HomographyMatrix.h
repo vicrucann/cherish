@@ -2,7 +2,15 @@
 #define HOMOGRAPHYMATRIX_H
 
 #include "vector"
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif // GNUC
 #include "Eigen/Dense"
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif // GNUC
+
 #include "SVMData.h"
 
 /*! \class HomographyMatrix
