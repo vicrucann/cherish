@@ -12,7 +12,14 @@
 #include <osgDB/ReaderWriter>
 #include <osgDB/Registry>
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif // GNUC
 #include <Eigen/Dense>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif // GNUC
 
 #include "Settings.h"
 #include "Utilities.h"

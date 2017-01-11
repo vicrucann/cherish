@@ -10,7 +10,15 @@
 #include <osgViewer/View>
 #include <osg/Camera>
 #include <osg/Plane>
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif // GNUC
 #include <Eigen/Dense>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif // GNUC
 
 #include "Canvas.h"
 #include "Stroke.h"

@@ -3,7 +3,14 @@
 #include "QtGlobal"
 #include "QDebug"
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif // GNUC
 #include <Eigen/Jacobi>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif // GNUC
 
 Eigen::Matrix3d HomographyMatrix::solve(entity::SVMData *svm)
 {
