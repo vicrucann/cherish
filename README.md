@@ -33,8 +33,11 @@ Documentation:
 * [Git](https://git-scm.com/) (not mandatory; only used for development)
 * C++ compiler with C++11 support, e.g., `gcc` (>=4.8.1), Visual Studio (>=2013), clang (>=3.0).
 * Graphics card supporting OpenGL (>=3.3), otherwise the shaders will not work
+* [Eigen library](http://eigen.tuxfamily.org) (when not using `git` for source download; see *Eigen Note* for more details).
 
 All tools, but OpenSceneGraph (OSG), have binaries and are easy to install. There are no official binaries for OSG library and it is recommended to install it from source. Use the [official guide](http://trac.openscenegraph.org/projects/osg//wiki/Support/GettingStarted) for detailed steps. Note: the used version of OSG only requires OpenGL and CMake; there is no need to install additional plugins; the minimal install is enough.
+
+*Eigen Note*: [Eigen library](http://eigen.tuxfamily.org) is also used within **Cherish**, however, if the source is downloaded by means of `git` (see below for instructions), no additional *Eigen* installation is required since the library is included as a third party dependency via git submodules.
 
 ### Getting the sources
 
