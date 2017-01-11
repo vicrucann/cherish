@@ -441,3 +441,8 @@ QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
 
     return cur;
 }
+
+bool Utilities::getCameraPosition(const Eigen::Matrix3d &H, osg::Vec3f &eye, osg::Vec3f &center, osg::Vec3f &up)
+{
+    return true;
+}

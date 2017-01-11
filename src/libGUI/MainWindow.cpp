@@ -368,6 +368,12 @@ void MainWindow::onImportPhoto(const QString &path, const QString &fileName)
     this->importPhoto(fullPath);
 }
 
+void MainWindow::onCameraPoseEdited(int index, const osg::Vec3f &eye, const osg::Vec3f &center, const osg::Vec3f &up)
+{
+    // edit camera pose by editing: bookmark tool position; SceneState data. Update.
+
+}
+
 /* Check whether the current scene is empty or not
  * If not - propose to save changes.
  * Clear the scene graph
@@ -1174,6 +1180,10 @@ void MainWindow::initializeCallbacks()
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestSceneToolStatus(bool&)),
                      this, SLOT(onRequestSceneToolStatus(bool&)),
                      Qt::UniqueConnection);
+
+//    QObject::connect(m_rootScene->getUserScene(), SIGNAL(cameraPoseEdited(int,osg::Vec3f,osg::Vec3f,osg::Vec3f)),
+//                     this, SLOT(onCameraPoseEdited(int,osg::Vec3f,osg::Vec3f,osg::Vec3f)),
+//                     Qt::UniqueConnection);
 
     /* bookmark widget data */
     QObject::connect(m_bookmarkWidget, SIGNAL(clicked(QModelIndex)),

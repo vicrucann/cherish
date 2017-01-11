@@ -10,6 +10,7 @@
 #include <osgViewer/View>
 #include <osg/Camera>
 #include <osg/Plane>
+#include <Eigen/Dense>
 
 #include "Canvas.h"
 #include "Stroke.h"
@@ -132,6 +133,11 @@ public:
 
     /*! UI method to obtain cursor data based on the given mouse mode. */
     static QCursor getCursorFromMode(cher::MOUSE_MODE mode);
+
+    /*! A method to retrieve camera pose given Homography matrix. The return pose is the  passed parameters
+     * for camera's eye, center and up vectors.
+     * \return true upon operation's success. */
+    static bool getCameraPosition(const Eigen::Matrix3d& H, osg::Vec3f& eye, osg::Vec3f& center, osg::Vec3f& up);
 };
 
 #endif // UTILITIES_H

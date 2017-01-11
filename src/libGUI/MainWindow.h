@@ -110,6 +110,9 @@ public slots:
     /*! Slot called when user performed drag-and-drop from PhotoWidget to GLWidget of a entity::Photo. */
     void onImportPhoto(const QString& path, const QString& fileName);
 
+    /*! Slot called when user finishes editing entity::SVMData on click outside of the aforementioned structure. */
+    void onCameraPoseEdited(int index, const osg::Vec3f& eye, const osg::Vec3f& center, const osg::Vec3f& up);
+
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */
     void onFileNew();

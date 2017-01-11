@@ -12,9 +12,13 @@
 #include <osgDB/ReaderWriter>
 #include <osgDB/Registry>
 
+#include <Eigen/Dense>
+
 #include "Settings.h"
+#include "Utilities.h"
 #include "EditEntityCommand.h"
 #include "MainWindow.h"
+#include "HomographyMatrix.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
     : osg::ProtectedGroup()
@@ -351,6 +355,33 @@ void RootScene::hideAndUpdateSVMData()
         bool vis = svm->getVisibility();
         if (!vis) continue;
         /* if the wire is present and about to be hidden, update the corresponding camera position. */
+        Eigen::Matrix3d H = HomographyMatrix::solve(svm);
+        osg::Vec3f eye, center, up;
+        bool success = Utilities::getCameraPosition(H, eye, center, up);
+        if (!success){
+            qWarning("Could not obtain camera pose from the given Homography");
+            continue;
+        }
+        // edit camera pose by editing: bookmark tool position; Bookmarks data.
+        entity::Bookmarks* bms = m_userScene->getBookmarksModel();
+        if (!bms){
+            qWarning("Could not exatract bookmarks pointer for editing");
+            continue;
+        }
+        bms->editBookmarkPose(i, eye, center, up);
+
+        entity::BookmarkTool* bt = this->getBookmarkTool(i);
+        if (!bt){
+            qWarning("Could not extract bookmark tool pointer");
+            continue;
+        }
+        bt->setPose(eye, center, up);
+
+        // trigger update
+        emit m_userScene->updateWidgets();
+
+        /* emit signal to edit the camera pose, this signal is associated with MainWindow */
+//        emit m_userScene->cameraPoseEdited(i, eye, center, up);
 
         /* hide the wires */
         svm->setVisibility(false);
@@ -660,6 +691,11 @@ bool RootScene::setSceneState(const entity::SceneState *state)
     }
 
     return true;
+}
+
+entity::BookmarkTool *RootScene::getBookmarkTool(int index)
+{
+    return dynamic_cast<entity::BookmarkTool*>(m_bookmarkTools->getChild(index));
 }
 
 

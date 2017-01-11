@@ -154,6 +154,10 @@ public:
      * \return Whether the operation was performed successfully (no size discrepancies found) or not. */
     bool setSceneState(const entity::SceneState* state);
 
+    /*! A method to obtain a bookmark tool associated with the entity::Bookmarks.
+     * \param index is the tool index associated with the bookmark data. */
+    entity::BookmarkTool* getBookmarkTool(int index);
+
 protected:
 
 private:

@@ -105,6 +105,15 @@ protected:
     void initializeSG();
 
 public:
+    /*! A method to edit the tool's position. */
+    void setPose(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up);
+
+protected:
+    /*! A method that uses internal camer parameters (eye, center, up) and sets up the vertices position
+     * for the tool.*/
+    void updatePosition();
+
+public:
     /*! A method to set visibility of a bookmark tool. */
     void setVisibility(bool on);
 
@@ -113,6 +122,8 @@ public:
 
 private:
     osg::AutoTransform* m_AT;
+
+    osg::Vec3f m_eye, m_center, m_up;
 };
 
 /*! \class AxisGlobalTool
