@@ -12,7 +12,7 @@ class HomographyMatrix
 {
 public:
 
-    static Eigen::Matrix3f solve(entity::SVMData* svm);
+    static Eigen::Matrix3d solve(entity::SVMData* svm);
 };
 
 #endif // HOMOGRAPHYMATRIX_H

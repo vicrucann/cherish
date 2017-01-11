@@ -5,13 +5,9 @@
 
 #include <Eigen/Jacobi>
 
-Eigen::Matrix3f HomographyMatrix::solve(entity::SVMData *svm)
+Eigen::Matrix3d HomographyMatrix::solve(entity::SVMData *svm)
 {
-    Eigen::Matrix3f H;
-    if (!svm) {
-        qWarning("The provided SVMData structure is NULL");
-        return H;
-    }
+    if (!svm) qCritical("The provided SVMData structure is NULL");
 
     const int n = 4;
     Eigen::MatrixXd A(n*2, 9);
@@ -37,9 +33,12 @@ Eigen::Matrix3f HomographyMatrix::solve(entity::SVMData *svm)
             A(j,8) = -p.y(); //-x2_(1, i);
     }
 
-    Eigen::JacobiSVD<Eigen::MatrixXd> svd(A, Eigen::ComputeFullV);
+    Eigen::JacobiSVD<Eigen::MatrixXd> svd(A, Eigen::ComputeFullV); // or U?
     Eigen::MatrixXd V((int)svd.matrixV().rows(), (int)svd.matrixV().cols());
     V = svd.matrixV();
+    Q_ASSERT(V.rows() == 9 && V.cols() == 1);
 
-    return H;
+    Eigen::Map<Eigen::Matrix3d, Eigen::Aligned> H(V.data());
+
+    return  H;
 }
