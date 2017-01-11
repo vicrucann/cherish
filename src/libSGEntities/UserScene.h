@@ -533,14 +533,6 @@ signals:
      * \param visibility is a boolean flag which indicated whether the tools are on (true) of off (false). */
     void requestSceneToolStatus(bool& visibility);
 
-    /*! A signal to be emitter from entity::RootScene::hideAndUpdateSvmData() in order to update the camera
-     * position which is associated with the last edited entity::SVMData.
-     * \param index is the bookmark index to update.
-     * \param eye is the new camera's eye parameters.
-     * \param center is the new camera's center parameter.
-     * \param up is the new camera's up parameter. */
-    void cameraPoseEdited(int index, const osg::Vec3f& eye, const osg::Vec3f& center, const osg::Vec3f& up);
-
 public slots:
     /*! A slot which is called when the canvas name was edited from CanvasPhotoWidget. Based on the edited item, the slot
      * edits the name of the corresponding canvas. This slot is connected to CanvasPhotoWidget::itemChanged() */

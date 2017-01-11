@@ -380,9 +380,6 @@ void RootScene::hideAndUpdateSVMData()
         // trigger update
         emit m_userScene->updateWidgets();
 
-        /* emit signal to edit the camera pose, this signal is associated with MainWindow */
-//        emit m_userScene->cameraPoseEdited(i, eye, center, up);
-
         /* hide the wires */
         svm->setVisibility(false);
     }
