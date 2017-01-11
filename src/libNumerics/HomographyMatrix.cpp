@@ -38,7 +38,7 @@ Eigen::Matrix3d HomographyMatrix::solve(entity::SVMData *svm)
     V = svd.matrixV();
     Q_ASSERT(V.rows() == 9 && V.cols() == 1);
 
-    Eigen::Map<Eigen::Matrix3d, Eigen::Aligned> H(V.data());
+    Eigen::Map<Eigen::Matrix3d, Eigen::Aligned> H(V.data(), 3, 3);
 
     return  H;
 }
