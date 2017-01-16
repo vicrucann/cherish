@@ -88,12 +88,34 @@ void BookmarksTest::testNewBookmark()
     qInfo("Add simulated SVMData");
     QVERIFY(m_rootScene->addSVMData());
 
+    qInfo("Create ground truth camera");
+    osg::Vec3f camEyeGround = cher::CENTER;
+    osg::Matrix tGround = osg::Matrix::translate(4, 4, 1);
+    osg::Matrix rGround = osg::Matrix::rotate(cher::PI*0.25, 0,1,0); // 45 degrees
+    rGround.rotate(cher::PI*0.125, osg::Vec3f(1,0,0)); // 22.5 degrees
+    camEyeGround = camEyeGround * rGround * tGround;
+    osg::Vec3f camCenterGround = cher::CENTER;
+    osg::Vec3f camUpGround = osg::Vec3f(0,1,0);
+    qDebug() << "camera ground=(" << camEyeGround.x() << ", " << camEyeGround.y() << ", " << camEyeGround.z() << ")";
+
     qInfo("Edit SVMData to some fixed values.");
     entity::SVMData* svm = m_rootScene->getSVMDataCurrent();
     QVERIFY(svm);
     entity::DraggableWire* wall = svm->getWallWire();
     entity::DraggableWire* floor = svm->getFlootWire();
     QVERIFY(wall && floor);
+
+    wall->pick(0); wall->editPick(0,0);
+    wall->pick(1); wall->editPick(0,0);
+    wall->pick(2); wall->editPick(0,0);
+    wall->pick(3); wall->editPick(0,0);
+    wall->unpick();
+
+    floor->pick(0); floor->editPick(0,0);
+    floor->pick(1); floor->editPick(0,0);
+    floor->pick(2); floor->editPick(0,0);
+    floor->pick(3); floor->editPick(0,0);
+    floor->unpick();
 
 }
 
