@@ -7,7 +7,8 @@
 
 #include "Stroke.h"
 #include "Bookmarks.h"
-
+#include "SVMData.h"
+#include "DraggableWire.h"
 
 void BookmarksTest::testAddBookmark()
 {
@@ -55,6 +56,44 @@ void BookmarksTest::testAddBookmark()
     QVERIFY(!isWhite(pmap));
 
 
+
+}
+
+void BookmarksTest::testNewBookmark()
+{
+    qInfo("Test bookmark calculation through SVM data manipulation. ");
+    qInfo("Create new bookmark and add it to the widgets.");
+    osg::Vec3d eye, center, up;
+    double fov;
+    this->m_glWidget->getCameraView(eye, center, up, fov);
+    m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
+
+    const entity::Bookmarks* bs = m_scene->getBookmarks();
+    QVERIFY(bs);
+    QVERIFY(bs->getNumBookmarks() == 1);
+    QVERIFY(bs->getEyes().size() == 1);
+    QVERIFY(bs->getCenters().size() == 1);
+    QVERIFY(bs->getUps().size() == 1);
+    QVERIFY(bs->getNames().size() == 1);
+    QVERIFY(bs->getFovs().size() == 1);
+
+    qInfo("Check the widget");
+    QCOMPARE(m_bookmarkWidget->count(), 1);
+    QListWidgetItem* item = m_bookmarkWidget->item(0);
+    QVERIFY(item);
+    QCOMPARE( item->text(), QString("Bookmark0"));
+    QIcon icon = item->icon();
+    QVERIFY(!icon.isNull());
+
+    qInfo("Add simulated SVMData");
+    QVERIFY(m_rootScene->addSVMData());
+
+    qInfo("Edit SVMData to some fixed values.");
+    entity::SVMData* svm = m_rootScene->getSVMDataCurrent();
+    QVERIFY(svm);
+    entity::DraggableWire* wall = svm->getWallWire();
+    entity::DraggableWire* floor = svm->getFlootWire();
+    QVERIFY(wall && floor);
 
 }
 

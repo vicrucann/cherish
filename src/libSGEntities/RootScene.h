@@ -89,6 +89,10 @@ public:
      * \param wire is the wire of entity::SVMData to hide. */
     void hideAndUpdateSVMData();
 
+    /*! A method to obtain a pointer on SVMData that is in the state of editing by user.
+     * If no such data available, return NULL. */
+    entity::SVMData* getSVMDataCurrent() const;
+
     void addBookmarkTool(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);

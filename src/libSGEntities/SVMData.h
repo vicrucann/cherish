@@ -42,12 +42,19 @@ public:
     /*! \return i-th point global coordinates [X, Y, Z] of the second wire (floor). */
     osg::Vec3f getGlobalFloor(int i) const;
 
+    /*! \return pointer on parent SVMData structure of the given wire. */
     static entity::SVMData* getParentSVM(entity::DraggableWire* wire);
 
+    /*! \return wire associated with Floor canvas. */
+    entity::DraggableWire* getWallWire() const;
+
+    /*! \return wire associated with Wall canvas. */
+    entity::DraggableWire* getFlootWire() const;
+
 private:
-    osg::ref_ptr<osg::Switch>   m_switch;
-    entity::DraggableWire*      m_wire1;
-    entity::DraggableWire*      m_wire2;
+    osg::ref_ptr<osg::Switch>   m_switch; /*!< Elements visibilities */
+    entity::DraggableWire*      m_wire1; /*!< Wall wire */
+    entity::DraggableWire*      m_wire2; /*!< Floot wire */
 };
 } // namespace entity
 

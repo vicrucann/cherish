@@ -80,3 +80,13 @@ entity::SVMData *entity::SVMData::getParentSVM(entity::DraggableWire *wire)
     Q_CHECK_PTR(sw->getParent(0));
     return dynamic_cast<entity::SVMData*>(sw->getParent(0));
 }
+
+entity::DraggableWire *entity::SVMData::getWallWire() const
+{
+    return m_wire1;
+}
+
+entity::DraggableWire *entity::SVMData::getFlootWire() const
+{
+    return m_wire2;
+}

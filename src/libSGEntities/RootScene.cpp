@@ -392,6 +392,23 @@ void RootScene::hideAndUpdateSVMData()
     }
 }
 
+entity::SVMData *RootScene::getSVMDataCurrent() const
+{
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    int num = m_userScene->getBookmarks()->getNumBookmarks();
+    entity::SVMData* result = NULL;
+    for (int i=0; i<num; ++i){
+        entity::SceneState* ss = m_userScene->getBookmarksModel()->getSceneState(i);
+        if (!ss) return 0;
+        entity::SVMData* svm = ss->getSVMData();
+        if (!svm) continue;
+        bool vis = svm->getVisibility();
+        if (!vis) continue;
+        result = svm;
+    }
+    return result;
+}
+
 void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
 {
     if (!m_bookmarkTools) {
