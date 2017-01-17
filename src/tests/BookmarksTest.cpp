@@ -62,6 +62,25 @@ void BookmarksTest::testAddBookmark()
 void BookmarksTest::testNewBookmark()
 {
     qInfo("Test bookmark calculation through SVM data manipulation. ");
+    qInfo("Create two canvases parallel to each other and perpendicular to Z axis.");
+    qInfo("Create canvases within XZ plane");
+    this->onNewCanvasXZ();
+    this->onNewCanvasXZ();
+    QCOMPARE(m_scene->getNumCanvases(), 5);
+    entity::Canvas* curr = m_scene->getCanvasCurrent();
+    entity::Canvas* prev = m_scene->getCanvasPrevious();
+    QVERIFY(curr && prev);
+
+    qInfo("Translate created canvases in known distance along Z axis");
+    const float d = 1.f;
+    curr->translate(osg::Matrix::translate(0,d,0));
+    prev->translate(osg::Matrix::translate(0,2*d,0));
+
+    QCOMPARE(curr->getCenter(), osg::Vec3f(0,d,0));
+    QCOMPARE(prev->getCenter(), osg::Vec3f(0,2*d,0));
+    QCOMPARE(curr->getGlobalAxisU(), osg::Vec3f(1,0,0));
+    QCOMPARE(prev->getGlobalAxisU(), osg::Vec3f(1,0,0));
+
     qInfo("Create new bookmark and add it to the widgets.");
     osg::Vec3d eye, center, up;
     double fov;
@@ -89,14 +108,9 @@ void BookmarksTest::testNewBookmark()
     QVERIFY(m_rootScene->addSVMData());
 
     qInfo("Create ground truth camera");
-    osg::Vec3f camEyeGround = cher::CENTER;
-    osg::Matrix tGround = osg::Matrix::translate(4, 4, 1);
-    osg::Matrix rGround = osg::Matrix::rotate(cher::PI*0.25, 0,1,0); // 45 degrees
-    rGround.rotate(cher::PI*0.125, osg::Vec3f(1,0,0)); // 22.5 degrees
-    camEyeGround = camEyeGround * rGround * tGround;
-    osg::Vec3f camCenterGround = cher::CENTER;
-    osg::Vec3f camUpGround = osg::Vec3f(0,1,0);
-    qDebug() << "camera ground=(" << camEyeGround.x() << ", " << camEyeGround.y() << ", " << camEyeGround.z() << ")";
+    osg::Vec3f gEye = cher::CENTER;
+    osg::Vec3f gCenter = osg::Vec3f(0,0,2);
+    osg::Vec3f gUp = osg::Vec3f(0,1,0);
 
     qInfo("Edit SVMData to some fixed values.");
     entity::SVMData* svm = m_rootScene->getSVMDataCurrent();
@@ -105,18 +119,22 @@ void BookmarksTest::testNewBookmark()
     entity::DraggableWire* floor = svm->getFlootWire();
     QVERIFY(wall && floor);
 
-    wall->pick(0); wall->editPick(0,0);
-    wall->pick(1); wall->editPick(0,0);
-    wall->pick(2); wall->editPick(0,0);
-    wall->pick(3); wall->editPick(0,0);
+    const float sqrt3_1 = 1.f/std::sqrt(3); // tangent of 30 degrees
+    const float w = d*sqrt3_1; // frame half width
+
+    wall->pick(0); wall->editPick(w,w);
+    wall->pick(1); wall->editPick(-w,w);
+    wall->pick(2); wall->editPick(-w,-w);
+    wall->pick(3); wall->editPick(w,-w);
     wall->unpick();
 
-    floor->pick(0); floor->editPick(0,0);
-    floor->pick(1); floor->editPick(0,0);
-    floor->pick(2); floor->editPick(0,0);
-    floor->pick(3); floor->editPick(0,0);
+    floor->pick(0); floor->editPick(w*2,w*2);
+    floor->pick(1); floor->editPick(-w*2,w*2);
+    floor->pick(2); floor->editPick(-w*2,-w*2);
+    floor->pick(3); floor->editPick(w*2,-w*2);
     floor->unpick();
 
+    qInfo("Test the provided SVMData for camera position calculation");
 }
 
 bool BookmarksTest::isWhite(const QPixmap &pmap)

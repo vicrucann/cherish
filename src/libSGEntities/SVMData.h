@@ -53,8 +53,8 @@ public:
 
 private:
     osg::ref_ptr<osg::Switch>   m_switch; /*!< Elements visibilities */
-    entity::DraggableWire*      m_wire1; /*!< Wall wire */
-    entity::DraggableWire*      m_wire2; /*!< Floot wire */
+    entity::DraggableWire*      m_wire1; /*!< Wall wire, within current canvas at the moment of creation. */
+    entity::DraggableWire*      m_wire2; /*!< Floor wire, within previous canvas at the moment of creation. */
 };
 } // namespace entity
 
