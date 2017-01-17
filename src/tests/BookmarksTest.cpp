@@ -5,10 +5,21 @@
 #include <QListWidgetItem>
 #include <QIcon>
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#endif // GNUC
+#include <Eigen/Dense>
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif // GNUC
+
 #include "Stroke.h"
 #include "Bookmarks.h"
 #include "SVMData.h"
 #include "DraggableWire.h"
+#include "HomographyMatrix.h"
+#include "Utilities.h"
 
 void BookmarksTest::testAddBookmark()
 {
@@ -135,6 +146,26 @@ void BookmarksTest::testNewBookmark()
     floor->unpick();
 
     qInfo("Test the provided SVMData for camera position calculation");
+    qInfo("Simulate RootScene::hideAndUpdateSVMData()");
+    QVERIFY(m_scene->getBookmarks());
+    int num = m_scene->getBookmarks()->getNumBookmarks();
+    QCOMPARE(num, 1);
+    entity::SceneState* ss = m_scene->getBookmarksModel()->getSceneState(0);
+    QVERIFY(ss);
+    QCOMPARE(ss->getSVMData(), svm);
+    QVERIFY(svm->getVisibility());
+    Eigen::Matrix3d H = HomographyMatrix::solve(svm);
+    osg::Vec3f rEye, rCenter, rUp; // result camera positions
+    QVERIFY(Utilities::getCameraPosition(H, rEye, rCenter, rUp));
+
+    qInfo("Update the bookmark's data");
+    entity::Bookmarks* bms = m_scene->getBookmarksModel();
+    QVERIFY(bms);
+    QVERIFY(bms->editBookmarkPose(0, rEye, rCenter, rUp));
+    entity::BookmarkTool* bt = m_rootScene->getBookmarkTool(0);
+    QVERIFY(bt);
+    bt->setPose(rEye, rCenter, rUp);
+    svm->setVisibility(false);
 }
 
 bool BookmarksTest::isWhite(const QPixmap &pmap)
