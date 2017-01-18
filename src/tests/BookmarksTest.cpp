@@ -5,20 +5,10 @@
 #include <QListWidgetItem>
 #include <QIcon>
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#endif // GNUC
-#include <Eigen/Dense>
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif // GNUC
-
 #include "Stroke.h"
 #include "Bookmarks.h"
 #include "SVMData.h"
 #include "DraggableWire.h"
-#include "HomographyMatrix.h"
 #include "Utilities.h"
 
 void BookmarksTest::testAddBookmark()
@@ -154,9 +144,8 @@ void BookmarksTest::testNewBookmark()
     QVERIFY(ss);
     QCOMPARE(ss->getSVMData(), svm);
     QVERIFY(svm->getVisibility());
-    Eigen::Matrix3d H = HomographyMatrix::solve(svm);
     osg::Vec3f rEye, rCenter, rUp; // result camera positions
-    QVERIFY(Utilities::getCameraPosition(H, rEye, rCenter, rUp));
+    QVERIFY(Utilities::getCameraPosition(svm, rEye, rCenter, rUp));
 
     qInfo("Update the bookmark's data");
     entity::Bookmarks* bms = m_scene->getBookmarksModel();

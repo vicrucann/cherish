@@ -11,17 +11,9 @@
 #include <osg/Camera>
 #include <osg/Plane>
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#endif // GNUC
-#include <Eigen/Dense>
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif // GNUC
-
 #include "Canvas.h"
 #include "Stroke.h"
+#include "SVMData.h"
 
 /*! \class Utilities
  * \brief Some generic methods compiled into one class.
@@ -142,10 +134,13 @@ public:
     /*! UI method to obtain cursor data based on the given mouse mode. */
     static QCursor getCursorFromMode(cher::MOUSE_MODE mode);
 
-    /*! A method to retrieve camera pose given Homography matrix. The return pose is the  passed parameters
-     * for camera's eye, center and up vectors.
-     * \return true upon operation's success. */
-    static bool getCameraPosition(const Eigen::Matrix3d& H, osg::Vec3f& eye, osg::Vec3f& center, osg::Vec3f& up);
+    /*! A method to obtain camera pose given 4 intersecting rays (obtained from entity::SVMData).
+     * The algorithm is as follows: first, find 4 intersections between each neighboring rays. In case
+     * if two rays are skewed, find the median of the shortest projection between the skew rays. Second,
+     * calculate the camera eye - average the calculated four intersections. The camera's center vector
+     * passes through one of the wire's centers, and the up vector is always constant - (0,1,0).
+     * \return true if the parameters were calculated successfully, false otherwise. */
+    static bool getCameraPosition(entity::SVMData* svm,  osg::Vec3f& eye, osg::Vec3f& center, osg::Vec3f& up);
 };
 
 #endif // UTILITIES_H

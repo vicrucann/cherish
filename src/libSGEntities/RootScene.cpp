@@ -12,20 +12,10 @@
 #include <osgDB/ReaderWriter>
 #include <osgDB/Registry>
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wold-style-cast"
-#endif // GNUC
-#include <Eigen/Dense>
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif // GNUC
-
 #include "Settings.h"
 #include "Utilities.h"
 #include "EditEntityCommand.h"
 #include "MainWindow.h"
-#include "HomographyMatrix.h"
 
 RootScene::RootScene(QUndoStack *undoStack)
     : osg::ProtectedGroup()
@@ -362,9 +352,8 @@ void RootScene::hideAndUpdateSVMData()
         bool vis = svm->getVisibility();
         if (!vis) continue;
         /* if the wire is present and about to be hidden, update the corresponding camera position. */
-        Eigen::Matrix3d H = HomographyMatrix::solve(svm);
         osg::Vec3f eye, center, up;
-        bool success = Utilities::getCameraPosition(H, eye, center, up);
+        bool success = Utilities::getCameraPosition(svm, eye, center, up);
         if (!success){
             qWarning("Could not obtain camera pose from the given Homography");
             continue;

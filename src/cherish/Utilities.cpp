@@ -442,19 +442,7 @@ QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
     return cur;
 }
 
-bool Utilities::getCameraPosition(const Eigen::Matrix3d &H, osg::Vec3f &eye, osg::Vec3f &center, osg::Vec3f &up)
+bool Utilities::getCameraPosition(entity::SVMData *svm, osg::Vec3f &eye, osg::Vec3f &center, osg::Vec3f &up)
 {
-    // extract [r1 r2 r3 t]
-    osg::Vec3f r1 = osg::Vec3f(H(0,0), H(1,0), H(2,0));
-    osg::Vec3f r2 = osg::Vec3f(H(0,1), H(1,1), H(2,1));
-    osg::Vec3f r3 = r1^r2;
-
-    float a1 = r1.normalize();
-    float a2 = r2.normalize();
-    float a = (a1 + a2)/2.f;
-    osg::Vec3f t = osg::Vec3f(H(0,2), H(1,2), H(2,2)) / a;
-
-    // translate [r1 r2 r3 t] into (eye, center, up) related to global (0,0,0)
-
     return true;
 }

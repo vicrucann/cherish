@@ -43,6 +43,7 @@ Eigen::Matrix3d HomographyMatrix::solve(entity::SVMData *svm)
     Eigen::JacobiSVD<Eigen::MatrixXd> svd(A, Eigen::ComputeFullV); // or U?
     Eigen::MatrixXd V((int)svd.matrixV().rows(), (int)svd.matrixV().cols());
     V = svd.matrixV();
+    qDebug() << "V dims=[" << V.rows() << "," << V.cols() << "]";
 //    Q_ASSERT(V.rows() == 9 && V.cols() == 1);
 
     Eigen::Map<Eigen::Matrix3d, Eigen::Aligned> H(V.data(), 3, 3);
