@@ -249,6 +249,11 @@ double Utilities::getSkewLinesDistance(const osg::Vec3d &r1, const osg::Vec3d &r
     return std::fabs((dir*u3)/u3.length());
 }
 
+bool Utilities::getLinesIntersection(const osg::Vec3f &La1, const osg::Vec3f &La2, const osg::Vec3f &Lb1, const osg::Vec3f &Lb2, osg::Vec3f &intersection)
+{
+    return true;
+}
+
 int Utilities::getCanvasesIntersection(entity::Canvas *current, entity::Canvas *previous, osg::Vec3f &p1, osg::Vec3f &p2, osg::Vec3f &p3, osg::Vec3f &p4)
 {
     /* find intersection line between current and previous */
@@ -444,5 +449,28 @@ QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
 
 bool Utilities::getCameraPosition(entity::SVMData *svm, osg::Vec3f &eye, osg::Vec3f &center, osg::Vec3f &up)
 {
+    eye = cher::CENTER;
+    up = cher::UP;
+    const int nPoints = 4;
+    if (!svm) return false;
+    entity::DraggableWire* wire1 = svm->getWallWire();
+    entity::DraggableWire* wire2 = svm->getFlootWire();
+    center = wire1->getCenter3D();
+    if (!wire1 || !wire2) return false;
+    std::vector<osg::Vec3f> intersections(nPoints);
+    for (int i=0; i<nPoints; ++i){
+        int j = (i==3)? 0 : i+1; // neighbor
+        auto Pa1 = wire1->getPoint3D(i);
+        auto Pa2 = wire2->getPoint3D(i);
+        auto Pb1 = wire1->getPoint3D(j);
+        auto Pb2 = wire2->getPoint3D(j);
+        bool obtained = Utilities::getLinesIntersection(Pa1, Pa2, Pb1, Pb2, intersections[i]);
+        if (!obtained){
+            qWarning("Could not obtain rays intersection, camera pose will not be updated");
+            return false;
+        }
+        eye += intersections[i];
+    }
+    eye /= nPoints;
     return true;
 }
