@@ -15,8 +15,16 @@ private slots:
     void testAddBookmark();
 
     /* Test bookmark add through the SVM data. The steps follow closely the same steps
-     * from MainWindow::onBookmarkNew() slot. */
+     * from MainWindow::onBookmarkNew() slot.
+     * \sa testNewBookmarkNoise();
+*/
     void testNewBookmarkPure();
+
+    /* Test bookmark add through the SVM data (noise is added to data). The steps follow closely the same steps
+     * from MainWindow::onBookmarkNew() slot.
+     * \sa testNewBookmarkPure();
+*/
+    void testNewBookmarkNoise();
 
 private:
     bool isWhite(const QPixmap& pmap);
