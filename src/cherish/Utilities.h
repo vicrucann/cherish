@@ -99,8 +99,9 @@ public:
      * u1 and u2 - unit direction vectors for the lines
      */
     /*! A method to obtain a distance between skew lines. For more info, see: http://www2.washjeff.edu/users/mwoltermann/Dorrie/69.pdf
+     * or here: http://paulbourke.net/geometry/pointlineplane/
      * \param center is the first point P1 (see notations in the link above)
-     * \param farPoint is to descrive the line on which P1 lies
+     * \param farPoint is to describe the line on which P1 lies
      * \param nearPoint is the second point P2
      * \param normal is to describe the line on which P2 lies
      * \param X1 is the projection point on first line onto second line

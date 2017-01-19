@@ -76,7 +76,7 @@ namespace cher{
 const double PI = 3.14159265359;
 const double EPSILON = 0.00001;
 const osg::Vec3f CENTER = osg::Vec3f(0.f,0.f,0.f);
-const osg::Vec3f UP = osg::Vec3f(0.f, 1.f, 0.f); /*!< global up vector */
+const osg::Vec3f UP = osg::Vec3f(0.f, 0.f, 1.f); /*!< global up vector */
 
 // main entity types
 enum ENTITY_TYPE

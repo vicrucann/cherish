@@ -60,7 +60,7 @@ void BookmarksTest::testAddBookmark()
 
 }
 
-void BookmarksTest::testNewBookmark()
+void BookmarksTest::testNewBookmarkPure()
 {
     qInfo("Test bookmark calculation through SVM data manipulation. ");
     qInfo("Create two canvases parallel to each other and perpendicular to Z axis.");
@@ -81,12 +81,15 @@ void BookmarksTest::testNewBookmark()
     QCOMPARE(prev->getCenter(), osg::Vec3f(0,2*d,0));
     QCOMPARE(curr->getGlobalAxisU(), osg::Vec3f(1,0,0));
     QCOMPARE(prev->getGlobalAxisU(), osg::Vec3f(1,0,0));
+    QCOMPARE(curr->getGlobalAxisV().z(), 1.f);
+    QCOMPARE(prev->getGlobalAxisV().z(), 1.f);
 
     qInfo("Create new bookmark and add it to the widgets.");
     osg::Vec3d eye, center, up;
     double fov;
     this->m_glWidget->getCameraView(eye, center, up, fov);
     m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
+    this->printCameraPose("original", eye, center, up);
 
     const entity::Bookmarks* bs = m_scene->getBookmarks();
     QVERIFY(bs);
@@ -110,8 +113,9 @@ void BookmarksTest::testNewBookmark()
 
     qInfo("Create ground truth camera");
     osg::Vec3f gEye = cher::CENTER;
-    osg::Vec3f gCenter = osg::Vec3f(0,0,2);
-    osg::Vec3f gUp = osg::Vec3f(0,1,0);
+    osg::Vec3f gCenter = osg::Vec3f(0,1,0);
+    osg::Vec3f gUp = osg::Vec3f(0,0,1);
+    printCameraPose("ground", gEye, gCenter, gUp);
 
     qInfo("Edit SVMData to some fixed values.");
     entity::SVMData* svm = m_rootScene->getSVMDataCurrent();
@@ -122,6 +126,9 @@ void BookmarksTest::testNewBookmark()
 
     const float sqrt3_1 = 1.f/std::sqrt(3); // tangent of 30 degrees
     const float w = d*sqrt3_1; // frame half width
+    const float w2 = 2.f*d*sqrt3_1;
+    qDebug() << "width=" << w;
+    qDebug() << "width2=" << w2;
 
     wall->pick(0); wall->editPick(w,w);
     wall->pick(1); wall->editPick(-w,w);
@@ -129,10 +136,10 @@ void BookmarksTest::testNewBookmark()
     wall->pick(3); wall->editPick(w,-w);
     wall->unpick();
 
-    floor->pick(0); floor->editPick(w*2,w*2);
-    floor->pick(1); floor->editPick(-w*2,w*2);
-    floor->pick(2); floor->editPick(-w*2,-w*2);
-    floor->pick(3); floor->editPick(w*2,-w*2);
+    floor->pick(0); floor->editPick(w2,w2);
+    floor->pick(1); floor->editPick(-w2,w2);
+    floor->pick(2); floor->editPick(-w2,-w2);
+    floor->pick(3); floor->editPick(w2,-w2);
     floor->unpick();
 
     qInfo("Test the provided SVMData for camera position calculation");
@@ -146,6 +153,7 @@ void BookmarksTest::testNewBookmark()
     QVERIFY(svm->getVisibility());
     osg::Vec3f rEye, rCenter, rUp; // result camera positions
     QVERIFY(Utilities::getCameraPosition(svm, rEye, rCenter, rUp));
+    printCameraPose("result", rEye, rCenter, rUp);
 
     qInfo("Update the bookmark's data");
     entity::Bookmarks* bms = m_scene->getBookmarksModel();
@@ -167,6 +175,13 @@ bool BookmarksTest::isWhite(const QPixmap &pmap)
         }
     }
     return true;
+}
+
+void BookmarksTest::printCameraPose(const std::string &name, const osg::Vec3f &eye, const osg::Vec3f &center, const osg::Vec3f &up)
+{
+    qDebug() << QString(name.c_str()) << ": eye=[" << eye.x() << eye.y() << eye.z()<<"]";
+    qDebug() << QString(name.c_str()) << "center=[" << center.x() << center.y() << center.z()<<"]";
+    qDebug() << QString(name.c_str()) << "up=[" << up.x() << up.y() << up.z()<<"]";
 }
 
 QTEST_MAIN(BookmarksTest)

@@ -16,10 +16,12 @@ private slots:
 
     /* Test bookmark add through the SVM data. The steps follow closely the same steps
      * from MainWindow::onBookmarkNew() slot. */
-    void testNewBookmark();
+    void testNewBookmarkPure();
 
 private:
     bool isWhite(const QPixmap& pmap);
+
+    void printCameraPose(const std::string& name, const osg::Vec3f& eye, const osg::Vec3f& center, const osg::Vec3f& up);
 };
 
 #endif // BOOKMARKSTEST_H

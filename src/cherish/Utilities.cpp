@@ -251,6 +251,69 @@ double Utilities::getSkewLinesDistance(const osg::Vec3d &r1, const osg::Vec3d &r
 
 bool Utilities::getLinesIntersection(const osg::Vec3f &La1, const osg::Vec3f &La2, const osg::Vec3f &Lb1, const osg::Vec3f &Lb2, osg::Vec3f &intersection)
 {
+    // first check if lines have exact intersection point
+    // do it by checking id the shortest distance is 0
+    auto distance = Utilities::getSkewLinesDistance(La1, La2, Lb1, Lb2);
+    if (distance == 0){
+        qDebug("3d lines have exact intersection point");
+        auto C = La2;
+        auto D = Lb2;
+        auto e = La1-La2;
+        auto f = Lb1-Lb2;
+        auto g = D-C;
+        if ((f^g).length()==0 || (f^e).length()==0){
+            qWarning("lines have no intersection, are they parallel?");
+            return false;
+        }
+
+        auto fgn = f^g; fgn.normalize();
+        auto fen = f^e; fen.normalize();
+        int di = -1;
+        if (fgn == fen) // same direction?
+            di *= -1;
+
+        intersection = C + e*di*( (f^g).length() / (f^e).length() );
+        return true;
+    }
+
+    // use notations as in getSkewLinesProjection
+    auto P1 = La2;
+    auto P2 = Lb2;
+    auto d = P2 - P1;
+    auto u1 = La1 - La2;
+    u1.normalize();
+    auto u2 = Lb1 - Lb2;
+    u2.normalize();
+    auto u3 = u1^u2; // cross product
+
+    if (std::fabs(u3.x())<=cher::EPSILON && std::fabs(u3.y())<=cher::EPSILON && std::fabs(u3.z())<=cher::EPSILON){
+        qWarning("getLinesIntersection: lines are almost parallel. Cannot obtain the intersection");
+        return false;
+    }
+
+    // X1 and X2 are the closest points on lines
+    // we want to find both X1 and X2
+    // solving the linear equation in r1 and r2: Xi = Pi + ri*ui
+    // for both r1 and r2
+    float a1 = u1*u1, b1 = u1*u2, c1 = u1*d;
+    float a2 = u1*u2, b2 = u2*u2, c2 = u2*d;
+    if (!(std::fabs(b1) > cher::EPSILON)){
+        qWarning("getLinesIntersection: denominator is zero");
+        return false;
+    }
+    if (!(a2!=-1 && a2!=1)){
+        qWarning("getLinesIntersection: lines are parallel");
+        return false;
+    }
+
+    double r1 = (c2 - b2*c1/b1)/(a2-b2*a1/b1);
+    double r2 = (a1*r1 - c1)/b1;
+
+    auto X1 = P1 + u1*r1;
+    auto X2 = P2 + u2*r2;
+
+    intersection = (X1 + X2)/2.f;
+
     return true;
 }
 
