@@ -520,20 +520,24 @@ bool Utilities::getCameraPosition(entity::SVMData *svm, osg::Vec3f &eye, osg::Ve
     entity::DraggableWire* wire2 = svm->getFlootWire();
     center = wire1->getCenter3D();
     if (!wire1 || !wire2) return false;
-    std::vector<osg::Vec3f> intersections(nPoints);
     for (int i=0; i<nPoints; ++i){
-        int j = (i==3)? 0 : i+1; // neighbor
-        auto Pa1 = wire1->getPoint3D(i);
-        auto Pa2 = wire2->getPoint3D(i);
-        auto Pb1 = wire1->getPoint3D(j);
-        auto Pb2 = wire2->getPoint3D(j);
-        bool obtained = Utilities::getLinesIntersection(Pa1, Pa2, Pb1, Pb2, intersections[i]);
-        if (!obtained){
-            qWarning("Could not obtain rays intersection, camera pose will not be updated");
-            return false;
+        for (int j=0; j<nPoints; ++j){
+            if (i==j) continue;
+            auto Pa1 = wire1->getPoint3D(i);
+            auto Pa2 = wire2->getPoint3D(i);
+            auto Pb1 = wire1->getPoint3D(j);
+            auto Pb2 = wire2->getPoint3D(j);
+            osg::Vec3f iss;
+            bool obtained = Utilities::getLinesIntersection(Pa1, Pa2, Pb1, Pb2, iss);
+            if (!obtained){
+                qWarning("Could not obtain rays intersection, camera pose will not be updated");
+                return false;
+            }
+            eye += iss;
         }
-        eye += intersections[i];
+//        int j = (i==3)? 0 : i+1; // neighbor
     }
     eye /= nPoints;
+    qDebug() << "eye=" << eye.x() << eye.y() << eye.z();
     return true;
 }

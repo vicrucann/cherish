@@ -147,6 +147,14 @@ osg::Vec4f MainWindow::getCurrentColor() const
     return Utilities::getOsgColor(qc);
 }
 
+double MainWindow::getFOV() const
+{
+    double fov;
+    osg::Vec3d eye,center,up;
+    m_glWidget->getCameraView(eye,center,up, fov);
+    return fov;
+}
+
 void MainWindow::onSetTabletActivity(bool active){
     m_glWidget->setTabletActivity(active);
 }

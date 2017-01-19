@@ -158,15 +158,6 @@ void BookmarksTest::testNewBookmarkPure()
     QCOMPARE(gEye, rEye);
     QCOMPARE(gCenter, rCenter);
     QCOMPARE(gEye, rEye);
-
-    qInfo("Update the bookmark's data");
-    entity::Bookmarks* bms = m_scene->getBookmarksModel();
-    QVERIFY(bms);
-    QVERIFY(bms->editBookmarkPose(0, rEye, rCenter, rUp));
-    entity::BookmarkTool* bt = m_rootScene->getBookmarkTool(0);
-    QVERIFY(bt);
-    bt->setPose(rEye, rCenter, rUp);
-    svm->setVisibility(false);
 }
 
 void BookmarksTest::testNewBookmarkNoise()
@@ -269,21 +260,12 @@ void BookmarksTest::testNewBookmarkNoise()
     qInfo("Compare the result with ground truth within threshold tolerance");
     osg::Vec3f diffE = rEye - gEye;
     qDebug() << "diff=" << std::fabs(diffE.x()) << std::fabs(diffE.y()) << std::fabs(diffE.z());
-    float tolerance = 0.05f;
+    float tolerance = 0.1f;
     QVERIFY( std::fabs(diffE.x()) < tolerance &&
              std::fabs(diffE.y()) < tolerance &&
              std::fabs(diffE.z()) < tolerance);
     QCOMPARE(rCenter, gCenter);
     QCOMPARE(rUp, gUp);
-
-    qInfo("Update the bookmark's data");
-    entity::Bookmarks* bms = m_scene->getBookmarksModel();
-    QVERIFY(bms);
-    QVERIFY(bms->editBookmarkPose(0, rEye, rCenter, rUp));
-    entity::BookmarkTool* bt = m_rootScene->getBookmarkTool(0);
-    QVERIFY(bt);
-    bt->setPose(rEye, rCenter, rUp);
-    svm->setVisibility(false);
 }
 
 bool BookmarksTest::isWhite(const QPixmap &pmap)

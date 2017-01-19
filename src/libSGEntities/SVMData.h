@@ -3,6 +3,7 @@
 
 #include <osg/Switch>
 #include <osg/MatrixTransform>
+#include <osg/Camera>
 
 #include "ProtectedGroup.h"
 #include "DraggableWire.h"
@@ -55,6 +56,7 @@ private:
     osg::ref_ptr<osg::Switch>   m_switch; /*!< Elements visibilities */
     entity::DraggableWire*      m_wire1; /*!< Wall wire, within current canvas at the moment of creation. */
     entity::DraggableWire*      m_wire2; /*!< Floor wire, within previous canvas at the moment of creation. */
+    osg::Camera*                m_camera; /*!< So that frames are always rendered on top of photos. */
 };
 } // namespace entity
 

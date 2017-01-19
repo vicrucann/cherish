@@ -364,7 +364,12 @@ void RootScene::hideAndUpdateSVMData()
             qWarning("Could not exatract bookmarks pointer for editing");
             continue;
         }
-        bms->editBookmarkPose(i, eye, center, up);
+        double fov = MainWindow::instance().getFOV();
+        bool edited = bms->editBookmarkPose(i, eye, center, up, fov);
+        if (!edited){
+            qWarning("Could not edit the bookmark position");
+            continue;
+        }
 
         entity::BookmarkTool* bt = this->getBookmarkTool(i);
         if (!bt){

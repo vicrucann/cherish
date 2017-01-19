@@ -52,6 +52,9 @@ public:
     /*! A method to obtain current color of the color dialog (for polygon drawing). */
     osg::Vec4f getCurrentColor() const;
 
+    /*! A method to obtain current camera's FOV. */
+    double getFOV() const;
+
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
     void onSetTabletActivity(bool active);

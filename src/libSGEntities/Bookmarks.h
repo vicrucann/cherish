@@ -131,7 +131,7 @@ public:
     /*! \return The number of bookmarks. */
     int getNumBookmarks() const;
 
-    bool editBookmarkPose(int index, const osg::Vec3f& eye, const osg::Vec3f& center, const osg::Vec3f& up);
+    bool editBookmarkPose(int index, const osg::Vec3f& eye, const osg::Vec3f& center, const osg::Vec3f& up, double fov);
 
 signals:
     /*! A signal to request GLWidget to be set with correspondance of the passed bookmark
