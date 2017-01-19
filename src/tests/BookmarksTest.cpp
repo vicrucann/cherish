@@ -154,6 +154,10 @@ void BookmarksTest::testNewBookmarkPure()
     osg::Vec3f rEye, rCenter, rUp; // result camera positions
     QVERIFY(Utilities::getCameraPosition(svm, rEye, rCenter, rUp));
     printCameraPose("result", rEye, rCenter, rUp);
+    qInfo("Compare the result with ground truth");
+    QCOMPARE(gEye, rEye);
+    QCOMPARE(gCenter, rCenter);
+    QCOMPARE(gEye, rEye);
 
     qInfo("Update the bookmark's data");
     entity::Bookmarks* bms = m_scene->getBookmarksModel();
