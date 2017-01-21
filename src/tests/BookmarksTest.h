@@ -26,6 +26,10 @@ private slots:
 */
     void testNewBookmarkNoise();
 
+    /*! The two canvases are located perpendicular to each other, not parallel like in
+     * testNewBookmarkPure(). */
+    void testNewBookmarkPerspective();
+
 private:
     bool isWhite(const QPixmap& pmap);
 

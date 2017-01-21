@@ -268,6 +268,107 @@ void BookmarksTest::testNewBookmarkNoise()
     QCOMPARE(rUp, gUp);
 }
 
+void BookmarksTest::testNewBookmarkPerspective()
+{
+    qInfo("Test bookmark calculation through SVM data manipulation. ");
+    qInfo("Take two canvases perpendicular to each other.");
+    entity::Canvas* curr = m_scene->getCanvasCurrent();
+    entity::Canvas* prev = m_scene->getCanvasPrevious();
+    QVERIFY(curr && prev);
+
+    qInfo("Test canvas locations");
+    QCOMPARE(curr->getCenter(), cher::CENTER);
+    QCOMPARE(prev->getCenter().y(), cher::CANVAS_MINW*0.5);
+    QCOMPARE(curr->getNormal().y(), -1.f);
+    QCOMPARE(prev->getNormal().x(), -1.f);
+
+    qInfo("Camera ground params");
+    osg::Vec3f gEye = osg::Vec3f(5, -5, 0), gCenter = cher::CENTER, gUp = cher::UP;
+
+    qInfo("Cast rays from camera eye onto canvases");
+    float w = 0.3f;
+    auto vx = gUp ^ (gCenter - gEye);
+    auto C = (gCenter-gEye)*10;
+    auto p1 = C + vx*w + gUp*w;
+    auto p2 = C - vx*w + gUp*w;
+    auto p3 = C - vx*w - gUp*w;
+    auto p4 = C + vx*w - gUp*w;
+
+    osg::Vec3f P1c, P2c, P3c, P4c;
+    osg::Vec3f P1p, P2p, P3p, P4p;
+    QVERIFY(Utilities::getRayPlaneIntersection(curr->getPlane(), curr->getCenter(), gEye, p1, P1c));
+    QVERIFY(Utilities::getRayPlaneIntersection(curr->getPlane(), curr->getCenter(), gEye, p2, P2c));
+    QVERIFY(Utilities::getRayPlaneIntersection(curr->getPlane(), curr->getCenter(), gEye, p3, P3c));
+    QVERIFY(Utilities::getRayPlaneIntersection(curr->getPlane(), curr->getCenter(), gEye, p4, P4c));
+
+    QVERIFY(Utilities::getRayPlaneIntersection(prev->getPlane(), prev->getCenter(), gEye, p1, P1p));
+    QVERIFY(Utilities::getRayPlaneIntersection(prev->getPlane(), prev->getCenter(), gEye, p2, P2p));
+    QVERIFY(Utilities::getRayPlaneIntersection(prev->getPlane(), prev->getCenter(), gEye, p3, P3p));
+    QVERIFY(Utilities::getRayPlaneIntersection(prev->getPlane(), prev->getCenter(), gEye, p4, P4p));
+
+    qInfo("Convert global intersections into local coordinate system");
+    osg::Vec3f p1c, p2c, p3c, p4c;
+    osg::Vec3f p1p, p2p, p3p, p4p;
+    QVERIFY(Utilities::getLocalFromGlobal(P1c, curr->getMatrixInverse(), p1c));
+    QVERIFY(Utilities::getLocalFromGlobal(P2c, curr->getMatrixInverse(), p2c));
+    QVERIFY(Utilities::getLocalFromGlobal(P3c, curr->getMatrixInverse(), p3c));
+    QVERIFY(Utilities::getLocalFromGlobal(P4c, curr->getMatrixInverse(), p4c));
+
+    QVERIFY(Utilities::getLocalFromGlobal(P1p, prev->getMatrixInverse(), p1p));
+    QVERIFY(Utilities::getLocalFromGlobal(P2p, prev->getMatrixInverse(), p2p));
+    QVERIFY(Utilities::getLocalFromGlobal(P3p, prev->getMatrixInverse(), p3p));
+    QVERIFY(Utilities::getLocalFromGlobal(P4p, prev->getMatrixInverse(), p4p));
+
+    qInfo("Add simulated SVMData");
+    qInfo("Create new bookmark and add it to the widgets.");
+    osg::Vec3d eye, center, up;
+    double fov;
+    this->m_glWidget->getCameraView(eye, center, up, fov);
+    m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
+    this->printCameraPose("original", eye, center, up);
+    this->printCameraPose("ground", gEye, gCenter, gUp);
+
+    QVERIFY(m_rootScene->addSVMData());
+    entity::SVMData* svm = m_rootScene->getSVMDataCurrent();
+    QVERIFY(svm);
+    entity::DraggableWire* wall = svm->getWallWire();
+    entity::DraggableWire* floor = svm->getFlootWire();
+    QVERIFY(wall && floor);
+
+    qInfo("Feed the simulated intersections to an SVM structure.");
+    wall->pick(0); wall->editPick(p1c.x(),p1c.y());
+    wall->pick(1); wall->editPick(p2c.x(),p2c.y());
+    wall->pick(2); wall->editPick(p3c.x(),p3c.y());
+    wall->pick(3); wall->editPick(p4c.x(),p4c.y());
+    wall->unpick();
+
+    floor->pick(0); floor->editPick(p1p.x(),p1p.y());
+    floor->pick(1); floor->editPick(p2p.x(),p2p.y());
+    floor->pick(2); floor->editPick(p3p.x(),p3p.y());
+    floor->pick(3); floor->editPick(p4p.x(),p4p.y());
+    floor->unpick();
+
+    qInfo("Test the provided SVMData for camera position calculation");
+    qInfo("Simulate RootScene::hideAndUpdateSVMData()");
+    QVERIFY(m_scene->getBookmarks());
+    int num = m_scene->getBookmarks()->getNumBookmarks();
+    QCOMPARE(num, 1);
+    entity::SceneState* ss = m_scene->getBookmarksModel()->getSceneState(0);
+    QVERIFY(ss);
+    QCOMPARE(ss->getSVMData(), svm);
+    QVERIFY(svm->getVisibility());
+    osg::Vec3f rEye, rCenter, rUp; // result camera positions
+    QVERIFY(Utilities::getCameraPosition(svm, rEye, rCenter, rUp));
+    printCameraPose("result", rEye, rCenter, rUp);
+
+    qInfo("Compare the result with ground truth");
+    auto diffE = gEye-rEye;
+    float th = 0.01f;
+    QVERIFY(std::fabs(diffE.x())<th && std::fabs(diffE.y())<th && std::fabs(diffE.z())<th);
+    QCOMPARE(gCenter, rCenter);
+    QCOMPARE(gUp, rUp);
+}
+
 bool BookmarksTest::isWhite(const QPixmap &pmap)
 {
     QImage image = pmap.toImage();

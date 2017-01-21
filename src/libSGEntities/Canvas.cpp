@@ -169,6 +169,16 @@ void entity::Canvas::initializeMasks()
         m_toolFrame->setNodeMask(cher::MASK_CANVASFRAME_IN);
 }
 
+osg::Matrix entity::Canvas::getMatrixInverse() const
+{
+    osg::Matrix M = m_transform->getMatrix();
+    osg::Matrix invM;
+    if (!invM.invert(M)){
+        qCritical("canvas rotate: could not invert matrix");
+    }
+    return invM;
+}
+
 osg::Matrix entity::Canvas::getMatrix() const
 {
     return m_transform->getMatrix();
