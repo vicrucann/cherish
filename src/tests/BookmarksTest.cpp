@@ -11,6 +11,8 @@
 #include "DraggableWire.h"
 #include "Utilities.h"
 
+#include "HomographyMatrix.h"
+
 void BookmarksTest::testAddBookmark()
 {
     qInfo("Prepare basic scene");
@@ -367,6 +369,66 @@ void BookmarksTest::testNewBookmarkPerspective()
     QVERIFY(std::fabs(diffE.x())<th && std::fabs(diffE.y())<th && std::fabs(diffE.z())<th);
     QCOMPARE(gCenter, rCenter);
     QCOMPARE(gUp, rUp);
+}
+
+void BookmarksTest::testHomographyCalculation()
+{
+    qInfo("Given a set of match points, find H and compare it to the ground truth.");
+    qInfo("Add simulated SVMData");
+    qInfo("Create new bookmark and add it to the widgets.");
+    osg::Vec3d eye, center, up;
+    double fov;
+    this->m_glWidget->getCameraView(eye, center, up, fov);
+    m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
+    this->printCameraPose("original", eye, center, up);
+
+    qInfo("Add SVM structure and edit point positions to known local coords.");
+    QVERIFY(m_rootScene->addSVMData());
+    entity::SVMData* svm = m_rootScene->getSVMDataCurrent();
+    QVERIFY(svm);
+    entity::DraggableWire* wall = svm->getWallWire();
+    entity::DraggableWire* floor = svm->getFlootWire();
+    QVERIFY(wall && floor);
+
+    qInfo("Feed the simulated intersections to an SVM structure.");
+    osg::Vec3d x1 = osg::Vec3d(1.41, 1.31, 0);
+    osg::Vec3d x2 = osg::Vec3d(4.80, 1.59, 0);
+    osg::Vec3d x3 = osg::Vec3d(4.93, 6.30, 0);
+    osg::Vec3d x4 = osg::Vec3d(0.64, 6.01, 0);
+    osg::Vec3d y1 = osg::Vec3d(3.18, 2.56, 0);
+    osg::Vec3d y2 = osg::Vec3d(5.34, 3.72, 0);
+    osg::Vec3d y3 = osg::Vec3d(3.16, 6.70, 0);
+    osg::Vec3d y4 = osg::Vec3d(0.73, 4.73, 0);
+
+
+    wall->pick(0); wall->editPick(x1.x(), x1.y());
+    wall->pick(1); wall->editPick(x2.x(), x2.y());
+    wall->pick(2); wall->editPick(x3.x(), x3.y());
+    wall->pick(3); wall->editPick(x4.x(), x4.y());
+    wall->unpick();
+
+    floor->pick(0); floor->editPick(y1.x(), y1.y());
+    floor->pick(1); floor->editPick(y2.x(), y2.y());
+    floor->pick(2); floor->editPick(y3.x(), y3.y());
+    floor->pick(3); floor->editPick(y4.x(), y4.y());
+    floor->unpick();
+
+    qInfo("Compare two H estimations");
+    osg::Matrix H0 = HomographyMatrix::solve(svm);
+    qDebug() << "H0=";
+    qDebug() << H0(0,0) << H0(0,1) << H0(0,2);
+    qDebug() << H0(1,0) << H0(1,1) << H0(1,2);
+    qDebug() << H0(2,0) << H0(2,1) << H0(2,2);
+
+    osg::Matrix H1 = HomographyMatrix::solveEigen(svm);
+    qDebug() << "H1=";
+    qDebug() << H1(0,0) << H1(0,1) << H1(0,2);
+    qDebug() << H1(1,0) << H1(1,1) << H1(1,2);
+    qDebug() << H1(2,0) << H1(2,1) << H1(2,2);
+
+    qInfo("Check Homography wraping works for the points");
+    double error = HomographyMatrix::evaluate(svm, H0);
+    QVERIFY(std::fabs(error) < 0.001);
 }
 
 bool BookmarksTest::isWhite(const QPixmap &pmap)

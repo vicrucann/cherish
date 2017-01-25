@@ -40,6 +40,9 @@ public:
     /*! \return i-th point local coordinates [u, v, 0] of the first wire (wall). */
     osg::Vec3f getLocalWall(int i) const;
 
+    /*! \return i-th points local coordinate [u, v, 0] of the second wire (floor). */
+    osg::Vec3f getLocalFloor(int i) const;
+
     /*! \return i-th point global coordinates [X, Y, Z] of the second wire (floor). */
     osg::Vec3f getGlobalFloor(int i) const;
 

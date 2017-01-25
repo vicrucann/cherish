@@ -20,7 +20,17 @@ class HomographyMatrix
 {
 public:
 
-    static Eigen::Matrix3d solve(entity::SVMData* svm);
+    static osg::Matrix solveEigen(entity::SVMData* svm);
+
+    /*! A method to extract Homogrpahy matrix from the given 4 point matches represented by
+     * entity::SVMData. */
+    static osg::Matrix solve(entity::SVMData* svm);
+
+    /*! A tester method to evaluate the calcualted Homography matrix for the given entity::SVMData. */
+    static double evaluate(entity::SVMData* svm, const osg::Matrix& H);
+
+    /*! A method to obtain rotation/translation matrix from Homography matrix. */
+    static osg::Matrixd getRt(const osg::Matrix& H);
 };
 
 #endif // HOMOGRAPHYMATRIX_H

@@ -30,6 +30,9 @@ private slots:
      * testNewBookmarkPure(). */
     void testNewBookmarkPerspective();
 
+    /* Given known H, and the points matching, test the Homography::solve() function. */
+    void testHomographyCalculation();
+
 private:
     bool isWhite(const QPixmap& pmap);
 
