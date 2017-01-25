@@ -124,13 +124,16 @@ osg::Matrixd HomographyMatrix::getRt(const osg::Matrix &H)
 {
     osg::Vec3f H1 = osg::Vec3f(H(0,0), H(1,0), H(2,0));
     osg::Vec3f H2 = osg::Vec3f(H(0,1), H(1,1), H(2,1));
-    osg::Vec3f H3 = H1^H2;
 
     auto norm1 = H1.length();
     auto norm2 = H2.length();
     auto tnorm = (norm1 + norm2)/2.0;
 
     osg::Vec3f T = osg::Vec3f(H(2,0), H(2,1), H(2,2)) / tnorm;
+
+    H1.normalize();
+    H2.normalize();
+    osg::Vec3f H3 = H1^H2;
 
 //    libNumerics::matrix<double> H_ini(3,3);
 //    for (int i=0; i<3; ++i){

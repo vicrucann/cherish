@@ -763,6 +763,11 @@ void MainWindow::onBookmark()
 
 void MainWindow::onBookmarkNew()
 {
+    if (!m_rootScene->getCanvasPrevious()){
+        qWarning("Cannot create a new bookmark without at least two canvases on the scene.");
+        return;
+    }
+
     /* create initial camera position, add it to scene graph and tools */
     osg::Vec3d eye, center, up;
     double fov;

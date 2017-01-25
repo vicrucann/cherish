@@ -429,6 +429,8 @@ void BookmarksTest::testHomographyCalculation()
     qInfo("Check Homography wraping works for the points");
     double error = HomographyMatrix::evaluate(svm, H0);
     QVERIFY(std::fabs(error) < 0.001);
+
+    qInfo("Extract R|t matrix");
 }
 
 bool BookmarksTest::isWhite(const QPixmap &pmap)
