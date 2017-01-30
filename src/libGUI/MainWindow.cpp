@@ -802,11 +802,38 @@ void MainWindow::onBookmarkNew()
 void MainWindow::onBookmarkEdit(const QString &name)
 {
     qDebug() << "about to edit " << name;
-    // find the first bookmark witjh the given name
+    // find index of the first bookmark with the given name
+    entity::Bookmarks* bms = m_rootScene->getBookmarksModel();
+    if (!bms){
+        qWarning("Could not extract bookmarks pointer, no editing will be performed.");
+        return;
+    }
+    auto names = bms->getNames();
+    int index = -1;
+    for (unsigned int i=0; i<names.size(); ++i){
+        if (name.toStdString() == names[i]){
+            index = i;
+            break;
+        }
+    }
+    if (index<0 || index>=int(names.size())){
+        qWarning("Could not find the bookmark with the provided name");
+        return;
+    }
+    Q_ASSERT(bms->getSceneState(index));
+    entity::SVMData* svm = bms->getSceneState(index)->getSVMData();
+    if (!svm){
+        qWarning("Could not extract related SVMData pointer");
+        return;
+    }
 
     // make the corresponding SVMData visible
+    svm->setVisibility(true);
 
-    // turn the mouse mode to svm idle
+    // turn the mouse mode to svm idle so that to edit the data
+    m_glWidget->setMouseMode(cher::SVM_IDLE);
+
+    this->statusBar()->showMessage(tr("Mode to edit the bookmark data is on."));
 }
 
 void MainWindow::onStrokeFogFactor()

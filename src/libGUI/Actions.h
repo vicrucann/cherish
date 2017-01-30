@@ -16,7 +16,6 @@ public slots:
 
 Q_SIGNALS:
     void triggeredName(const QString& name);
-    void test();
 };
 
 #endif // ACTIONS_H
