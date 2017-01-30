@@ -13,6 +13,7 @@
 #include <osgDB/Registry>
 
 #include "Settings.h"
+#include "Utilities.h"
 #include "EditEntityCommand.h"
 #include "MainWindow.h"
 
@@ -351,10 +352,55 @@ void RootScene::hideAndUpdateSVMData()
         bool vis = svm->getVisibility();
         if (!vis) continue;
         /* if the wire is present and about to be hidden, update the corresponding camera position. */
+        osg::Vec3f eye, center, up;
+        bool success = Utilities::getCameraPosition(svm, eye, center, up);
+        if (!success){
+            qWarning("Could not obtain camera pose from the given Homography");
+            continue;
+        }
+        // edit camera pose by editing: bookmark tool position; Bookmarks data.
+        entity::Bookmarks* bms = m_userScene->getBookmarksModel();
+        if (!bms){
+            qWarning("Could not exatract bookmarks pointer for editing");
+            continue;
+        }
+        double fov = MainWindow::instance().getFOV();
+        bool edited = bms->editBookmarkPose(i, eye, center, up, fov);
+        if (!edited){
+            qWarning("Could not edit the bookmark position");
+            continue;
+        }
+
+        entity::BookmarkTool* bt = this->getBookmarkTool(i);
+        if (!bt){
+            qWarning("Could not extract bookmark tool pointer");
+            continue;
+        }
+        bt->setPose(eye, center, up);
+
+        // trigger update
+        emit m_userScene->updateWidgets();
 
         /* hide the wires */
         svm->setVisibility(false);
     }
+}
+
+entity::SVMData *RootScene::getSVMDataCurrent() const
+{
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    int num = m_userScene->getBookmarks()->getNumBookmarks();
+    entity::SVMData* result = NULL;
+    for (int i=0; i<num; ++i){
+        entity::SceneState* ss = m_userScene->getBookmarksModel()->getSceneState(i);
+        if (!ss) return 0;
+        entity::SVMData* svm = ss->getSVMData();
+        if (!svm) continue;
+        bool vis = svm->getVisibility();
+        if (!vis) continue;
+        result = svm;
+    }
+    return result;
 }
 
 void RootScene::addBookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
@@ -660,6 +706,11 @@ bool RootScene::setSceneState(const entity::SceneState *state)
     }
 
     return true;
+}
+
+entity::BookmarkTool *RootScene::getBookmarkTool(int index)
+{
+    return dynamic_cast<entity::BookmarkTool*>(m_bookmarkTools->getChild(index));
 }
 
 

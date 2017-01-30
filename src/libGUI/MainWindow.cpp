@@ -147,6 +147,14 @@ osg::Vec4f MainWindow::getCurrentColor() const
     return Utilities::getOsgColor(qc);
 }
 
+double MainWindow::getFOV() const
+{
+    double fov;
+    osg::Vec3d eye,center,up;
+    m_glWidget->getCameraView(eye,center,up, fov);
+    return fov;
+}
+
 void MainWindow::onSetTabletActivity(bool active){
     m_glWidget->setTabletActivity(active);
 }
@@ -755,6 +763,11 @@ void MainWindow::onBookmark()
 
 void MainWindow::onBookmarkNew()
 {
+    if (!m_rootScene->getCanvasPrevious()){
+        qWarning("Cannot create a new bookmark without at least two canvases on the scene.");
+        return;
+    }
+
     /* create initial camera position, add it to scene graph and tools */
     osg::Vec3d eye, center, up;
     double fov;
@@ -762,7 +775,22 @@ void MainWindow::onBookmarkNew()
     m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
 
     /* create corresponding SVM data connected to the bookmark */
-    m_rootScene->addSVMData();
+    bool added = m_rootScene->addSVMData();
+    if (!added){
+        qWarning("Could not add SVMData to scene. Only current view is bookmarked.");
+        return;
+    }
+
+    /* add bookmark name in editable bookmarks list in main menu */
+    Q_ASSERT(m_bookmarkWidget);
+    int cnt = m_bookmarkWidget->count()-1;
+    if (cnt<0){
+        qWarning("No bookmarks were added to widget, the bookmark will not be editable.");
+        return;
+    }
+    QListWidgetItem* item = m_bookmarkWidget->item(cnt);
+    Q_ASSERT(item);
+    this->addMenuBookmark(item->text());
 
     /* set mouse in SVM mode.
      * The camera position will be updated from EventHandler. */
@@ -771,9 +799,41 @@ void MainWindow::onBookmarkNew()
     this->statusBar()->showMessage(tr("New camera view added through SVM method."));
 }
 
-void MainWindow::onBookmarkEdit()
+void MainWindow::onBookmarkEdit(const QString &name)
 {
+    qDebug() << "about to edit " << name;
+    // find index of the first bookmark with the given name
+    entity::Bookmarks* bms = m_rootScene->getBookmarksModel();
+    if (!bms){
+        qWarning("Could not extract bookmarks pointer, no editing will be performed.");
+        return;
+    }
+    auto names = bms->getNames();
+    int index = -1;
+    for (unsigned int i=0; i<names.size(); ++i){
+        if (name.toStdString() == names[i]){
+            index = i;
+            break;
+        }
+    }
+    if (index<0 || index>=int(names.size())){
+        qWarning("Could not find the bookmark with the provided name");
+        return;
+    }
+    Q_ASSERT(bms->getSceneState(index));
+    entity::SVMData* svm = bms->getSceneState(index)->getSVMData();
+    if (!svm){
+        qWarning("Could not extract related SVMData pointer");
+        return;
+    }
 
+    // make the corresponding SVMData visible
+    svm->setVisibility(true);
+
+    // turn the mouse mode to svm idle so that to edit the data
+    m_glWidget->setMouseMode(cher::SVM_IDLE);
+
+    this->statusBar()->showMessage(tr("Mode to edit the bookmark data is on."));
 }
 
 void MainWindow::onStrokeFogFactor()
@@ -897,9 +957,6 @@ void MainWindow::initializeActions()
     m_actionBookmarkNew = new QAction(Data::viewerBookmarkNewIcon(), tr("Create new bookmark..."), this);
     this->connect(m_actionBookmarkNew, SIGNAL(triggered(bool)), this, SLOT(onBookmarkNew()));
 
-    m_actionBookmarkEdit = new QAction(Data::viewerBookmarkEditIcon(), tr("Edit existing bookmark"), this);
-    this->connect(m_actionBookmarkEdit, SIGNAL(triggered(bool)), this, SLOT(onBookmarkEdit()));
-
     m_actionCameraSettings = new QAction(Data::cameraApertureIcon(), tr("Camera settings"), this);
     this->connect(m_actionCameraSettings, SIGNAL(triggered(bool)), this, SLOT(onCameraAperture()));
 
@@ -1002,7 +1059,11 @@ void MainWindow::initializeMenus()
     menuCamera->addSeparator();
     menuCamera->addAction(m_actionBookmark);
     menuCamera->addAction(m_actionBookmarkNew);
-    menuCamera->addAction(m_actionBookmarkEdit);
+    /* Bookmark edit submenu */
+    m_submenuBookmarks = menuCamera->addMenu("Edit created bookmark");
+    m_submenuBookmarks->setIcon(Data::viewerBookmarkEditIcon());
+//    menuCamera->addAction(m_actionBookmarkEdit);
+
     menuCamera->addSeparator();
     menuCamera->addAction(m_actionCameraSettings);
 
@@ -1015,6 +1076,7 @@ void MainWindow::initializeMenus()
     menuScene->addAction(m_actionEraser);
     menuScene->addAction(m_actionCanvasEdit);
     menuScene->addSeparator();
+    /* new canvas submenu */
     QMenu* submenuCanvas = menuScene->addMenu("New Canvas");
     submenuCanvas->setIcon(Data::sceneNewCanvasIcon());
     submenuCanvas->addAction(m_actionCanvasClone);
@@ -1355,5 +1417,12 @@ void MainWindow::setSceneState(const entity::SceneState *state)
     m_actionTools->setChecked(state->getAxisFlag());
 
     // we only want to keep original screenshot
-//    m_rootScene->updateBookmark(m_bookmarkWidget, row);
+    //    m_rootScene->updateBookmark(m_bookmarkWidget, row);
+}
+
+void MainWindow::addMenuBookmark(const QString &name)
+{
+    BookmarkAction* act = new BookmarkAction(name, this);
+    this->connect(act, SIGNAL(triggeredName(QString)), this, SLOT(onBookmarkEdit(QString)));
+    m_submenuBookmarks->addAction(act);
 }

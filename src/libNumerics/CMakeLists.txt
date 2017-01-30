@@ -18,6 +18,14 @@ link_directories(${CMAKE_BINARY_DIR}/src/libNumerics/CurveFitting/libPathFitter)
 set (libNumerics_SRCS
     HomographyMatrix.h
     HomographyMatrix.cpp
+    libHomogrpahy/matrix.cpp
+    libHomogrpahy/matrix.h
+    libHomogrpahy/vector.cpp
+    libHomogrpahy/Hmatrix.h
+    libHomogrpahy/SVD.h
+    libHomogrpahy/ccmath_svd.cpp
+    libHomogrpahy/LM.h
+    libHomogrpahy/alternatives.h
     )
 
 add_library(libNumerics STATIC

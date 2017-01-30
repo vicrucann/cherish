@@ -13,6 +13,8 @@
 
 #include "Canvas.h"
 #include "Stroke.h"
+#include "SVMData.h"
+#include "DraggableWire.h"
 
 /*! \class Utilities
  * \brief Some generic methods compiled into one class.
@@ -97,8 +99,9 @@ public:
      * u1 and u2 - unit direction vectors for the lines
      */
     /*! A method to obtain a distance between skew lines. For more info, see: http://www2.washjeff.edu/users/mwoltermann/Dorrie/69.pdf
+     * or here: http://paulbourke.net/geometry/pointlineplane/
      * \param center is the first point P1 (see notations in the link above)
-     * \param farPoint is to descrive the line on which P1 lies
+     * \param farPoint is to describe the line on which P1 lies
      * \param nearPoint is the second point P2
      * \param normal is to describe the line on which P2 lies
      * \param X1 is the projection point on first line onto second line
@@ -113,6 +116,20 @@ public:
      * \sa getSkewLinesProjection() */
     static double getSkewLinesDistance(const osg::Vec3d &r1, const osg::Vec3d &r2,
                                        const osg::Vec3d &v1, const osg::Vec3d &v2);
+
+    /*! A method to obtain an intersection between the two lines. Each line is presented by two points in
+     * 3D space. The algorithm treats the lines as skew and the intersection is calculated as average between
+     * two projections on each line. The projection between the skew lines is a shortest distance between the
+     * lines.
+     * \param La1 is the first 3D point on first line.
+     * \param La2 is the second 3D point on first line.
+     * \param Lb1 is the first 3D point on second line.
+     * \param Lb2 is the second 3D point on second line.
+     * \param intersection is the result intersection.
+     * \return true if the intersection calculation was successful.
+*/
+    static bool getLinesIntersection(const osg::Vec3f& La1, const osg::Vec3f& La2, const osg::Vec3f& Lb1, const osg::Vec3f& Lb2,
+                                     osg::Vec3f& intersection);
 
 
     /*! A method to obtain intersection between two canvases (planes) so that to do projection on the intersection onto the second canvas.
@@ -132,6 +149,13 @@ public:
 
     /*! UI method to obtain cursor data based on the given mouse mode. */
     static QCursor getCursorFromMode(cher::MOUSE_MODE mode);
+
+    /*! A method to obtain camera pose given 4 intersecting rays (obtained from entity::SVMData).
+     * The algorithm is as follows: first, find 4 intersections between each neighboring rays (or use all possible pair?).
+     * Second, calculate the camera eye - average of the calculated four intersections. The camera's center vector
+     * passes through one of the wire's centers, and the up vector is always constant - (0,1,0).
+     * \return true if the parameters were calculated successfully, false otherwise. */
+    static bool getCameraPosition(entity::SVMData* svm,  osg::Vec3f& eye, osg::Vec3f& center, osg::Vec3f& up);
 };
 
 #endif // UTILITIES_H

@@ -27,6 +27,7 @@
 #include "ListView.h"
 #include "PhotoModel.h"
 #include "Data.h"
+#include "Actions.h"
 
 /*! \class MainWindow
  * \brief Re-defined QMainWindow that contains all the GUI elements such as GLWidget, menu bars, tool bars and other widgets.
@@ -51,6 +52,9 @@ public:
 
     /*! A method to obtain current color of the color dialog (for polygon drawing). */
     osg::Vec4f getCurrentColor() const;
+
+    /*! A method to obtain current camera's FOV. */
+    double getFOV() const;
 
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
@@ -166,7 +170,7 @@ protected slots:
 
     void onBookmark();
     void onBookmarkNew();
-    void onBookmarkEdit();
+    void onBookmarkEdit(const QString& name);
 
     void onStrokeFogFactor();
 
@@ -179,6 +183,12 @@ protected:
 
     bool        importPhoto(QString& fileName);
     void        setSceneState(const entity::SceneState* state);
+
+    /*! UI Method to add name of editable bookmark into bookmark's submenu. Has to be run
+     * whenever the new bookmark is added throught the SVM method, or when opening new file.
+     * Has to be cleared when the scene is cleared, or certain elements deleted when the corresponding
+     * bookmark is deleted. */
+    void        addMenuBookmark(const QString& name);
 
     QMdiArea*       m_mdiArea;
 
@@ -193,6 +203,7 @@ protected:
     QUndoStack*     m_undoStack;
 
     QMenuBar*       m_menuBar;
+    QMenu*          m_submenuBookmarks;
     osg::ref_ptr<RootScene> m_rootScene; // main scene graph
     QUndoStack* m_viewStack;
     GLWidget*       m_glWidget;
@@ -209,7 +220,7 @@ protected:
 
     /* CAMERA actions */
     QAction * m_actionOrbit, * m_actionPan, * m_actionZoom
-            , * m_actionPrevView, * m_actionNextView, * m_actionBookmark, * m_actionBookmarkNew, * m_actionBookmarkEdit
+            , * m_actionPrevView, * m_actionNextView, * m_actionBookmark, * m_actionBookmarkNew
             , * m_actionCameraSettings, * m_actionHomeView, * m_actionViewAllCanvas;
 
     // SCENE actions

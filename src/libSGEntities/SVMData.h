@@ -3,6 +3,7 @@
 
 #include <osg/Switch>
 #include <osg/MatrixTransform>
+#include <osg/Camera>
 
 #include "ProtectedGroup.h"
 #include "DraggableWire.h"
@@ -36,12 +37,29 @@ public:
     /*! \return whether the wire geometries are visible (true) or not (false). */
     bool getVisibility() const;
 
+    /*! \return i-th point local coordinates [u, v, 0] of the first wire (wall). */
+    osg::Vec3f getLocalWall(int i) const;
+
+    /*! \return i-th points local coordinate [u, v, 0] of the second wire (floor). */
+    osg::Vec3f getLocalFloor(int i) const;
+
+    /*! \return i-th point global coordinates [X, Y, Z] of the second wire (floor). */
+    osg::Vec3f getGlobalFloor(int i) const;
+
+    /*! \return pointer on parent SVMData structure of the given wire. */
     static entity::SVMData* getParentSVM(entity::DraggableWire* wire);
 
+    /*! \return wire associated with Floor canvas. */
+    entity::DraggableWire* getWallWire() const;
+
+    /*! \return wire associated with Wall canvas. */
+    entity::DraggableWire* getFlootWire() const;
+
 private:
-    osg::ref_ptr<osg::Switch>   m_switch;
-    entity::DraggableWire*      m_wire1;
-    entity::DraggableWire*      m_wire2;
+    osg::ref_ptr<osg::Switch>   m_switch; /*!< Elements visibilities */
+    entity::DraggableWire*      m_wire1; /*!< Wall wire, within current canvas at the moment of creation. */
+    entity::DraggableWire*      m_wire2; /*!< Floor wire, within previous canvas at the moment of creation. */
+    osg::Camera*                m_camera; /*!< So that frames are always rendered on top of photos. */
 };
 } // namespace entity
 

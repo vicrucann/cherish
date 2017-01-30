@@ -203,6 +203,19 @@ int entity::Bookmarks::getNumBookmarks() const
     return m_eyes.size();
 }
 
+bool entity::Bookmarks::editBookmarkPose(int index, const osg::Vec3f &eye, const osg::Vec3f &center, const osg::Vec3f &up, double fov)
+{
+    if (index<0 || index >= this->getNumBookmarks()){
+        qWarning("editBookmarkPose: index exceeds dimensions");
+        return false;
+    }
+    m_eyes[index] = eye;
+    m_centers[index] = center;
+    m_ups[index] = up;
+    m_fovs[index] = fov;
+    return true;
+}
+
 void entity::Bookmarks::onClicked(const QModelIndex &index)
 {
     qDebug() << "Bookmarks: on clicked " << index.row();

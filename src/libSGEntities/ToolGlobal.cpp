@@ -107,41 +107,12 @@ entity::BookmarkTool::BookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &cent
     : ToolGlobal(12, osg::Array::BIND_OVERALL,
            new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,0,12))
     , m_AT(new osg::AutoTransform)
+    , m_eye(eye)
+    , m_center(center)
+    , m_up(up)
 {
     this->setColor(cher::BOOKMARK_CLR);
-
-    std::vector<osg::Vec3f> verts;
-    osg::Vec3d dir = center-eye;
-    dir.normalize();
-
-    /* since auto transform is activated, we have to move the geometry
-     * so that it is located in front on the camera
-     * the used autoscale, scales the geometry in relation to the screen */
-    osg::Vec3f eye_mod = eye + dir*0.5;
-
-    osg::Vec3d side = dir^up;
-    side.normalize();
-    osg::Vec3d C = eye_mod + dir * cher::BOOKMARK_Z;
-    osg::Vec3d v1 = C + side * cher::BOOKMARK_X + up * cher::BOOKMARK_Y;
-    osg::Vec3d v2 = C - side * cher::BOOKMARK_X + up * cher::BOOKMARK_Y;
-    osg::Vec3d v3 = C - side * cher::BOOKMARK_X - up * cher::BOOKMARK_Y;
-    osg::Vec3d v4 = C + side * cher::BOOKMARK_X - up * cher::BOOKMARK_Y;
-    verts.push_back(eye_mod);
-    verts.push_back(v1);
-    verts.push_back(v2);
-    verts.push_back(v3);
-    verts.push_back(v4);
-    verts.push_back(v1);
-    verts.push_back(eye_mod);
-    verts.push_back(v2);
-    verts.push_back(eye_mod);
-    verts.push_back(v3);
-    verts.push_back(eye_mod);
-    verts.push_back(v4);
-    this->setVertices(verts);
-
-    m_AT->setAutoScaleToScreen(true);
-    m_AT->setPosition(eye_mod);
+    this->updatePosition();
 
     this->initializeSG();
     this->setVisibility(true);
@@ -151,6 +122,51 @@ void entity::BookmarkTool::initializeSG()
 {
     m_switch->addChild(m_AT);
     m_AT->addChild(m_geodeWire);
+}
+
+void entity::BookmarkTool::setPose(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+{
+    m_eye = eye;
+    m_center = center;
+    m_up = up;
+    this->updatePosition();
+}
+
+void entity::BookmarkTool::updatePosition()
+{
+    std::vector<osg::Vec3f> verts;
+    osg::Vec3d dir = m_center - m_eye;
+    dir.normalize();
+
+    /* since auto transform is activated, we have to move the geometry
+     * so that it is located in front on the camera
+     * the used autoscale, scales the geometry in relation to the screen */
+    osg::Vec3f eye_mod = m_eye + dir*0.5;
+    osg::Vec3d side = dir^m_up;
+    side.normalize();
+    osg::Vec3d C = eye_mod + dir * cher::BOOKMARK_Z;
+    osg::Vec3d v1 = C + side * cher::BOOKMARK_X + m_up * cher::BOOKMARK_Y;
+    osg::Vec3d v2 = C - side * cher::BOOKMARK_X + m_up * cher::BOOKMARK_Y;
+    osg::Vec3d v3 = C - side * cher::BOOKMARK_X - m_up * cher::BOOKMARK_Y;
+    osg::Vec3d v4 = C + side * cher::BOOKMARK_X - m_up * cher::BOOKMARK_Y;
+
+    verts.push_back(eye_mod);
+    verts.push_back(v1);
+    verts.push_back(v2);
+    verts.push_back(v3);
+    verts.push_back(v4);
+    verts.push_back(v1);
+    verts.push_back(eye_mod);
+    verts.push_back(v2);
+    verts.push_back(eye_mod);
+    verts.push_back(v3);
+    verts.push_back(eye_mod);
+    verts.push_back(v4);
+
+    this->setVertices(verts);
+
+    m_AT->setAutoScaleToScreen(true);
+    m_AT->setPosition(eye_mod);
 }
 
 void entity::BookmarkTool::setVisibility(bool on)

@@ -46,6 +46,9 @@ public:
     /*! Method is called automatically from initializeSG(), or must be called when reading scene from file. */
     virtual void initializeMasks();
 
+    /*! \return an inverse of model matrix of the canvas, i.e., a global to local matrix. */
+    osg::Matrix getMatrixInverse() const;
+
     /*! \return model matrix of the canvas, i.e., local to global matrix.  */
     osg::Matrix getMatrix() const;
 

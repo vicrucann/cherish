@@ -651,6 +651,7 @@ void EventHandler::doIdleMouse(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
     /* if click was performed outside of the SVMData, then
      * change the mouse mode and stop editing the SVMData. Also, obtain camera position. */
     if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+        // reset the mouse mode to previous. It will also update the camera position, see setMode().
         m_glWidget->setMouseMode(m_glWidget->getMousePrevious());
         return;
     }

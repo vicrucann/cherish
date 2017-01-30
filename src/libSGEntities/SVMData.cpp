@@ -13,10 +13,14 @@ entity::SVMData::SVMData()
     , m_switch(new osg::Switch)
     , m_wire1(new entity::DraggableWire())
     , m_wire2(new entity::DraggableWire())
+    , m_camera(new osg::Camera)
 {
     this->addChild(m_switch.get());
-    m_switch->addChild(m_wire1);
-    m_switch->addChild(m_wire2);
+    m_switch->addChild(m_camera);
+    m_camera->setClearMask(GL_DEPTH_BUFFER_BIT);
+    m_camera->setRenderOrder(osg::Camera::POST_RENDER);
+    m_camera->addChild(m_wire1);
+    m_camera->addChild(m_wire2);
 
     this->getOrCreateStateSet()->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
     this->getOrCreateStateSet()->setMode(GL_BLEND, osg::StateAttribute::ON);
@@ -35,14 +39,39 @@ void entity::SVMData::setTransformFloor(osg::Matrix m)
 
 void entity::SVMData::setVisibility(bool visibility)
 {
-    m_switch->setChildValue(m_wire1, visibility);
-    m_switch->setChildValue(m_wire2, visibility);
+    m_switch->setChildValue(m_camera, visibility);
 }
 
 bool entity::SVMData::getVisibility() const
 {
-    Q_ASSERT(m_switch->getChildValue(m_wire1) == m_switch->getChildValue(m_wire2));
-    return m_switch->getChildValue(m_wire1);
+    return m_switch->getChildValue(m_camera);
+}
+
+osg::Vec3f entity::SVMData::getLocalWall(int i) const
+{
+    if (i<0 || i>3){
+        qCritical("Index exceeds limits");
+    }
+
+    return m_wire1->getPoint2D(i);
+}
+
+osg::Vec3f entity::SVMData::getLocalFloor(int i) const
+{
+    if (i<0 || i>3){
+        qCritical("Index exceeds limits");
+    }
+
+    return m_wire2->getPoint2D(i);
+}
+
+osg::Vec3f entity::SVMData::getGlobalFloor(int i) const
+{
+    if (i<0 || i>3){
+        qCritical("Index exceeds limits");
+    }
+
+    return m_wire2->getPoint3D(i);
 }
 
 entity::SVMData *entity::SVMData::getParentSVM(entity::DraggableWire *wire)
@@ -61,4 +90,14 @@ entity::SVMData *entity::SVMData::getParentSVM(entity::DraggableWire *wire)
 
     Q_CHECK_PTR(sw->getParent(0));
     return dynamic_cast<entity::SVMData*>(sw->getParent(0));
+}
+
+entity::DraggableWire *entity::SVMData::getWallWire() const
+{
+    return m_wire1;
+}
+
+entity::DraggableWire *entity::SVMData::getFlootWire() const
+{
+    return m_wire2;
 }

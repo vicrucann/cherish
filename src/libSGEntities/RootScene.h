@@ -89,6 +89,10 @@ public:
      * \param wire is the wire of entity::SVMData to hide. */
     void hideAndUpdateSVMData();
 
+    /*! A method to obtain a pointer on SVMData that is in the state of editing by user.
+     * If no such data available, return NULL. */
+    entity::SVMData* getSVMDataCurrent() const;
+
     void addBookmarkTool(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
@@ -153,6 +157,10 @@ public:
     /*! \param A pointer on SceneState instance which is served as a source for RootScene settings.
      * \return Whether the operation was performed successfully (no size discrepancies found) or not. */
     bool setSceneState(const entity::SceneState* state);
+
+    /*! A method to obtain a bookmark tool associated with the entity::Bookmarks.
+     * \param index is the tool index associated with the bookmark data. */
+    entity::BookmarkTool* getBookmarkTool(int index);
 
 protected:
 

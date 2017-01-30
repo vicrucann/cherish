@@ -116,6 +116,20 @@ void entity::DraggableWire::dragStop()
     this->pick(m_selectedPoint);
 }
 
+osg::Vec3f entity::DraggableWire::getPoint2D(int i) const
+{
+    if (i<0 || i>3) return osg::Vec3f(0,0,0);
+    osg::Vec3Array* points = static_cast<osg::Vec3Array*>(m_wire->getVertexArray());
+    Q_CHECK_PTR(points);
+    Q_ASSERT(points->size() == 4);
+    return (*points)[i];
+}
+
+osg::Vec3f entity::DraggableWire::getPoint3D(int i) const
+{
+    return this->getPoint2D(i) * this->getMatrix();
+}
+
 void entity::DraggableWire::setColorPointsDefaults()
 {
     this->setColorPoint(0, Utilities::getOsgColor(cher::SVMDATA_CLR_POINTS[0]));
