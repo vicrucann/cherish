@@ -156,6 +156,8 @@ public:
      * passes through one of the wire's centers, and the up vector is always constant - (0,1,0).
      * \return true if the parameters were calculated successfully, false otherwise. */
     static bool getCameraPosition(entity::SVMData* svm,  osg::Vec3f& eye, osg::Vec3f& center, osg::Vec3f& up);
+
+    static bool getRotationTranslation(const osg::Matrix& H, osg::Matrix& Rt);
 };
 
 #endif // UTILITIES_H

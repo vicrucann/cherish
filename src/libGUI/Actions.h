@@ -14,7 +14,7 @@ public:
 public slots:
     void onTriggered();
 
-Q_SIGNALS:
+signals:
     void triggeredName(const QString& name);
 };
 

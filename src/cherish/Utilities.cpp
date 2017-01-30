@@ -538,3 +538,8 @@ bool Utilities::getCameraPosition(entity::SVMData *svm, osg::Vec3f &eye, osg::Ve
     qDebug() << "eye=" << eye.x() << eye.y() << eye.z();
     return true;
 }
+
+bool Utilities::getRotationTranslation(const osg::Matrix &H, osg::Matrix &Rt)
+{
+    return true;
+}
