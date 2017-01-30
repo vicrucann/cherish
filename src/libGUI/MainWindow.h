@@ -27,6 +27,7 @@
 #include "ListView.h"
 #include "PhotoModel.h"
 #include "Data.h"
+#include "Actions.h"
 
 /*! \class MainWindow
  * \brief Re-defined QMainWindow that contains all the GUI elements such as GLWidget, menu bars, tool bars and other widgets.
@@ -169,7 +170,7 @@ protected slots:
 
     void onBookmark();
     void onBookmarkNew();
-    void onBookmarkEdit();
+    void onBookmarkEdit(const QString& name);
 
     void onStrokeFogFactor();
 

@@ -11,6 +11,8 @@ include_directories(
 set(libGUI_SRCS
     CherishApplication.cpp
     CherishApplication.h
+    Actions.h
+    Actions.cpp
     MainWindow.cpp
     MainWindow.h
     #CMainWindow.h

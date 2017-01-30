@@ -780,9 +780,8 @@ void MainWindow::onBookmarkNew()
         qWarning("Could not add SVMData to scene. Only current view is bookmarked.");
         return;
     }
-    Q_ASSERT(m_rootScene->getUserScene());
-    Q_ASSERT(m_rootScene->getUserScene()->getBookmarksModel());
-    Q_ASSERT(m_rootScene->getUserScene()->getBookmarksModel()->getLastSceneState());
+
+    /* add bookmark name in editable bookmarks list in main menu */
     Q_ASSERT(m_bookmarkWidget);
     int cnt = m_bookmarkWidget->count()-1;
     if (cnt<0){
@@ -797,14 +796,17 @@ void MainWindow::onBookmarkNew()
      * The camera position will be updated from EventHandler. */
     m_glWidget->setMouseMode(cher::SVM_IDLE);
 
-    /* add bookmark name in editable bookmarks list in main menu */
-
     this->statusBar()->showMessage(tr("New camera view added through SVM method."));
 }
 
-void MainWindow::onBookmarkEdit()
+void MainWindow::onBookmarkEdit(const QString &name)
 {
+    qDebug() << "about to edit " << name;
+    // find the first bookmark witjh the given name
 
+    // make the corresponding SVMData visible
+
+    // turn the mouse mode to svm idle
 }
 
 void MainWindow::onStrokeFogFactor()
@@ -1393,7 +1395,7 @@ void MainWindow::setSceneState(const entity::SceneState *state)
 
 void MainWindow::addMenuBookmark(const QString &name)
 {
-    QAction* act = new QAction(name, this);
-    this->connect(act, SIGNAL(triggered(bool)), this, SLOT(onBookmarkEdit()));
+    BookmarkAction* act = new BookmarkAction(name, this);
+    this->connect(act, SIGNAL(triggeredName(QString)), this, SLOT(onBookmarkEdit(QString)));
     m_submenuBookmarks->addAction(act);
 }
