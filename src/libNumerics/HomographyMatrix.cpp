@@ -135,23 +135,6 @@ osg::Matrixd HomographyMatrix::getRt(const osg::Matrix &H)
     H2.normalize();
     osg::Vec3f H3 = H1^H2;
 
-//    libNumerics::matrix<double> H_ini(3,3);
-//    for (int i=0; i<3; ++i){
-//        for (int j=0; j<3; ++j){
-//            H_ini(i,j) = H(i,j);
-//        }
-//    }
-
-//    libNumerics::vector<double> H1 = H_ini.col(0);
-//    libNumerics::vector<double> H2 = H_ini.col(1);
-//    libNumerics::vector<double> H3 = cross(H1, H2);
-
-//    double norm1 = H1.qnorm();
-//    double norm2 = H2.qnorm();
-//    double tnorm = (norm1 + norm2) / 2.0;
-
-//    libNumerics::vector<double> T = H_ini.col(2)/tnorm;
-
     osg::Matrixd RT(H1[0], H2[0], H3[0], T[0],
                     H1[1], H2[1], H3[1], T[1],
                     H1[2], H2[2], H3[3], T[2],
