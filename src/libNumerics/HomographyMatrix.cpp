@@ -17,7 +17,11 @@
 
 osg::Matrix HomographyMatrix::solveEigen(entity::SVMData *svm)
 {
-    if (!svm) qCritical("The provided SVMData structure is NULL");
+    osg::Matrix H;
+    if (!svm) {
+        qCritical("The provided SVMData structure is NULL");
+        return H;
+    }
 
     const int n = 4;
     Eigen::MatrixXd A(n*2, 9);
@@ -47,7 +51,6 @@ osg::Matrix HomographyMatrix::solveEigen(entity::SVMData *svm)
     Eigen::MatrixXd V((int)svd.matrixV().rows(), (int)svd.matrixV().cols());
     V = svd.matrixV();
 
-    osg::Matrix H;
     H(0,0) = V(0,8);
     H(0,1) = V(1,8);
     H(0,2) = V(2,8);
@@ -65,11 +68,15 @@ osg::Matrix HomographyMatrix::solveEigen(entity::SVMData *svm)
 
 osg::Matrix HomographyMatrix::solve(entity::SVMData *svm)
 {
-    if (!svm) qCritical("The provided SVMData structure is NULL");
+    osg::Matrix H;
+    if (!svm) {
+        qCritical("The provided SVMData structure is NULL");
+        return H;
+    }
     const int n = 4;
 
 
-    osg::Matrix H;
+
     libNumerics::matrix<double> x1(2, n);
     libNumerics::matrix<double> x2(2, n);
     for (int i=0; i<n; ++i){

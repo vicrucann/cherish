@@ -1212,7 +1212,10 @@ void entity::UserScene::polygonFinish(QUndoStack *stack)
 
 bool entity::UserScene::polygonValid() const
 {
-    if (!m_canvasCurrent) throw std::runtime_error("There is no current canvas on the scene");
+    if (!m_canvasCurrent) {
+        qCritical("There is no current canvas on the scene");
+        return false;
+    }
     return m_canvasCurrent->getPolygonCurrent();
 }
 
