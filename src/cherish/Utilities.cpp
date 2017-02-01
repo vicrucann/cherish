@@ -535,6 +535,10 @@ bool Utilities::getCameraPosition(entity::SVMData *svm, osg::Vec3f &eye, osg::Ve
         eye += iss;
     }
     eye /= nPoints;
-    qDebug() << "eye=" << eye.x() << eye.y() << eye.z();
+
+    osg::Vec3f ce = center - eye;
+    osg::Vec3f normal = wire2->getPlane().getNormal();
+    osg::Vec3f right = normal^ce;
+    up = ce^right;
     return true;
 }

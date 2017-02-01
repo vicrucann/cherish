@@ -415,22 +415,20 @@ void BookmarksTest::testHomographyCalculation()
 
     qInfo("Compare two H estimations");
     osg::Matrix H0 = HomographyMatrix::solve(svm);
-    qDebug() << "H0=";
-    qDebug() << H0(0,0) << H0(0,1) << H0(0,2);
-    qDebug() << H0(1,0) << H0(1,1) << H0(1,2);
-    qDebug() << H0(2,0) << H0(2,1) << H0(2,2);
 
     osg::Matrix H1 = HomographyMatrix::solveEigen(svm);
-    qDebug() << "H1=";
-    qDebug() << H1(0,0) << H1(0,1) << H1(0,2);
-    qDebug() << H1(1,0) << H1(1,1) << H1(1,2);
-    qDebug() << H1(2,0) << H1(2,1) << H1(2,2);
 
     qInfo("Check Homography wraping works for the points");
     double error = HomographyMatrix::evaluate(svm, H0);
     QVERIFY(std::fabs(error) < 0.001);
 
     qInfo("Extract R|t matrix");
+    osg::Matrixd P = HomographyMatrix::getRt(H0);
+    qDebug() << "P=";
+    qDebug() << P(0,0) << P(0,1) << P(0,2) << P(0,3);
+    qDebug() << P(1,0) << P(1,1) << P(1,2) << P(1,3);
+    qDebug() << P(2,0) << P(2,1) << P(2,2) << P(2,3);
+    qDebug() << P(3,0) << P(3,1) << P(3,2) << P(3,3);
 }
 
 bool BookmarksTest::isWhite(const QPixmap &pmap)
