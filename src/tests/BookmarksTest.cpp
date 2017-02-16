@@ -424,7 +424,7 @@ void BookmarksTest::testHomographyCalculation()
 void BookmarksTest::testRotationTranslation()
 {
    qInfo("Create original points in 3D");
-   osg::Vec3f P0 = osg::Vec3f(1, 1, 0),
+   auto P0 = osg::Vec3f(1, 1, 0),
            P1 = osg::Vec3f(-1, 1, 0),
            P2 = osg::Vec3f(-1, -1, 0),
            P3 = osg::Vec3f(1, -1, 0);
@@ -433,9 +433,14 @@ void BookmarksTest::testRotationTranslation()
    auto theta1 = cher::PI / 6.f;
    auto theta2 = cher::PI / 4.f;
    osg::Matrix Projection = osg::Matrix::rotate(theta1, 0,1,0) *
-           osg::Matrix::rotate(theta2, 1,0,0) * osg::Matrix::translate(0.1,0.2,0);
-   // Homogenious coords
-   osg::Vec3f D0 = P0 * Projection,
+           osg::Matrix::rotate(theta2, 1,0,0) * osg::Matrix::translate(0.5,-0.2,0);
+   qDebug() << "KProjection=";
+   qDebug()<<  " = " << Projection(0,0) << Projection(0,1) << Projection(2,0) << Projection(3,0);
+   qDebug()<<  " = " << Projection(0,1) << Projection(1,1) << Projection(2,1) << Projection(3,1);
+   qDebug()<<  " = " << Projection(0,2) << Projection(1,2) << Projection(2,2) << Projection(3,2);
+   qDebug()<<  " = " << Projection(0,3) << Projection(1,3) << Projection(2,3) << Projection(3,3);
+   // 3D coords
+   auto D0 = P0 * Projection,
            D1 = P1 * Projection,
            D2 = P2 * Projection,
            D3 = P3 * Projection;
@@ -488,24 +493,9 @@ void BookmarksTest::testRotationTranslation()
    floor->pick(3); floor->editPick(P3.x(),P3.y());
    floor->unpick();
 
-   qInfo("Extract Homogrpahy");
-   osg::Matrix H = HomographyMatrix::solve(svm);
-   double error = HomographyMatrix::evaluate(svm, H);
-   QVERIFY(std::fabs(error) < 0.001);
-
-   qInfo("Extract rotation and translation");
-   osg::Matrix Rt = HomographyMatrix::getRt(H);
-
-   qInfo("Test against OpenCV function");
-   HomographyMatrix::solveDecompose(svm);
-   HomographyMatrix::solvePnP(svm);
-
-   qInfo("Evaluate projection matrix");
-   auto Dn0 = P0*Rt,
-           Dn1 = P1*Rt,
-           Dn2 = P2*Rt,
-           Dn3 = P3*Rt;
-
+   qInfo("Use SolvePnP to get Projection matrix");
+   osg::Matrixd Projection_;
+//   Q_ASSERT(Utilities::getProjectionMatrix(svm, Projection_));
 
 }
 
@@ -530,7 +520,7 @@ void BookmarksTest::printCameraPose(const std::string &name, const osg::Vec3f &e
 
 osg::Vec3f BookmarksTest::projectToPlane(const osg::Vec3f &D, const osg::Vec3f &normal, const osg::Vec3f &origin)
 {
-    osg::Vec3f v = D - origin;
+    auto v = D - origin;
     float dist = v*normal;
     return D - normal*dist;
 }

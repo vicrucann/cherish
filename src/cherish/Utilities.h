@@ -10,6 +10,7 @@
 #include <osgViewer/View>
 #include <osg/Camera>
 #include <osg/Plane>
+#include <osg/Matrixd>
 
 #include "Canvas.h"
 #include "Stroke.h"
@@ -156,6 +157,16 @@ public:
      * passes through one of the wire's centers, and the up vector is always constant - (0,1,0).
      * \return true if the parameters were calculated successfully, false otherwise. */
     static bool getCameraPosition(entity::SVMData* svm,  osg::Vec3f& eye, osg::Vec3f& center, osg::Vec3f& up);
+
+    /*! A method that uses OpenCV's implementation of SolvePnP, i.e., provided four matches between the
+     * object points (3D) and image points (2d) - both extracted from entity::SVMData, it finds the projection
+     * matrix (rotation and translation) that does the projection from the object points to homogenious image points.
+     * This method is used when we want to update camera position when user is finished entity::SVMData manipulation.
+     * \param svm is the input entity::SVMData parameter
+     * \param projection is the output projection matrix [R|t], already converted to global coordinates ( for more
+     * info see : http://stackoverflow.com/questions/18637494/camera-position-in-world-coordinate-from-cvsolvepnp#18643735 )
+     * \return true if projection matrix was extracted successfully, false otherwise. */
+//    static bool getProjectionMatrix(entity::SVMData* svm, osg::Matrixd &projection);
 };
 
 #endif // UTILITIES_H

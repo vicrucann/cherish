@@ -15,8 +15,8 @@
 #include "libHomogrpahy/Hmatrix.h"
 #include "libHomogrpahy/matrix.h"
 
-#include <opencv2/core.hpp>
-#include <opencv2/calib3d.hpp>
+//#include <opencv2/core.hpp>
+//#include <opencv2/calib3d.hpp>
 #include <vector>
 
 osg::Matrix HomographyMatrix::solveEigen(entity::SVMData *svm)
@@ -70,77 +70,58 @@ osg::Matrix HomographyMatrix::solveEigen(entity::SVMData *svm)
     return  H;
 }
 
+//osg::Matrix HomographyMatrix::solvePnP(entity::SVMData *svm)
+//{
+//    std::vector<cv::Point3d> object;
+//    std::vector<cv::Point2d> image;
+//    object.push_back(cv::Point3d(svm->getGlobalFloor(0).x(), svm->getGlobalFloor(0).y(), svm->getGlobalFloor(0).z()));
+//    object.push_back(cv::Point3d(svm->getGlobalFloor(1).x(), svm->getGlobalFloor(1).y(), svm->getGlobalFloor(1).z()));
+//    object.push_back(cv::Point3d(svm->getGlobalFloor(2).x(), svm->getGlobalFloor(2).y(), svm->getGlobalFloor(2).z()));
+//    object.push_back(cv::Point3d(svm->getGlobalFloor(3).x(), svm->getGlobalFloor(3).y(), svm->getGlobalFloor(3).z()));
+//    image.push_back(cv::Point2d(svm->getLocalWall(0).x(), svm->getLocalWall(0).y()));
+//    image.push_back(cv::Point2d(svm->getLocalWall(1).x(), svm->getLocalWall(1).y()));
+//    image.push_back(cv::Point2d(svm->getLocalWall(2).x(), svm->getLocalWall(2).y()));
+//    image.push_back(cv::Point2d(svm->getLocalWall(3).x(), svm->getLocalWall(3).y()));
 
-void HomographyMatrix::solveDecompose(entity::SVMData *svm)
-{
-    std::vector<cv::Point2d> obj;
-    std::vector<cv::Point2d> scene;
-    obj.push_back(cv::Point2d(svm->getLocalWall(0).x(), svm->getLocalWall(0).y()));
-    obj.push_back(cv::Point2d(svm->getLocalWall(1).x(), svm->getLocalWall(1).y()));
-    obj.push_back(cv::Point2d(svm->getLocalWall(2).x(), svm->getLocalWall(2).y()));
-    obj.push_back(cv::Point2d(svm->getLocalWall(3).x(), svm->getLocalWall(3).y()));
-    scene.push_back(cv::Point2d(svm->getLocalFloor(0).x(), svm->getLocalFloor(0).y()));
-    scene.push_back(cv::Point2d(svm->getLocalFloor(1).x(), svm->getLocalFloor(1).y()));
-    scene.push_back(cv::Point2d(svm->getLocalFloor(2).x(), svm->getLocalFloor(2).y()));
-    scene.push_back(cv::Point2d(svm->getLocalFloor(3).x(), svm->getLocalFloor(3).y()));
+//    cv::Mat rvec;
+//    cv::Mat tvec;
+//    auto K = cv::Mat::eye(3,3, CV_32F);
+//    cv::solvePnP(object, image, K, cv::noArray(), rvec, tvec);
 
-    cv::Mat H =  cv::findHomography( obj, scene);
-    std::cout << "Decompose ==============================" << std::endl;
-    std::cout << "H=" << H << std::endl;
+//    cv::Mat R;
+//    cv::Rodrigues(rvec, R);
 
-    cv::Mat K(3,3,cv::DataType<double>::type);
-    cv::setIdentity(K);
+//    std::vector<cv::Point2d> projected;
+//    cv::projectPoints(object, rvec, tvec, K, cv::noArray(), projected);
 
-    std::vector<cv::Mat> Rs, Ts;
-    cv::decomposeHomographyMat(H, K, Rs, Ts, cv::noArray());
-    std::cout << "Estimated decomposition:\n\n";
-    std::cout << "rvec = " << std::endl;
-    for (auto R_ : Rs) {
-        cv::Mat1d rvec;
-        cv::Rodrigues(R_, rvec);
-        std::cout << "R=" << R_ << std::endl;
-        std::cout << "r=" << rvec*180/CV_PI << std::endl << std::endl;
-    }
+//    for(unsigned int i = 0; i < projected.size(); ++i)
+//    {
+//        std::cout << "image=" << image[i] << " projected=" << projected[i] << std::endl;
+//    }
 
-    std::cout << std::endl;
+//    // copy OCV data to OSG
+//    std::vector<double> tvec_;
+//    auto r00 = R.at<double>(0,0);
+//    auto r01 = R.at<double>(0,1);
+//    auto r02 = R.at<double>(0,2);
+//    auto r10 = R.at<double>(1,0);
+//    auto r11 = R.at<double>(1,1);
+//    auto r12 = R.at<double>(1,2);
+//    auto r20 = R.at<double>(2,0);
+//    auto r21 = R.at<double>(2,1);
+//    auto r22 = R.at<double>(2,2);
+//    auto t00 = tvec.at<double>(0,0);
+//    auto t10 = tvec.at<double>(1,0);
+//    auto t20 = tvec.at<double>(2,0);
 
-    std::cout << "t = " << std::endl;
-    for (auto t_ : Ts) {
-        std::cout << t_ << std::endl << std::endl;
-    }
-}
+//    osg::Matrixd Projection
+//            (r00, r01, r02, t00,
+//            r10, r11, r12, t10,
+//            r20, r21, r22, t20,
+//            0, 0, 0, 1 );
 
-void HomographyMatrix::solvePnP(entity::SVMData *svm)
-{
-    std::vector<cv::Point3d> object;
-    std::vector<cv::Point2d> image;
-    object.push_back(cv::Point3d(svm->getGlobalFloor(0).x(), svm->getGlobalFloor(0).y(), svm->getGlobalFloor(0).z()));
-    object.push_back(cv::Point3d(svm->getGlobalFloor(1).x(), svm->getGlobalFloor(1).y(), svm->getGlobalFloor(1).z()));
-    object.push_back(cv::Point3d(svm->getGlobalFloor(2).x(), svm->getGlobalFloor(2).y(), svm->getGlobalFloor(2).z()));
-    object.push_back(cv::Point3d(svm->getGlobalFloor(3).x(), svm->getGlobalFloor(3).y(), svm->getGlobalFloor(3).z()));
-    image.push_back(cv::Point2d(svm->getLocalWall(0).x(), svm->getLocalWall(0).y()));
-    image.push_back(cv::Point2d(svm->getLocalWall(1).x(), svm->getLocalWall(1).y()));
-    image.push_back(cv::Point2d(svm->getLocalWall(2).x(), svm->getLocalWall(2).y()));
-    image.push_back(cv::Point2d(svm->getLocalWall(3).x(), svm->getLocalWall(3).y()));
-
-    cv::Mat rvec(3,1,cv::DataType<double>::type);
-    cv::Mat tvec(3,1,cv::DataType<double>::type);
-    cv::Mat1f K = (cv::Mat1f(3,3) << 1,0,0,0,1,0,0,0,1);
-    cv::solvePnP(object, image, K, cv::noArray(), rvec, tvec);
-    cv::Mat R;
-    cv::Rodrigues(rvec, R);
-    std::cout << "R=" << R << std::endl;
-    std::cout << "tvec=" << tvec << std::endl;
-
-    std::vector<cv::Point2d> projected;
-    cv::projectPoints(object, rvec, tvec, K, cv::noArray(), projected);
-
-    for(unsigned int i = 0; i < projected.size(); ++i)
-    {
-        std::cout << "image=" << image[i] << " projected=" << projected[i] << std::endl;
-    }
-    osg::Matrixd Projection();
-}
+//    return Projection;
+//}
 
 osg::Matrix HomographyMatrix::solve(entity::SVMData *svm)
 {

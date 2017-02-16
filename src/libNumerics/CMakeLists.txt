@@ -36,5 +36,5 @@ target_link_libraries( libNumerics
     libPathFitter
     ${QT_LIBRARIES}
     ${OPENSCENEGRAPH_LIBRARIES}
-    ${OpenCV_LIBS}
+    #${OpenCV_LIBS}
 )

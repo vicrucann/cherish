@@ -105,7 +105,7 @@ include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 
 ## OpenCV
-find_package(OpenCV REQUIRED)
+#find_package(OpenCV REQUIRED)
 
 ## Other build packages
 #if (cheris_BUILD_DOC)

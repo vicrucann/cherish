@@ -352,12 +352,22 @@ void RootScene::hideAndUpdateSVMData()
         bool vis = svm->getVisibility();
         if (!vis) continue;
         /* if the wire is present and about to be hidden, update the corresponding camera position. */
+//        osg::Matrixd projection;
+//        bool projected = Utilities::getProjectionMatrix(svm, projection);
+//        if (!projected){
+//            qWarning("Could not obtain projection matrix, the bookmark will not be updated");
+//            continue;
+//        }
+        // apply the projection for the "image" canvas
+
+        // re-calculate the camera position
+
         osg::Vec3f eye, center, up;
-        bool success = Utilities::getCameraPosition(svm, eye, center, up);
-        if (!success){
-            qWarning("Could not obtain camera pose from the given Homography");
-            continue;
-        }
+//        bool success = Utilities::getCameraPosition(svm, eye, center, up);
+//        if (!success){
+//            qWarning("Could not obtain camera pose from the given Homography");
+//            continue;
+//        }
         // edit camera pose by editing: bookmark tool position; Bookmarks data.
         entity::Bookmarks* bms = m_userScene->getBookmarksModel();
         if (!bms){

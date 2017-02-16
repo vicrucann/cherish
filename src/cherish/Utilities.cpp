@@ -6,6 +6,10 @@
 #include "Settings.h"
 #include "Data.h"
 
+//#include <opencv2/core.hpp>
+//#include <opencv2/calib3d.hpp>
+#include "vector"
+
 QColor Utilities::getQColor(const osg::Vec4f &color)
 {
     return QColor(color.r()*255, color.g()*255, color.b()*255, color.a()*255);
@@ -542,3 +546,72 @@ bool Utilities::getCameraPosition(entity::SVMData *svm, osg::Vec3f &eye, osg::Ve
     up = ce^right;
     return true;
 }
+
+//bool Utilities::getProjectionMatrix(entity::SVMData *svm, osg::Matrixd &projection)
+//{
+//    if (!svm){
+//        qWarning("SVM structure is NULL");
+//        return false;
+//    }
+
+//    std::vector<cv::Point3f> object;
+//    std::vector<cv::Point2f> image;
+//    for (int i=0; i<4; ++i){
+//        object.push_back(cv::Point3f(svm->getGlobalFloor(i).x(), svm->getGlobalFloor(i).y(), svm->getGlobalFloor(i).z()));
+//        image.push_back(cv::Point2f(svm->getLocalWall(i).x(), svm->getLocalWall(i).y()));
+//        std::cout << "object=" << object[i] << " image=" << image[i] << std::endl;
+//    }
+//    // use solvePNP method
+//    cv::Mat rvec(3,1,cv::DataType<double>::type);
+//    cv::Mat tvec(3,1,cv::DataType<double>::type);
+//    cv::Mat1f K = (cv::Mat1f(3,3) << 1,0,0,0,1,0,0,0,1);
+
+//    cv::solvePnP(object, image, K, cv::noArray(), rvec, tvec/*, cv::SOLVEPNP_P3P*/);
+//    // get rotation matrix format
+//    cv::Mat R;
+//    cv::Rodrigues(rvec, R);
+
+//    std::vector<cv::Point2f> projected;
+//    cv::projectPoints(object, rvec, tvec, K, cv::noArray(), projected);
+//    float error = 0.f;
+//    for(unsigned int i = 0; i < projected.size(); ++i)
+//    {
+//        auto ei = image[i]-projected[i];
+//        error += ei.x*ei.x + ei.y*ei.y;
+//    }
+//    error = std::sqrt(error);
+//    qDebug() << "PROJECTION ERROR=" << error;
+
+//    // OpenCV solution provides the projection in camera coordinates, convert it to global coordinates
+//    // for info, see: http://stackoverflow.com/questions/18637494/camera-position-in-world-coordinate-from-cvsolvepnp#18643735
+//    R = R.t();  // rotation of inverse
+//    tvec = -R * tvec; // translation of inverse
+
+//    // copy OCV data to OSG
+//    auto r00 = R.at<double>(0,0);
+//    auto r01 = R.at<double>(0,1);
+//    auto r02 = R.at<double>(0,2);
+//    auto r10 = R.at<double>(1,0);
+//    auto r11 = R.at<double>(1,1);
+//    auto r12 = R.at<double>(1,2);
+//    auto r20 = R.at<double>(2,0);
+//    auto r21 = R.at<double>(2,1);
+//    auto r22 = R.at<double>(2,2);
+//    auto t00 = tvec.at<double>(0,0);
+//    auto t10 = tvec.at<double>(1,0);
+//    auto t20 = tvec.at<double>(2,0);
+
+//    // OpenGL frame: multiply by matrix rotated 180 degrees around x axis
+//    osg::Matrixd R180 = osg::Matrixd::rotate(cher::PI, 1,0,0);
+//    projection = osg::Matrixd(
+//                r00, r10, r20, 0,
+//                r01, r11, r21, 0,
+//                r02, r12, r22, 0,
+//                t00, t10, t20, 1 ) * R180;
+//    qDebug() << "Projection_osg=";
+//    qDebug()<<  " = " << projection(0,0) << projection(0,1) << projection(2,0) << projection(3,0);
+//    qDebug()<<  " = " << projection(0,1) << projection(1,1) << projection(2,1) << projection(3,1);
+//    qDebug()<<  " = " << projection(0,2) << projection(1,2) << projection(2,2) << projection(3,2);
+//    qDebug()<<  " = " << projection(0,3) << projection(1,3) << projection(2,3) << projection(3,3);
+//    return true;
+//}

@@ -115,7 +115,7 @@ void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
         qcolor = Qt::white;
         break;
     }
-    item->setBackgroundColor(0, qcolor);
+//    item->setBackgroundColor(0, qcolor);
     item->setData(0, cher::DelegateBGColor, qcolor);
 }
 
