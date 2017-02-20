@@ -43,6 +43,8 @@ set (libSGEntities_SRCS
     SVMData.cpp
     DraggableWire.h
     DraggableWire.cpp
+    EditableWire.h
+    EditableWire.cpp
 )
 
 add_library(libSGEntities

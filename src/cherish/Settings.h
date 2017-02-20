@@ -52,19 +52,25 @@ const osg::Vec4 green = osg::Vec4(float(133)/255.0f, float(153)/255.0f, float(0)
 namespace molokai {
 const QColor orangeSoft(QString("#EFC090"));
 const QColor orange(QString("#FD971F"));
+const QColor orangeBright(QString("#EF5939"));
 
 const QColor violetSoft(QString("#D197D9"));
 const QColor violet(QString("#AE81FF"));
 
 const QColor greenSoft(QString("#D9E577"));
 const QColor green(QString("#A6E22E"));
+const QColor greenBright(QString("#66CCB3"));
+const QColor greenDark(QString("#465457"));
 
 const QColor blueSoft(QString("#79ABFF"));
 const QColor blue(QString("#1E90FF"));
+const QColor blueBright(QString("#66D9EF"));
+const QColor blueDark(QString("#13354A"));
 
 const QColor cherrySoft(QColor("#BCA3A3"));
 const QColor cherry(QColor("#960050"));
 const QColor cherryBright(QColor("#F92672"));
+const QColor cherryDark(QColor("#1E0010"));
 
 const QColor yellowSoft(QColor("#FFE792"));
 } // molokai
@@ -186,6 +192,11 @@ const std::vector<QColor> SVMDATA_CLR_POINTSHOVER =  {
                                         molokai::orange, molokai::violet, molokai::green, molokai::blue};
 const QColor SVMDATA_CLR_DRAG =         molokai::cherryBright;
 
+// bookmark camera pose color settings
+const QColor CAMPOSE_CLR_FOCAL =        molokai::blueDark;
+const QColor CAMPOSE_CLR_EYE =          molokai::greenDark;
+const QColor CAMPOSE_CLR_CENTER =       molokai::cherryDark;
+
 // stroke settings
 const osg::Vec4 STROKE_CLR_NORMAL = solarized::base03;
 const osg::Vec4 STROKE_CLR_SELECTED = solarized::red;
@@ -237,6 +248,9 @@ const std::string NAME_PHOTO = "Photo";
 const std::string NAME_BOOKMARK = "Bookmark";
 const std::string NAME_SVM_WIRE = "SVMWire";
 const std::string NAME_SVM_POINTS = "SVMPoints";
+const std::string NAME_CAM_EYE = "CamEye";
+const std::string NAME_CAM_CENTER = "CamCenter";
+const std::string NAME_CAM_FOCAL = "CamFocal";
 
 // variable that helps to adapt to high DPI monitors
 extern double DPI_SCALING;
