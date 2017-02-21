@@ -16,7 +16,6 @@ entity::EditableWire::EditableWire(double fov2)
     this->addChild(m_geode);
     m_geode->addDrawable(m_eye);
     m_geode->addDrawable(m_center);
-    m_geode->addDrawable(m_center);
     m_geode->addDrawable(m_focal);
 
     m_eye->setUseDisplayList(false);
@@ -50,7 +49,7 @@ entity::EditableWire::EditableWire(double fov2)
     verts_center->push_back(cher::CENTER);
     verts_center->push_back(osg::Vec3f(0.f, cher::SVMDATA_HALFWIDTH*1.5f, 0.f));
     osg::Vec4Array* clr_center = new osg::Vec4Array(2);
-    m_center->addPrimitiveSet(new osg::DrawArrays(GL_LINE, 0, verts_center->size()));
+    m_center->addPrimitiveSet(new osg::DrawArrays(GL_LINES, 0, verts_center->size()));
     m_center->setVertexArray(verts_center);
     m_center->setColorArray(clr_center);
     this->setColorCenterDefaults();

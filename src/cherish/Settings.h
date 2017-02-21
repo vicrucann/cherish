@@ -135,6 +135,12 @@ enum MOUSE_MODE
     SVM_HOVER_POINT = 0x530,
     SVM_DRAG_POINT,
 
+    MOUSE_CAMPOSE = 0x600,
+    CAMPOSE_IDLE = 0x610,
+    CAMPOSE_EYE = 0x620,
+    CAMPOSE_CENTER = 0x630,
+    CAMPOSE_FOCAL = 0x640,
+
     maskMouse = 0xff00,
     maskEntity = 0xff0,
     maskAction = 0xf,
@@ -151,12 +157,14 @@ enum EVENT {
 };
 
 /*! Enum class for canvas traversal masks. */
-enum TraversalMask{
+enum TraversalMask
+{
     MASK_CANVAS_IN = 0x110, /* sees all canvas data */
     MASK_CANVAS_OUT = 0x001, /* does not see any of canvas data */
     MASK_CANVASDATA_IN = 0x010, /* sees only geodeData geometries */
     MASK_CANVASFRAME_IN = 0x100, /* sees only canvas frame drawables */
     MASK_SVMDATA_IN = 0x1000, /* sees only entity::SVMData */
+    MASK_CAMPOSEDATA_IN = 0x1000,
     MASK_ALL_IN = ~0x0
 };
 

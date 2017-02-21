@@ -126,9 +126,25 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             break;
         }
         break;
+    case cher::MOUSE_CAMPOSE:
+        switch (m_mode){
+        case cher::CAMPOSE_EYE:
+            this->doCameraEye(ea, aa);
+            break;
+        case cher::CAMPOSE_CENTER:
+            this->doCameraCenter(ea, aa);
+            break;
+        case cher::CAMPOSE_FOCAL:
+            this->doCameraFocal(ea, aa);
+            break;
+        default:
+            this->doCameraIdle(ea, aa);
+            break;
+        }
+        break;
     default:
         break;
-    }
+    } // switch (cher::maskMouse & m_mode)
 
 //    switch (m_mode){
 //    case cher::PHOTO_PUSH:
@@ -140,6 +156,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     return false;
 }
 
+
+// Todo: make wires to inherit from 1 virtual class
+// + make campose data and svm data to inherit from 1 virtual class
 void EventHandler::setMode(cher::MOUSE_MODE mode)
 {
     entity::Canvas* cnv = m_scene->getCanvasCurrent();
@@ -158,13 +177,17 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     case cher::SELECT_ENTITY:
         /* if mode is only for current canvas, disable all other canvases from usage */
         m_scene->setCanvasesButCurrent(false);
-        m_scene->hideAndUpdateSVMData();
+        m_scene->hideAndUpdateSVMData(); // TODO same to campose data
         break;
     case cher::SVM_DRAG_POINT:
     case cher::SVM_DRAG_WIRE:
     case cher::SVM_HOVER_POINT:
     case cher::SVM_HOVER_WIRE:
     case cher::SVM_IDLE:
+    case cher::CAMPOSE_EYE:
+    case cher::CAMPOSE_CENTER:
+    case cher::CAMPOSE_FOCAL:
+    case cher::CAMPOSE_IDLE:
         /* if it is SVM mode, no canvases can be available for selection at all */
         m_scene->setAllCanvases(false);
         break;
@@ -670,15 +693,11 @@ void EventHandler::doHoverWire(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
     if (ea.getEventType() != osgGA::GUIEventAdapter::MOVE)
         return;
 
-    std::cout << "hover-wire" << std::endl;
-
     bool isModeSame = true;
     PolyLineIntersector::Intersection intersectionLine;
     std::tie(isModeSame, intersectionLine) = this->setSVMMouseMode<PolyLineIntersector::Intersection, PolyLineIntersector>(ea, aa, cher::SVM_IDLE);
     this->updateWireGeometry(intersectionLine);
     if (!isModeSame) return;
-
-    std::cout << "trying for a point" << std::endl;
     PointIntersector::Intersection intersectionPoint;
     std::tie(isModeSame, intersectionPoint) =
             this->setSVMMouseMode<PointIntersector::Intersection, PointIntersector>(ea, aa, cher::SVM_HOVER_WIRE);
@@ -690,8 +709,6 @@ void EventHandler::doHoverPoint(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
     if ( !(ea.getEventType() == osgGA::GUIEventAdapter::MOVE ||
            (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)) )
         return;
-
-    std::cout << "hover-point" << std::endl;
 
     bool isModeSame = true;
     PointIntersector::Intersection intersectionPoint;
@@ -713,6 +730,35 @@ void EventHandler::doDragPoint(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
             new VirtualPlaneIntersector<entity::DraggableWire>(m_selection.get());
     auto intersection = vpi->getIntersection2D(ea, aa);
     this->updateDragPointGeometry(intersection, ea);
+}
+
+void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+        // switch to campose center mode ?
+    }
+
+    if (! (ea.getEventType() == osgGA::GUIEventAdapter::MOVE))
+        return;
+
+
+
+
+}
+
+void EventHandler::doCameraCenter(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+
+}
+
+void EventHandler::doCameraFocal(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+
+}
+
+void EventHandler::doCameraIdle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+
 }
 
 entity::Stroke *EventHandler::getStroke(const StrokeIntersector::Intersection &result)

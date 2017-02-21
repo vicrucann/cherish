@@ -799,6 +799,43 @@ void MainWindow::onBookmarkNew()
     this->statusBar()->showMessage(tr("New camera view added through SVM method."));
 }
 
+void MainWindow::onBookmarkSketch()
+{
+    if (!m_rootScene->getCanvasCurrent()){
+        qWarning("Cannot create new bookmark without at least one canvas on the scene");
+        return;
+    }
+
+    /* create initial camera pose, add it to scene graph and tools */
+    osg::Vec3d eye, center, up;
+    double fov;
+    m_glWidget->getCameraView(eye, center, up, fov);
+    m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
+
+    /* create corresponding CamPoseData connected to the bookmark. */
+    bool added = m_rootScene->addCamPoseData();
+    if (!added){
+        qWarning("Could not add Camera pose scene graph. Only current view is bookmarked");
+        return;
+    }
+
+    /* add bookmark name in editable bookmarks list in main menu */
+    Q_ASSERT(m_bookmarkWidget);
+    int cnt = m_bookmarkWidget->count()-1;
+    if (cnt<0){
+        qWarning("Could not extract bookmark index corresctly, no bookmarks were added to the widget.");
+        return;
+    }
+    QListWidgetItem* item = m_bookmarkWidget->item(cnt);
+    Q_ASSERT(item);
+    this->addMenuBookmark(item->text());
+
+    /* set mouse in cam pose editing mode. The position will be updated after user is finished editing. */
+    m_glWidget->setMouseMode(cher::CAMPOSE_EYE);
+
+    this->statusBar()->showMessage(tr("New camera view is added though manual relocation by user."));
+}
+
 void MainWindow::onBookmarkEdit(const QString &name)
 {
     qDebug() << "about to edit " << name;
@@ -957,6 +994,9 @@ void MainWindow::initializeActions()
     m_actionBookmarkNew = new QAction(Data::viewerBookmarkNewIcon(), tr("Create new bookmark..."), this);
     this->connect(m_actionBookmarkNew, SIGNAL(triggered(bool)), this, SLOT(onBookmarkNew()));
 
+    m_actionBookmarkSketch = new QAction(Data::viewerBookmarkSketchIcon(), tr("Position new bookmark"), this);
+    this->connect(m_actionBookmarkSketch, SIGNAL(triggered(bool)), this, SLOT(onBookmarkSketch()));
+
     m_actionCameraSettings = new QAction(Data::cameraApertureIcon(), tr("Camera settings"), this);
     this->connect(m_actionCameraSettings, SIGNAL(triggered(bool)), this, SLOT(onCameraAperture()));
 
@@ -1059,6 +1099,7 @@ void MainWindow::initializeMenus()
     menuCamera->addSeparator();
     menuCamera->addAction(m_actionBookmark);
     menuCamera->addAction(m_actionBookmarkNew);
+    menuCamera->addAction(m_actionBookmarkSketch);
     /* Bookmark edit submenu */
     m_submenuBookmarks = menuCamera->addMenu("Edit created bookmark");
     m_submenuBookmarks->setIcon(Data::viewerBookmarkEditIcon());
@@ -1189,6 +1230,7 @@ void MainWindow::initializeToolbars()
     tbViewer->addAction(m_actionNextView);
     tbViewer->addAction(m_actionBookmark);
     tbViewer->addAction(m_actionBookmarkNew);
+    tbViewer->addAction(m_actionBookmarkSketch);
     tbViewer->addAction(m_actionCameraSettings);
 
     /* OPTIONS bar */

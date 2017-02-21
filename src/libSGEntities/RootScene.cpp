@@ -341,6 +341,21 @@ bool RootScene::addSVMData()
     return added;
 }
 
+bool RootScene::addCamPoseData()
+{
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    entity::SceneState* ss = m_userScene->getBookmarksModel()->getLastSceneState();
+    if (!ss) return false;
+
+    /* take current canvas transform to create CamPoseData */
+    entity::Canvas* cnv = m_userScene->getCanvasCurrent();
+    if (!cnv) return false;
+
+    /* add campose data with the given params */
+    bool added = ss->addCamPoseData(cnv->getMatrix());
+    return added;
+}
+
 void RootScene::hideAndUpdateSVMData()
 {
     Q_CHECK_PTR(m_userScene->getBookmarks());

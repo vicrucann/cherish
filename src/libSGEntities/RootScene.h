@@ -21,6 +21,7 @@
 #include "ToolGlobal.h"
 #include "SceneState.h"
 #include "SVMData.h"
+#include "CamPoseData.h"
 #include "DraggableWire.h"
 
 #include <QUndoStack>
@@ -84,6 +85,11 @@ public:
      * Used to create a new bookmark using correspondence between four points in two different planes
      * This method requires presense of at least two canvases on the screen. */
     bool addSVMData();
+
+    /* A method to supplement a last added entity::SceneState with entity::CamPoseData as a child.
+     * Used to create a new bookmark using user interaction. This method requires presense of at least
+     * one canvas on the scene. */
+    bool addCamPoseData();
 
     /*! A method to hide all the visible SVMData from scene.
      * \param wire is the wire of entity::SVMData to hide. */

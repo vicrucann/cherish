@@ -507,6 +507,19 @@ QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
     case cher::SVM_IDLE:
         cur = Qt::CrossCursor;
         break;
+
+    case cher::CAMPOSE_IDLE:
+        cur = Qt::CrossCursor;
+        break;
+    case cher::CAMPOSE_EYE:
+        cur = QCursor(Data::sceneImageMovePixmap(), -1, -1);
+        break;
+    case cher::CAMPOSE_CENTER:
+        cur = QCursor(Data::sceneImageRotatePixmap(), -1, -1);
+        break;
+    case cher::CAMPOSE_FOCAL:
+        cur = QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
+        break;
     default:
         break;
     }
