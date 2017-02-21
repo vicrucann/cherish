@@ -11,6 +11,7 @@ entity::EditableWire::EditableWire(double fov2)
     , m_eye(new osg::Geometry())
     , m_center(new osg::Geometry())
     , m_focal(new osg::Geometry())
+    , m_selection(-1)
 {
     this->addChild(m_geode);
     m_geode->addDrawable(m_eye);
@@ -97,6 +98,16 @@ void entity::EditableWire::editEye(double u, double v)
 void entity::EditableWire::editCenter(double theta)
 {
     this->rotate(theta);
+}
+
+void entity::EditableWire::pick(int index)
+{
+
+}
+
+void entity::EditableWire::unpick()
+{
+
 }
 
 void entity::EditableWire::setColorFocal(const osg::Vec4f &color)

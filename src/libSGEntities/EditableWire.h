@@ -52,11 +52,24 @@ public:
      * \param theta is the rotation angle from the current position. */
     void editCenter(double theta);
 
+    /*! A method to set up defult colors for all the geometries. */
+    void unselect();
 
+    /*! A method to set up selected color for a geometry.
+     * \param index is the given geometry index, e.g., 1 for eye, 2 for center, and 3 for focal geometry. */
+    void pick(int index);
+
+    /*! A method to set up the selected geometry to unselected default color. */
+    void unpick();
 
 protected:
+    /*! Set a given color to the whole focal geometry. \param color is the color input. */
     void setColorFocal(const osg::Vec4f& color);
+
+    /*! A method to set up default colors to eye geometry. */
     void setColorEyeDefaults();
+
+    /*! A method to set up default colors to center geometry. */
     void setColorCenterDefaults();
 
     /*! A method to update geometries after new colors are assigned. */
@@ -81,6 +94,8 @@ private:
     osg::Geometry* m_eye; /*!< geometry responsible for camera eye allocation */
     osg::Geometry* m_center; /*!< geometry responsible for camera center allocation */
     osg::Geometry* m_focal; /*!< geometry that includes all the wire and is responsible for camera focal allocation */
+
+    int m_selection; /*!< index of selected geometry: 1 - eye, 2 - center, 3 - focal */
 
 }; // class EditableWire
 
