@@ -48,6 +48,10 @@ public:
     /*! A method to edit the position of the camera eye (point of the triangular wire). */
     void editEye(double u, double v);
 
+    /*! A method to edit the center position of the camera pose, i.e., the camera look direction.
+     * \param theta is the rotation angle from the current position. */
+    void editCenter(double theta);
+
 
 
 protected:
@@ -64,7 +68,7 @@ protected:
     void move(double u, double v);
 
     /*! A method to rotate all the geometries on a given angle. Normally called from editCenter().
-     * \param theta is the rotation angle. */
+     * \param theta is the rotation angle. The rotation is performed around the camera's eye position.  */
     void rotate(double theta);
 
     /*! A method to translate the focal geometry along the center line of camera pose wire.

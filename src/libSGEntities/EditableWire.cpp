@@ -94,6 +94,11 @@ void entity::EditableWire::editEye(double u, double v)
     this->move(u, v);
 }
 
+void entity::EditableWire::editCenter(double theta)
+{
+    this->rotate(theta);
+}
+
 void entity::EditableWire::setColorFocal(const osg::Vec4f &color)
 {
     osg::Vec4Array* clr = static_cast<osg::Vec4Array*>(m_focal->getColorArray());
@@ -157,4 +162,39 @@ void entity::EditableWire::move(double u, double v)
     for (unsigned int i=0; i<verts_focal->size(); ++i)
         (*verts_focal)[i] = (*verts_focal)[i] + osg::Vec3f(du, dv, 0);
     this->updateGeometry(m_focal);
+}
+
+void entity::EditableWire::rotate(double theta)
+{
+    // eye remain on the same position, but we have to take its coords
+    osg::Vec3Array* verts_eye = static_cast<osg::Vec3Array*>(m_eye->getVertexArray());
+    Q_CHECK_PTR(verts_eye);
+    Q_ASSERT(verts_eye->size() == 1);
+    osg::Vec3f eye = (*verts_eye)[0];
+
+    // rotate the center geometry
+    // p_theta = vec3(x0*cos(theta) - y0*sin(theta), x0*sin(theta) + y0*cos(theta), 0);
+    osg::Vec3Array* verts_center = static_cast<osg::Vec3Array*>(m_center->getVertexArray());
+    Q_CHECK_PTR(verts_center);
+    Q_ASSERT(verts_center->size() == 2);
+    float x0 = (*verts_center)[1].x();
+    float y0 = (*verts_center)[1].y();
+    (*verts_center)[1] = osg::Vec3f(x0*std::cos(theta)-y0*std::sin(theta),
+                                    x0*std::sin(theta)+y0*std::cos(theta),
+                                    0.f);
+    this->updateGeometry(m_center);
+
+    // rotate the focal wire
+    osg::Vec3Array* verts_focal = static_cast<osg::Vec3Array*>(m_focal->getVertexArray());
+    Q_CHECK_PTR(verts_focal);
+    Q_ASSERT(verts_focal->size() == 3);
+    for (unsigned int i=1; i<verts_focal->size(); ++i){
+        float x0 = (*verts_focal)[i].x();
+        float y0 = (*verts_focal)[i].y();
+        (*verts_focal)[i] = osg::Vec3f(x0*std::cos(theta)-y0*std::sin(theta),
+                                       x0*std::sin(theta)+y0*std::cos(theta),
+                                       0.f);
+    }
+    this->updateGeometry(m_focal);
+
 }
