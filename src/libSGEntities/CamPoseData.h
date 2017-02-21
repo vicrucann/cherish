@@ -18,11 +18,26 @@ class EditableWire;
 */
 
 namespace entity {
-class CamPoseData
+class CamPoseData : public osg::ProtectedGroup
 {
 public:
     /*! Default constructor. Creates an empty instance without initializing the structure.*/
-    CamPoseData();
+    CamPoseData(double fov);
+
+    /*! A method  to set up world to local matrix transform for the wire. */
+    void setTransform(osg::Matrix m);
+
+    /*! Method to set up visibility of geometries. */
+    void setVisibility(bool visibility);
+
+    /*! \return whether the wire geometries are visible (true) or not (false). */
+    bool getVisibility() const;
+
+    /*! \return pointer on parent CamPoseData structure of the given wire. */
+    static entity::CamPoseData* getParentCamPose(entity::EditableWire* wire);
+
+    /*! \return The wire geometries. */
+    entity::EditableWire* getWire() const;
 
 private:
     osg::ref_ptr<osg::Switch>   m_switch; /*!< Child scene graph visibility. */
