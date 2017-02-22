@@ -204,6 +204,18 @@ bool Utilities::getGlobalFromLocal(const osg::Vec3f &p, const osg::Matrix &M, os
     return true;
 }
 
+double Utilities::getAngleTwoVectors(const osg::Vec2f &p1, const osg::Vec2f &p2, const osg::Vec2f &p3, const osg::Vec2f &p4)
+{
+    double theta = 0.0;
+
+    osg::Vec2f v1 = p2-p1;
+    osg::Vec2f v2 = p4-p3;
+
+    theta = std::atan2(v2.y(), v2.x()) - std::atan2(v1.y(), v1.x());
+
+    return theta;
+}
+
 bool Utilities::getSkewLinesProjection(const osg::Vec3f &center, const osg::Vec3f &farPoint, const osg::Vec3f &nearPoint, const osg::Vec3f &normal, osg::Vec3f &X1)
 {
     osg::Vec3f P1 = center;

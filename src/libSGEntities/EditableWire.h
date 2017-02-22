@@ -42,6 +42,11 @@ public:
     /*! \return global center of the camera  pose wire. */
     osg::Vec3f getCenter3D() const;
 
+    /*! A method to obtain local coordinates of the center points.
+     * \param p1 is the input parameter for eye location,
+     * \param p2 is the input parameter for center location. */
+    void getCenter2D(osg::Vec2f& p1, osg::Vec2f& p2) const;
+
     /*! \return const pointer on geode node which contains all the drawables (i.e. return geode parent). */
     const osg::Geode* getGeode() const;
 

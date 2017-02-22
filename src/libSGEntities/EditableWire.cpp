@@ -84,6 +84,15 @@ osg::Vec3f entity::EditableWire::getCenter3D() const
     return local * this->getMatrix();
 }
 
+void entity::EditableWire::getCenter2D(osg::Vec2f &p1, osg::Vec2f &p2) const
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_center->getVertexArray());
+    Q_CHECK_PTR(verts);
+    Q_ASSERT(verts->size() == 2);
+    p1 = osg::Vec2f((*verts)[0].x(), (*verts)[0].y());
+    p2 = osg::Vec2f((*verts)[1].x(), (*verts)[1].y());
+}
+
 const osg::Geode *entity::EditableWire::getGeode() const
 {
     return m_geode;
@@ -187,9 +196,9 @@ void entity::EditableWire::rotate(double theta)
     osg::Vec3Array* verts_center = static_cast<osg::Vec3Array*>(m_center->getVertexArray());
     Q_CHECK_PTR(verts_center);
     Q_ASSERT(verts_center->size() == 2);
-    float x0 = (*verts_center)[1].x();
-    float y0 = (*verts_center)[1].y();
-    (*verts_center)[1] = osg::Vec3f(x0*std::cos(theta)-y0*std::sin(theta),
+    float x0 = (*verts_center)[1].x() - eye.x();
+    float y0 = (*verts_center)[1].y() - eye.y();
+    (*verts_center)[1] = eye +  osg::Vec3f(x0*std::cos(theta)-y0*std::sin(theta),
                                     x0*std::sin(theta)+y0*std::cos(theta),
                                     0.f);
     this->updateGeometry(m_center);
@@ -199,9 +208,9 @@ void entity::EditableWire::rotate(double theta)
     Q_CHECK_PTR(verts_focal);
     Q_ASSERT(verts_focal->size() == 3);
     for (unsigned int i=1; i<verts_focal->size(); ++i){
-        float x0 = (*verts_focal)[i].x();
-        float y0 = (*verts_focal)[i].y();
-        (*verts_focal)[i] = osg::Vec3f(x0*std::cos(theta)-y0*std::sin(theta),
+        float x0 = (*verts_focal)[i].x() - eye.x();
+        float y0 = (*verts_focal)[i].y() - eye.y();
+        (*verts_focal)[i] = eye + osg::Vec3f(x0*std::cos(theta)-y0*std::sin(theta),
                                        x0*std::sin(theta)+y0*std::cos(theta),
                                        0.f);
     }

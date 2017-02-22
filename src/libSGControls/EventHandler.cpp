@@ -737,6 +737,8 @@ void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
 {
     if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
         // switch to campose center mode ?
+        m_glWidget->setMouseMode(cher::CAMPOSE_CENTER);
+        return;
     }
 
     if (! (ea.getEventType() == osgGA::GUIEventAdapter::MOVE))
@@ -759,7 +761,29 @@ void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
 
 void EventHandler::doCameraCenter(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+        // switch to campose center mode ?
+        m_glWidget->setMouseMode(cher::CAMPOSE_FOCAL);
+        return;
+    }
+    if (! (ea.getEventType() == osgGA::GUIEventAdapter::MOVE))
+        return;
 
+
+    // find local intersection with camera plane and derive the angle from it like it's done with photo rotation
+    double u=0, v=0;
+    if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        return;
+    if (!m_selection2.get()){
+        qCritical("No selection - exiting the mode");
+        m_glWidget->setMouseMode(cher::PEN_SKETCH);
+        return;
+    }
+    // calculate the angle
+    osg::Vec2f p1, p2;
+    m_selection2->getCenter2D(p1, p2);
+    double theta = Utilities::getAngleTwoVectors(p1, p2, p1, osg::Vec2f(u, v));
+    m_selection2->editCenter(theta);
 }
 
 void EventHandler::doCameraFocal(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)

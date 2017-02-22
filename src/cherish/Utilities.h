@@ -93,6 +93,15 @@ public:
      * \sa getModel(), getLocalFromGlobal(). */
     static bool getGlobalFromLocal(const osg::Vec3f& p, const osg::Matrix& M, osg::Vec3f& P);
 
+    /*! A method which obtains an angle between two vectors in 2d. For more info, see:
+     * http://www.euclideanspace.com/maths/algebra/vectors/angleBetween/index.htm .
+     * \param p1 is the first point of the first vector.
+     * \param p2 is the second point of the first vector.
+     * \param p3 is the first point of the second vector.
+     * \param p4 is the second point of the second vector.
+     * \return an angle between two vectors in radians. */
+    static double getAngleTwoVectors(const osg::Vec2f& p1, const osg::Vec2f& p2, const osg::Vec2f& p3, const osg::Vec2f& p4);
+
     /* algorithm for distance between skew lines:
      *
      * For two points P1 and P2 on skew lines;
