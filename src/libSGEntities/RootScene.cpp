@@ -415,7 +415,7 @@ entity::SVMData *RootScene::getSVMDataCurrent() const
 {
     Q_CHECK_PTR(m_userScene->getBookmarks());
     int num = m_userScene->getBookmarks()->getNumBookmarks();
-    entity::SVMData* result = NULL;
+    entity::SVMData* result = nullptr;
     for (int i=0; i<num; ++i){
         entity::SceneState* ss = m_userScene->getBookmarksModel()->getSceneState(i);
         if (!ss) return 0;
@@ -424,6 +424,23 @@ entity::SVMData *RootScene::getSVMDataCurrent() const
         bool vis = svm->getVisibility();
         if (!vis) continue;
         result = svm;
+    }
+    return result;
+}
+
+entity::CamPoseData *RootScene::getCamPoseDataCurrent() const
+{
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    int num = m_userScene->getBookmarks()->getNumBookmarks();
+    entity::CamPoseData* result = nullptr;
+    for (int i=0; i<num; ++i){
+        entity::SceneState* ss = m_userScene->getBookmarksModel()->getSceneState(i);
+        if (!ss) return nullptr;
+        entity::CamPoseData* cam = ss->getCamPoseData();
+        if (!cam) continue;
+        bool vis = cam->getVisibility();
+        if (!vis) continue;
+        result = cam;
     }
     return result;
 }

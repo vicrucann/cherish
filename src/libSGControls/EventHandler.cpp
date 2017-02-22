@@ -18,6 +18,7 @@ EventHandler::EventHandler(GLWidget *widget, RootScene* scene, cher::MOUSE_MODE 
     , m_mode(mode)
     , m_scene(scene)
     , m_selection(0)
+    , m_selection2(0)
 {
 }
 
@@ -741,9 +742,19 @@ void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
     if (! (ea.getEventType() == osgGA::GUIEventAdapter::MOVE))
         return;
 
-
-
-
+    // find local intersection with the camera plane - it will be new camera eye
+    double u=0, v=0;
+    if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        return;
+    if (!m_selection2.get()){
+        auto cam = m_scene->getCamPoseDataCurrent();
+        if (!cam) {
+            qWarning("Could not extract cam pose data, no editing will be performed");
+            return;
+        }
+        m_selection2 = cam->getWire();
+    }
+    m_selection2->editEye(u, v);
 }
 
 void EventHandler::doCameraCenter(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)

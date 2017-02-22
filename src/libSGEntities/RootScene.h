@@ -99,6 +99,10 @@ public:
      * If no such data available, return NULL. */
     entity::SVMData* getSVMDataCurrent() const;
 
+    /*! A method to obtain a pointer on campose data that is in the state of editing by user.
+     * If no such data available, return 0. */
+    entity::CamPoseData* getCamPoseDataCurrent() const;
+
     void addBookmarkTool(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);

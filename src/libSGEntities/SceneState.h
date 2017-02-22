@@ -143,6 +143,8 @@ public:
     /*! \return modifiable pointer on entity::SVMData. */
     entity::SVMData* getSVMData();
 
+    entity::CamPoseData* getCamPoseData();
+
     osg::ProtectedGroup* getChildData();
 
 private:

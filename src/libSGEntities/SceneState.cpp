@@ -233,6 +233,14 @@ entity::SVMData *entity::SceneState::getSVMData()
     return dynamic_cast<entity::SVMData*>(node);
 }
 
+entity::CamPoseData *entity::SceneState::getCamPoseData()
+{
+    if (this->getNumChildren() == 0) return NULL;
+    osg::Node* node = this->getChild(0);
+    Q_CHECK_PTR(node);
+    return dynamic_cast<entity::CamPoseData*>(node);
+}
+
 osg::ProtectedGroup *entity::SceneState::getChildData()
 {
     if (this->getNumChildren() == 0) return NULL;

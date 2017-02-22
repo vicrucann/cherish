@@ -232,6 +232,7 @@ protected:
     osg::observer_ptr<RootScene>        m_scene;        /*!< A pointer on a scene; ofter used to extract scene elements such as current canvas. */
 
     osg::observer_ptr<entity::DraggableWire> m_selection;
+    osg::observer_ptr<entity::EditableWire> m_selection2;
 };
 
 #endif // EVENTHANDLER
