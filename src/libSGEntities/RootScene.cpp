@@ -411,6 +411,46 @@ void RootScene::hideAndUpdateSVMData()
     }
 }
 
+void RootScene::hideAndUpdateCamPoseData()
+{
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    int num = m_userScene->getBookmarks()->getNumBookmarks();
+    for (int i=0; i<num; ++i){
+        entity::SceneState* ss = m_userScene->getBookmarksModel()->getSceneState(i);
+        entity::CamPoseData* cam = ss->getCamPoseData();
+        if (!cam) continue;
+        bool vis = cam->getVisibility();
+        if (!vis) continue;
+        // get new camera pose
+        osg::Vec3f eye,center,up;
+        cam->getCamera(eye,center, up);
+        // edit existing camera pose
+        entity::Bookmarks* bms = m_userScene->getBookmarksModel();
+        if (!bms){
+            qWarning("Could not exatract bookmarks pointer for editing");
+            continue;
+        }
+        double fov = MainWindow::instance().getFOV();
+        bool edited = bms->editBookmarkPose(i, eye, center, up, fov);
+        if (!edited){
+            qWarning("Could not edit the bookmark position");
+            continue;
+        }
+        entity::BookmarkTool* bt = this->getBookmarkTool(i);
+        if (!bt){
+            qWarning("Could not extract bookmark tool pointer");
+            continue;
+        }
+        bt->setPose(eye, center, up);
+        // trigger update
+        emit m_userScene->updateWidgets();
+
+        /* hide the wires */
+        cam->setVisibility(false);
+    }
+
+}
+
 entity::SVMData *RootScene::getSVMDataCurrent() const
 {
     Q_CHECK_PTR(m_userScene->getBookmarks());

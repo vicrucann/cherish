@@ -154,8 +154,18 @@ public:
     /*! A method to obtaib intersection between two planes. For more details on the algorithm, see: http://geomalgorithms.com/a05-_intersect-1.html */
     static int getPlanesIntersection(entity::Canvas* canvas1, entity::Canvas* canvas2, osg::Vec3f& iP, osg::Vec3f& u);
 
-    /*! A method to project 3d point onto 3D line. */
+    /*! A method to project 3d point onto 3D line.
+     * \param iP is the global point on the line.
+     * \param u is the vector defining the line direction.
+     * \param P is the point to project.
+     * \return global coordinate of the projected point. */
     static osg::Vec3f projectPointOnLine(const osg::Vec3f& iP, const osg::Vec3f& u, const osg::Vec3f& P);
+
+    /*! A method to estimate Euclidean distance between two points in 3D.
+     * \param P1 is the first 3D point.
+     * \param P2 is the second 3D point.
+     * \return Euclidean distance according to https://en.wikipedia.org/wiki/Euclidean_distance */
+    static double distanceTwoPoints(const osg::Vec3f& P1, const osg::Vec3f& P2);
 
     /*! UI method to obtain cursor data based on the given mouse mode. */
     static QCursor getCursorFromMode(cher::MOUSE_MODE mode);

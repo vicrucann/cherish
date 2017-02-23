@@ -42,6 +42,9 @@ public:
     /*! \return global center of the camera  pose wire. */
     osg::Vec3f getCenter3D() const;
 
+    /*! \return global up vector. */
+    osg::Vec3f getUp() const;
+
     /*! A method to obtain local coordinates of the center points.
      * \param p1 is the input parameter for eye location,
      * \param p2 is the input parameter for center location. */
@@ -56,6 +59,11 @@ public:
     /*! A method to edit the center position of the camera pose, i.e., the camera look direction.
      * \param theta is the rotation angle from the current position. */
     void editCenter(double theta);
+
+    /*! A method to edit focal distance of the camera pose.
+     * \param distance is the new distance from camera eye. Note, the distance can never be smaller
+     * than certain threshold, e.g., 0.2. */
+    void editFocal(double distance);
 
     /*! A method to set up defult colors for all the geometries. */
     void unselect();
@@ -99,6 +107,7 @@ private:
     osg::Geometry* m_eye; /*!< geometry responsible for camera eye allocation */
     osg::Geometry* m_center; /*!< geometry responsible for camera center allocation */
     osg::Geometry* m_focal; /*!< geometry that includes all the wire and is responsible for camera focal allocation */
+    double         m_fov2; /*!< FOV, full angle in degrees. */
 
     int m_selection; /*!< index of selected geometry: 1 - eye, 2 - center, 3 - focal */
 

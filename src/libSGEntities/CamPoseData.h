@@ -39,6 +39,9 @@ public:
     /*! \return The wire geometries. */
     entity::EditableWire* getWire() const;
 
+    /*! A method to obtain camera pose from the parameters of the wire geometry. */
+    bool getCamera(osg::Vec3f& eye, osg::Vec3f& center, osg::Vec3f& up);
+
 private:
     osg::ref_ptr<osg::Switch>   m_switch; /*!< Child scene graph visibility. */
     entity::EditableWire*       m_wire;  /*!< Camera pose wire geometries. */

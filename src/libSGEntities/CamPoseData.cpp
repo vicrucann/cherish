@@ -62,3 +62,11 @@ entity::EditableWire *entity::CamPoseData::getWire() const
 {
     return m_wire;
 }
+
+bool entity::CamPoseData::getCamera(osg::Vec3f &eye, osg::Vec3f &center, osg::Vec3f &up)
+{
+    eye = m_wire->getEye3D();
+    center = m_wire->getCenter3D();
+    up = m_wire->getUp();
+    return true;
+}

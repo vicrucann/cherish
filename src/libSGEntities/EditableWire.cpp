@@ -84,6 +84,11 @@ osg::Vec3f entity::EditableWire::getCenter3D() const
     return local * this->getMatrix();
 }
 
+osg::Vec3f entity::EditableWire::getUp() const
+{
+    return cher::UP;
+}
+
 void entity::EditableWire::getCenter2D(osg::Vec2f &p1, osg::Vec2f &p2) const
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_center->getVertexArray());
@@ -106,6 +111,11 @@ void entity::EditableWire::editEye(double u, double v)
 void entity::EditableWire::editCenter(double theta)
 {
     this->rotate(theta);
+}
+
+void entity::EditableWire::editFocal(double distance)
+{
+    this->translate(distance);
 }
 
 void entity::EditableWire::pick(int index)
@@ -216,4 +226,46 @@ void entity::EditableWire::rotate(double theta)
     }
     this->updateGeometry(m_focal);
 
+}
+
+void entity::EditableWire::translate(double d)
+{
+    // if distance is smaller than threshold, do nothing
+    if (d<0.2) return;
+
+    // obtain eye position
+    // eye remain on the same position, but we have to take its coords
+    osg::Vec3Array* verts_eye = static_cast<osg::Vec3Array*>(m_eye->getVertexArray());
+    Q_CHECK_PTR(verts_eye);
+    Q_ASSERT(verts_eye->size() == 1);
+    osg::Vec3f eye = (*verts_eye)[0];
+
+    // use fov2 to calculate size with the given distanve
+    // also scale up the center geometry as focal size changes
+    osg::Vec3Array* verts_center = static_cast<osg::Vec3Array*>(m_center->getVertexArray());
+    Q_CHECK_PTR(verts_center);
+    Q_ASSERT(verts_center->size() == 2);
+    osg::Vec3f center = (*verts_center)[1];
+    osg::Vec3f dir = center-eye;
+    dir.normalize();
+
+    osg::Vec3Array* verts_focal = static_cast<osg::Vec3Array*>(m_focal->getVertexArray());
+    Q_CHECK_PTR(verts_focal);
+    Q_ASSERT(verts_focal->size() == 3);
+    osg::Vec3f foc = (*verts_focal)[1] - (*verts_focal)[2];
+    foc.normalize(); // foc is always perpendicular to dir
+
+    double alpha = m_fov2 * 0.5; // half angle of fov
+    double x05 = d * std::tan(alpha); // half distance of the focal length
+
+    // center extends 20% more than position of focal
+    osg::Vec3f new_center = eye + dir*d*1.2;
+    (*verts_center)[1] = new_center;
+    this->updateGeometry(m_center);
+
+    // edit size and location of focal geometry
+    osg::Vec3f new_middle = eye + dir * d;
+    (*verts_focal)[1] = new_middle + foc * x05;
+    (*verts_focal)[2] = new_middle - foc * x05;
+    this->updateGeometry(m_focal);
 }

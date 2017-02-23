@@ -179,6 +179,7 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
         /* if mode is only for current canvas, disable all other canvases from usage */
         m_scene->setCanvasesButCurrent(false);
         m_scene->hideAndUpdateSVMData(); // TODO same to campose data
+        m_scene->hideAndUpdateCamPoseData();
         break;
     case cher::SVM_DRAG_POINT:
     case cher::SVM_DRAG_WIRE:
@@ -196,6 +197,7 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
         /* if selection within 3D, enable all the canvases for selection */
         m_scene->setCanvasesButCurrent(true);
         m_scene->hideAndUpdateSVMData();
+        m_scene->hideAndUpdateCamPoseData();
         break;
     }
 
@@ -788,7 +790,33 @@ void EventHandler::doCameraCenter(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
 
 void EventHandler::doCameraFocal(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+        // switch to campose center mode ?
+        m_glWidget->setMouseMode(cher::PEN_SKETCH);
+        return;
+    }
+    if (! (ea.getEventType() == osgGA::GUIEventAdapter::MOVE))
+        return;
 
+    // find local intersection with camera plane and derive the distance from the eye for focal plane to be located
+    double u=0, v=0;
+    if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        return;
+    if (!m_selection2.get()){
+        qCritical("No selection - exiting the mode");
+        m_glWidget->setMouseMode(cher::PEN_SKETCH);
+        return;
+    }
+    // calculate the distance, make sure it does not get smaller than a threshold
+    osg::Vec3f P2 = osg::Vec3f(u,v,0);
+    osg::Vec3f eye = m_selection2->getEye2D();
+    osg::Vec2f c1, c2;
+    m_selection2->getCenter2D(c1,c2);
+    osg::Vec3f dir = osg::Vec3f(c2.x() - c1.x(), c2.y() - c1.y(), 0);
+    dir.normalize();
+    osg::Vec3f P1 = Utilities::projectPointOnLine(eye, dir, P2);
+    double distance = Utilities::distanceTwoPoints(P1, eye);
+    m_selection2->editFocal(distance);
 }
 
 void EventHandler::doCameraIdle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)

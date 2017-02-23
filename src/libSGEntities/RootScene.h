@@ -91,9 +91,11 @@ public:
      * one canvas on the scene. */
     bool addCamPoseData();
 
-    /*! A method to hide all the visible SVMData from scene.
-     * \param wire is the wire of entity::SVMData to hide. */
+    /*! A method to hide all the visible SVMData from scene.*/
     void hideAndUpdateSVMData();
+
+    /*! A method to hide all the visible CamPoseData from scene. */
+    void hideAndUpdateCamPoseData();
 
     /*! A method to obtain a pointer on SVMData that is in the state of editing by user.
      * If no such data available, return NULL. */

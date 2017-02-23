@@ -442,6 +442,14 @@ osg::Vec3f Utilities::projectPointOnLine(const osg::Vec3f &iP, const osg::Vec3f 
     return iP + u * ((P-iP)*u)/(u*u);
 }
 
+double Utilities::distanceTwoPoints(const osg::Vec3f &P1, const osg::Vec3f &P2)
+{
+    auto dx = P1.x() - P2.x(),
+            dy = P1.y() - P2.y(),
+            dz = P1.z() - P2.z();
+    return std::sqrt(dx*dx + dy*dy + dz*dz);
+}
+
 QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
 {
     QCursor cur = Qt::ArrowCursor;
