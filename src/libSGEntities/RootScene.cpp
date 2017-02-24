@@ -443,7 +443,6 @@ void RootScene::hideAndUpdateCamPoseData()
             qWarning("Could not extract bookmark tool pointer");
             continue;
         }
-        qDebug() << "eye setting = " << eye.x() << eye.y() << eye.z();
         bt->setPose(eye, center, up);
         // trigger update
         emit m_userScene->updateWidgets();
@@ -452,6 +451,9 @@ void RootScene::hideAndUpdateCamPoseData()
         cam->setVisibility(false);
 
         // insert new canvas in the FOV of the new camera pose. In this canvas an image will be placed
+        osg::Vec3f normal = center - eye;
+        normal.normalize();
+        this->addCanvas(normal, center);
         // that represents the camera's view.
         // update bookmark thumbnail
     }

@@ -739,7 +739,6 @@ void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
 {
     if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
         // switch to campose center mode ?
-        qDebug() << "eye set = " << m_selection2->getEye3D().x() << m_selection2->getEye3D().y() << m_selection2->getEye3D().z();
         m_glWidget->setMouseMode(cher::CAMPOSE_CENTER);
         return;
     }
@@ -748,9 +747,11 @@ void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
         return;
 
     // find local intersection with the camera plane - it will be new camera eye
+    qDebug("searching for eye");
     double u=0, v=0;
     if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
         return;
+    qDebug("eye found");
     if (!m_selection2.get()){
         auto cam = m_scene->getCamPoseDataCurrent();
         if (!cam) {
@@ -759,6 +760,7 @@ void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
         }
         m_selection2 = cam->getWire();
     }
+    qDebug("editing eye");
     m_selection2->editEye(u, v);
 }
 
@@ -793,6 +795,7 @@ void EventHandler::doCameraFocal(const osgGA::GUIEventAdapter &ea, osgGA::GUIAct
 {
     if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
         // switch to campose center mode ?
+        m_selection2 = 0;
         m_glWidget->setMouseMode(cher::PEN_SKETCH);
         return;
     }
