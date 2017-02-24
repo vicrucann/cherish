@@ -739,6 +739,7 @@ void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
 {
     if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
         // switch to campose center mode ?
+        qDebug() << "eye set = " << m_selection2->getEye3D().x() << m_selection2->getEye3D().y() << m_selection2->getEye3D().z();
         m_glWidget->setMouseMode(cher::CAMPOSE_CENTER);
         return;
     }

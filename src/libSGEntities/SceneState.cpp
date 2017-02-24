@@ -217,9 +217,9 @@ bool entity::SceneState::addSVMData(const osg::Matrix &wall, const osg::Matrix &
     return this->addChild(svm);
 }
 
-bool entity::SceneState::addCamPoseData(const osg::Matrix &matrix)
+bool entity::SceneState::addCamPoseData(const osg::Matrix &matrix, double fov)
 {
-    osg::ref_ptr<entity::CamPoseData> cam = new entity::CamPoseData(60);
+    osg::ref_ptr<entity::CamPoseData> cam = new entity::CamPoseData(fov);
     Q_CHECK_PTR(cam.get());
     cam->setTransform(matrix);
     return this->addChild(cam);

@@ -53,7 +53,8 @@ public:
     /*! A method to obtain current color of the color dialog (for polygon drawing). */
     osg::Vec4f getCurrentColor() const;
 
-    /*! A method to obtain current camera's FOV. */
+    /*! A method to obtain current camera's FOV.
+     * \return full angle FOV (not half angle). */
     double getFOV() const;
 
 public slots:

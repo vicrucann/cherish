@@ -11,6 +11,7 @@ entity::EditableWire::EditableWire(double fov2)
     , m_eye(new osg::Geometry())
     , m_center(new osg::Geometry())
     , m_focal(new osg::Geometry())
+    , m_fov2(fov2)
     , m_selection(-1)
 {
     this->addChild(m_geode);
@@ -25,10 +26,12 @@ entity::EditableWire::EditableWire(double fov2)
     m_focal->setUseDisplayList(false);
     m_focal->setName(cher::NAME_CAM_FOCAL);
 
+    double theta = (m_fov2 * 0.5f)*cher::PI/180.f;
+    float X = cher::SVMDATA_HALFWIDTH * std::tan(theta);
     osg::Vec3Array* verts_focal = new osg::Vec3Array();
     verts_focal->push_back(cher::CENTER);
-    verts_focal->push_back(osg::Vec3f(cher::SVMDATA_HALFWIDTH, cher::SVMDATA_HALFWIDTH, 0.f));
-    verts_focal->push_back(osg::Vec3f(-cher::SVMDATA_HALFWIDTH, cher::SVMDATA_HALFWIDTH, 0));
+    verts_focal->push_back(osg::Vec3f(X, cher::SVMDATA_HALFWIDTH, 0.f));
+    verts_focal->push_back(osg::Vec3f(-X, cher::SVMDATA_HALFWIDTH, 0));
     osg::Vec4Array* clr_focal = new osg::Vec4Array(3);
     m_focal->addPrimitiveSet(new osg::DrawArrays(GL_LINE_LOOP, 0, verts_focal->size()));
     m_focal->setVertexArray(verts_focal);
@@ -47,7 +50,7 @@ entity::EditableWire::EditableWire(double fov2)
 
     osg::Vec3Array* verts_center = new osg::Vec3Array();
     verts_center->push_back(cher::CENTER);
-    verts_center->push_back(osg::Vec3f(0.f, cher::SVMDATA_HALFWIDTH*1.5f, 0.f));
+    verts_center->push_back(osg::Vec3f(0.f, cher::SVMDATA_HALFWIDTH, 0.f));
     osg::Vec4Array* clr_center = new osg::Vec4Array(2);
     m_center->addPrimitiveSet(new osg::DrawArrays(GL_LINES, 0, verts_center->size()));
     m_center->setVertexArray(verts_center);
@@ -255,7 +258,7 @@ void entity::EditableWire::translate(double d)
     osg::Vec3f foc = (*verts_focal)[1] - (*verts_focal)[2];
     foc.normalize(); // foc is always perpendicular to dir
 
-    double alpha = m_fov2 * 0.5; // half angle of fov
+    double alpha = (m_fov2 * 0.5)*cher::PI/180.f; // half angle of fov
     double x05 = d * std::tan(alpha); // half distance of the focal length
 
     // center extends 20% more than position of focal

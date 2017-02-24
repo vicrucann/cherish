@@ -138,7 +138,7 @@ public:
 
     /*! A method to create new instance of entity::CamPoseData and add it as a child to the scene state.
      * \param matrix is matrix transform for the camera pose wires. */
-    bool addCamPoseData(const osg::Matrix& matrix);
+    bool addCamPoseData(const osg::Matrix& matrix, double fov);
 
     /*! \return modifiable pointer on entity::SVMData. */
     entity::SVMData* getSVMData();

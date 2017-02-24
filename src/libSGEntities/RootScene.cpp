@@ -352,7 +352,8 @@ bool RootScene::addCamPoseData()
     if (!cnv) return false;
 
     /* add campose data with the given params */
-    bool added = ss->addCamPoseData(cnv->getMatrix());
+    double fov = MainWindow::instance().getFOV();
+    bool added = ss->addCamPoseData(cnv->getMatrix(), fov);
     return added;
 }
 
@@ -424,7 +425,7 @@ void RootScene::hideAndUpdateCamPoseData()
         // get new camera pose
         osg::Vec3f eye,center,up;
         cam->getCamera(eye,center, up);
-        // edit existing camera pose
+        // edit camera pose by editing: current camera pose, bookmark tool position; Bookmarks data.
         entity::Bookmarks* bms = m_userScene->getBookmarksModel();
         if (!bms){
             qWarning("Could not exatract bookmarks pointer for editing");
@@ -436,17 +437,23 @@ void RootScene::hideAndUpdateCamPoseData()
             qWarning("Could not edit the bookmark position");
             continue;
         }
+        // edit phisical tool position.
         entity::BookmarkTool* bt = this->getBookmarkTool(i);
         if (!bt){
             qWarning("Could not extract bookmark tool pointer");
             continue;
         }
+        qDebug() << "eye setting = " << eye.x() << eye.y() << eye.z();
         bt->setPose(eye, center, up);
         // trigger update
         emit m_userScene->updateWidgets();
 
         /* hide the wires */
         cam->setVisibility(false);
+
+        // insert new canvas in the FOV of the new camera pose. In this canvas an image will be placed
+        // that represents the camera's view.
+        // update bookmark thumbnail
     }
 
 }
