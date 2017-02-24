@@ -352,7 +352,7 @@ bool RootScene::addCamPoseData()
     if (!cnv) return false;
 
     /* add campose data with the given params */
-    double fov = MainWindow::instance().getFOV();
+    double fov = MainWindow::instance().getFOV2();
     bool added = ss->addCamPoseData(cnv->getMatrix(), fov);
     return added;
 }
@@ -390,7 +390,7 @@ void RootScene::hideAndUpdateSVMData()
             qWarning("Could not exatract bookmarks pointer for editing");
             continue;
         }
-        double fov = MainWindow::instance().getFOV();
+        double fov = MainWindow::instance().getFOV2();
         bool edited = bms->editBookmarkPose(i, eye, center, up, fov);
         if (!edited){
             qWarning("Could not edit the bookmark position");
@@ -425,14 +425,15 @@ void RootScene::hideAndUpdateCamPoseData()
         // get new camera pose
         osg::Vec3f eye,center,up;
         cam->getCamera(eye,center, up);
+        qDebug() << "eye to be edited=" << eye.x() << eye.y() << eye.z();
         // edit camera pose by editing: current camera pose, bookmark tool position; Bookmarks data.
         entity::Bookmarks* bms = m_userScene->getBookmarksModel();
         if (!bms){
             qWarning("Could not exatract bookmarks pointer for editing");
             continue;
         }
-        double fov = MainWindow::instance().getFOV();
-        bool edited = bms->editBookmarkPose(i, eye, center, up, fov);
+        double fov2 = MainWindow::instance().getFOV2();
+        bool edited = bms->editBookmarkPose(i, eye, center, up, fov2);
         if (!edited){
             qWarning("Could not edit the bookmark position");
             continue;
@@ -454,7 +455,8 @@ void RootScene::hideAndUpdateCamPoseData()
         osg::Vec3f normal = center - eye;
         normal.normalize();
         this->addCanvas(normal, center);
-        // that represents the camera's view.
+        // change current camera pose to be where the bookmark is
+        MainWindow::instance().setCameraView(eye, center, up, fov2);
         // update bookmark thumbnail
     }
 

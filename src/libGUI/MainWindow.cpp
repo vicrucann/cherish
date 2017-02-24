@@ -130,6 +130,12 @@ osg::Camera *MainWindow::getCamera() const
     return m_glWidget->getCamera();
 }
 
+void MainWindow::setCameraView(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const double &fov2)
+{
+    if (!m_glWidget) return;
+    m_glWidget->setCameraView(eye, center, up, fov2);
+}
+
 bool MainWindow::getStrokeFogFactor() const
 {
     if (!m_actionStrokeFogFactor) return false;
@@ -147,7 +153,7 @@ osg::Vec4f MainWindow::getCurrentColor() const
     return Utilities::getOsgColor(qc);
 }
 
-double MainWindow::getFOV() const
+double MainWindow::getFOV2() const
 {
     double fov;
     osg::Vec3d eye,center,up;

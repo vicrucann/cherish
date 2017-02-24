@@ -62,8 +62,9 @@ public:
 protected:
     void setCameraView();
 public:
-    /*! Method to set up the manipulator to specified camera paramenters. */
-    void setCameraView(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov);
+    /*! Method to set up the manipulator to specified camera paramenters.
+     * \param fov2 is the full angle FOV, in degrees. */
+    void setCameraView(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov2);
 
     /*! Method to return manipulator's camera parameters. */
     void getCameraView(osg::Vec3d& eye, osg::Vec3d& center, osg::Vec3d& up, double& fov) const;

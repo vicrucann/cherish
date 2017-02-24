@@ -36,18 +36,32 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    /*! Constructor. */
+    /*! Constructor: initialies the GUI elements and scene graph structure. */
     explicit MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+    /*! Destructor: annulates singlton-related pointer. */
     ~MainWindow();
 
+    /*! Singleton design pattern. */
     static MainWindow& instance();
 
     /*! \return const pointer to RootScene. */
     const RootScene* getRootScene() const;
 
+    /*! A method to obtain pointer on current canvas, if there is one present. */
     entity::Canvas* getCanvasCurrent() const;
+
+    /*! \return pointer on a camera used within GLWidget. */
     osg::Camera* getCamera() const;
+
+    /*! A method to setup camera position and parameters within GLWidget.
+     * \param fov2 is the full angle (not half angle) FOV, in degrees. */
+    void setCameraView(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov2);
+
+    /*! \return state of the button responsible for whether fog factor is on (true) or off (false). */
     bool getStrokeFogFactor() const;
+
+    /*! A method to obtain a scene screenshot with the given camera position. */
     QPixmap getScreenshot(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
 
     /*! A method to obtain current color of the color dialog (for polygon drawing). */
@@ -55,7 +69,7 @@ public:
 
     /*! A method to obtain current camera's FOV.
      * \return full angle FOV (not half angle). */
-    double getFOV() const;
+    double getFOV2() const;
 
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */

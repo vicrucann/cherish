@@ -751,7 +751,6 @@ void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
     double u=0, v=0;
     if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
         return;
-    qDebug("eye found");
     if (!m_selection2.get()){
         auto cam = m_scene->getCamPoseDataCurrent();
         if (!cam) {
@@ -760,7 +759,8 @@ void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
         }
         m_selection2 = cam->getWire();
     }
-    qDebug("editing eye");
+    osg::Vec3f eye3d = osg::Vec3f(u,v,0.f) * m_selection2->getMatrix();
+    qDebug() << "eye found=" << eye3d.x() << eye3d.y() << eye3d.z();
     m_selection2->editEye(u, v);
 }
 

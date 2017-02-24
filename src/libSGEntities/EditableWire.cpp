@@ -62,11 +62,7 @@ entity::EditableWire::EditableWire(double fov2)
 
 osg::Vec3f entity::EditableWire::getEye3D() const
 {
-    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_eye->getVertexArray());
-    Q_CHECK_PTR(verts);
-    Q_ASSERT(verts->size() == 1);
-    osg::Vec3f local = (*verts)[0];
-    return local * this->getMatrix();
+    return this->getEye2D() * this->getMatrix();
 }
 
 osg::Vec3f entity::EditableWire::getEye2D() const
@@ -262,7 +258,7 @@ void entity::EditableWire::translate(double d)
     double x05 = d * std::tan(alpha); // half distance of the focal length
 
     // center extends 20% more than position of focal
-    osg::Vec3f new_center = eye + dir*d*1.2;
+    osg::Vec3f new_center = eye + dir*d;
     (*verts_center)[1] = new_center;
     this->updateGeometry(m_center);
 
