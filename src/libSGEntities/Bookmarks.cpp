@@ -141,6 +141,10 @@ void entity::Bookmarks::addBookmark(BookmarkWidget *widget, const osg::Vec3d &ey
 /* update the look of the bookmakr's screenshot */
 void entity::Bookmarks::updateBookmark(BookmarkWidget *widget, int row)
 {
+    if (!widget){
+        qWarning("BookmarkWidget pointer is null. Screenshot will not be updated");
+        return;
+    }
     if (row >=0 && row < static_cast<int>(m_eyes.size())){
         QListWidgetItem* item = widget->item(row);
         QPixmap pmap = MainWindow::instance().getScreenshot(m_eyes[row],

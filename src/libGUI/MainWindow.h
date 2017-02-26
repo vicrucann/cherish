@@ -71,6 +71,9 @@ public:
      * \return full angle FOV (not half angle). */
     double getFOV2() const;
 
+    /*! A method to obtain a pointer on bookmark widget. */
+    BookmarkWidget* getBookmarkWidget();
+
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
     void onSetTabletActivity(bool active);

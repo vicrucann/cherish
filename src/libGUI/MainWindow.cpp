@@ -161,6 +161,11 @@ double MainWindow::getFOV2() const
     return fov;
 }
 
+BookmarkWidget *MainWindow::getBookmarkWidget()
+{
+    return m_bookmarkWidget;
+}
+
 void MainWindow::onSetTabletActivity(bool active){
     m_glWidget->setTabletActivity(active);
 }

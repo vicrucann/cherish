@@ -458,6 +458,8 @@ void RootScene::hideAndUpdateCamPoseData()
         // change current camera pose to be where the bookmark is
         MainWindow::instance().setCameraView(eye, center, up, fov2);
         // update bookmark thumbnail
+        qDebug() << "trying to update bookmark=" << i;
+        this->updateBookmark(MainWindow::instance().getBookmarkWidget(), i);
     }
 
 }
