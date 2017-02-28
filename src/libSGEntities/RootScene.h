@@ -109,6 +109,9 @@ public:
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
     void deleteBookmarkTool(int first, int last);
+
+    /*! A method which is called when a file is opened. It resets the screenshot bookmarks.
+     * \param widget is a pointer on bookmark widget (member of MainWindow). */
     void resetBookmarks(BookmarkWidget* widget);
 
     /*! A method to set visibility of all the bookmarks tools. The visibility cannot be set for individual bookmarks tool, only for the

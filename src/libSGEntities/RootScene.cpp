@@ -425,7 +425,6 @@ void RootScene::hideAndUpdateCamPoseData()
         // get new camera pose
         osg::Vec3f eye,center,up;
         cam->getCamera(eye,center, up);
-        qDebug() << "eye to be edited=" << eye.x() << eye.y() << eye.z();
         // edit camera pose by editing: current camera pose, bookmark tool position; Bookmarks data.
         entity::Bookmarks* bms = m_userScene->getBookmarksModel();
         if (!bms){
@@ -452,16 +451,25 @@ void RootScene::hideAndUpdateCamPoseData()
         cam->setVisibility(false);
 
         // insert new canvas in the FOV of the new camera pose. In this canvas an image will be placed
-        osg::Vec3f normal = center - eye;
+        osg::Vec3f normal = -center + eye;
         normal.normalize();
         this->addCanvas(normal, center);
-        // change current camera pose to be where the bookmark is
-        MainWindow::instance().setCameraView(eye, center, up, fov2);
-        // update bookmark thumbnail
-        qDebug() << "trying to update bookmark=" << i;
-        this->updateBookmark(MainWindow::instance().getBookmarkWidget(), i);
-    }
+        // make sure canvas is facing the new camera position
+        entity::Canvas* canvas = this->getCanvasCurrent();
+        if (!canvas){
+            qWarning("Could not extract current canvas");
+            continue;
+        }
+        osg::Vec3f cnvC = canvas->getCenter3D();
+        osg::Matrix rot = osg::Matrix::identity();
+        rot.makeRotate(canvas->getGlobalAxisV(), up); // global V is aligned with up direction
+        canvas->rotate(rot, cnvC);
 
+        // request screenshot update
+        BookmarkWidget* widget = MainWindow::instance().getBookmarkWidget();
+        this->updateBookmark(widget, i);
+        break;
+    }
 }
 
 entity::SVMData *RootScene::getSVMDataCurrent() const
@@ -537,13 +545,6 @@ void RootScene::resetBookmarks(BookmarkWidget *widget)
         return;
     }
     bms->resetModel(widget);
-
-//    const std::vector<osg::Vec3d>& eyes = bms->getEyes();
-//    const std::vector<osg::Vec3d>& centers = bms->getCenters();
-//    const std::vector<osg::Vec3d>& ups = bms->getUps();
-//    for (size_t i=0; i < bms->getNames().size(); ++i){
-//        m_bookmarkTools->addChild(new entity::BookmarkTool(eyes[i], centers[i], ups[i]));
-//    }
 }
 
 void RootScene::setBookmarkToolVisibility(bool vis)

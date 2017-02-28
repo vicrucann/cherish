@@ -406,11 +406,10 @@ void MainWindow::onFileNew()
 */
 void MainWindow::onFileOpen()
 {
-    this->onFileClose();
-
     QString fname = QFileDialog::getOpenFileName(this, tr("Open a scene from file"),
                                                  QString(), tr("OSG files (*.osg *.osgt)"));
     if (!fname.isEmpty()){
+        this->onFileClose();
         m_rootScene->setFilePath(fname.toStdString());
         if (!this->loadSceneFromFile()){
             QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
