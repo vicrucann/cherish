@@ -92,7 +92,8 @@ public:
     /*! Method to set tablet proximity flag. */
     void setTabletActivity(bool active);
 
-    /*! Method to obtain a scene graph screenshot by given camera position.  */
+    /*! Method to obtain a scene graph screenshot by given camera position.
+     * This method resets the view back to what it was before the screenshot was taken. */
     QPixmap getScreenShot(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
 
 public slots:

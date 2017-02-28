@@ -433,6 +433,9 @@ void RootScene::hideAndUpdateCamPoseData()
             continue;
         }
         double fov2 = MainWindow::instance().getFOV2();
+        // reset the current view
+        MainWindow::instance().setCameraView(eye, center, up, fov2);
+        // edit bookmark position
         bool edited = bms->editBookmarkPose(i, eye, center, up, fov2);
         if (!edited){
             qWarning("Could not edit the bookmark position");

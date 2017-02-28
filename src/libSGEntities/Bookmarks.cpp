@@ -147,8 +147,6 @@ void entity::Bookmarks::updateBookmark(BookmarkWidget *widget, int row)
     }
     if (row >=0 && row < static_cast<int>(m_eyes.size())){
         QListWidgetItem* item = widget->item(row);
-        qDebug() << "eye updated=" << m_eyes[row].x() << m_eyes[row].y() << m_eyes[row].z();
-        qDebug() << "up updated=" << m_ups[row].x() << m_ups[row].y() << m_ups[row].z();
         emit this->requestSceneStateSet(this->getSceneState(row));
         QPixmap pmap = MainWindow::instance().getScreenshot(m_eyes[row], m_centers[row], m_ups[row]);
         item->setIcon(QIcon(pmap));
