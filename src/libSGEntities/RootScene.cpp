@@ -6,6 +6,7 @@
 
 #include <QtGlobal>
 #include <QDebug>
+#include <QMessageBox>
 
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
@@ -450,20 +451,9 @@ void RootScene::hideAndUpdateCamPoseData()
         /* hide the wires */
         cam->setVisibility(false);
 
-        // insert new canvas in the FOV of the new camera pose. In this canvas an image will be placed
-        osg::Vec3f normal = -center + eye;
-        normal.normalize();
-        this->addCanvas(normal, center);
-        // make sure canvas is facing the new camera position
-        entity::Canvas* canvas = this->getCanvasCurrent();
-        if (!canvas){
-            qWarning("Could not extract current canvas");
-            continue;
-        }
-        osg::Vec3f cnvC = canvas->getCenter3D();
-        osg::Matrix rot = osg::Matrix::identity();
-        rot.makeRotate(canvas->getGlobalAxisV(), up); // global V is aligned with up direction
-        canvas->rotate(rot, cnvC);
+        // suggest to insert new canvas in the FOV of the new camera pose.
+        // In this canvas an image will be placed.
+        emit m_userScene->requestCanvasCreate(eye, center, up);
 
         // request screenshot update
         BookmarkWidget* widget = MainWindow::instance().getBookmarkWidget();

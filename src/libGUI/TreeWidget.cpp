@@ -135,7 +135,6 @@ void CanvasPhotoWidget::onCanvasVisibilitySet(int row, bool visibility)
     }
 
 //    bool value = item->data(0, cher::DelegateVisibilityRole).toBool();
-    qDebug() << "Requested visibility " << visibility;
     item->setData(0, cher::DelegateVisibilityRole, !visibility );
 }
 

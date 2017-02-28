@@ -132,6 +132,13 @@ public slots:
     /*! Slot called when user performed drag-and-drop from PhotoWidget to GLWidget of a entity::Photo. */
     void onImportPhoto(const QString& path, const QString& fileName);
 
+    /*! Slot called when bookmark position is finished editing. The slot requests from user whether new canvas should be
+     * created within the FOV of the camera position.
+     * \param eye is eye position of the camera,
+     * \param center is the center position of camera,
+     * \param up is up vector of camera position.  */
+    void onRequestCanvasCreate(const osg::Vec3f& eye, const osg::Vec3f& center, const osg::Vec3f& up);
+
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */
     void onFileNew();

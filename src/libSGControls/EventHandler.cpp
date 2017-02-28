@@ -737,7 +737,7 @@ void EventHandler::doDragPoint(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
 
 void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
-    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
         // switch to campose center mode ?
         m_glWidget->setMouseMode(cher::CAMPOSE_CENTER);
         return;
@@ -747,7 +747,6 @@ void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
         return;
 
     // find local intersection with the camera plane - it will be new camera eye
-    qDebug("searching for eye");
     double u=0, v=0;
     if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
         return;
@@ -760,13 +759,12 @@ void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
         m_selection2 = cam->getWire();
     }
     osg::Vec3f eye3d = osg::Vec3f(u,v,0.f) * m_selection2->getMatrix();
-    qDebug() << "eye found=" << eye3d.x() << eye3d.y() << eye3d.z();
     m_selection2->editEye(u, v);
 }
 
 void EventHandler::doCameraCenter(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
-    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
         // switch to campose center mode ?
         m_glWidget->setMouseMode(cher::CAMPOSE_FOCAL);
         return;
@@ -793,7 +791,7 @@ void EventHandler::doCameraCenter(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
 
 void EventHandler::doCameraFocal(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
-    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
         // switch to campose center mode ?
         m_selection2 = 0;
         m_glWidget->setMouseMode(cher::PEN_SKETCH);

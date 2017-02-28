@@ -387,6 +387,29 @@ void MainWindow::onImportPhoto(const QString &path, const QString &fileName)
     this->importPhoto(fullPath);
 }
 
+void MainWindow::onRequestCanvasCreate(const osg::Vec3f &eye, const osg::Vec3f &center, const osg::Vec3f &up)
+{
+    QMessageBox::StandardButton reply = QMessageBox::question(this,
+                                                              tr("Creating new bookmark view"),
+                                                              tr("Do you want to create new canvas associated with this view?"),
+                                                              QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::Yes){
+        osg::Vec3f normal = -center + eye;
+        normal.normalize();
+        m_rootScene->addCanvas(normal, center);
+        // make sure canvas is facing the new camera position
+        entity::Canvas* canvas = m_rootScene->getCanvasCurrent();
+        if (!canvas){
+            qWarning("Could not extract current canvas");
+            return;
+        }
+        osg::Vec3f cnvC = canvas->getCenter3D();
+        osg::Matrix rot = osg::Matrix::identity();
+        rot.makeRotate(canvas->getGlobalAxisV(), up); // global V is aligned with up direction
+        canvas->rotate(rot, cnvC);
+    }
+}
+
 /* Check whether the current scene is empty or not
  * If not - propose to save changes.
  * Clear the scene graph
@@ -522,7 +545,6 @@ void MainWindow::onFileClose()
     m_undoStack->clear();
     m_viewStack->clear();
     m_bookmarkWidget->model()->removeRows(0,m_bookmarkWidget->count());
-//    m_canvasWidget->model()->removeRows(0, m_canvasWidget->count());
     m_canvasWidget->model()->removeRows(0, m_canvasWidget->topLevelItemCount());
 
     this->statusBar()->showMessage(tr("Current project is closed"));
@@ -1287,6 +1309,10 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestSceneToolStatus(bool&)),
                      this, SLOT(onRequestSceneToolStatus(bool&)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestCanvasCreate(osg::Vec3f,osg::Vec3f,osg::Vec3f)),
+                     this, SLOT(onRequestCanvasCreate(osg::Vec3f,osg::Vec3f,osg::Vec3f)),
                      Qt::UniqueConnection);
 
     /* bookmark widget data */
