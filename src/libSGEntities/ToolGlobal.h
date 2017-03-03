@@ -164,6 +164,42 @@ private:
     osg::Camera* m_camera;
 };
 
+/*! \class ATGeode
+ * \brief Helper class to create non-scalable geometries, e.g., AT -> Geode -> Geometry.
+ * Used for pickable geometry.
+*/
+class ATGeode : public osg::AutoTransform
+{
+public:
+    /*! Constructor initializes the internal scene graph structure and sets up the parameters of the auto scaling. */
+    ATGeode();
+
+protected:
+    friend class FrameTool;
+
+    osg::Geode* geode;
+    osg::Geometry* geometry;
+};
+
+/*! \class ATRGeode
+ * \brief Helper class to create non-scalable geometries that always render on top.
+ * The node has the following scene graph structure: AT-> Camera -> Geode -> Geometry.
+*/
+class ATRGeode : public osg::AutoTransform
+{
+public:
+    /*! Constructor initializes the internal scene graph structure and sets up parameters of auto scale and camera. */
+    ATRGeode();
+
+protected:
+    friend class FrameTool;
+
+    osg::Geode* geode;
+    osg::Geometry* geometry;
+    osg::Camera* camera;
+
+};
+
 /*! \class FrameTool
  * \brief A tool to depict canvas bounding box in both its non-editable and editable states.
  *
@@ -210,7 +246,9 @@ protected:
     void initializeSG();
 
 public:
-    /*! A method to set canvas frame visibility. */
+    /*! A method to set canvas frame visibility. When visibility is set to off, the visibility values are saved. When the
+     * visibility is turned back on, the values are poped back to their original states.
+     * \param on is true when canvas frame is visible, false - otherwise. */
     void setVisibility(bool on);
 
     /*! A method to obtain a canvas frame visibility. */
@@ -279,19 +317,17 @@ protected:
     void rotateWireGeometry(osg::Geometry* geometry, double theta, osg::Vec3f center);
 
 private:
-    osg::Geode* m_geodePickable, * m_geodeIntersect
-                , * m_geodeAxis, * m_geodeScales, * m_geodeNormal, * m_geodeRotation;
-    osg::Geometry* m_geomPickable, * m_geomIntersect, * m_geomCenter
-                , * m_geomAxisU, * m_geomAxisV;
-
-    /* tools to scale entities: uniform scaling and axis aligned */
-    osg::Geometry * m_geomScaleUV1, * m_geomScaleUV2, * m_geomScaleUV3, * m_geomScaleUV4;
+    osg::Geode* m_geodeIntersect, * m_geodeNormal, * m_geodeRotation;
+    osg::Geometry* m_geomIntersect;
 
     /* canvas offset and 3d rotation drawables */
-    osg::Geometry * m_geomNormal1, * m_geomNormal2;
-    osg::Geometry * m_geomRotateX1, * m_geomRotateX2, * m_geomRotateY1, * m_geomRotateY2;
+    osg::Geometry * m_geomNormal1, * m_geomNormal2; /*!< canvas offset geomtries */
+    osg::Geometry * m_geomRotateX1, * m_geomRotateX2, * m_geomRotateY1, * m_geomRotateY2; /*!< canvas 3d rotation geometries */
 
-    osg::Camera* m_cameraAxis; /* so that local axis always renders on top of photos */
+    ATGeode* m_AT_pick; /*!< pickable scene graph: AT -> geode -> geometry */
+    ATRGeode* m_AT_scaleUV1, * m_AT_scaleUV2, * m_AT_scaleUV3, * m_AT_scaleUV4; /*!< tools to scale 2D entities */
+    ATRGeode* m_AT_center;
+    ATRGeode* m_AT_axisU, * m_AT_axisV;
 
     bool m_selected; // if there is selection present on scene
     bool m_editable; // if canvas is in edit mode: offset and rotation
