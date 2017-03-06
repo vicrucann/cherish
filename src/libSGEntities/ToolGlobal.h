@@ -213,26 +213,23 @@ protected:
  *
  *      FrameTool -> Switch -> GeodeWire
  *                          |-> GeodeIntersect
- *                          |-> GeodePickable
- *                          |-> GeodeScales
+ *                          |-> AT_Pickable
+ *                          |-> AT_Center (scales, axis)
  *                          |-> GeodeNormal
  *                          |-> GeodeRotation
- *                          |-> CameraAxis      ->  GeodeAxis
  *
  * Each geode represents a single functionality / element within the canvas frame:
  *
  * * GeodeWire is the non-editable canvas wire
  * * GeodeIntersect contains the geometry of two canvas intersection (normally would contained within the previous canvas).
- * * GeodePickbale contains a selectable quad of a non-editable canvas, and it only allows changing the state of a canvas, e.g.,
+ * * AT_Pickbale contains a selectable quad of a non-editable canvas, and it only allows changing the state of a canvas, e.g.,
  * from current to previous.
- * * GeodeScales are the quads which appear when the canvas is in 2D-editable mode and they allow to change the scale of the 2D
+ * * AT_Center etc. are the quads which appear when the canvas is in 2D-editable mode and they allow to change the scale of the 2D
  * selection of the canvas.
  * * GeodeNormal is the canvas normal representation which appears when the canvas is in 3D-editable mode. Dragging along the
  * normals allows to edit canvas offset along the normal.
  * * GeodeRotation is a canvas wireframe representation which appears when the canvas is in 3D-editable mode. It allows changing
  * a canvas location by rotation along local U or local V axis.
- * * CameraAxis and GeodeAxis are used when the canvas is in 2D-editable mode. It allows to rotate the selected entities within
- * the canvas. The CameraAxis is set up so that the GeodeAxis is always post-rendered.
  *
 */
 class FrameTool : public ToolGlobal
@@ -326,12 +323,12 @@ private:
 
     ATGeode* m_AT_pick; /*!< pickable scene graph: AT -> geode -> geometry */
     ATRGeode* m_AT_scaleUV1, * m_AT_scaleUV2, * m_AT_scaleUV3, * m_AT_scaleUV4; /*!< tools to scale 2D entities */
-    ATRGeode* m_AT_center;
-    ATRGeode* m_AT_axisU, * m_AT_axisV;
+    ATRGeode* m_AT_center; /*!< 2D entities translation */
+    ATRGeode* m_AT_axisU, * m_AT_axisV; /*!< 2D entities rotations */
 
-    bool m_selected; // if there is selection present on scene
-    bool m_editable; // if canvas is in edit mode: offset and rotation
-    bool m_visible;
+    bool m_selected; /*!< if there is selection present on scene */
+    bool m_editable; /*!< if canvas is in edit mode: offset and rotation */
+    bool m_visible; /*!< canvas frame visibility flag */
 
     std::vector<bool> m_visibilityState;
 };

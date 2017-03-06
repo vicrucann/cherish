@@ -216,6 +216,18 @@ double Utilities::getAngleTwoVectors(const osg::Vec2f &p1, const osg::Vec2f &p2,
     return theta;
 }
 
+osg::Vec3f Utilities::rotate2DPointAround(const osg::Vec3f &center, float theta, const osg::Vec3f &original)
+{
+    osg::Vec3f result = original;
+    if (theta != 0){
+        auto P = original - center;
+        result = center + osg::Vec3f(P.x() * std::cos(theta) - P.y() * std::sin(theta),
+                                     P.x() * std::sin(theta) + P.y() * std::cos(theta),
+                                     0);
+    }
+    return result;
+}
+
 bool Utilities::getSkewLinesProjection(const osg::Vec3f &center, const osg::Vec3f &farPoint, const osg::Vec3f &nearPoint, const osg::Vec3f &normal, osg::Vec3f &X1)
 {
     osg::Vec3f P1 = center;

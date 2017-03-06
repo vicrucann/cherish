@@ -102,6 +102,14 @@ public:
      * \return an angle between two vectors in radians. */
     static double getAngleTwoVectors(const osg::Vec2f& p1, const osg::Vec2f& p2, const osg::Vec2f& p3, const osg::Vec2f& p4);
 
+    /*! A method to rotate a 2D point around another point on a specified angle.
+     * The input and output points have "local point" format: [u,v,0].
+     * \param center is the point around which the rotation will be done.
+     * \param theta is the angle of rotation in radians.
+     * \param original is the point to rotate.
+     * \return the result rotated point. */
+    static osg::Vec3f rotate2DPointAround(const osg::Vec3f& center, float theta, const osg::Vec3f& original);
+
     /* algorithm for distance between skew lines:
      *
      * For two points P1 and P2 on skew lines;

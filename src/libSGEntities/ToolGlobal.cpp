@@ -8,6 +8,7 @@
 #include <osg/LineStipple>
 
 #include "Settings.h"
+#include "Utilities.h"
 
 
 entity::ToolGlobal::ToolGlobal(int nVerts, osg::Array::Binding colorBind, osg::PrimitiveSet *primitiveSet, float linewidth)
@@ -336,7 +337,11 @@ void entity::FrameTool::setVisibility(bool on)
     m_visible = on;
     m_switch->setChildValue(m_geodeWire, on);
 
-    if (m_visibilityState.size()>0) Q_ASSERT(m_visibilityState.size() == m_switch->getNumChildren()-1);
+    if (m_visibilityState.size()>0) {
+        qDebug() << "num states = " << m_visibilityState.size();
+        qDebug() << "num child switch =" << m_switch->getNumChildren();
+        Q_ASSERT(m_visibilityState.size() == m_switch->getNumChildren()-1);
+    }
     if (on && m_visibilityState.size() == m_switch->getNumChildren()-1){
         for (unsigned int i=0; i<m_switch->getNumChildren()-1; ++i){
             osg::Node* node = m_switch->getChild(i);
@@ -347,15 +352,10 @@ void entity::FrameTool::setVisibility(bool on)
             if (node == m_geodeWire) continue;
             m_switch->setChildValue(node, m_visibilityState.at(i));
         }
-//        m_switch->setChildValue(m_AT_edit, m_visibilityState.at(0));
-//        m_switch->setChildValue(m_geodeNormal, m_visibilityState.at(1));
-//        m_switch->setChildValue(m_geodeRotation, m_visibilityState.at(2));
-//        m_switch->setChildValue(m_AT_pick, m_visibilityState.at(3));
-//        m_switch->setChildValue(m_geodeIntersect, m_visibilityState.at(4));
         m_visibilityState.clear();
     }
     else if (!on && m_visibilityState.size() == 0){
-        for (unsigned int i=0; i<m_switch->getNumChildren()-1; ++i){
+        for (unsigned int i=0; i<m_switch->getNumChildren(); ++i){
             osg::Node* node = m_switch->getChild(i);
             if (!node){
                 qWarning("Could not extract a child of switch, skipping.");
@@ -365,17 +365,6 @@ void entity::FrameTool::setVisibility(bool on)
             m_visibilityState.push_back(m_switch->getChildValue(node));
             m_switch->setChildValue(node, false);
         }
-//        m_visibilityState.push_back(m_switch->getChildValue(m_AT_edit));
-//        m_visibilityState.push_back(m_switch->getChildValue(m_geodeNormal));
-//        m_visibilityState.push_back(m_switch->getChildValue(m_geodeRotation));
-//        m_visibilityState.push_back(m_switch->getChildValue(m_AT_pick));
-//        m_visibilityState.push_back(m_switch->getChildValue(m_geodeIntersect));
-
-//        m_switch->setChildValue(m_AT_edit, false);
-//        m_switch->setChildValue(m_geodeNormal, false);
-//        m_switch->setChildValue(m_geodeRotation, false);
-//        m_switch->setChildValue(m_AT_pick, false);
-//        m_switch->setChildValue(m_geodeIntersect, false);
     }
     else {
         for (unsigned int i=0; i<m_switch->getNumChildren()-1; ++i){
@@ -390,11 +379,6 @@ void entity::FrameTool::setVisibility(bool on)
             else
                 m_switch->setChildValue(node, false);
         }
-//        m_switch->setChildValue(m_AT_edit, false);
-//        m_switch->setChildValue(m_geodeNormal, false);
-//        m_switch->setChildValue(m_geodeRotation, false);
-//        m_switch->setChildValue(m_AT_pick, on);
-//        m_switch->setChildValue(m_geodeIntersect, on);
     }
 }
 
@@ -408,7 +392,7 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
                                     const osg::Vec3f &centerCustom, double theta,
                                     bool selectionIsEmpty)
 {
-    float scaleAT = 400.f;
+    float scaleAT = 200.f;
 
     if (m_visible){
         /* wireframe drawables */
@@ -609,7 +593,9 @@ void entity::FrameTool::rotate(double theta, osg::Vec3f center)
 {
     this->rotateWireGeometry(m_geomWire, theta, center);
     this->rotateWireGeometry(m_AT_center->geometry, theta, center);
+//    m_AT_axisU->setPosition(Utilities::rotate2DPointAround(center, theta, m_AT_axisU->getPosition()));
     this->rotateWireGeometry(m_AT_axisU->geometry, theta, center);
+//    m_AT_axisV->setPosition(Utilities::rotate2DPointAround(center, theta, m_AT_axisV->getPosition()));
     this->rotateWireGeometry(m_AT_axisV->geometry, theta, center);
 
     this->rotateWireGeometry(m_AT_scaleUV1->geometry, theta, center);
@@ -664,11 +650,7 @@ void entity::FrameTool::setQuadGeometry(osg::Geometry *geom, const osg::Vec3f &P
     (*verts)[3] = P + osg::Vec3(0.f, -szY, 0.f);
 
     if (theta != 0){
-        for (size_t i=0; i<verts->size(); ++i){
-            osg::Vec3f vi = (*verts)[i] - center;
-            (*verts)[i] = center + osg::Vec3f(vi.x() * std::cos(theta) - vi.y() * std::sin(theta),
-                                              vi.x() * std::sin(theta) + vi.y() * std::cos(theta), 0);
-        }
+        for (size_t i=0; i<verts->size(); ++i) (*verts)[i] = Utilities::rotate2DPointAround(center, theta, (*verts)[i]);
     }
     this->updateGeometry(geom);
 }
@@ -732,11 +714,8 @@ void entity::FrameTool::rotateWireGeometry(osg::Geometry *geometry, double theta
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geometry->getVertexArray());
     Q_CHECK_PTR(verts);
-    for (unsigned int i=0; i<verts->size(); ++i){
-        osg::Vec3f vi = (*verts)[i] - center;
-        (*verts)[i] = center + osg::Vec3f(vi.x() * std::cos(theta) - vi.y() * std::sin(theta),
-                                          vi.x() * std::sin(theta) + vi.y() * std::cos(theta), 0);
-    }
+    for (unsigned int i=0; i<verts->size(); ++i)
+        (*verts)[i] = Utilities::rotate2DPointAround(center, theta, (*verts)[i]);
     verts->dirty();
     this->updateGeometry(geometry);
 }

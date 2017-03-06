@@ -4,6 +4,7 @@
 #include <QDebug>
 
 #include "Settings.h"
+#include "Utilities.h"
 #include "MainWindow.h"
 
 entity::ShaderedEntity2D::ShaderedEntity2D(unsigned int drawing, AttributeBinding binding, const std::string &name, const osg::Vec4f &color)
@@ -193,9 +194,7 @@ void entity::ShaderedEntity2D::rotate(double theta, osg::Vec3f center)
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(this->getVertexArray());
     for (unsigned int i=0; i<verts->size(); ++i){
-        osg::Vec3f vi = (*verts)[i] - center;
-        (*verts)[i] = center + osg::Vec3f(vi.x() * std::cos(theta) - vi.y() * std::sin(theta),
-                                          vi.x() * std::sin(theta) + vi.y() * std::cos(theta), 0);
+        (*verts)[i] = Utilities::rotate2DPointAround(center, theta, (*verts)[i]);
     }
     verts->dirty();
     this->dirtyBound();
