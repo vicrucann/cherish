@@ -467,22 +467,37 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
             m_AT_axisV->setPosition(Utilities::rotate2DPointAround(centerCustom, theta, pointV));
             this->setQuadGeometry(m_AT_axisV->geometry, Pav, szCr*scaleAT, szAx*scaleAT, theta, centerCustom);
 
-    //        float sz05 = szCr*0.5;
-            osg::Vec3f p1 = verts.at(1) + osg::Vec3f(szCr,0,0);
-            osg::Vec3f p2 = verts.at(2) + osg::Vec3f(szCr, szCr, 0);
-            osg::Vec3f p3 = verts.at(3) + osg::Vec3f(0, szCr, 0);
-    //        osg::Vec3f p01 = p1 + osg::Vec3f(szX-sz05,0,0);
-    //        osg::Vec3f p23 = p2 + osg::Vec3f(szX-sz05,0,0);
-    //        osg::Vec3f p12 = p2 + osg::Vec3f(0,szY-sz05,0);
-    //        osg::Vec3f p30 = p3 + osg::Vec3f(0,szY-sz05,0);
+            osg::Vec3f p1 = verts.at(1);
+            osg::Vec3f p2 = verts.at(2);
+            osg::Vec3f p3 = verts.at(3);
             m_AT_scaleUV1->setPosition(p0);
             m_AT_scaleUV2->setPosition(p1);
             m_AT_scaleUV3->setPosition(p2);
             m_AT_scaleUV4->setPosition(p3);
-            this->setQuadGeometry(m_AT_scaleUV1->geometry, p0, szCr*scaleAT, szCr*scaleAT);
-            this->setQuadGeometry(m_AT_scaleUV2->geometry, p1, szCr*scaleAT, szCr*scaleAT);
-            this->setQuadGeometry(m_AT_scaleUV3->geometry, p2, szCr*scaleAT, szCr*scaleAT);
-            this->setQuadGeometry(m_AT_scaleUV4->geometry, p3, szCr*scaleAT, szCr*scaleAT);
+            this->setScaleGeometry(m_AT_scaleUV1->geometry,
+                                   p0,
+                                   p0 - osg::Vec3f(szCr, 0, 0)*scaleAT,
+                                   p0 - osg::Vec3f(szCr, szCr, 0)*scaleAT,
+                                   p0 - osg::Vec3f(0, szCr, 0)*scaleAT);
+            this->setScaleGeometry(m_AT_scaleUV2->geometry,
+                                   p1,
+                                   p1 - osg::Vec3f(0, szCr, 0)*scaleAT,
+                                   p1 + osg::Vec3f(szCr, -szCr, 0)*scaleAT,
+                                   p1 + osg::Vec3f(szCr, 0, 0)*scaleAT);
+//            this->setQuadGeometry(m_AT_scaleUV1->geometry, p0, szCr*scaleAT, szCr*scaleAT);
+//            this->setQuadGeometry(m_AT_scaleUV2->geometry, p1, szCr*scaleAT, szCr*scaleAT);
+            this->setScaleGeometry(m_AT_scaleUV3->geometry,
+                                   p2,
+                                   p2 + osg::Vec3f(szCr, 0, 0)*scaleAT,
+                                   p2 + osg::Vec3f(szCr, szCr, 0)*scaleAT,
+                                   p2 + osg::Vec3f(0, szCr, 0)*scaleAT);
+//            this->setQuadGeometry(m_AT_scaleUV3->geometry, p2, szCr*scaleAT, szCr*scaleAT);
+            this->setScaleGeometry(m_AT_scaleUV4->geometry,
+                                   p3,
+                                   p3 + osg::Vec3f(0, szCr, 0)*scaleAT,
+                                   p3 + osg::Vec3f(-szCr, szCr, 0)*scaleAT,
+                                   p3 - osg::Vec3f(szCr, 0, 0)*scaleAT);
+//            this->setQuadGeometry(m_AT_scaleUV4->geometry, p3, szCr*scaleAT, szCr*scaleAT);
         }
     }
 }
@@ -650,8 +665,21 @@ void entity::FrameTool::setQuadGeometry(osg::Geometry *geom, const osg::Vec3f &P
     (*verts)[3] = P + osg::Vec3(0.f, -szY, 0.f);
 
     if (theta != 0){
-        for (size_t i=0; i<verts->size(); ++i) (*verts)[i] = Utilities::rotate2DPointAround(center, theta, (*verts)[i]);
+        for (size_t i=0; i<verts->size(); ++i)
+            (*verts)[i] = Utilities::rotate2DPointAround(center, theta, (*verts)[i]);
     }
+    this->updateGeometry(geom);
+}
+
+void entity::FrameTool::setScaleGeometry(osg::Geometry *geom, const osg::Vec3f &P0, const osg::Vec3f &P1, const osg::Vec3f &P2, const osg::Vec3f &P3)
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(geom->getVertexArray());
+    Q_CHECK_PTR(verts);
+    Q_ASSERT(verts->size() == 4);
+    (*verts)[0] = P0;
+    (*verts)[1] = P1;
+    (*verts)[2] = P2;
+    (*verts)[3] = P3;
     this->updateGeometry(geom);
 }
 

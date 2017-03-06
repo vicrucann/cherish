@@ -304,6 +304,10 @@ protected:
     void initLineGeometry(osg::Geometry* geom, float lineWidth, const std::string& name = "");
 
     void setQuadGeometry(osg::Geometry* geom, const osg::Vec3f& P, float szX, float szY, float theta = 0, const osg::Vec3f& center = cher::CENTER);
+
+    /*! A method to set up m_AT_scale geometries. */
+    void setScaleGeometry(osg::Geometry* geom, const osg::Vec3f& P0, const osg::Vec3f& P1, const osg::Vec3f& P2, const osg::Vec3f& P3);
+
     void setLineGeometry(osg::Geometry* geom, const osg::Vec3f& P1, const osg::Vec3f& P2);
 
     void setColorGeometry(osg::Geometry* geom, const osg::Vec4f& color);
