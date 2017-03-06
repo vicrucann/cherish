@@ -650,7 +650,7 @@ void entity::Canvas::rotateEntities(std::vector<Entity2D *> entities, double the
 void entity::Canvas::rotateEntitiesSelected(double theta)
 {
     m_selectedGroup.rotate(theta);
-    //m_toolFrame->rotate(theta, m_selectedGroup.getCenter2DCustom());
+//    m_toolFrame->rotate(theta, m_selectedGroup.getCenter2DCustom());
 }
 
 /* If no entities are selected, the update frame is performed

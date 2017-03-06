@@ -337,11 +337,7 @@ void entity::FrameTool::setVisibility(bool on)
     m_visible = on;
     m_switch->setChildValue(m_geodeWire, on);
 
-    if (m_visibilityState.size()>0) {
-        qDebug() << "num states = " << m_visibilityState.size();
-        qDebug() << "num child switch =" << m_switch->getNumChildren();
-        Q_ASSERT(m_visibilityState.size() == m_switch->getNumChildren()-1);
-    }
+    if (m_visibilityState.size()>0)  Q_ASSERT(m_visibilityState.size() == m_switch->getNumChildren()-1);
     if (on && m_visibilityState.size() == m_switch->getNumChildren()-1){
         for (unsigned int i=0; i<m_switch->getNumChildren()-1; ++i){
             osg::Node* node = m_switch->getChild(i);
@@ -462,11 +458,13 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
             this->setQuadGeometry(m_AT_center->geometry, Pc, szCr*scaleAT, szCr*scaleAT);
 
             osg::Vec3f Pau = Pc + osg::Vec3f(szAx + 0.1, 0, 0);
-            m_AT_axisU->setPosition(centerCustom + osg::Vec3f(0.1 + 0.5*szAx, 0, 0));
+            osg::Vec3f pointU = Pau - osg::Vec3f(0.5*szAx, 0.5*szCr, 0);
+            m_AT_axisU->setPosition(Utilities::rotate2DPointAround(centerCustom, theta, pointU));
             this->setQuadGeometry(m_AT_axisU->geometry, Pau, szAx*scaleAT, szCr*scaleAT, theta, centerCustom);
 
             osg::Vec3f Pav = Pc + osg::Vec3f(0, szAx + 0.1, 0);
-            m_AT_axisV->setPosition(centerCustom + osg::Vec3f(0, 0.1 + 0.5*szAx, 0));
+            osg::Vec3f pointV = Pav - osg::Vec3f(0.5*szCr, 0.5*szAx, 0);
+            m_AT_axisV->setPosition(Utilities::rotate2DPointAround(centerCustom, theta, pointV));
             this->setQuadGeometry(m_AT_axisV->geometry, Pav, szCr*scaleAT, szAx*scaleAT, theta, centerCustom);
 
     //        float sz05 = szCr*0.5;
@@ -593,8 +591,10 @@ void entity::FrameTool::rotate(double theta, osg::Vec3f center)
 {
     this->rotateWireGeometry(m_geomWire, theta, center);
     this->rotateWireGeometry(m_AT_center->geometry, theta, center);
+//    osg::Vec3f centerU = Utilities::rotate2DPointAround(center, theta, m_AT_axisU->getPosition());
 //    m_AT_axisU->setPosition(Utilities::rotate2DPointAround(center, theta, m_AT_axisU->getPosition()));
     this->rotateWireGeometry(m_AT_axisU->geometry, theta, center);
+//    osg::Vec3f centerV = Utilities::rotate2DPointAround(center, theta, m_AT_axisV->getPosition());
 //    m_AT_axisV->setPosition(Utilities::rotate2DPointAround(center, theta, m_AT_axisV->getPosition()));
     this->rotateWireGeometry(m_AT_axisV->geometry, theta, center);
 
