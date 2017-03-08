@@ -1099,7 +1099,8 @@ void entity::UserScene::strokeFinish(QUndoStack* stack)
 //    m_canvasCurrent->updateFrame(m_canvasPrevious.get());
     entity::Stroke* stroke = m_canvasCurrent->getStrokeCurrent();
     if (this->strokeValid()){
-        if (stroke->isLengthy()){
+//        if (stroke->isLengthy())
+        {
             osg::ref_ptr<entity::Stroke> stroke_clone = new entity::Stroke;
             Q_ASSERT(stroke_clone.get());
             if (stroke_clone->copyFrom(stroke)){
@@ -1789,7 +1790,10 @@ bool entity::UserScene::addEntity(entity::Canvas *canvas, Entity2D *entity)
         for (int i=0; i<m_groupBookmarks->getNumBookmarks(); ++i){
             entity::SceneState* state = m_groupBookmarks->getSceneState(i);
             if (!state) return result;
-            state->insertTransparency(idx, photo->getTransparency());
+            if (i<m_groupBookmarks->getNumBookmarks()-1)
+                state->insertTransparency(idx, 0.f);
+            else
+                state->insertTransparency(idx, photo->getTransparency());
         }
         break;
     }

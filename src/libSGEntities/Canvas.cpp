@@ -981,7 +981,7 @@ entity::Entity2D *entity::Canvas::getEntity(unsigned int i) const
     /* requested entity is a photo */
     else if (i>=m_geodeStrokes->getNumChildren() &&  i<m_geodeStrokes->getNumChildren() + m_geodePhotos->getNumChildren()){
         Q_ASSERT(int(i)-int(m_geodeStrokes->getNumChildren()) >= 0 );
-        Q_ASSERT(int(i)-int(m_geodeStrokes->getNumChildren()) < int(m_geodeStrokes->getNumChildren()));
+        Q_ASSERT(int(i)-int(m_geodeStrokes->getNumChildren()) <= int(m_geodeStrokes->getNumChildren()));
         return dynamic_cast<entity::Entity2D*>(m_geodePhotos->getDrawable(i-m_geodeStrokes->getNumChildren()));
     }
     /* rquested entity is a polygon */

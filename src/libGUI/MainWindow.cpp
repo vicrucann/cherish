@@ -385,15 +385,24 @@ void MainWindow::onImportPhoto(const QString &path, const QString &fileName)
 {
     QString fullPath = path + "/" + fileName;
     this->importPhoto(fullPath);
+
+    // rescale and move the photo so that it is plaved right within camera view
+    entity::Canvas* canvas = m_rootScene->getCanvasCurrent();
+    if (!canvas) return;
+
+    entity::Photo* photo = canvas->getPhoto(canvas->getNumPhotos()-1);
+    if (!photo) return;
+
+
 }
 
 void MainWindow::onRequestCanvasCreate(const osg::Vec3f &eye, const osg::Vec3f &center, const osg::Vec3f &up)
 {
-    QMessageBox::StandardButton reply = QMessageBox::question(this,
+    QMessageBox::StandardButton replyCanvas = QMessageBox::question(this,
                                                               tr("Creating new bookmark view"),
                                                               tr("Do you want to create new canvas associated with this view?"),
                                                               QMessageBox::Yes|QMessageBox::No);
-    if (reply == QMessageBox::Yes){
+    if (replyCanvas == QMessageBox::Yes){
         osg::Vec3f normal = -center + eye;
         normal.normalize();
         m_rootScene->addCanvas(normal, center);
