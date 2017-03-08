@@ -688,7 +688,8 @@ void MainWindow::onNewCanvasXY()
 
 void MainWindow::onNewCanvasYZ()
 {
-    m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 0, 1, 0), osg::Matrix::translate(0,0,0));
+    m_rootScene->addCanvas(osg::Matrix::rotate(-cher::PI*0.5, 0, 1, 0)*osg::Matrix::rotate(cher::PI*0.5, 1,0,0),
+                           osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
     this->onRequestUpdate();
