@@ -137,7 +137,7 @@ void CanvasTest::testNewYZ()
 
     qInfo("Test normal and center parameters");
     QVERIFY(differenceWithinThreshold(cnvi->getCenter(), cher::CENTER));
-    QVERIFY(differenceWithinThreshold(cnvi->getNormal(), osg::Vec3f(1.f, 0.f, 0.f)));
+    QVERIFY(differenceWithinThreshold(cnvi->getNormal(), osg::Vec3f(-1.f, 0.f, 0.f)));
 }
 
 void CanvasTest::testNewXZ()
