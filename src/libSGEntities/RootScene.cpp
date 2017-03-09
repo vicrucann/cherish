@@ -424,15 +424,15 @@ void RootScene::hideAndUpdateCamPoseData()
         bool vis = cam->getVisibility();
         if (!vis) continue;
         // get new camera pose
+        double fov2;
         osg::Vec3f eye,center,up;
-        cam->getCamera(eye,center, up);
+        cam->getCamera(eye,center, up, fov2);
         // edit camera pose by editing: current camera pose, bookmark tool position; Bookmarks data.
         entity::Bookmarks* bms = m_userScene->getBookmarksModel();
         if (!bms){
             qWarning("Could not exatract bookmarks pointer for editing");
             continue;
         }
-        double fov2 = MainWindow::instance().getFOV2();
         // reset the current view
         MainWindow::instance().setCameraView(eye, center, up, fov2);
         // edit bookmark position

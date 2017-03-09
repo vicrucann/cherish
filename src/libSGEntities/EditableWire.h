@@ -39,6 +39,9 @@ public:
     /*! \return local eye position of the camera pose wire. */
     osg::Vec3f getEye2D() const;
 
+    /*! \return local position of the second focal point (first being the eye, third is symmetrical to the second one). */
+    osg::Vec3f getFocal2D() const;
+
     /*! \return global center of the camera  pose wire. */
     osg::Vec3f getCenter3D() const;
 
@@ -51,10 +54,16 @@ public:
     /*! \return global up vector. */
     osg::Vec3f getUp() const;
 
+    /*! \return full angle - field of view, in degrees. */
+    double getFOV2() const;
+
     /*! A method to obtain local coordinates of the center points.
      * \param p1 is the input parameter for eye location,
      * \param p2 is the input parameter for center location. */
     void getCenter2D(osg::Vec2f& p1, osg::Vec2f& p2) const;
+
+    /*! \return camera's center position. */
+    osg::Vec3f getCenter2D() const;
 
     /*! \return const pointer on geode node which contains all the drawables (i.e. return geode parent). */
     const osg::Geode* getGeode() const;

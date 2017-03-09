@@ -74,6 +74,14 @@ osg::Vec3f entity::EditableWire::getEye2D() const
     return local;
 }
 
+osg::Vec3f entity::EditableWire::getFocal2D() const
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_focal->getVertexArray());
+    Q_CHECK_PTR(verts);
+    Q_ASSERT(verts->size() == 3);
+    return (*verts)[1];
+}
+
 osg::Vec3f entity::EditableWire::getCenter3D() const
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_center->getVertexArray());
@@ -120,6 +128,18 @@ osg::Vec3f entity::EditableWire::getUp() const
     return right ^ v;
 }
 
+double entity::EditableWire::getFOV2() const
+{
+    osg::Vec3f eye = this->getEye2D();
+    osg::Vec3f center = this->getCenter2D();
+    osg::Vec3f f = this->getFocal2D();
+//    double a_rad = Utilities::getAngleTwoVectors(eye, center, eye, f);
+    double d1 = Utilities::distanceTwoPoints(center, f);
+    double d2 = Utilities::distanceTwoPoints(eye, center);
+    return 2.0 * std::atan(d1/d2) * 180.0 / cher::PI;
+
+}
+
 void entity::EditableWire::getCenter2D(osg::Vec2f &p1, osg::Vec2f &p2) const
 {
     osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_center->getVertexArray());
@@ -127,6 +147,14 @@ void entity::EditableWire::getCenter2D(osg::Vec2f &p1, osg::Vec2f &p2) const
     Q_ASSERT(verts->size() == 2);
     p1 = osg::Vec2f((*verts)[0].x(), (*verts)[0].y());
     p2 = osg::Vec2f((*verts)[1].x(), (*verts)[1].y());
+}
+
+osg::Vec3f entity::EditableWire::getCenter2D() const
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_center->getVertexArray());
+    Q_CHECK_PTR(verts);
+    Q_ASSERT(verts->size() == 2);
+    return (*verts)[1];
 }
 
 const osg::Geode *entity::EditableWire::getGeode() const
