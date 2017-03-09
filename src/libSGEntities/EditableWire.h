@@ -42,6 +42,12 @@ public:
     /*! \return global center of the camera  pose wire. */
     osg::Vec3f getCenter3D() const;
 
+    /*! \return 2D right direction vector */
+    osg::Vec3f getRight2D() const;
+
+    /*! \return 3D right vector */
+    osg::Vec3f getRight3D() const;
+
     /*! \return global up vector. */
     osg::Vec3f getUp() const;
 
@@ -63,7 +69,7 @@ public:
     /*! A method to edit focal distance of the camera pose.
      * \param distance is the new distance from camera eye. Note, the distance can never be smaller
      * than certain threshold, e.g., 0.2. */
-    void editFocal(double distance);
+    void editFocal(double angle);
 
     /*! A method to set up defult colors for all the geometries. */
     void unselect();
@@ -101,6 +107,8 @@ protected:
      * \param d is the new distance between the camera eye and the new position of the focal geometry. The method
      * also updates the new length of the focal geometry since it is based on the distance from an eye. */
     void translate(double d);
+
+    void expand(double a);
 
 private:
     osg::Geode* m_geode;

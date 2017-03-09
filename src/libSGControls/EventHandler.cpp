@@ -818,7 +818,10 @@ void EventHandler::doCameraFocal(const osgGA::GUIEventAdapter &ea, osgGA::GUIAct
     dir.normalize();
     osg::Vec3f P1 = Utilities::projectPointOnLine(eye, dir, P2);
     double distance = Utilities::distanceTwoPoints(P1, eye);
-    m_selection2->editFocal(distance);
+
+    // calculate the angle based on the point position from the eye-center direction
+    double distance2 = Utilities::distanceTwoPoints(P1, P2);
+    m_selection2->editFocal(distance2);
 }
 
 void EventHandler::doCameraIdle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)

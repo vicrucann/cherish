@@ -1033,8 +1033,8 @@ void MainWindow::initializeActions()
     m_actionBookmark = new QAction(Data::viewerBookmarkIcon(), tr("Bookmark view"), this);
     this->connect(m_actionBookmark, SIGNAL(triggered(bool)), this, SLOT(onBookmark()));
 
-    m_actionBookmarkNew = new QAction(Data::viewerBookmarkNewIcon(), tr("Create new bookmark..."), this);
-    this->connect(m_actionBookmarkNew, SIGNAL(triggered(bool)), this, SLOT(onBookmarkNew()));
+//    m_actionBookmarkNew = new QAction(Data::viewerBookmarkNewIcon(), tr("Create new bookmark..."), this);
+//    this->connect(m_actionBookmarkNew, SIGNAL(triggered(bool)), this, SLOT(onBookmarkNew()));
 
     m_actionBookmarkSketch = new QAction(Data::viewerBookmarkSketchIcon(), tr("Position new bookmark"), this);
     this->connect(m_actionBookmarkSketch, SIGNAL(triggered(bool)), this, SLOT(onBookmarkSketch()));
@@ -1140,7 +1140,7 @@ void MainWindow::initializeMenus()
     menuCamera->addAction(m_actionNextView);
     menuCamera->addSeparator();
     menuCamera->addAction(m_actionBookmark);
-    menuCamera->addAction(m_actionBookmarkNew);
+//    menuCamera->addAction(m_actionBookmarkNew);
     menuCamera->addAction(m_actionBookmarkSketch);
     /* Bookmark edit submenu */
     m_submenuBookmarks = menuCamera->addMenu("Edit created bookmark");
@@ -1271,7 +1271,7 @@ void MainWindow::initializeToolbars()
     tbViewer->addAction(m_actionPrevView);
     tbViewer->addAction(m_actionNextView);
     tbViewer->addAction(m_actionBookmark);
-    tbViewer->addAction(m_actionBookmarkNew);
+//    tbViewer->addAction(m_actionBookmarkNew);
     tbViewer->addAction(m_actionBookmarkSketch);
     tbViewer->addAction(m_actionCameraSettings);
 

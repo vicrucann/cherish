@@ -83,9 +83,41 @@ osg::Vec3f entity::EditableWire::getCenter3D() const
     return local * this->getMatrix();
 }
 
+osg::Vec3f entity::EditableWire::getRight2D() const
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_focal->getVertexArray());
+    Q_CHECK_PTR(verts);
+    Q_ASSERT(verts->size() == 3);
+    osg::Vec3f p1 = (*verts)[1];
+    osg::Vec3f p2 = (*verts)[2];
+    osg::Vec3f right = p1-p2;
+    right.normalize();
+    return right;
+}
+
+osg::Vec3f entity::EditableWire::getRight3D() const
+{
+    osg::Vec3Array* verts = static_cast<osg::Vec3Array*>(m_focal->getVertexArray());
+    Q_CHECK_PTR(verts);
+    Q_ASSERT(verts->size() == 3);
+    osg::Vec3f p1 = (*verts)[1];
+    osg::Vec3f p2 = (*verts)[2];
+    osg::Vec3f P1 = p1 * this->getMatrix();
+    osg::Vec3f P2 = p2 * this->getMatrix();
+    osg::Vec3f Right = P1 - P2;
+    Right.normalize();
+    return Right;
+}
+
 osg::Vec3f entity::EditableWire::getUp() const
 {
-    return cher::UP;
+    osg::Vec3f eye = this->getEye3D();
+    osg::Vec3f center = this->getCenter3D();
+    osg::Vec3f right = this->getRight3D();
+    osg::Vec3f v = center - eye;
+    v.normalize();
+
+    return right ^ v;
 }
 
 void entity::EditableWire::getCenter2D(osg::Vec2f &p1, osg::Vec2f &p2) const
@@ -112,9 +144,10 @@ void entity::EditableWire::editCenter(double theta)
     this->rotate(theta);
 }
 
-void entity::EditableWire::editFocal(double distance)
+void entity::EditableWire::editFocal(double angle)
 {
-    this->translate(distance);
+    this->expand(angle);
+//    this->translate(angle);
 }
 
 void entity::EditableWire::pick(int index)
@@ -257,5 +290,21 @@ void entity::EditableWire::translate(double d)
     osg::Vec3f new_middle = eye + dir * d;
     (*verts_focal)[1] = new_middle + foc * x05;
     (*verts_focal)[2] = new_middle - foc * x05;
+    this->updateGeometry(m_focal);
+}
+
+void entity::EditableWire::expand(double a)
+{
+    osg::Vec2f eye, center;
+    this->getCenter2D(eye, center);
+
+    osg::Vec3f right = this->getRight2D();
+
+    osg::Vec3Array* verts_focal = static_cast<osg::Vec3Array*>(m_focal->getVertexArray());
+    Q_CHECK_PTR(verts_focal);
+    Q_ASSERT(verts_focal->size() == 3);
+
+    (*verts_focal)[1] = osg::Vec3f(center.x(), center.y(), 0) + right * a;
+    (*verts_focal)[2] = osg::Vec3f(center.x(), center.y(), 0) - right * a;
     this->updateGeometry(m_focal);
 }
