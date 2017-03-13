@@ -824,15 +824,15 @@ void MainWindow::onBookmarkNew()
     }
 
     /* add bookmark name in editable bookmarks list in main menu */
-    Q_ASSERT(m_bookmarkWidget);
-    int cnt = m_bookmarkWidget->count()-1;
-    if (cnt<0){
-        qWarning("No bookmarks were added to widget, the bookmark will not be editable.");
-        return;
-    }
-    QListWidgetItem* item = m_bookmarkWidget->item(cnt);
-    Q_ASSERT(item);
-    this->addMenuBookmark(item->text());
+//    Q_ASSERT(m_bookmarkWidget);
+//    int cnt = m_bookmarkWidget->count()-1;
+//    if (cnt<0){
+//        qWarning("No bookmarks were added to widget, the bookmark will not be editable.");
+//        return;
+//    }
+//    QListWidgetItem* item = m_bookmarkWidget->item(cnt);
+//    Q_ASSERT(item);
+//    this->addMenuBookmark(item->text());
 
     /* set mouse in SVM mode.
      * The camera position will be updated from EventHandler. */
@@ -862,15 +862,15 @@ void MainWindow::onBookmarkSketch()
     }
 
     /* add bookmark name in editable bookmarks list in main menu */
-    Q_ASSERT(m_bookmarkWidget);
-    int cnt = m_bookmarkWidget->count()-1;
-    if (cnt<0){
-        qWarning("Could not extract bookmark index corresctly, no bookmarks were added to the widget.");
-        return;
-    }
-    QListWidgetItem* item = m_bookmarkWidget->item(cnt);
-    Q_ASSERT(item);
-    this->addMenuBookmark(item->text());
+//    Q_ASSERT(m_bookmarkWidget);
+//    int cnt = m_bookmarkWidget->count()-1;
+//    if (cnt<0){
+//        qWarning("Could not extract bookmark index corresctly, no bookmarks were added to the widget.");
+//        return;
+//    }
+//    QListWidgetItem* item = m_bookmarkWidget->item(cnt);
+//    Q_ASSERT(item);
+//    this->addMenuBookmark(item->text());
 
     /* set mouse in cam pose editing mode. The position will be updated after user is finished editing. */
     m_glWidget->setMouseMode(cher::CAMPOSE_EYE);
@@ -1143,8 +1143,8 @@ void MainWindow::initializeMenus()
 //    menuCamera->addAction(m_actionBookmarkNew);
     menuCamera->addAction(m_actionBookmarkSketch);
     /* Bookmark edit submenu */
-    m_submenuBookmarks = menuCamera->addMenu("Edit created bookmark");
-    m_submenuBookmarks->setIcon(Data::viewerBookmarkEditIcon());
+//    m_submenuBookmarks = menuCamera->addMenu("Edit created bookmark");
+//    m_submenuBookmarks->setIcon(Data::viewerBookmarkEditIcon());
 //    menuCamera->addAction(m_actionBookmarkEdit);
 
     menuCamera->addSeparator();
