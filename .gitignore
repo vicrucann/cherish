@@ -44,3 +44,6 @@
 docs/html/*
 docs/latex/*
 docs/doc_doxygen/*
+
+# tester datasets
+samples/dura/*
