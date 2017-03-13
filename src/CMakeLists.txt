@@ -104,6 +104,9 @@ find_package(OpenSceneGraph REQUIRED COMPONENTS osgDB osgGA osgUtil osgViewer os
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 
 
+## OpenCV
+#find_package(OpenCV REQUIRED)
+
 ## Other build packages
 #if (cheris_BUILD_DOC)
 if(cheris_BUILD_DOC)

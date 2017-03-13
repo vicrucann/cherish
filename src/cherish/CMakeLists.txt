@@ -45,6 +45,7 @@ target_link_libraries( ${PROJECT_NAME}
     # dynamic
     ${OPENSCENEGRAPH_LIBRARIES}
     ${QT_LIBRARIES}
+    #${OpenCV_LIBS}
 
     # defined within cherish
     libGUI

@@ -78,7 +78,7 @@ entity::SVMData *entity::SVMData::getParentSVM(entity::DraggableWire *wire)
 {
     Q_CHECK_PTR(wire);
     if (wire->getNumParents() != 1){
-        qWarning("DraggableWire must have one parents");
+        qWarning("DraggableWire must have one parent");
         return NULL;
     }
 

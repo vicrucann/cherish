@@ -13,6 +13,10 @@
 
 namespace entity {
 
+/*! \class DraggableWire
+ * \brief A scene graph class that contains all the geometric entities of entity::SVMData.
+*/
+
 class DraggableWire : public osg::MatrixTransform
 {
     friend class SVMData;

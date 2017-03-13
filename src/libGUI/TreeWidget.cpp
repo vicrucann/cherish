@@ -115,7 +115,7 @@ void CanvasPhotoWidget::onCanvasSelectedColor(int row, int color)
         qcolor = Qt::white;
         break;
     }
-    item->setBackgroundColor(0, qcolor);
+//    item->setBackgroundColor(0, qcolor);
     item->setData(0, cher::DelegateBGColor, qcolor);
 }
 
@@ -135,7 +135,6 @@ void CanvasPhotoWidget::onCanvasVisibilitySet(int row, bool visibility)
     }
 
 //    bool value = item->data(0, cher::DelegateVisibilityRole).toBool();
-    qDebug() << "Requested visibility " << visibility;
     item->setData(0, cher::DelegateVisibilityRole, !visibility );
 }
 

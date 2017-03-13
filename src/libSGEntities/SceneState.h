@@ -7,6 +7,7 @@
 
 #include "ProtectedGroup.h"
 #include "SVMData.h"
+#include "CamPoseData.h"
 
 class RootScene;
 
@@ -135,8 +136,16 @@ public:
      * \param floor is matrix transdorm for the previous canvas. */
     bool addSVMData(const osg::Matrix& wall, const osg::Matrix& floor);
 
+    /*! A method to create new instance of entity::CamPoseData and add it as a child to the scene state.
+     * \param matrix is matrix transform for the camera pose wires. */
+    bool addCamPoseData(const osg::Matrix& matrix, double fov);
+
     /*! \return modifiable pointer on entity::SVMData. */
     entity::SVMData* getSVMData();
+
+    entity::CamPoseData* getCamPoseData();
+
+    osg::ProtectedGroup* getChildData();
 
 private:
     bool m_axisFlag;  /*!< Boolean flag indicating whether global axis visibility is on (true) or off (false). */

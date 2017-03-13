@@ -15,9 +15,17 @@
 #include "libHomogrpahy/Hmatrix.h"
 #include "libHomogrpahy/matrix.h"
 
+//#include <opencv2/core.hpp>
+//#include <opencv2/calib3d.hpp>
+#include <vector>
+
 osg::Matrix HomographyMatrix::solveEigen(entity::SVMData *svm)
 {
-    if (!svm) qCritical("The provided SVMData structure is NULL");
+    osg::Matrix H;
+    if (!svm) {
+        qCritical("The provided SVMData structure is NULL");
+        return H;
+    }
 
     const int n = 4;
     Eigen::MatrixXd A(n*2, 9);
@@ -47,7 +55,6 @@ osg::Matrix HomographyMatrix::solveEigen(entity::SVMData *svm)
     Eigen::MatrixXd V((int)svd.matrixV().rows(), (int)svd.matrixV().cols());
     V = svd.matrixV();
 
-    osg::Matrix H;
     H(0,0) = V(0,8);
     H(0,1) = V(1,8);
     H(0,2) = V(2,8);
@@ -63,13 +70,68 @@ osg::Matrix HomographyMatrix::solveEigen(entity::SVMData *svm)
     return  H;
 }
 
+//osg::Matrix HomographyMatrix::solvePnP(entity::SVMData *svm)
+//{
+//    std::vector<cv::Point3d> object;
+//    std::vector<cv::Point2d> image;
+//    object.push_back(cv::Point3d(svm->getGlobalFloor(0).x(), svm->getGlobalFloor(0).y(), svm->getGlobalFloor(0).z()));
+//    object.push_back(cv::Point3d(svm->getGlobalFloor(1).x(), svm->getGlobalFloor(1).y(), svm->getGlobalFloor(1).z()));
+//    object.push_back(cv::Point3d(svm->getGlobalFloor(2).x(), svm->getGlobalFloor(2).y(), svm->getGlobalFloor(2).z()));
+//    object.push_back(cv::Point3d(svm->getGlobalFloor(3).x(), svm->getGlobalFloor(3).y(), svm->getGlobalFloor(3).z()));
+//    image.push_back(cv::Point2d(svm->getLocalWall(0).x(), svm->getLocalWall(0).y()));
+//    image.push_back(cv::Point2d(svm->getLocalWall(1).x(), svm->getLocalWall(1).y()));
+//    image.push_back(cv::Point2d(svm->getLocalWall(2).x(), svm->getLocalWall(2).y()));
+//    image.push_back(cv::Point2d(svm->getLocalWall(3).x(), svm->getLocalWall(3).y()));
+
+//    cv::Mat rvec;
+//    cv::Mat tvec;
+//    auto K = cv::Mat::eye(3,3, CV_32F);
+//    cv::solvePnP(object, image, K, cv::noArray(), rvec, tvec);
+
+//    cv::Mat R;
+//    cv::Rodrigues(rvec, R);
+
+//    std::vector<cv::Point2d> projected;
+//    cv::projectPoints(object, rvec, tvec, K, cv::noArray(), projected);
+
+//    for(unsigned int i = 0; i < projected.size(); ++i)
+//    {
+//        std::cout << "image=" << image[i] << " projected=" << projected[i] << std::endl;
+//    }
+
+//    // copy OCV data to OSG
+//    std::vector<double> tvec_;
+//    auto r00 = R.at<double>(0,0);
+//    auto r01 = R.at<double>(0,1);
+//    auto r02 = R.at<double>(0,2);
+//    auto r10 = R.at<double>(1,0);
+//    auto r11 = R.at<double>(1,1);
+//    auto r12 = R.at<double>(1,2);
+//    auto r20 = R.at<double>(2,0);
+//    auto r21 = R.at<double>(2,1);
+//    auto r22 = R.at<double>(2,2);
+//    auto t00 = tvec.at<double>(0,0);
+//    auto t10 = tvec.at<double>(1,0);
+//    auto t20 = tvec.at<double>(2,0);
+
+//    osg::Matrixd Projection
+//            (r00, r01, r02, t00,
+//            r10, r11, r12, t10,
+//            r20, r21, r22, t20,
+//            0, 0, 0, 1 );
+
+//    return Projection;
+//}
+
 osg::Matrix HomographyMatrix::solve(entity::SVMData *svm)
 {
-    if (!svm) qCritical("The provided SVMData structure is NULL");
+    osg::Matrix H;
+    if (!svm) {
+        qCritical("The provided SVMData structure is NULL");
+        return H;
+    }
     const int n = 4;
 
-
-    osg::Matrix H;
     libNumerics::matrix<double> x1(2, n);
     libNumerics::matrix<double> x2(2, n);
     for (int i=0; i<n; ++i){
@@ -122,18 +184,20 @@ double HomographyMatrix::evaluate(entity::SVMData *svm, const osg::Matrix &H)
 
 osg::Matrixd HomographyMatrix::getRt(const osg::Matrix &H)
 {
-    osg::Vec3f H1 = osg::Vec3f(H(0,0), H(1,0), H(2,0));
-    osg::Vec3f H2 = osg::Vec3f(H(0,1), H(1,1), H(2,1));
+    // [row][col]
+    osg::Vec3d H1 = osg::Vec3d(H(0,0), H(0,1), H(0,2));
+    osg::Vec3d H2 = osg::Vec3d(H(1,0), H(1,1), H(1,2));
 
     auto norm1 = H1.length();
     auto norm2 = H2.length();
     auto tnorm = (norm1 + norm2)/2.0;
 
-    osg::Vec3f T = osg::Vec3f(H(2,0), H(2,1), H(2,2)) / tnorm;
+    osg::Vec3d T = osg::Vec3d(H(2,0), H(2,1), H(2,2)) / tnorm;
 
     H1.normalize();
     H2.normalize();
-    osg::Vec3f H3 = H1^H2;
+    osg::Vec3d H3 = H1^H2;
+    H3.normalize();
 
     osg::Matrixd RT(H1[0], H2[0], H3[0], T[0],
                     H1[1], H2[1], H3[1], T[1],

@@ -130,6 +130,12 @@ osg::Camera *MainWindow::getCamera() const
     return m_glWidget->getCamera();
 }
 
+void MainWindow::setCameraView(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const double &fov2)
+{
+    if (!m_glWidget) return;
+    m_glWidget->setCameraView(eye, center, up, fov2);
+}
+
 bool MainWindow::getStrokeFogFactor() const
 {
     if (!m_actionStrokeFogFactor) return false;
@@ -147,12 +153,17 @@ osg::Vec4f MainWindow::getCurrentColor() const
     return Utilities::getOsgColor(qc);
 }
 
-double MainWindow::getFOV() const
+double MainWindow::getFOV2() const
 {
     double fov;
     osg::Vec3d eye,center,up;
     m_glWidget->getCameraView(eye,center,up, fov);
     return fov;
+}
+
+BookmarkWidget *MainWindow::getBookmarkWidget()
+{
+    return m_bookmarkWidget;
 }
 
 void MainWindow::onSetTabletActivity(bool active){
@@ -374,6 +385,38 @@ void MainWindow::onImportPhoto(const QString &path, const QString &fileName)
 {
     QString fullPath = path + "/" + fileName;
     this->importPhoto(fullPath);
+
+    // rescale and move the photo so that it is plaved right within camera view
+    entity::Canvas* canvas = m_rootScene->getCanvasCurrent();
+    if (!canvas) return;
+
+    entity::Photo* photo = canvas->getPhoto(canvas->getNumPhotos()-1);
+    if (!photo) return;
+
+
+}
+
+void MainWindow::onRequestCanvasCreate(const osg::Vec3f &eye, const osg::Vec3f &center, const osg::Vec3f &up)
+{
+    QMessageBox::StandardButton replyCanvas = QMessageBox::question(this,
+                                                              tr("Creating new bookmark view"),
+                                                              tr("Do you want to create new canvas associated with this view?"),
+                                                              QMessageBox::Yes|QMessageBox::No);
+    if (replyCanvas == QMessageBox::Yes){
+        osg::Vec3f normal = -center + eye;
+        normal.normalize();
+        m_rootScene->addCanvas(normal, center);
+        // make sure canvas is facing the new camera position
+        entity::Canvas* canvas = m_rootScene->getCanvasCurrent();
+        if (!canvas){
+            qWarning("Could not extract current canvas");
+            return;
+        }
+        osg::Vec3f cnvC = canvas->getCenter3D();
+        osg::Matrix rot = osg::Matrix::identity();
+        rot.makeRotate(canvas->getGlobalAxisV(), up); // global V is aligned with up direction
+        canvas->rotate(rot, cnvC);
+    }
 }
 
 /* Check whether the current scene is empty or not
@@ -395,11 +438,10 @@ void MainWindow::onFileNew()
 */
 void MainWindow::onFileOpen()
 {
-    this->onFileClose();
-
     QString fname = QFileDialog::getOpenFileName(this, tr("Open a scene from file"),
                                                  QString(), tr("OSG files (*.osg *.osgt)"));
     if (!fname.isEmpty()){
+        this->onFileClose();
         m_rootScene->setFilePath(fname.toStdString());
         if (!this->loadSceneFromFile()){
             QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
@@ -512,7 +554,6 @@ void MainWindow::onFileClose()
     m_undoStack->clear();
     m_viewStack->clear();
     m_bookmarkWidget->model()->removeRows(0,m_bookmarkWidget->count());
-//    m_canvasWidget->model()->removeRows(0, m_canvasWidget->count());
     m_canvasWidget->model()->removeRows(0, m_canvasWidget->topLevelItemCount());
 
     this->statusBar()->showMessage(tr("Current project is closed"));
@@ -647,7 +688,8 @@ void MainWindow::onNewCanvasXY()
 
 void MainWindow::onNewCanvasYZ()
 {
-    m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 0, 1, 0), osg::Matrix::translate(0,0,0));
+    m_rootScene->addCanvas(osg::Matrix::rotate(-cher::PI*0.5, 0, 1, 0)*osg::Matrix::rotate(cher::PI*0.5, 1,0,0),
+                           osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
     this->onRequestUpdate();
@@ -782,21 +824,58 @@ void MainWindow::onBookmarkNew()
     }
 
     /* add bookmark name in editable bookmarks list in main menu */
-    Q_ASSERT(m_bookmarkWidget);
-    int cnt = m_bookmarkWidget->count()-1;
-    if (cnt<0){
-        qWarning("No bookmarks were added to widget, the bookmark will not be editable.");
-        return;
-    }
-    QListWidgetItem* item = m_bookmarkWidget->item(cnt);
-    Q_ASSERT(item);
-    this->addMenuBookmark(item->text());
+//    Q_ASSERT(m_bookmarkWidget);
+//    int cnt = m_bookmarkWidget->count()-1;
+//    if (cnt<0){
+//        qWarning("No bookmarks were added to widget, the bookmark will not be editable.");
+//        return;
+//    }
+//    QListWidgetItem* item = m_bookmarkWidget->item(cnt);
+//    Q_ASSERT(item);
+//    this->addMenuBookmark(item->text());
 
     /* set mouse in SVM mode.
      * The camera position will be updated from EventHandler. */
     m_glWidget->setMouseMode(cher::SVM_IDLE);
 
     this->statusBar()->showMessage(tr("New camera view added through SVM method."));
+}
+
+void MainWindow::onBookmarkSketch()
+{
+    if (!m_rootScene->getCanvasCurrent()){
+        qWarning("Cannot create new bookmark without at least one canvas on the scene");
+        return;
+    }
+
+    /* create initial camera pose, add it to scene graph and tools */
+    osg::Vec3d eye, center, up;
+    double fov;
+    m_glWidget->getCameraView(eye, center, up, fov);
+    m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
+
+    /* create corresponding CamPoseData connected to the bookmark. */
+    bool added = m_rootScene->addCamPoseData();
+    if (!added){
+        qWarning("Could not add Camera pose scene graph. Only current view is bookmarked");
+        return;
+    }
+
+    /* add bookmark name in editable bookmarks list in main menu */
+//    Q_ASSERT(m_bookmarkWidget);
+//    int cnt = m_bookmarkWidget->count()-1;
+//    if (cnt<0){
+//        qWarning("Could not extract bookmark index corresctly, no bookmarks were added to the widget.");
+//        return;
+//    }
+//    QListWidgetItem* item = m_bookmarkWidget->item(cnt);
+//    Q_ASSERT(item);
+//    this->addMenuBookmark(item->text());
+
+    /* set mouse in cam pose editing mode. The position will be updated after user is finished editing. */
+    m_glWidget->setMouseMode(cher::CAMPOSE_EYE);
+
+    this->statusBar()->showMessage(tr("New camera view is added though manual relocation by user."));
 }
 
 void MainWindow::onBookmarkEdit(const QString &name)
@@ -954,8 +1033,11 @@ void MainWindow::initializeActions()
     m_actionBookmark = new QAction(Data::viewerBookmarkIcon(), tr("Bookmark view"), this);
     this->connect(m_actionBookmark, SIGNAL(triggered(bool)), this, SLOT(onBookmark()));
 
-    m_actionBookmarkNew = new QAction(Data::viewerBookmarkNewIcon(), tr("Create new bookmark..."), this);
-    this->connect(m_actionBookmarkNew, SIGNAL(triggered(bool)), this, SLOT(onBookmarkNew()));
+//    m_actionBookmarkNew = new QAction(Data::viewerBookmarkNewIcon(), tr("Create new bookmark..."), this);
+//    this->connect(m_actionBookmarkNew, SIGNAL(triggered(bool)), this, SLOT(onBookmarkNew()));
+
+    m_actionBookmarkSketch = new QAction(Data::viewerBookmarkSketchIcon(), tr("Position new bookmark"), this);
+    this->connect(m_actionBookmarkSketch, SIGNAL(triggered(bool)), this, SLOT(onBookmarkSketch()));
 
     m_actionCameraSettings = new QAction(Data::cameraApertureIcon(), tr("Camera settings"), this);
     this->connect(m_actionCameraSettings, SIGNAL(triggered(bool)), this, SLOT(onCameraAperture()));
@@ -1058,10 +1140,11 @@ void MainWindow::initializeMenus()
     menuCamera->addAction(m_actionNextView);
     menuCamera->addSeparator();
     menuCamera->addAction(m_actionBookmark);
-    menuCamera->addAction(m_actionBookmarkNew);
+//    menuCamera->addAction(m_actionBookmarkNew);
+    menuCamera->addAction(m_actionBookmarkSketch);
     /* Bookmark edit submenu */
-    m_submenuBookmarks = menuCamera->addMenu("Edit created bookmark");
-    m_submenuBookmarks->setIcon(Data::viewerBookmarkEditIcon());
+//    m_submenuBookmarks = menuCamera->addMenu("Edit created bookmark");
+//    m_submenuBookmarks->setIcon(Data::viewerBookmarkEditIcon());
 //    menuCamera->addAction(m_actionBookmarkEdit);
 
     menuCamera->addSeparator();
@@ -1188,7 +1271,8 @@ void MainWindow::initializeToolbars()
     tbViewer->addAction(m_actionPrevView);
     tbViewer->addAction(m_actionNextView);
     tbViewer->addAction(m_actionBookmark);
-    tbViewer->addAction(m_actionBookmarkNew);
+//    tbViewer->addAction(m_actionBookmarkNew);
+    tbViewer->addAction(m_actionBookmarkSketch);
     tbViewer->addAction(m_actionCameraSettings);
 
     /* OPTIONS bar */
@@ -1235,6 +1319,10 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestSceneToolStatus(bool&)),
                      this, SLOT(onRequestSceneToolStatus(bool&)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_rootScene->getUserScene(), SIGNAL(requestCanvasCreate(osg::Vec3f,osg::Vec3f,osg::Vec3f)),
+                     this, SLOT(onRequestCanvasCreate(osg::Vec3f,osg::Vec3f,osg::Vec3f)),
                      Qt::UniqueConnection);
 
     /* bookmark widget data */

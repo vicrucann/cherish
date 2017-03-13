@@ -267,7 +267,6 @@ void BookmarksTest::testNewBookmarkNoise()
              std::fabs(diffE.y()) < tolerance &&
              std::fabs(diffE.z()) < tolerance);
     QCOMPARE(rCenter, gCenter);
-    QCOMPARE(rUp, gUp);
 }
 
 void BookmarksTest::testNewBookmarkPerspective()
@@ -368,7 +367,6 @@ void BookmarksTest::testNewBookmarkPerspective()
     float th = 0.01f;
     QVERIFY(std::fabs(diffE.x())<th && std::fabs(diffE.y())<th && std::fabs(diffE.z())<th);
     QCOMPARE(gCenter, rCenter);
-    QCOMPARE(gUp, rUp);
 }
 
 void BookmarksTest::testHomographyCalculation()
@@ -415,22 +413,90 @@ void BookmarksTest::testHomographyCalculation()
 
     qInfo("Compare two H estimations");
     osg::Matrix H0 = HomographyMatrix::solve(svm);
-    qDebug() << "H0=";
-    qDebug() << H0(0,0) << H0(0,1) << H0(0,2);
-    qDebug() << H0(1,0) << H0(1,1) << H0(1,2);
-    qDebug() << H0(2,0) << H0(2,1) << H0(2,2);
 
     osg::Matrix H1 = HomographyMatrix::solveEigen(svm);
-    qDebug() << "H1=";
-    qDebug() << H1(0,0) << H1(0,1) << H1(0,2);
-    qDebug() << H1(1,0) << H1(1,1) << H1(1,2);
-    qDebug() << H1(2,0) << H1(2,1) << H1(2,2);
 
     qInfo("Check Homography wraping works for the points");
     double error = HomographyMatrix::evaluate(svm, H0);
-    QVERIFY(std::fabs(error) < 0.001);
+    QVERIFY(std::fabs(error) < 0.001);    
+}
 
-    qInfo("Extract R|t matrix");
+void BookmarksTest::testRotationTranslation()
+{
+   qInfo("Create original points in 3D");
+   auto P0 = osg::Vec3f(1, 1, 0),
+           P1 = osg::Vec3f(-1, 1, 0),
+           P2 = osg::Vec3f(-1, -1, 0),
+           P3 = osg::Vec3f(1, -1, 0);
+
+   qInfo("Rotate the points along chosen axis in chosen angle");
+   auto theta1 = cher::PI / 6.f;
+   auto theta2 = cher::PI / 4.f;
+   osg::Matrix Projection = osg::Matrix::rotate(theta1, 0,1,0) *
+           osg::Matrix::rotate(theta2, 1,0,0) * osg::Matrix::translate(0.5,-0.2,0);
+   qDebug() << "KProjection=";
+   qDebug()<<  " = " << Projection(0,0) << Projection(0,1) << Projection(2,0) << Projection(3,0);
+   qDebug()<<  " = " << Projection(0,1) << Projection(1,1) << Projection(2,1) << Projection(3,1);
+   qDebug()<<  " = " << Projection(0,2) << Projection(1,2) << Projection(2,2) << Projection(3,2);
+   qDebug()<<  " = " << Projection(0,3) << Projection(1,3) << Projection(2,3) << Projection(3,3);
+   // 3D coords
+   auto D0 = P0 * Projection,
+           D1 = P1 * Projection,
+           D2 = P2 * Projection,
+           D3 = P3 * Projection;
+
+   // Euclidean coords
+   auto d0_ = osg::Vec3f(D0[0]/D0[2], D0[1]/D0[2], 1);
+   auto d1_ = osg::Vec3f(D1[0]/D1[2], D1[1]/D1[2], 1);
+   auto d2_ = osg::Vec3f(D2[0]/D2[2], D2[1]/D2[2], 1);
+   auto d3_ = osg::Vec3f(D3[0]/D3[2], D3[1]/D3[2], 1);
+
+   qInfo("Project the transformed points back into the same plane");
+   osg::Vec3f normal = osg::Vec3f(0,0,1);
+   osg::Vec3f origin = osg::Vec3f(0,0,0);
+   auto d0 = projectToPlane(D0, normal, origin),
+           d1 = projectToPlane(D1, normal, origin),
+           d2 = projectToPlane(D2, normal, origin),
+           d3 = projectToPlane(D3, normal, origin);
+
+   qInfo("Add svm structure");
+
+   QVERIFY(m_scene->setCanvasCurrent(m_canvas0.get()));
+   entity::Canvas* curr = m_scene->getCanvasCurrent();
+   QVERIFY(curr);
+   QCOMPARE(curr, m_canvas0.get());
+   entity::Canvas* prev = m_scene->getCanvasPrevious();
+   QVERIFY(prev);
+   QCOMPARE(prev, m_canvas2.get());
+
+   osg::Vec3d eye, center, up;
+   double fov;
+   this->m_glWidget->getCameraView(eye, center, up, fov);
+   m_rootScene->addBookmark(m_bookmarkWidget, eye, center, up, fov);
+   QVERIFY(m_rootScene->addSVMData());
+   entity::SVMData* svm = m_rootScene->getSVMDataCurrent();
+   QVERIFY(svm);
+   entity::DraggableWire* wall = svm->getWallWire();
+   entity::DraggableWire* floor = svm->getFlootWire();
+   QVERIFY(wall && floor);
+
+   qInfo("Locate points of SVMData at the set locations");
+   wall->pick(0); wall->editPick(d0_.x(),d0_.y());
+   wall->pick(1); wall->editPick(d1_.x(),d1_.y());
+   wall->pick(2); wall->editPick(d2_.x(),d2_.y());
+   wall->pick(3); wall->editPick(d3_.x(),d3_.y());
+   wall->unpick();
+
+   floor->pick(0); floor->editPick(P0.x(),P0.y());
+   floor->pick(1); floor->editPick(P1.x(),P1.y());
+   floor->pick(2); floor->editPick(P2.x(),P2.y());
+   floor->pick(3); floor->editPick(P3.x(),P3.y());
+   floor->unpick();
+
+   qInfo("Use SolvePnP to get Projection matrix");
+   osg::Matrixd Projection_;
+//   Q_ASSERT(Utilities::getProjectionMatrix(svm, Projection_));
+
 }
 
 bool BookmarksTest::isWhite(const QPixmap &pmap)
@@ -450,6 +516,13 @@ void BookmarksTest::printCameraPose(const std::string &name, const osg::Vec3f &e
     qDebug() << QString(name.c_str()) << ": eye=[" << eye.x() << eye.y() << eye.z()<<"]";
     qDebug() << QString(name.c_str()) << "center=[" << center.x() << center.y() << center.z()<<"]";
     qDebug() << QString(name.c_str()) << "up=[" << up.x() << up.y() << up.z()<<"]";
+}
+
+osg::Vec3f BookmarksTest::projectToPlane(const osg::Vec3f &D, const osg::Vec3f &normal, const osg::Vec3f &origin)
+{
+    auto v = D - origin;
+    float dist = v*normal;
+    return D - normal*dist;
 }
 
 QTEST_MAIN(BookmarksTest)

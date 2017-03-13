@@ -22,6 +22,8 @@ public:
 
     static osg::Matrix solveEigen(entity::SVMData* svm);
 
+//    static osg::Matrix solvePnP(entity::SVMData* svm);
+
     /*! A method to extract Homogrpahy matrix from the given 4 point matches represented by
      * entity::SVMData. */
     static osg::Matrix solve(entity::SVMData* svm);

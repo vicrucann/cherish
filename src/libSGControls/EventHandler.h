@@ -21,6 +21,8 @@
 #include "Photo.h"
 #include "SVMData.h"
 #include "DraggableWire.h"
+#include "CamPoseData.h"
+#include "EditableWire.h"
 #include "UserScene.h"
 #include "RootScene.h"
 #include "StrokeIntersector.h"
@@ -116,6 +118,18 @@ protected:
 
     /*! A method for point dragging related to entity::SVMData. VirtualPlaneIntersector is used. */
     void doDragPoint(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
+
+    /*! A method for setting up camera eye position when editing entity::CamPoseData */
+    void doCameraEye(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
+
+    /*! A method for setting up camera center position when editing entity::CamPoseData */
+    void doCameraCenter(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
+
+    /*! A method for setting up camera focal size when editing entity::CamPoseData */
+    void doCameraFocal(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
+
+    /*! A method for editing entity::CamPoseData parameters. */
+    void doCameraIdle(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
 
 protected:
     /*! A method to obtain entity::Stroke type from intersection result. */
@@ -218,6 +232,7 @@ protected:
     osg::observer_ptr<RootScene>        m_scene;        /*!< A pointer on a scene; ofter used to extract scene elements such as current canvas. */
 
     osg::observer_ptr<entity::DraggableWire> m_selection;
+    osg::observer_ptr<entity::EditableWire> m_selection2;
 };
 
 #endif // EVENTHANDLER

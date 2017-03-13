@@ -533,6 +533,9 @@ signals:
      * \param visibility is a boolean flag which indicated whether the tools are on (true) of off (false). */
     void requestSceneToolStatus(bool& visibility);
 
+    /*! A signal to be emitter whenever user finishes editing camera position. */
+    void requestCanvasCreate(const osg::Vec3f& eye, const osg::Vec3f& center, const osg::Vec3f& up);
+
 public slots:
     /*! A slot which is called when the canvas name was edited from CanvasPhotoWidget. Based on the edited item, the slot
      * edits the name of the corresponding canvas. This slot is connected to CanvasPhotoWidget::itemChanged() */

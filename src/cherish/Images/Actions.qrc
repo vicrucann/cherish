@@ -80,5 +80,6 @@
         <file>scene-polygon-24px.svg</file>
         <file>viewer-bookmarkedit-24px.svg</file>
         <file>viewer-bookmarknew-24px.svg</file>
+        <file>viewer-bookmarksketch-24px.svg</file>
     </qresource>
 </RCC>

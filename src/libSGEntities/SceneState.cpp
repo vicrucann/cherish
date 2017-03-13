@@ -217,12 +217,36 @@ bool entity::SceneState::addSVMData(const osg::Matrix &wall, const osg::Matrix &
     return this->addChild(svm);
 }
 
+bool entity::SceneState::addCamPoseData(const osg::Matrix &matrix, double fov)
+{
+    osg::ref_ptr<entity::CamPoseData> cam = new entity::CamPoseData(fov);
+    Q_CHECK_PTR(cam.get());
+    cam->setTransform(matrix);
+    return this->addChild(cam);
+}
+
 entity::SVMData *entity::SceneState::getSVMData()
 {
     if (this->getNumChildren() == 0) return NULL;
     osg::Node* node = this->getChild(0);
     Q_CHECK_PTR(node);
     return dynamic_cast<entity::SVMData*>(node);
+}
+
+entity::CamPoseData *entity::SceneState::getCamPoseData()
+{
+    if (this->getNumChildren() == 0) return NULL;
+    osg::Node* node = this->getChild(0);
+    Q_CHECK_PTR(node);
+    return dynamic_cast<entity::CamPoseData*>(node);
+}
+
+osg::ProtectedGroup *entity::SceneState::getChildData()
+{
+    if (this->getNumChildren() == 0) return NULL;
+    osg::Node* node = this->getChild(0);
+    Q_CHECK_PTR(node);
+    return dynamic_cast<osg::ProtectedGroup*>(node);
 }
 
 REGISTER_OBJECT_WRAPPER(SceneState_Wrapper

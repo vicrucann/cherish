@@ -10,6 +10,7 @@
 #include <osgViewer/View>
 #include <osg/Camera>
 #include <osg/Plane>
+#include <osg/Matrixd>
 
 #include "Canvas.h"
 #include "Stroke.h"
@@ -92,6 +93,23 @@ public:
      * \sa getModel(), getLocalFromGlobal(). */
     static bool getGlobalFromLocal(const osg::Vec3f& p, const osg::Matrix& M, osg::Vec3f& P);
 
+    /*! A method which obtains an angle between two vectors in 2d. For more info, see:
+     * http://www.euclideanspace.com/maths/algebra/vectors/angleBetween/index.htm .
+     * \param p1 is the first point of the first vector.
+     * \param p2 is the second point of the first vector.
+     * \param p3 is the first point of the second vector.
+     * \param p4 is the second point of the second vector.
+     * \return an angle between two vectors in radians. */
+    static double getAngleTwoVectors(const osg::Vec2f& p1, const osg::Vec2f& p2, const osg::Vec2f& p3, const osg::Vec2f& p4);
+
+    /*! A method to rotate a 2D point around another point on a specified angle.
+     * The input and output points have "local point" format: [u,v,0].
+     * \param center is the point around which the rotation will be done.
+     * \param theta is the angle of rotation in radians.
+     * \param original is the point to rotate.
+     * \return the result rotated point. */
+    static osg::Vec3f rotate2DPointAround(const osg::Vec3f& center, float theta, const osg::Vec3f& original);
+
     /* algorithm for distance between skew lines:
      *
      * For two points P1 and P2 on skew lines;
@@ -144,8 +162,18 @@ public:
     /*! A method to obtaib intersection between two planes. For more details on the algorithm, see: http://geomalgorithms.com/a05-_intersect-1.html */
     static int getPlanesIntersection(entity::Canvas* canvas1, entity::Canvas* canvas2, osg::Vec3f& iP, osg::Vec3f& u);
 
-    /*! A method to project 3d point onto 3D line. */
+    /*! A method to project 3d point onto 3D line.
+     * \param iP is the global point on the line.
+     * \param u is the vector defining the line direction.
+     * \param P is the point to project.
+     * \return global coordinate of the projected point. */
     static osg::Vec3f projectPointOnLine(const osg::Vec3f& iP, const osg::Vec3f& u, const osg::Vec3f& P);
+
+    /*! A method to estimate Euclidean distance between two points in 3D.
+     * \param P1 is the first 3D point.
+     * \param P2 is the second 3D point.
+     * \return Euclidean distance according to https://en.wikipedia.org/wiki/Euclidean_distance */
+    static double distanceTwoPoints(const osg::Vec3f& P1, const osg::Vec3f& P2);
 
     /*! UI method to obtain cursor data based on the given mouse mode. */
     static QCursor getCursorFromMode(cher::MOUSE_MODE mode);
@@ -156,6 +184,16 @@ public:
      * passes through one of the wire's centers, and the up vector is always constant - (0,1,0).
      * \return true if the parameters were calculated successfully, false otherwise. */
     static bool getCameraPosition(entity::SVMData* svm,  osg::Vec3f& eye, osg::Vec3f& center, osg::Vec3f& up);
+
+    /*! A method that uses OpenCV's implementation of SolvePnP, i.e., provided four matches between the
+     * object points (3D) and image points (2d) - both extracted from entity::SVMData, it finds the projection
+     * matrix (rotation and translation) that does the projection from the object points to homogenious image points.
+     * This method is used when we want to update camera position when user is finished entity::SVMData manipulation.
+     * \param svm is the input entity::SVMData parameter
+     * \param projection is the output projection matrix [R|t], already converted to global coordinates ( for more
+     * info see : http://stackoverflow.com/questions/18637494/camera-position-in-world-coordinate-from-cvsolvepnp#18643735 )
+     * \return true if projection matrix was extracted successfully, false otherwise. */
+//    static bool getProjectionMatrix(entity::SVMData* svm, osg::Matrixd &projection);
 };
 
 #endif // UTILITIES_H

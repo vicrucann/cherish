@@ -164,6 +164,42 @@ private:
     osg::Camera* m_camera;
 };
 
+/*! \class ATGeode
+ * \brief Helper class to create non-scalable geometries, e.g., AT -> Geode -> Geometry.
+ * Used for pickable geometry.
+*/
+class ATGeode : public osg::AutoTransform
+{
+public:
+    /*! Constructor initializes the internal scene graph structure and sets up the parameters of the auto scaling. */
+    ATGeode();
+
+protected:
+    friend class FrameTool;
+
+    osg::Geode* geode;
+    osg::Geometry* geometry;
+};
+
+/*! \class ATRGeode
+ * \brief Helper class to create non-scalable geometries that always render on top.
+ * The node has the following scene graph structure: AT-> Camera -> Geode -> Geometry.
+*/
+class ATRGeode : public osg::AutoTransform
+{
+public:
+    /*! Constructor initializes the internal scene graph structure and sets up parameters of auto scale and camera. */
+    ATRGeode();
+
+protected:
+    friend class FrameTool;
+
+    osg::Geode* geode;
+    osg::Geometry* geometry;
+    osg::Camera* camera;
+
+};
+
 /*! \class FrameTool
  * \brief A tool to depict canvas bounding box in both its non-editable and editable states.
  *
@@ -177,26 +213,23 @@ private:
  *
  *      FrameTool -> Switch -> GeodeWire
  *                          |-> GeodeIntersect
- *                          |-> GeodePickable
- *                          |-> GeodeScales
+ *                          |-> AT_Pickable
+ *                          |-> AT_Center (scales, axis)
  *                          |-> GeodeNormal
  *                          |-> GeodeRotation
- *                          |-> CameraAxis      ->  GeodeAxis
  *
  * Each geode represents a single functionality / element within the canvas frame:
  *
  * * GeodeWire is the non-editable canvas wire
  * * GeodeIntersect contains the geometry of two canvas intersection (normally would contained within the previous canvas).
- * * GeodePickbale contains a selectable quad of a non-editable canvas, and it only allows changing the state of a canvas, e.g.,
+ * * AT_Pickbale contains a selectable quad of a non-editable canvas, and it only allows changing the state of a canvas, e.g.,
  * from current to previous.
- * * GeodeScales are the quads which appear when the canvas is in 2D-editable mode and they allow to change the scale of the 2D
+ * * AT_Center etc. are the quads which appear when the canvas is in 2D-editable mode and they allow to change the scale of the 2D
  * selection of the canvas.
  * * GeodeNormal is the canvas normal representation which appears when the canvas is in 3D-editable mode. Dragging along the
  * normals allows to edit canvas offset along the normal.
  * * GeodeRotation is a canvas wireframe representation which appears when the canvas is in 3D-editable mode. It allows changing
  * a canvas location by rotation along local U or local V axis.
- * * CameraAxis and GeodeAxis are used when the canvas is in 2D-editable mode. It allows to rotate the selected entities within
- * the canvas. The CameraAxis is set up so that the GeodeAxis is always post-rendered.
  *
 */
 class FrameTool : public ToolGlobal
@@ -210,7 +243,9 @@ protected:
     void initializeSG();
 
 public:
-    /*! A method to set canvas frame visibility. */
+    /*! A method to set canvas frame visibility. When visibility is set to off, the visibility values are saved. When the
+     * visibility is turned back on, the values are poped back to their original states.
+     * \param on is true when canvas frame is visible, false - otherwise. */
     void setVisibility(bool on);
 
     /*! A method to obtain a canvas frame visibility. */
@@ -269,6 +304,10 @@ protected:
     void initLineGeometry(osg::Geometry* geom, float lineWidth, const std::string& name = "");
 
     void setQuadGeometry(osg::Geometry* geom, const osg::Vec3f& P, float szX, float szY, float theta = 0, const osg::Vec3f& center = cher::CENTER);
+
+    /*! A method to set up m_AT_scale geometries. */
+    void setScaleGeometry(osg::Geometry* geom, const osg::Vec3f& P0, const osg::Vec3f& P1, const osg::Vec3f& P2, const osg::Vec3f& P3);
+
     void setLineGeometry(osg::Geometry* geom, const osg::Vec3f& P1, const osg::Vec3f& P2);
 
     void setColorGeometry(osg::Geometry* geom, const osg::Vec4f& color);
@@ -279,23 +318,21 @@ protected:
     void rotateWireGeometry(osg::Geometry* geometry, double theta, osg::Vec3f center);
 
 private:
-    osg::Geode* m_geodePickable, * m_geodeIntersect
-                , * m_geodeAxis, * m_geodeScales, * m_geodeNormal, * m_geodeRotation;
-    osg::Geometry* m_geomPickable, * m_geomIntersect, * m_geomCenter
-                , * m_geomAxisU, * m_geomAxisV;
-
-    /* tools to scale entities: uniform scaling and axis aligned */
-    osg::Geometry * m_geomScaleUV1, * m_geomScaleUV2, * m_geomScaleUV3, * m_geomScaleUV4;
+    osg::Geode* m_geodeIntersect, * m_geodeNormal, * m_geodeRotation;
+    osg::Geometry* m_geomIntersect;
 
     /* canvas offset and 3d rotation drawables */
-    osg::Geometry * m_geomNormal1, * m_geomNormal2;
-    osg::Geometry * m_geomRotateX1, * m_geomRotateX2, * m_geomRotateY1, * m_geomRotateY2;
+    osg::Geometry * m_geomNormal1, * m_geomNormal2; /*!< canvas offset geomtries */
+    osg::Geometry * m_geomRotateX1, * m_geomRotateX2, * m_geomRotateY1, * m_geomRotateY2; /*!< canvas 3d rotation geometries */
 
-    osg::Camera* m_cameraAxis; /* so that local axis always renders on top of photos */
+    ATGeode* m_AT_pick; /*!< pickable scene graph: AT -> geode -> geometry */
+    ATRGeode* m_AT_scaleUV1, * m_AT_scaleUV2, * m_AT_scaleUV3, * m_AT_scaleUV4; /*!< tools to scale 2D entities */
+    ATRGeode* m_AT_center; /*!< 2D entities translation */
+    ATRGeode* m_AT_axisU, * m_AT_axisV; /*!< 2D entities rotations */
 
-    bool m_selected; // if there is selection present on scene
-    bool m_editable; // if canvas is in edit mode: offset and rotation
-    bool m_visible;
+    bool m_selected; /*!< if there is selection present on scene */
+    bool m_editable; /*!< if canvas is in edit mode: offset and rotation */
+    bool m_visible; /*!< canvas frame visibility flag */
 
     std::vector<bool> m_visibilityState;
 };

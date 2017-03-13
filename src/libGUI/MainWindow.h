@@ -36,25 +36,43 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    /*! Constructor. */
+    /*! Constructor: initialies the GUI elements and scene graph structure. */
     explicit MainWindow(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+
+    /*! Destructor: annulates singlton-related pointer. */
     ~MainWindow();
 
+    /*! Singleton design pattern. */
     static MainWindow& instance();
 
     /*! \return const pointer to RootScene. */
     const RootScene* getRootScene() const;
 
+    /*! A method to obtain pointer on current canvas, if there is one present. */
     entity::Canvas* getCanvasCurrent() const;
+
+    /*! \return pointer on a camera used within GLWidget. */
     osg::Camera* getCamera() const;
+
+    /*! A method to setup camera position and parameters within GLWidget.
+     * \param fov2 is the full angle (not half angle) FOV, in degrees. */
+    void setCameraView(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up, const double& fov2);
+
+    /*! \return state of the button responsible for whether fog factor is on (true) or off (false). */
     bool getStrokeFogFactor() const;
+
+    /*! A method to obtain a scene screenshot with the given camera position. */
     QPixmap getScreenshot(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
 
     /*! A method to obtain current color of the color dialog (for polygon drawing). */
     osg::Vec4f getCurrentColor() const;
 
-    /*! A method to obtain current camera's FOV. */
-    double getFOV() const;
+    /*! A method to obtain current camera's FOV.
+     * \return full angle FOV (not half angle). */
+    double getFOV2() const;
+
+    /*! A method to obtain a pointer on bookmark widget. */
+    BookmarkWidget* getBookmarkWidget();
 
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
@@ -114,6 +132,13 @@ public slots:
     /*! Slot called when user performed drag-and-drop from PhotoWidget to GLWidget of a entity::Photo. */
     void onImportPhoto(const QString& path, const QString& fileName);
 
+    /*! Slot called when bookmark position is finished editing. The slot requests from user whether new canvas should be
+     * created within the FOV of the camera position.
+     * \param eye is eye position of the camera,
+     * \param center is the center position of camera,
+     * \param up is up vector of camera position.  */
+    void onRequestCanvasCreate(const osg::Vec3f& eye, const osg::Vec3f& center, const osg::Vec3f& up);
+
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */
     void onFileNew();
@@ -170,6 +195,7 @@ protected slots:
 
     void onBookmark();
     void onBookmarkNew();
+    void onBookmarkSketch();
     void onBookmarkEdit(const QString& name);
 
     void onStrokeFogFactor();
@@ -220,8 +246,8 @@ protected:
 
     /* CAMERA actions */
     QAction * m_actionOrbit, * m_actionPan, * m_actionZoom
-            , * m_actionPrevView, * m_actionNextView, * m_actionBookmark, * m_actionBookmarkNew
-            , * m_actionCameraSettings, * m_actionHomeView, * m_actionViewAllCanvas;
+            , * m_actionPrevView, * m_actionNextView, * m_actionBookmark/*, * m_actionBookmarkNew*/
+            , * m_actionBookmarkSketch , * m_actionCameraSettings, * m_actionHomeView, * m_actionViewAllCanvas;
 
     // SCENE actions
     QAction * m_actionSketch, * m_actionEraser, * m_actionSelect, * m_actionSelect3d, * m_actionPolygon

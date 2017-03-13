@@ -6,6 +6,10 @@
 #include "Settings.h"
 #include "Data.h"
 
+//#include <opencv2/core.hpp>
+//#include <opencv2/calib3d.hpp>
+#include "vector"
+
 QColor Utilities::getQColor(const osg::Vec4f &color)
 {
     return QColor(color.r()*255, color.g()*255, color.b()*255, color.a()*255);
@@ -198,6 +202,30 @@ bool Utilities::getGlobalFromLocal(const osg::Vec3f &p, const osg::Matrix &M, os
     }
     P = p * M;
     return true;
+}
+
+double Utilities::getAngleTwoVectors(const osg::Vec2f &p1, const osg::Vec2f &p2, const osg::Vec2f &p3, const osg::Vec2f &p4)
+{
+    double theta = 0.0;
+
+    osg::Vec2f v1 = p2-p1;
+    osg::Vec2f v2 = p4-p3;
+
+    theta = std::atan2(v2.y(), v2.x()) - std::atan2(v1.y(), v1.x());
+
+    return theta;
+}
+
+osg::Vec3f Utilities::rotate2DPointAround(const osg::Vec3f &center, float theta, const osg::Vec3f &original)
+{
+    osg::Vec3f result = original;
+    if (theta != 0){
+        auto P = original - center;
+        result = center + osg::Vec3f(P.x() * std::cos(theta) - P.y() * std::sin(theta),
+                                     P.x() * std::sin(theta) + P.y() * std::cos(theta),
+                                     0);
+    }
+    return result;
 }
 
 bool Utilities::getSkewLinesProjection(const osg::Vec3f &center, const osg::Vec3f &farPoint, const osg::Vec3f &nearPoint, const osg::Vec3f &normal, osg::Vec3f &X1)
@@ -426,6 +454,14 @@ osg::Vec3f Utilities::projectPointOnLine(const osg::Vec3f &iP, const osg::Vec3f 
     return iP + u * ((P-iP)*u)/(u*u);
 }
 
+double Utilities::distanceTwoPoints(const osg::Vec3f &P1, const osg::Vec3f &P2)
+{
+    auto dx = P1.x() - P2.x(),
+            dy = P1.y() - P2.y(),
+            dz = P1.z() - P2.z();
+    return std::sqrt(dx*dx + dy*dy + dz*dz);
+}
+
 QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
 {
     QCursor cur = Qt::ArrowCursor;
@@ -503,6 +539,19 @@ QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
     case cher::SVM_IDLE:
         cur = Qt::CrossCursor;
         break;
+
+    case cher::CAMPOSE_IDLE:
+        cur = Qt::CrossCursor;
+        break;
+    case cher::CAMPOSE_EYE:
+        cur = QCursor(Data::sceneImageMovePixmap(), -1, -1);
+        break;
+    case cher::CAMPOSE_CENTER:
+        cur = QCursor(Data::sceneImageRotatePixmap(), -1, -1);
+        break;
+    case cher::CAMPOSE_FOCAL:
+        cur = QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
+        break;
     default:
         break;
     }
@@ -535,6 +584,79 @@ bool Utilities::getCameraPosition(entity::SVMData *svm, osg::Vec3f &eye, osg::Ve
         eye += iss;
     }
     eye /= nPoints;
-    qDebug() << "eye=" << eye.x() << eye.y() << eye.z();
+
+    osg::Vec3f ce = center - eye;
+    osg::Vec3f normal = wire2->getPlane().getNormal();
+    osg::Vec3f right = normal^ce;
+    up = ce^right;
     return true;
 }
+
+//bool Utilities::getProjectionMatrix(entity::SVMData *svm, osg::Matrixd &projection)
+//{
+//    if (!svm){
+//        qWarning("SVM structure is NULL");
+//        return false;
+//    }
+
+//    std::vector<cv::Point3f> object;
+//    std::vector<cv::Point2f> image;
+//    for (int i=0; i<4; ++i){
+//        object.push_back(cv::Point3f(svm->getGlobalFloor(i).x(), svm->getGlobalFloor(i).y(), svm->getGlobalFloor(i).z()));
+//        image.push_back(cv::Point2f(svm->getLocalWall(i).x(), svm->getLocalWall(i).y()));
+//        std::cout << "object=" << object[i] << " image=" << image[i] << std::endl;
+//    }
+//    // use solvePNP method
+//    cv::Mat rvec(3,1,cv::DataType<double>::type);
+//    cv::Mat tvec(3,1,cv::DataType<double>::type);
+//    cv::Mat1f K = (cv::Mat1f(3,3) << 1,0,0,0,1,0,0,0,1);
+
+//    cv::solvePnP(object, image, K, cv::noArray(), rvec, tvec/*, cv::SOLVEPNP_P3P*/);
+//    // get rotation matrix format
+//    cv::Mat R;
+//    cv::Rodrigues(rvec, R);
+
+//    std::vector<cv::Point2f> projected;
+//    cv::projectPoints(object, rvec, tvec, K, cv::noArray(), projected);
+//    float error = 0.f;
+//    for(unsigned int i = 0; i < projected.size(); ++i)
+//    {
+//        auto ei = image[i]-projected[i];
+//        error += ei.x*ei.x + ei.y*ei.y;
+//    }
+//    error = std::sqrt(error);
+//    qDebug() << "PROJECTION ERROR=" << error;
+
+//    // OpenCV solution provides the projection in camera coordinates, convert it to global coordinates
+//    // for info, see: http://stackoverflow.com/questions/18637494/camera-position-in-world-coordinate-from-cvsolvepnp#18643735
+//    R = R.t();  // rotation of inverse
+//    tvec = -R * tvec; // translation of inverse
+
+//    // copy OCV data to OSG
+//    auto r00 = R.at<double>(0,0);
+//    auto r01 = R.at<double>(0,1);
+//    auto r02 = R.at<double>(0,2);
+//    auto r10 = R.at<double>(1,0);
+//    auto r11 = R.at<double>(1,1);
+//    auto r12 = R.at<double>(1,2);
+//    auto r20 = R.at<double>(2,0);
+//    auto r21 = R.at<double>(2,1);
+//    auto r22 = R.at<double>(2,2);
+//    auto t00 = tvec.at<double>(0,0);
+//    auto t10 = tvec.at<double>(1,0);
+//    auto t20 = tvec.at<double>(2,0);
+
+//    // OpenGL frame: multiply by matrix rotated 180 degrees around x axis
+//    osg::Matrixd R180 = osg::Matrixd::rotate(cher::PI, 1,0,0);
+//    projection = osg::Matrixd(
+//                r00, r10, r20, 0,
+//                r01, r11, r21, 0,
+//                r02, r12, r22, 0,
+//                t00, t10, t20, 1 ) * R180;
+//    qDebug() << "Projection_osg=";
+//    qDebug()<<  " = " << projection(0,0) << projection(0,1) << projection(2,0) << projection(3,0);
+//    qDebug()<<  " = " << projection(0,1) << projection(1,1) << projection(2,1) << projection(3,1);
+//    qDebug()<<  " = " << projection(0,2) << projection(1,2) << projection(2,2) << projection(3,2);
+//    qDebug()<<  " = " << projection(0,3) << projection(1,3) << projection(2,3) << projection(3,3);
+//    return true;
+//}

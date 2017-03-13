@@ -131,14 +131,14 @@ void GLWidget::setCameraView()
     m_viewStack->push(cmd);
 }
 
-void GLWidget::setCameraView(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const double &fov)
+void GLWidget::setCameraView(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up, const double &fov2)
 {
     m_manipulator->setTransformation(eye, center, up);
     osg::Camera* camera = this->getCamera();
     if (camera){
         float ratio = static_cast<float>(this->width()) / static_cast<float>( this->height());
-        camera->setProjectionMatrixAsPerspective(fov*0.5, ratio, 1.f, 1000.f);
-        emit this->FOVSet(fov);
+        camera->setProjectionMatrixAsPerspective(fov2*0.5, ratio, 1.f, 1000.f);
+        emit this->FOVSet(fov2);
     }
 
     /* for stack of camera views */

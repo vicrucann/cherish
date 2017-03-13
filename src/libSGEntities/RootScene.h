@@ -21,6 +21,7 @@
 #include "ToolGlobal.h"
 #include "SceneState.h"
 #include "SVMData.h"
+#include "CamPoseData.h"
 #include "DraggableWire.h"
 
 #include <QUndoStack>
@@ -85,18 +86,32 @@ public:
      * This method requires presense of at least two canvases on the screen. */
     bool addSVMData();
 
-    /*! A method to hide all the visible SVMData from scene.
-     * \param wire is the wire of entity::SVMData to hide. */
+    /* A method to supplement a last added entity::SceneState with entity::CamPoseData as a child.
+     * Used to create a new bookmark using user interaction. This method requires presense of at least
+     * one canvas on the scene. */
+    bool addCamPoseData();
+
+    /*! A method to hide all the visible SVMData from scene.*/
     void hideAndUpdateSVMData();
+
+    /*! A method to hide all the visible CamPoseData from scene. */
+    void hideAndUpdateCamPoseData();
 
     /*! A method to obtain a pointer on SVMData that is in the state of editing by user.
      * If no such data available, return NULL. */
     entity::SVMData* getSVMDataCurrent() const;
 
+    /*! A method to obtain a pointer on campose data that is in the state of editing by user.
+     * If no such data available, return 0. */
+    entity::CamPoseData* getCamPoseDataCurrent() const;
+
     void addBookmarkTool(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void updateBookmark(BookmarkWidget* widget, int row);
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
     void deleteBookmarkTool(int first, int last);
+
+    /*! A method which is called when a file is opened. It resets the screenshot bookmarks.
+     * \param widget is a pointer on bookmark widget (member of MainWindow). */
     void resetBookmarks(BookmarkWidget* widget);
 
     /*! A method to set visibility of all the bookmarks tools. The visibility cannot be set for individual bookmarks tool, only for the

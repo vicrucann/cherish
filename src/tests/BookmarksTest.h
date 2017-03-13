@@ -30,13 +30,19 @@ private slots:
      * testNewBookmarkPure(). */
     void testNewBookmarkPerspective();
 
-    /* Given known H, and the points matching, test the Homography::solve() function. */
+    /*! Given known H, and the points matching, test the Homography::solve() function. */
     void testHomographyCalculation();
+
+    /*! Given a known transformation of one plane into another, find the rotation and translation based
+     * on Homography matrix and compare the obtained values with the initial ones. */
+    void testRotationTranslation();
 
 private:
     bool isWhite(const QPixmap& pmap);
 
     void printCameraPose(const std::string& name, const osg::Vec3f& eye, const osg::Vec3f& center, const osg::Vec3f& up);
+
+    osg::Vec3f projectToPlane(const osg::Vec3f& D, const osg::Vec3f& normal, const osg::Vec3f& origin);
 };
 
 #endif // BOOKMARKSTEST_H

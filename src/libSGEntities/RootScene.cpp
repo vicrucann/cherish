@@ -6,6 +6,7 @@
 
 #include <QtGlobal>
 #include <QDebug>
+#include <QMessageBox>
 
 #include <osgDB/ReadFile>
 #include <osgDB/WriteFile>
@@ -341,6 +342,22 @@ bool RootScene::addSVMData()
     return added;
 }
 
+bool RootScene::addCamPoseData()
+{
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    entity::SceneState* ss = m_userScene->getBookmarksModel()->getLastSceneState();
+    if (!ss) return false;
+
+    /* take current canvas transform to create CamPoseData */
+    entity::Canvas* cnv = m_userScene->getCanvasCurrent();
+    if (!cnv) return false;
+
+    /* add campose data with the given params */
+    double fov = MainWindow::instance().getFOV2();
+    bool added = ss->addCamPoseData(cnv->getMatrix(), fov);
+    return added;
+}
+
 void RootScene::hideAndUpdateSVMData()
 {
     Q_CHECK_PTR(m_userScene->getBookmarks());
@@ -352,19 +369,29 @@ void RootScene::hideAndUpdateSVMData()
         bool vis = svm->getVisibility();
         if (!vis) continue;
         /* if the wire is present and about to be hidden, update the corresponding camera position. */
+//        osg::Matrixd projection;
+//        bool projected = Utilities::getProjectionMatrix(svm, projection);
+//        if (!projected){
+//            qWarning("Could not obtain projection matrix, the bookmark will not be updated");
+//            continue;
+//        }
+        // apply the projection for the "image" canvas
+
+        // re-calculate the camera position
+
         osg::Vec3f eye, center, up;
-        bool success = Utilities::getCameraPosition(svm, eye, center, up);
-        if (!success){
-            qWarning("Could not obtain camera pose from the given Homography");
-            continue;
-        }
+//        bool success = Utilities::getCameraPosition(svm, eye, center, up);
+//        if (!success){
+//            qWarning("Could not obtain camera pose from the given Homography");
+//            continue;
+//        }
         // edit camera pose by editing: bookmark tool position; Bookmarks data.
         entity::Bookmarks* bms = m_userScene->getBookmarksModel();
         if (!bms){
             qWarning("Could not exatract bookmarks pointer for editing");
             continue;
         }
-        double fov = MainWindow::instance().getFOV();
+        double fov = MainWindow::instance().getFOV2();
         bool edited = bms->editBookmarkPose(i, eye, center, up, fov);
         if (!edited){
             qWarning("Could not edit the bookmark position");
@@ -386,11 +413,63 @@ void RootScene::hideAndUpdateSVMData()
     }
 }
 
+void RootScene::hideAndUpdateCamPoseData()
+{
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    int num = m_userScene->getBookmarks()->getNumBookmarks();
+    for (int i=0; i<num; ++i){
+        entity::SceneState* ss = m_userScene->getBookmarksModel()->getSceneState(i);
+        entity::CamPoseData* cam = ss->getCamPoseData();
+        if (!cam) continue;
+        bool vis = cam->getVisibility();
+        if (!vis) continue;
+        // get new camera pose
+        double fov2;
+        osg::Vec3f eye,center,up;
+        cam->getCamera(eye,center, up, fov2);
+        // edit camera pose by editing: current camera pose, bookmark tool position; Bookmarks data.
+        entity::Bookmarks* bms = m_userScene->getBookmarksModel();
+        if (!bms){
+            qWarning("Could not exatract bookmarks pointer for editing");
+            continue;
+        }
+        // reset the current view
+        MainWindow::instance().setCameraView(eye, center, up, fov2);
+        // edit bookmark position
+        bool edited = bms->editBookmarkPose(i, eye, center, up, fov2);
+        if (!edited){
+            qWarning("Could not edit the bookmark position");
+            continue;
+        }
+        // edit phisical tool position.
+        entity::BookmarkTool* bt = this->getBookmarkTool(i);
+        if (!bt){
+            qWarning("Could not extract bookmark tool pointer");
+            continue;
+        }
+        bt->setPose(eye, center, up);
+        // trigger update
+        emit m_userScene->updateWidgets();
+
+        /* hide the wires */
+        cam->setVisibility(false);
+
+        // suggest to insert new canvas in the FOV of the new camera pose.
+        // In this canvas an image will be placed.
+        emit m_userScene->requestCanvasCreate(eye, center, up);
+
+        // request screenshot update
+        BookmarkWidget* widget = MainWindow::instance().getBookmarkWidget();
+        this->updateBookmark(widget, i);
+        break;
+    }
+}
+
 entity::SVMData *RootScene::getSVMDataCurrent() const
 {
     Q_CHECK_PTR(m_userScene->getBookmarks());
     int num = m_userScene->getBookmarks()->getNumBookmarks();
-    entity::SVMData* result = NULL;
+    entity::SVMData* result = nullptr;
     for (int i=0; i<num; ++i){
         entity::SceneState* ss = m_userScene->getBookmarksModel()->getSceneState(i);
         if (!ss) return 0;
@@ -399,6 +478,23 @@ entity::SVMData *RootScene::getSVMDataCurrent() const
         bool vis = svm->getVisibility();
         if (!vis) continue;
         result = svm;
+    }
+    return result;
+}
+
+entity::CamPoseData *RootScene::getCamPoseDataCurrent() const
+{
+    Q_CHECK_PTR(m_userScene->getBookmarks());
+    int num = m_userScene->getBookmarks()->getNumBookmarks();
+    entity::CamPoseData* result = nullptr;
+    for (int i=0; i<num; ++i){
+        entity::SceneState* ss = m_userScene->getBookmarksModel()->getSceneState(i);
+        if (!ss) return nullptr;
+        entity::CamPoseData* cam = ss->getCamPoseData();
+        if (!cam) continue;
+        bool vis = cam->getVisibility();
+        if (!vis) continue;
+        result = cam;
     }
     return result;
 }
@@ -442,13 +538,6 @@ void RootScene::resetBookmarks(BookmarkWidget *widget)
         return;
     }
     bms->resetModel(widget);
-
-//    const std::vector<osg::Vec3d>& eyes = bms->getEyes();
-//    const std::vector<osg::Vec3d>& centers = bms->getCenters();
-//    const std::vector<osg::Vec3d>& ups = bms->getUps();
-//    for (size_t i=0; i < bms->getNames().size(); ++i){
-//        m_bookmarkTools->addChild(new entity::BookmarkTool(eyes[i], centers[i], ups[i]));
-//    }
 }
 
 void RootScene::setBookmarkToolVisibility(bool vis)

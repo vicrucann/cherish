@@ -18,6 +18,7 @@ EventHandler::EventHandler(GLWidget *widget, RootScene* scene, cher::MOUSE_MODE 
     , m_mode(mode)
     , m_scene(scene)
     , m_selection(0)
+    , m_selection2(0)
 {
 }
 
@@ -126,9 +127,25 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             break;
         }
         break;
+    case cher::MOUSE_CAMPOSE:
+        switch (m_mode){
+        case cher::CAMPOSE_EYE:
+            this->doCameraEye(ea, aa);
+            break;
+        case cher::CAMPOSE_CENTER:
+            this->doCameraCenter(ea, aa);
+            break;
+        case cher::CAMPOSE_FOCAL:
+            this->doCameraFocal(ea, aa);
+            break;
+        default:
+            this->doCameraIdle(ea, aa);
+            break;
+        }
+        break;
     default:
         break;
-    }
+    } // switch (cher::maskMouse & m_mode)
 
 //    switch (m_mode){
 //    case cher::PHOTO_PUSH:
@@ -140,6 +157,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
     return false;
 }
 
+
+// Todo: make wires to inherit from 1 virtual class
+// + make campose data and svm data to inherit from 1 virtual class
 void EventHandler::setMode(cher::MOUSE_MODE mode)
 {
     entity::Canvas* cnv = m_scene->getCanvasCurrent();
@@ -158,13 +178,18 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     case cher::SELECT_ENTITY:
         /* if mode is only for current canvas, disable all other canvases from usage */
         m_scene->setCanvasesButCurrent(false);
-        m_scene->hideAndUpdateSVMData();
+        m_scene->hideAndUpdateSVMData(); // TODO same to campose data
+        m_scene->hideAndUpdateCamPoseData();
         break;
     case cher::SVM_DRAG_POINT:
     case cher::SVM_DRAG_WIRE:
     case cher::SVM_HOVER_POINT:
     case cher::SVM_HOVER_WIRE:
     case cher::SVM_IDLE:
+    case cher::CAMPOSE_EYE:
+    case cher::CAMPOSE_CENTER:
+    case cher::CAMPOSE_FOCAL:
+    case cher::CAMPOSE_IDLE:
         /* if it is SVM mode, no canvases can be available for selection at all */
         m_scene->setAllCanvases(false);
         break;
@@ -172,6 +197,7 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
         /* if selection within 3D, enable all the canvases for selection */
         m_scene->setCanvasesButCurrent(true);
         m_scene->hideAndUpdateSVMData();
+        m_scene->hideAndUpdateCamPoseData();
         break;
     }
 
@@ -670,15 +696,11 @@ void EventHandler::doHoverWire(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
     if (ea.getEventType() != osgGA::GUIEventAdapter::MOVE)
         return;
 
-    std::cout << "hover-wire" << std::endl;
-
     bool isModeSame = true;
     PolyLineIntersector::Intersection intersectionLine;
     std::tie(isModeSame, intersectionLine) = this->setSVMMouseMode<PolyLineIntersector::Intersection, PolyLineIntersector>(ea, aa, cher::SVM_IDLE);
     this->updateWireGeometry(intersectionLine);
     if (!isModeSame) return;
-
-    std::cout << "trying for a point" << std::endl;
     PointIntersector::Intersection intersectionPoint;
     std::tie(isModeSame, intersectionPoint) =
             this->setSVMMouseMode<PointIntersector::Intersection, PointIntersector>(ea, aa, cher::SVM_HOVER_WIRE);
@@ -690,8 +712,6 @@ void EventHandler::doHoverPoint(const osgGA::GUIEventAdapter &ea, osgGA::GUIActi
     if ( !(ea.getEventType() == osgGA::GUIEventAdapter::MOVE ||
            (ea.getEventType() == osgGA::GUIEventAdapter::DRAG && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)) )
         return;
-
-    std::cout << "hover-point" << std::endl;
 
     bool isModeSame = true;
     PointIntersector::Intersection intersectionPoint;
@@ -713,6 +733,100 @@ void EventHandler::doDragPoint(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
             new VirtualPlaneIntersector<entity::DraggableWire>(m_selection.get());
     auto intersection = vpi->getIntersection2D(ea, aa);
     this->updateDragPointGeometry(intersection, ea);
+}
+
+void EventHandler::doCameraEye(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+        // switch to campose center mode ?
+        m_glWidget->setMouseMode(cher::CAMPOSE_CENTER);
+        return;
+    }
+
+    if (! (ea.getEventType() == osgGA::GUIEventAdapter::MOVE))
+        return;
+
+    // find local intersection with the camera plane - it will be new camera eye
+    double u=0, v=0;
+    if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        return;
+    if (!m_selection2.get()){
+        auto cam = m_scene->getCamPoseDataCurrent();
+        if (!cam) {
+            qWarning("Could not extract cam pose data, no editing will be performed");
+            return;
+        }
+        m_selection2 = cam->getWire();
+    }
+    osg::Vec3f eye3d = osg::Vec3f(u,v,0.f) * m_selection2->getMatrix();
+    m_selection2->editEye(u, v);
+}
+
+void EventHandler::doCameraCenter(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+        // switch to campose center mode ?
+        m_glWidget->setMouseMode(cher::CAMPOSE_FOCAL);
+        return;
+    }
+    if (! (ea.getEventType() == osgGA::GUIEventAdapter::MOVE))
+        return;
+
+
+    // find local intersection with camera plane and derive the angle from it like it's done with photo rotation
+    double u=0, v=0;
+    if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        return;
+    if (!m_selection2.get()){
+        qCritical("No selection - exiting the mode");
+        m_glWidget->setMouseMode(cher::PEN_SKETCH);
+        return;
+    }
+    // calculate the angle
+    osg::Vec2f p1, p2;
+    m_selection2->getCenter2D(p1, p2);
+    double theta = Utilities::getAngleTwoVectors(p1, p2, p1, osg::Vec2f(u, v));
+    m_selection2->editCenter(theta);
+}
+
+void EventHandler::doCameraFocal(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+        // switch to campose center mode ?
+        m_selection2 = 0;
+        m_glWidget->setMouseMode(cher::PEN_SKETCH);
+        return;
+    }
+    if (! (ea.getEventType() == osgGA::GUIEventAdapter::MOVE))
+        return;
+
+    // find local intersection with camera plane and derive the distance from the eye for focal plane to be located
+    double u=0, v=0;
+    if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        return;
+    if (!m_selection2.get()){
+        qCritical("No selection - exiting the mode");
+        m_glWidget->setMouseMode(cher::PEN_SKETCH);
+        return;
+    }
+    // calculate the distance, make sure it does not get smaller than a threshold
+    osg::Vec3f P2 = osg::Vec3f(u,v,0);
+    osg::Vec3f eye = m_selection2->getEye2D();
+    osg::Vec2f c1, c2;
+    m_selection2->getCenter2D(c1,c2);
+    osg::Vec3f dir = osg::Vec3f(c2.x() - c1.x(), c2.y() - c1.y(), 0);
+    dir.normalize();
+    osg::Vec3f P1 = Utilities::projectPointOnLine(eye, dir, P2);
+    double distance = Utilities::distanceTwoPoints(P1, eye);
+
+    // calculate the angle based on the point position from the eye-center direction
+    double distance2 = Utilities::distanceTwoPoints(P1, P2);
+    m_selection2->editFocal(distance2);
+}
+
+void EventHandler::doCameraIdle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+
 }
 
 entity::Stroke *EventHandler::getStroke(const StrokeIntersector::Intersection &result)
