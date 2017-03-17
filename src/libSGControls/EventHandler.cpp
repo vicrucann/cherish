@@ -696,16 +696,11 @@ void EventHandler::doIdleMouse(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
     /* if click was performed outside of the SVMData, then
      * change the mouse mode and stop editing the SVMData. Also, obtain camera position. */
     if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
-//       //  reset the mouse mode to previous. It will also update the camera position, see setMode().
-//        m_glWidget->setMouseMode(m_glWidget->getMousePrevious());
-//        return;
-        // ask user if they finished editing the frame positions
-        qDebug("Trying to finish up with SVMData");
-        QMessageBox::StandardButton reply = QMessageBox::question(m_glWidget,
+        /*QMessageBox::StandardButton reply = QMessageBox::question(m_glWidget,
                                                                   QString("Photo re-scaling and re-positioning"),
                                                                   QString("Did you finish editing the wire for both planes?"),
                                                                   QMessageBox::Yes|QMessageBox::No );
-        if (reply == QMessageBox::Yes){
+        if (reply == QMessageBox::Yes)*/{
         // if yes, remove the svm frame and set the next mode
             bool removed = m_scene->removePhotoScaleData();
             if (!removed){
@@ -897,11 +892,11 @@ void EventHandler::doPhotoScaleBookmark(const osgGA::GUIEventAdapter &ea, osgGA:
 
     // if mouse release, set the re-scaling for the selected bookmark tool
     if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && m_tool.get() != 0) {
-        QMessageBox::StandardButton reply = QMessageBox::question(m_glWidget,
+        /*QMessageBox::StandardButton reply = QMessageBox::question(m_glWidget,
                                                                   QString("Photo re-scaling and re-positioning"),
                                                                   QString("Select this bookmark?"),
                                                                   QMessageBox::Yes|QMessageBox::No );
-        if (reply == QMessageBox::Yes){
+        if (reply == QMessageBox::Yes)*/{
             //
             m_tool->setColorDefault();
             m_tool = 0;
