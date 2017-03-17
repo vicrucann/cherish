@@ -108,6 +108,10 @@ public:
     /*! A method to edit the tool's position. */
     void setPose(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up);
 
+    void setColorDefault();
+
+    void setColorSelected();
+
 protected:
     /*! A method that uses internal camer parameters (eye, center, up) and sets up the vertices position
      * for the tool.*/

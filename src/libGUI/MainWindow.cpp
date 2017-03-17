@@ -393,7 +393,28 @@ void MainWindow::onImportPhoto(const QString &path, const QString &fileName)
     entity::Photo* photo = canvas->getPhoto(canvas->getNumPhotos()-1);
     if (!photo) return;
 
+    // check if there are some bookmarks on scene
+    if (m_bookmarkWidget->count() > 0){
+        // ask user if they want the photo to get re-scaled and re-positioned to match the 3D scene
+        QMessageBox::StandardButton reply = QMessageBox::question(this,
+                                                                  tr("Photo re-scaling and re-positioning"),
+                                                                  tr("Do you want to match four points of the photo with four points within 3D model in order to re-scale and"
+                                                                     " re-position the photo within the canvas?"),
+                                                                  QMessageBox::Yes|QMessageBox::No );
+        if (reply == QMessageBox::Yes){
+            if (!m_rootScene->getCanvasCurrent() || !m_rootScene->getCanvasPrevious()){
+                QMessageBox::warning(this, tr("Photo re-scaling and re-positioning"),
+                                     "There must be at least two canvases on the scene in order to perform "
+                                           "photo re-scaling.");
+                return;
+            }
+            QMessageBox::information(this, "Photo re-scaling and re-positioning",
+                                     "Please select a canvas which contains model points",
+                                     QMessageBox::Close);
+            m_glWidget->setMouseMode(cher::PHOTOSCALE_MODELPLANE);
 
+        }
+    }
 }
 
 void MainWindow::onRequestCanvasCreate(const osg::Vec3f &eye, const osg::Vec3f &center, const osg::Vec3f &up)
@@ -416,6 +437,16 @@ void MainWindow::onRequestCanvasCreate(const osg::Vec3f &eye, const osg::Vec3f &
         osg::Matrix rot = osg::Matrix::identity();
         rot.makeRotate(canvas->getGlobalAxisV(), up); // global V is aligned with up direction
         canvas->rotate(rot, cnvC);
+    }
+}
+
+void MainWindow::onCanvasClicked(const QModelIndex &index)
+{
+    entity::Canvas* canvas = m_rootScene->getCanvasCurrent();
+    if (!canvas) return;
+    if (m_glWidget->getMouseMode() == cher::PHOTOSCALE_MODELPLANE){
+        m_rootScene->addPhotoScaleData();
+        m_glWidget->setMouseMode(cher::SVM_IDLE);
     }
 }
 
@@ -1401,6 +1432,10 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_canvasWidget, SIGNAL(rightClicked(QModelIndex)),
                      m_rootScene->getUserScene(), SLOT(onRightClicked(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_canvasWidget, SIGNAL(clicked(QModelIndex)),
+                     this, SLOT(onCanvasClicked(QModelIndex)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_canvasWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)),

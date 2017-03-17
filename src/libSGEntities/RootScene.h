@@ -86,6 +86,10 @@ public:
      * This method requires presense of at least two canvases on the screen. */
     bool addSVMData();
 
+    bool addPhotoScaleData();
+
+    bool removePhotoScaleData();
+
     /* A method to supplement a last added entity::SceneState with entity::CamPoseData as a child.
      * Used to create a new bookmark using user interaction. This method requires presense of at least
      * one canvas on the scene. */

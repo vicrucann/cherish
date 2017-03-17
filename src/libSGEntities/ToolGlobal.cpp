@@ -112,11 +112,12 @@ entity::BookmarkTool::BookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &cent
     , m_center(center)
     , m_up(up)
 {
-    this->setColor(cher::BOOKMARK_CLR);
+    this->setColorDefault();
     this->updatePosition();
 
     this->initializeSG();
     this->setVisibility(true);
+    this->setNodeMask(cher::MASK_BOOKMARK_IN);
 }
 
 void entity::BookmarkTool::initializeSG()
@@ -133,11 +134,22 @@ void entity::BookmarkTool::setPose(const osg::Vec3d &eye, const osg::Vec3d &cent
     this->updatePosition();
 }
 
+void entity::BookmarkTool::setColorDefault()
+{
+    this->setColor(cher::BOOKMARK_CLR);
+}
+
+void entity::BookmarkTool::setColorSelected()
+{
+    this->setColor(cher::BOOKMARK_CLR_SELECT);
+}
+
 void entity::BookmarkTool::updatePosition()
 {
     std::vector<osg::Vec3f> verts;
     osg::Vec3d dir = m_center - m_eye;
     dir.normalize();
+    float at_scale = 2.f;
 
     /* since auto transform is activated, we have to move the geometry
      * so that it is located in front on the camera
@@ -145,11 +157,11 @@ void entity::BookmarkTool::updatePosition()
     osg::Vec3f eye_mod = m_eye + dir*0.02;
     osg::Vec3d side = dir^m_up;
     side.normalize();
-    osg::Vec3d C = eye_mod + dir * cher::BOOKMARK_Z;
-    osg::Vec3d v1 = C + side * cher::BOOKMARK_X + m_up * cher::BOOKMARK_Y;
-    osg::Vec3d v2 = C - side * cher::BOOKMARK_X + m_up * cher::BOOKMARK_Y;
-    osg::Vec3d v3 = C - side * cher::BOOKMARK_X - m_up * cher::BOOKMARK_Y;
-    osg::Vec3d v4 = C + side * cher::BOOKMARK_X - m_up * cher::BOOKMARK_Y;
+    osg::Vec3d C = eye_mod + dir * cher::BOOKMARK_Z * at_scale;
+    osg::Vec3d v1 = C + side * cher::BOOKMARK_X * at_scale + m_up * cher::BOOKMARK_Y * at_scale;
+    osg::Vec3d v2 = C - side * cher::BOOKMARK_X * at_scale + m_up * cher::BOOKMARK_Y * at_scale;
+    osg::Vec3d v3 = C - side * cher::BOOKMARK_X * at_scale - m_up * cher::BOOKMARK_Y * at_scale;
+    osg::Vec3d v4 = C + side * cher::BOOKMARK_X * at_scale - m_up * cher::BOOKMARK_Y * at_scale;
 
     verts.push_back(eye_mod);
     verts.push_back(v1);

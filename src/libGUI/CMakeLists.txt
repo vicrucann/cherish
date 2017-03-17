@@ -35,6 +35,7 @@ set(libGUI_SRCS
 
 qt5_wrap_ui(UI_GENERATED_SRCS
     Widgets/CameraProperties.ui
+    #Widgets/messageform.ui
     #Widgets/CMainWindow.ui
 )
 

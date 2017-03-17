@@ -342,6 +342,32 @@ bool RootScene::addSVMData()
     return added;
 }
 
+bool RootScene::addPhotoScaleData()
+{
+    entity::Canvas* model = m_userScene->getCanvasCurrent();
+    entity::Canvas* photo = m_userScene->getCanvasPrevious();
+    if (!model || !photo) return false;
+
+    osg::ref_ptr<entity::SVMData> svm = new entity::SVMData;
+    Q_CHECK_PTR(svm.get());
+    svm->setNodeMask(cher::MASK_SVMDATA_IN);
+    svm->setTransformWall(photo->getMatrix());
+    svm->setTransformFloor(model->getMatrix());
+    return this->addChild(svm.get());
+}
+
+bool RootScene::removePhotoScaleData()
+{
+    bool removed = false;
+    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+        entity::SVMData* svm = dynamic_cast<entity::SVMData*>( this->getChild(i));
+        if (!svm) continue;
+        removed = this->removeChild(svm);
+        break;
+    }
+    return removed;
+}
+
 bool RootScene::addCamPoseData()
 {
     Q_CHECK_PTR(m_userScene->getBookmarks());

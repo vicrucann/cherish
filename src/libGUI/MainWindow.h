@@ -139,6 +139,10 @@ public slots:
      * \param up is up vector of camera position.  */
     void onRequestCanvasCreate(const osg::Vec3f& eye, const osg::Vec3f& center, const osg::Vec3f& up);
 
+    /*! Slot is called whenever user right clicks on Canvas within canvas widget. Called after similar slot
+     * of user scene. This slot is only for photo re-scaling mouse mode. */
+    void onCanvasClicked(const QModelIndex& index);
+
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */
     void onFileNew();
@@ -267,6 +271,7 @@ protected:
     QAction* m_actionStrokeFogFactor;
 
     CameraProperties*   m_cameraProperties;
+
     QColorDialog*       m_colorDialog;
 
     static MainWindow* m_instance;
