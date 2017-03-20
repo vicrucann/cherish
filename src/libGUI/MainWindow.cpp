@@ -1490,11 +1490,16 @@ void MainWindow::initializeCallbacks()
 bool MainWindow::loadSceneFromFile()
 {
     if (!m_rootScene->isSetFilePath()) return false;
+
+    // load scene from file, initialize canvas tools and shader programs
     if (!m_rootScene->loadSceneFromFile()) return false;
     m_glWidget->update();
     this->initializeCallbacks();
 
+    // bookmark screenshot initialization
     m_rootScene->resetBookmarks(m_bookmarkWidget);
+
+    // reset the content of CanvasPhotoWidget
     if (!m_rootScene->getUserScene()) return false;
     m_rootScene->getUserScene()->resetModel(m_canvasWidget);
 

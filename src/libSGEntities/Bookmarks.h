@@ -117,8 +117,11 @@ public:
     void deleteBookmark(BookmarkWidget* widget, const QModelIndex& index);
 
     /*! This method is called only when a scene is loaded from file. It resets the widget's content,
-     * updates the screenshots.
-     * \param widget is the widget to update */
+     * updates the screenshots. The addition of the bookmark data to the widget also triggers creation
+     * of the bookmark tool and addition it to the scene graph through the signals-slots.
+     * \param widget is the widget to update
+     * \sa MainWindows::onBookmarkAddedToWidget().
+*/
     void resetModel(BookmarkWidget* widget);
 
     /*! The method to manually clear all the vector data as well as remove all SceneState children. */
