@@ -702,9 +702,10 @@ void EventHandler::doIdleMouse(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
                                                                   QMessageBox::Yes|QMessageBox::No );
         if (reply == QMessageBox::Yes)*/{
         // if yes, remove the svm frame and set the next mode
-            bool removed = m_scene->removePhotoScaleData();
-            if (!removed){
-                qCritical("Could not removed SVMData properly. The scene graph might be corrupted.");
+            bool hidden = m_scene->hidePhotoScaleData();
+//            bool removed = m_scene->removePhotoScaleData();
+            if (!hidden){
+                qCritical("Could not hide SVMData properly. The scene graph might be corrupted.");
                 m_glWidget->setMouseMode(cher::PEN_SKETCH);
                 return;
             }
@@ -898,8 +899,48 @@ void EventHandler::doPhotoScaleBookmark(const osgGA::GUIEventAdapter &ea, osgGA:
                                                                   QMessageBox::Yes|QMessageBox::No );
         if (reply == QMessageBox::Yes)*/{
             //
+
+            // obtain svm coords
+            const entity::SVMData* svm = m_scene->getPhotoScaleData();
+            if (!svm){
+                qCritical("Could not obtain SVMData of RootScene. Scene graph might be corrupted.");
+                m_glWidget->setMouseMode(cher::PEN_SKETCH);
+                return;
+            }
+            // obtain bookmar's position
+            osg::Vec3d eye, center, up;
+            m_tool->getPose(eye, center, up);
+
+            // obtain photo to re-scale
+            entity::Canvas* canvas = m_scene->getCanvasPrevious();
+            if (!canvas){
+                qCritical("Could not obtain canvas with photo");
+                m_glWidget->setMouseMode(cher::PEN_SKETCH);
+                return;
+            }
+            entity::Photo* photo = canvas->getPhoto(0);
+            if (!photo){
+                qCritical("Could not obtain photo pointer");
+                m_glWidget->setMouseMode(cher::PEN_SKETCH);
+                return;
+            }
+
+            // do a photo re-scaling using SVM and camera pose
+            photo->scaleAndPositionWith(svm, eye, center, up);
+
+            // remove SVMData from scene, it will not be used again
+            bool removed = m_scene->removePhotoScaleData();
+            if (!removed){
+                qCritical("Could not remove SVMData as a child of RootScene. Scene graph may be corrupted.");
+                m_glWidget->setMouseMode(cher::PEN_SKETCH);
+                return;
+            }
+
+            // unselect the bookmark tool
             m_tool->setColorDefault();
             m_tool = 0;
+
+            // set up the next mouse mode
             m_glWidget->setMouseMode(cher::PEN_SKETCH);
             return;
         }

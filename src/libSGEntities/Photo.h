@@ -12,15 +12,19 @@
 #include <osg/ref_ptr>
 #include <osg/Texture2D>
 #include <osgDB/ObjectWrapper>
+#include <SVMData.h>
 
 namespace entity {
 
 /*! \class Photo
- * Class description
+ * \brief Quad that uses texture to represent a 2D photo in 3D space.
 */
 class Photo: public entity::Entity2D{
 public:
+    /*! Default constructor, creates empty object and initializes OpenGL states. */
     Photo();
+
+    /*! Constructor which is only used for OSG factorization. Not used otherwise. */
     Photo(const Photo& photo, const osg::CopyOp& copyop = osg::CopyOp::SHALLOW_COPY);
 
     META_Node(entity, Photo)
@@ -51,6 +55,7 @@ public:
     void flipV();
     void scale(double scale, osg::Vec3f center);
     void scale(double scaleX, double scaleY, osg::Vec3f center);
+    void scaleAndPositionWith(const entity::SVMData* svm, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
     void setColor(const osg::Vec4f& color);
     void setTransparency(float alpha);
     float getTransparency() const;
@@ -61,9 +66,9 @@ protected:
     void updateVertices();
 
 private:
-    osg::ref_ptr<osg::Texture2D> m_texture;
-    osg::Vec3f m_center;
-    float m_width, m_height;
+    osg::ref_ptr<osg::Texture2D> m_texture; /*!< Photo texture container. */
+    osg::Vec3f m_center; /*!< local center. */
+    float m_width, m_height; /*!< width and height of the photo quad. */
     float m_angle;
 };
 }

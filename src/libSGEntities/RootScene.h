@@ -86,9 +86,17 @@ public:
      * This method requires presense of at least two canvases on the screen. */
     bool addSVMData();
 
+    /*! A method to add SVMData as a child to RootScene when using photo re-scaling. */
     bool addPhotoScaleData();
 
+    /*! A method to hide SVMData which is a child of RootScene. Used when doing photo re-scaling. */
+    bool hidePhotoScaleData();
+
+    /*! A method to remove any SVMData as a child of RootScene when done using photo re-scaling. */
     bool removePhotoScaleData();
+
+    /*! \return a pointer on SVMData which is a direct child of RootScene. */
+    const entity::SVMData* getPhotoScaleData() const;
 
     /* A method to supplement a last added entity::SceneState with entity::CamPoseData as a child.
      * Used to create a new bookmark using user interaction. This method requires presense of at least

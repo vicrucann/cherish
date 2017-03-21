@@ -1,5 +1,7 @@
 #include "Photo.h"
 #include "Settings.h"
+#include "Utilities.h"
+#include "DraggableWire.h"
 
 #include <QDebug>
 #include <QtGlobal>
@@ -216,6 +218,68 @@ void entity::Photo::scale(double scaleX, double scaleY, osg::Vec3f center)
 //    this->dirtyBound();
 
     this->updateVertices();
+}
+
+void entity::Photo::scaleAndPositionWith(const SVMData *svm, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+{
+    if (!svm) {
+        qWarning("Cannot complete the re-scaling. SVM is null");
+        return;
+    }
+
+    entity::DraggableWire* photo = svm->getFlootWire();
+    entity::DraggableWire* model = svm->getWallWire();
+    if (!photo || !model) {
+        qWarning("Cannot complete the re-scaling, wire is null");
+        return;
+    }
+
+    // get global intersection point between the camera ray and photo plane
+//    osg::Vec3f C;
+    osg::Vec3f S0, S1, S2, S3;
+//    bool intersected = Utilities::getRayPlaneIntersection(photo->getPlane(), photo->getCenter3D(), eye, center, C, true);
+    bool intersected0 = Utilities::getRayPlaneIntersection(photo->getPlane(), photo->getCenter3D(), eye, model->getPoint3D(0), S0, true);
+    bool intersected1 = Utilities::getRayPlaneIntersection(photo->getPlane(), photo->getCenter3D(), eye, model->getPoint3D(1), S1, true);
+    bool intersected2 = Utilities::getRayPlaneIntersection(photo->getPlane(), photo->getCenter3D(), eye, model->getPoint3D(2), S2, true);
+    bool intersected3 = Utilities::getRayPlaneIntersection(photo->getPlane(), photo->getCenter3D(), eye, model->getPoint3D(3), S3, true);
+    if (/*!intersected || */!intersected0 || !intersected1 || !intersected2 || !intersected3) {
+        qWarning("Cannot complete the re-scaling. No intersection found.");
+        return;
+    }
+
+    // transform global intersection point into local coordinates
+    osg::Vec3f c;
+    osg::Vec3f s0, s1, s2, s3;
+    osg::Matrix M = photo->getMatrix();
+    osg::Matrix invM;
+    if (!invM.invert(M)) {
+        qWarning("Cannot complete re-scaling. Could not invert transform matrix.");
+        return;
+    }
+//    bool transformed = Utilities::getLocalFromGlobal(C, invM, c);
+    bool transformed0 = Utilities::getLocalFromGlobal(S0, invM, s0);
+    bool transformed1 = Utilities::getLocalFromGlobal(S1, invM, s1);
+    bool transformed2 = Utilities::getLocalFromGlobal(S2, invM, s2);
+    bool transformed3 = Utilities::getLocalFromGlobal(S3, invM, s3);
+    if (/*!transformed || */!transformed0 || !transformed1 || !transformed2 || !transformed3) {
+        qWarning("Cannot complete re-scaling. Failed to transform global to local coordinates.");
+        return;
+    }
+    qInfo("About to perform photo move and re-scaling based on provided structures.");
+
+    // move photo location to new position
+    c = (s0 + s1 + s2 + s3) * 0.25f;
+    this->move(c.x(), c.y());
+
+    // calculate scale
+    osg::Vec3f p0 = photo->getPoint2D(0);
+    osg::Vec3f p1 = photo->getPoint2D(1);
+    osg::Vec3f p2 = photo->getPoint2D(2);
+    osg::Vec3f p3 = photo->getPoint2D(3);
+    float scaleX = ((p0-p1).length() / (s0-s1).length() + (p3-p2).length() / (s3-s2).length()) * 0.5f;
+    float scaleY = ((p2-p1).length() / (s2-s1).length() + (p3-p0).length() / (s3-s0).length()) * 0.5f;
+
+    this->scale(scaleX, scaleY, c);
 }
 
 void entity::Photo::setColor(const osg::Vec4f &color)

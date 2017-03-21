@@ -134,6 +134,13 @@ void entity::BookmarkTool::setPose(const osg::Vec3d &eye, const osg::Vec3d &cent
     this->updatePosition();
 }
 
+void entity::BookmarkTool::getPose(osg::Vec3d &eye, osg::Vec3d &center, osg::Vec3d &up)
+{
+    eye = m_eye;
+    center = m_center;
+    up = m_up;
+}
+
 void entity::BookmarkTool::setColorDefault()
 {
     this->setColor(cher::BOOKMARK_CLR);

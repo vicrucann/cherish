@@ -132,19 +132,21 @@ void Utilities::getFarNear(double x, double y, const osg::Matrix &invVPW, osg::V
     far = osg::Vec3f(x, y, 1.f) * invVPW;
 }
 
-bool Utilities::getRayPlaneIntersection(const osg::Plane &plane, const osg::Vec3f &center, const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, osg::Vec3f &P)
+bool Utilities::getRayPlaneIntersection(const osg::Plane &plane, const osg::Vec3f &center, const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, osg::Vec3f &P, bool isLine)
 {
     if (!plane.valid()){
         qWarning("rayPlaneIntersection: plane is not valid");
         return false;
     }
 
-    std::vector<osg::Vec3f> ray(2);
-    ray[0] = nearPoint;
-    ray[1] = farPoint;
-    if (plane.intersect(ray)) { // 1 or -1 means no intersection
-        qWarning("rayPlaneIntersection: not intersection with ray");
-        return false;
+    if (!isLine) {
+        std::vector<osg::Vec3f> ray(2);
+        ray[0] = nearPoint;
+        ray[1] = farPoint;
+        if (plane.intersect(ray)) { // 1 or -1 means no intersection
+            qWarning("rayPlaneIntersection: no intersection with ray");
+            return false;
+        }
     }
 
     osg::Vec3f dir = farPoint-nearPoint;

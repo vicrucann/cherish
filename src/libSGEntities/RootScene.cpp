@@ -356,6 +356,18 @@ bool RootScene::addPhotoScaleData()
     return this->addChild(svm.get());
 }
 
+bool RootScene::hidePhotoScaleData()
+{
+    bool hidden = false;
+    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+        entity::SVMData* svm = dynamic_cast<entity::SVMData*>( this->getChild(i));
+        if (!svm) continue;
+        svm->setVisibility(false);
+        hidden = true;
+    }
+    return hidden;
+}
+
 bool RootScene::removePhotoScaleData()
 {
     bool removed = false;
@@ -366,6 +378,16 @@ bool RootScene::removePhotoScaleData()
         break;
     }
     return removed;
+}
+
+const entity::SVMData *RootScene::getPhotoScaleData() const
+{
+    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+        const entity::SVMData* svm = dynamic_cast<const entity::SVMData*>( this->getChild(i));
+        if (!svm) continue;
+        return svm;
+    }
+    return nullptr;
 }
 
 bool RootScene::addCamPoseData()

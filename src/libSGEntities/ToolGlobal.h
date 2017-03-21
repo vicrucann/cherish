@@ -108,8 +108,13 @@ public:
     /*! A method to edit the tool's position. */
     void setPose(const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up);
 
+    /*! A method to obtain the tool's eye, center and up vectors. */
+    void getPose(osg::Vec3d& eye, osg::Vec3d& center, osg::Vec3d& up);
+
+    /*! A method to set up the tool's color to default values. */
     void setColorDefault();
 
+    /*! A method to set up the tool's color to selected values. */
     void setColorSelected();
 
 protected:
