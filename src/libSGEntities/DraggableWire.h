@@ -27,6 +27,9 @@ public:
     /*! \return global center of the wire plane. In local coordinates, the center is always (0,0). */
     osg::Vec3f getCenter3D() const;
 
+    /*! \return local center of the wire plane. */
+    osg::Vec3f getCenter2D() const;
+
     /*! \return a plane that describes the position of all the points of the wire. */
     osg::Plane getPlane() const;
 

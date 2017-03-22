@@ -1,5 +1,7 @@
 #include "DraggableWire.h"
 
+#include <vector>
+
 #include <QtGlobal>
 #include <QDebug>
 #include "Settings.h"
@@ -45,7 +47,16 @@ entity::DraggableWire::DraggableWire()
 
 osg::Vec3f entity::DraggableWire::getCenter3D() const
 {
-    return osg::Vec3f(0,0,0) * this->getMatrix();
+    return this->getCenter2D() * this->getMatrix();
+}
+
+osg::Vec3f entity::DraggableWire::getCenter2D() const
+{
+    osg::Vec3f p0 = this->getPoint2D(0),
+            p1 = this->getPoint2D(1),
+            p2 = this->getPoint2D(2),
+            p3 = this->getPoint2D(3);
+    return (p0+p1+p2+p3)*0.25f;
 }
 
 osg::Plane entity::DraggableWire::getPlane() const

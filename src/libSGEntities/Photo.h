@@ -68,7 +68,7 @@ protected:
 private:
     osg::ref_ptr<osg::Texture2D> m_texture; /*!< Photo texture container. */
     osg::Vec3f m_center; /*!< local center. */
-    float m_width, m_height; /*!< width and height of the photo quad. */
+    float m_width, m_height; /*!< half-width and half-height of the photo quad. */
     float m_angle;
 };
 }
