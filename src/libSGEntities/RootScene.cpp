@@ -345,13 +345,13 @@ bool RootScene::addSVMData()
 bool RootScene::addPhotoScaleData()
 {
     entity::Canvas* model = m_userScene->getCanvasCurrent();
-    entity::Canvas* photo = m_userScene->getCanvasPrevious();
-    if (!model || !photo) return false;
+    entity::Canvas* image = m_userScene->getCanvasPrevious();
+    if (!model || !image) return false;
 
     osg::ref_ptr<entity::SVMData> svm = new entity::SVMData;
     Q_CHECK_PTR(svm.get());
     svm->setNodeMask(cher::MASK_SVMDATA_IN);
-    svm->setTransformWall(photo->getMatrix());
+    svm->setTransformWall(image->getMatrix());
     svm->setTransformFloor(model->getMatrix());
     return this->addChild(svm.get());
 }

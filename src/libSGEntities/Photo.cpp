@@ -227,22 +227,23 @@ void entity::Photo::scaleAndPositionWith(const SVMData *svm, const osg::Vec3d &e
         return;
     }
 
-    entity::DraggableWire* photo = svm->getFlootWire();
-    entity::DraggableWire* model = svm->getWallWire();
-    if (!photo || !model) {
+    entity::DraggableWire* image = svm->getWallWire();
+    entity::DraggableWire* model = svm->getFlootWire();
+    if (!image || !model) {
         qWarning("Cannot complete the re-scaling, wire is null");
         return;
     }
 
-    // get global intersection point between the camera ray and photo plane
+    // get global intersection point between the camera ray and image plane
     osg::Vec3f S0, S1, S2, S3;
-    osg::Vec3f C;
-    bool intersected0 = Utilities::getRayPlaneIntersection(photo->getPlane(), photo->getCenter3D(), eye, model->getPoint3D(0), S0, true);
-    bool intersected1 = Utilities::getRayPlaneIntersection(photo->getPlane(), photo->getCenter3D(), eye, model->getPoint3D(1), S1, true);
-    bool intersected2 = Utilities::getRayPlaneIntersection(photo->getPlane(), photo->getCenter3D(), eye, model->getPoint3D(2), S2, true);
-    bool intersected3 = Utilities::getRayPlaneIntersection(photo->getPlane(), photo->getCenter3D(), eye, model->getPoint3D(3), S3, true);
-    bool intersected = Utilities::getRayPlaneIntersection(photo->getPlane(), photo->getCenter3D(), eye, center, C, true);
-    if (!intersected || !intersected0 || !intersected1 || !intersected2 || !intersected3) {
+    osg::Vec3f C = this->getCenter();
+    osg::Vec3f Delta = C - image->getPoint2D(0); // delta with 0th corner point
+    bool intersected0 = Utilities::getRayPlaneIntersection(image->getPlane(), image->getCenter3D(), eye, model->getPoint3D(0), S0, true);
+    bool intersected1 = Utilities::getRayPlaneIntersection(image->getPlane(), image->getCenter3D(), eye, model->getPoint3D(1), S1, true);
+    bool intersected2 = Utilities::getRayPlaneIntersection(image->getPlane(), image->getCenter3D(), eye, model->getPoint3D(2), S2, true);
+    bool intersected3 = Utilities::getRayPlaneIntersection(image->getPlane(), image->getCenter3D(), eye, model->getPoint3D(3), S3, true);
+//    bool intersected = Utilities::getRayPlaneIntersection(image->getPlane(), image->getCenter3D(), eye, center, C, true);
+    if (/*!intersected || */!intersected0 || !intersected1 || !intersected2 || !intersected3) {
         qWarning("Cannot complete the re-scaling. No intersection found.");
         return;
     }
@@ -250,7 +251,7 @@ void entity::Photo::scaleAndPositionWith(const SVMData *svm, const osg::Vec3d &e
     // transform global intersection point into local coordinates
     osg::Vec3f s0, s1, s2, s3; // projected local wire coords
     osg::Vec3f c;
-    osg::Matrix M = photo->getMatrix();
+    osg::Matrix M = image->getMatrix();
     osg::Matrix invM;
     if (!invM.invert(M)) {
         qWarning("Cannot complete re-scaling. Could not invert transform matrix.");
@@ -261,22 +262,23 @@ void entity::Photo::scaleAndPositionWith(const SVMData *svm, const osg::Vec3d &e
     bool transformed1 = Utilities::getLocalFromGlobal(S1, invM, s1);
     bool transformed2 = Utilities::getLocalFromGlobal(S2, invM, s2);
     bool transformed3 = Utilities::getLocalFromGlobal(S3, invM, s3);
-    bool transformed = Utilities::getLocalFromGlobal(C, invM, c);
-    if (!transformed || !transformed0 || !transformed1 || !transformed2 || !transformed3) {
+//    bool transformed = Utilities::getLocalFromGlobal(C, invM, c);
+    if (/*!transformed || */!transformed0 || !transformed1 || !transformed2 || !transformed3) {
         qWarning("Cannot complete re-scaling. Failed to transform global to local coordinates.");
         return;
     }
     qInfo("About to perform photo move and re-scaling based on provided structures.");
 
     // calculate scale
-    osg::Vec3f p0 = photo->getPoint2D(0);
-    osg::Vec3f p1 = photo->getPoint2D(1);
-    osg::Vec3f p2 = photo->getPoint2D(2);
-    osg::Vec3f p3 = photo->getPoint2D(3);
+    osg::Vec3f p0 = image->getPoint2D(0);
+    osg::Vec3f p1 = image->getPoint2D(1);
+    osg::Vec3f p2 = image->getPoint2D(2);
+    osg::Vec3f p3 = image->getPoint2D(3);
     float scaleX = ((p0-p1).length() / (s0-s1).length() + (p3-p2).length() / (s3-s2).length()) * 0.5f;
     float scaleY = ((p2-p1).length() / (s2-s1).length() + (p3-p0).length() / (s3-s0).length()) * 0.5f;
 
-    this->scale(scaleX, scaleY, c);
+    osg::Vec3f delta = osg::Vec3f(Delta.x()/scaleX, Delta.y()/scaleY, 0); // scaled delta from 0th point
+    this->scale(1.f/scaleX, 1.f/scaleY, s0+delta);
 }
 
 void entity::Photo::setColor(const osg::Vec4f &color)
