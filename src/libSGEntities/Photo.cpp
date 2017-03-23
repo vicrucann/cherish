@@ -276,9 +276,10 @@ void entity::Photo::scaleAndPositionWith(const SVMData *svm, const osg::Vec3d &e
     osg::Vec3f p3 = image->getPoint2D(3);
     float scaleX = ((p0-p1).length() / (s0-s1).length() + (p3-p2).length() / (s3-s2).length()) * 0.5f;
     float scaleY = ((p2-p1).length() / (s2-s1).length() + (p3-p0).length() / (s3-s0).length()) * 0.5f;
+    float scale_inv = 1.f/(0.5f*(scaleX+scaleY));
 
-    osg::Vec3f delta = osg::Vec3f(Delta.x()/scaleX, Delta.y()/scaleY, 0); // scaled delta from 0th point
-    this->scale(1.f/scaleX, 1.f/scaleY, s0+delta);
+    osg::Vec3f delta = osg::Vec3f(Delta.x()*scale_inv, Delta.y()*scale_inv, 0); // scaled delta from 0th point
+    this->scale(scale_inv, scale_inv, s0+delta);
 }
 
 void entity::Photo::setColor(const osg::Vec4f &color)
