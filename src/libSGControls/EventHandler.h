@@ -129,9 +129,6 @@ protected:
     /*! A method for setting up camera focal size when editing entity::CamPoseData */
     void doCameraFocal(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
 
-    /*! A method for editing entity::CamPoseData parameters. */
-    void doCameraIdle(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
-
     /*! A method that suggests a user to select a plane where model is located. (Photo re-scale procedure). */
     void doPhotoScaleModelPlane(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
 

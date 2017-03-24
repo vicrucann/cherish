@@ -502,13 +502,13 @@ void RootScene::hideAndUpdateCamPoseData()
         /* hide the wires */
         cam->setVisibility(false);
 
-        // suggest to insert new canvas in the FOV of the new camera pose.
-        // In this canvas an image will be placed.
-        emit m_userScene->requestCanvasCreate(eye, center, up);
-
         // request screenshot update
         BookmarkWidget* widget = MainWindow::instance().getBookmarkWidget();
         this->updateBookmark(widget, i);
+
+        // suggest to insert new canvas in the FOV of the new camera pose.
+        // In this canvas an image will be placed.
+        emit m_userScene->requestCanvasCreate(eye, center, up);
         break;
     }
 }

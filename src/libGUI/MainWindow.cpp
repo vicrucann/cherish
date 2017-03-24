@@ -437,6 +437,10 @@ void MainWindow::onRequestCanvasCreate(const osg::Vec3f &eye, const osg::Vec3f &
         osg::Matrix rot = osg::Matrix::identity();
         rot.makeRotate(canvas->getGlobalAxisV(), up); // global V is aligned with up direction
         canvas->rotate(rot, cnvC);
+
+        this->onSketch();
+        this->statusBar()->showMessage(tr("New canvas was added."));
+        this->onRequestUpdate();
     }
 }
 

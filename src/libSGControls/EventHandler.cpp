@@ -141,7 +141,6 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             this->doCameraFocal(ea, aa);
             break;
         default:
-            this->doCameraIdle(ea, aa);
             break;
         }
         break;
@@ -205,11 +204,9 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     case cher::CAMPOSE_CENTER:
     case cher::CAMPOSE_FOCAL:
     case cher::CAMPOSE_IDLE:
-        /* if it is SVM mode, no canvases can be available for selection at all */
-        m_scene->setAllCanvases(false);
-        break;
     case cher::PHOTOSCALE_BOOKAMRK:
-        m_scene->setAllCanvases(false);
+        /* if it is SVM mode, no canvases can be available for selection at all */
+        m_scene->setCanvasesButCurrent(false);
         break;
     default:
         /* if selection within 3D, enable all the canvases for selection */
@@ -854,11 +851,6 @@ void EventHandler::doCameraFocal(const osgGA::GUIEventAdapter &ea, osgGA::GUIAct
     // calculate the angle based on the point position from the eye-center direction
     double distance2 = Utilities::distanceTwoPoints(P1, P2);
     m_selection2->editFocal(distance2);
-}
-
-void EventHandler::doCameraIdle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
-{
-    // make sure proper traversal masks are set up
 }
 
 void EventHandler::doPhotoScaleModelPlane(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
