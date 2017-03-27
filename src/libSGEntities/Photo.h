@@ -47,19 +47,56 @@ public:
     void loadImage(const std::string& fname);
     osg::StateAttribute* getTextureAsAttribute() const;
 
+    /*! A method to change location of the Photo center.
+     * \param u is a new local U coordinate,
+     * \param v is a new local V coordinate. */
     void move(const double u, const double v);
+
+    /*! A method to change photo location within a canvas by using delta movement.
+     * \param du is delta movement in local U coordinate,
+     * \param dv is delta movement in local V coordinate. */
     void moveDelta(double du, double dv);
+
+    /*! A method to change photo orientation within its canvas.
+     * \param angle is the new rotation angle from positive U coordinate and around photo center, in radians. */
     void rotate(double angle);
+
+    /*! A method to change photo orientation around a specified photo center.
+     * \param theta is the rotation angle, in radians.
+     * \param center is the local coordinates of new photo center around which the rotation will be performed. */
     void rotate(double theta, osg::Vec3f center);
+
+    /*! A method to perform a horizontal flip. */
     void flipH();
+
+    /*! A method to perform a vertical flip. */
     void flipV();
+
+    /*! A method to scale photo quad uniformly around specified center. */
     void scale(double scale, osg::Vec3f center);
+
+    /*! A method to scale both directions of photo quad independently around specified center. */
     void scale(double scaleX, double scaleY, osg::Vec3f center);
+
+    /*! A method to perform automatic re-scaling so that whole photo is fit within current camera view.
+     * \param normal is the photo plane's normal vector.
+     * \param C is an arbitrary point within the photo plane.
+     * \return true if re-scaling was performed, false - otherwire (e.g., when eye direction is parallel to photo plane).*/
+    bool scaleWithinViewport(const osg::Plane& plane, const osg::Vec3f& C, const osg::Matrix& invM);
+
+    /*! A method to perform auto re-scaling and re-positionning by using SVMData and specifed camera position. */
     void scaleAndPositionWith(const entity::SVMData* svm, const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
+
+    /*! A method to set up quad color, e.g., when performing selection. */
     void setColor(const osg::Vec4f& color);
+
+    /*! A method to set up quad transparency. */
     void setTransparency(float alpha);
+
+    /*! \return quad's transparency level. */
     float getTransparency() const;
 
+    /*! \return type of entity::Entity2D. */
     cher::ENTITY_TYPE getEntityType() const;
 
 protected:

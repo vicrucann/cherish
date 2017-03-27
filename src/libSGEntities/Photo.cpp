@@ -2,6 +2,7 @@
 #include "Settings.h"
 #include "Utilities.h"
 #include "DraggableWire.h"
+#include "MainWindow.h"
 
 #include <QDebug>
 #include <QtGlobal>
@@ -218,6 +219,67 @@ void entity::Photo::scale(double scaleX, double scaleY, osg::Vec3f center)
 //    this->dirtyBound();
 
     this->updateVertices();
+}
+
+bool entity::Photo::scaleWithinViewport(const osg::Plane &plane, const osg::Vec3f &C, const osg::Matrix &invM)
+{
+    // obtain camera position
+    osg::Vec3f eye, center, up;
+    osg::Camera* camera = MainWindow::instance().getCamera();
+    if (!camera) {
+        qWarning("Could not extract camera for Photo re-scale.");
+        return false;
+    }
+    camera->getViewMatrixAsLookAt(eye, center, up);
+
+    int W = MainWindow::instance().getViewportWidth();
+    int H = MainWindow::instance().getViewportHeight();
+    qDebug() << "GLw=" << W << "GLh=" << H;
+    std::vector<osg::Vec2f> screen;
+    screen.push_back(osg::Vec2f(W, H));
+    screen.push_back(osg::Vec2f(0, H));
+    screen.push_back(osg::Vec2f(0, 0));
+    screen.push_back(osg::Vec2f(W, 0));
+
+    if (!camera->getViewport()) return false;
+    osg::Matrix VPW = camera->getViewMatrix() * camera->getProjectionMatrix() *
+            camera->getViewport()->computeWindowMatrix();
+    osg::Matrix invVPW;
+    if (!invVPW.invert(VPW)){
+        qWarning("invVPW: could not invert VPW matrix");
+        return false;
+    }
+    std::vector<osg::Vec3f> nearP(4);
+    std::vector<osg::Vec3f> farP(4);
+    std::vector<osg::Vec3f> Intersections(4);
+    std::vector<osg::Vec3f> intersections(4);
+    // find intersections of screen coords with photo plane
+    for (unsigned int i=0; i<4; ++i){
+        Utilities::getFarNear(screen[i].x(), screen[i].y(), invVPW, nearP[i], farP[i]);
+        // 3d intersection point
+        if (!Utilities::getRayPlaneIntersection(plane, C, nearP[i], farP[i], Intersections[i])){
+            qDebug("No intersection, the view is close to being parallel to photo plane");
+            return false;
+        }
+        // local intersection point
+        if (!Utilities::getLocalFromGlobal(Intersections[i], invM, intersections[i])){
+            qDebug("Could not obtain correct local intersection point for auto photo re-scale");
+            return false;
+        }
+    }
+
+    // calculate the photo new size
+    float w = std::fabs(intersections[0].x() - intersections[1].x());
+    float h = std::fabs(intersections[0].y() - intersections[3].y());
+
+    // calcualte scaling for photo
+    float scaleX = w/this->getWidth();
+    float scaleY = h/this->getHeight();
+    float scale = std::min(scaleX, scaleY);
+
+    this->scale(scale, m_center);
+
+    return false;
 }
 
 void entity::Photo::scaleAndPositionWith(const SVMData *svm, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)

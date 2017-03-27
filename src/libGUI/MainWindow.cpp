@@ -147,6 +147,16 @@ QPixmap MainWindow::getScreenshot(const osg::Vec3d &eye, const osg::Vec3d &cente
     return m_glWidget->getScreenShot(eye, center, up);
 }
 
+int MainWindow::getViewportWidth() const
+{
+    return m_glWidget->width();
+}
+
+int MainWindow::getViewportHeight() const
+{
+    return m_glWidget->height();
+}
+
 osg::Vec4f MainWindow::getCurrentColor() const
 {
     QColor qc = m_colorDialog->currentColor();

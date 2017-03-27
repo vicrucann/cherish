@@ -72,6 +72,7 @@ fur::AddPhotoCommand::AddPhotoCommand(entity::UserScene* scene, const std::strin
     m_photo->loadImage(fname);
 
     m_photo->getOrCreateStateSet()->setTextureAttributeAndModes(0, m_photo->getTextureAsAttribute());
+    m_photo->scaleWithinViewport(m_canvas->getPlane(), m_canvas->getCenter3D(), m_canvas->getMatrixInverse());
 
     this->setText(QObject::tr("Add photo to %1")
                   .arg(QString(m_canvas->getName().c_str())));

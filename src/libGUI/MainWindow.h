@@ -64,6 +64,12 @@ public:
     /*! A method to obtain a scene screenshot with the given camera position. */
     QPixmap getScreenshot(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
 
+    /*! \return width of GLWidget. */
+    int getViewportWidth() const;
+
+    /*! \return height of GLWidget. */
+    int getViewportHeight() const;
+
     /*! A method to obtain current color of the color dialog (for polygon drawing). */
     osg::Vec4f getCurrentColor() const;
 
