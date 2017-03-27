@@ -76,13 +76,14 @@ bool entity::Stroke::redefineToShape(osg::MatrixTransform *t)
         if (tolerance < 0.f){
             /* auto threshold helps to avoid under-fitting or over-fitting of the curve
          * depending on the scale of drawn stroke. */
-            float length = this->getLength();
-            qDebug() << "length=" << length;
-
-            tolerance = length * 0.001;
-            qDebug() << "assume threshold=" << tolerance;
+//            float length = this->getLength();
+//            const double scale = 0.001;
+            tolerance = 0.0001; //length * scale;
         }
 
+        // normalize the coordinates
+        osg::Vec3f center = this->getBoundingBox().center();
+        double scale = this->normalize(path.get(), center);
         OsgPathFitter<osg::Vec3Array, osg::Vec3f, float> fitter;
         fitter.init(*(path.get()));
         osg::ref_ptr<osg::Vec3Array> curves = fitter.fit(tolerance);
@@ -90,6 +91,8 @@ bool entity::Stroke::redefineToShape(osg::MatrixTransform *t)
             qWarning("Curves is NULL");
             return false;
         }
+        // denormalize the coordinates
+        this->denormalize(curves.get(), center, scale);
 
         this->setVertexArray(curves.get());
         m_isCurved = true;
@@ -216,6 +219,34 @@ osg::Vec3Array *entity::Stroke::getCurvePoints(const osg::Vec3Array *bezierPts) 
     }
     Q_ASSERT(points->size() == (cher::STROKE_SEGMENTS_NUMBER + 1) * (bezierPts->size() / 4));
     return points.release();
+}
+
+double entity::Stroke::normalize(osg::Vec3Array *path, const osg::Vec3f &center)
+{
+    if (!path) return 1.0;
+    double deltas = 0.0;
+    for (unsigned int i=0; i<path->size(); ++i){
+        osg::Vec3f p = (*path)[i];
+        deltas += std::sqrt( (p.x() - center.x())*(p.x() - center.x()) + (p.y() - center.y())*(p.y() - center.y()) );
+    }
+    double scale = (path->size()>0) ? deltas / path->size() : 1.0;
+    if (scale == 0) return 1.0;
+    for (unsigned int i=0; i<path->size(); ++i){
+        osg::Vec3f p = (*path)[i];
+        osg::Vec3f p_ = (p - center)/scale;
+        (*path)[i] = p_;
+    }
+    return scale;
+}
+
+void entity::Stroke::denormalize(osg::Vec3Array *path, const osg::Vec3f &center, double scale)
+{
+    if (!path) return;
+    for (unsigned int i=0; i<path->size(); ++i){
+        osg::Vec3f p_ = (*path)[i];
+        osg::Vec3f p = p_*scale + center;
+        (*path)[i] = p;
+    }
 }
 
 /* for serialization of stroke type
