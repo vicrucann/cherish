@@ -240,6 +240,7 @@ bool entity::Photo::scaleWithinViewport(const osg::Plane &plane, const osg::Vec3
     screen.push_back(osg::Vec2f(0, H));
     screen.push_back(osg::Vec2f(0, 0));
     screen.push_back(osg::Vec2f(W, 0));
+    screen.push_back(osg::Vec2f(W/2, H/2)); // photo center
 
     if (!camera->getViewport()) return false;
     osg::Matrix VPW = camera->getViewMatrix() * camera->getProjectionMatrix() *
@@ -249,12 +250,14 @@ bool entity::Photo::scaleWithinViewport(const osg::Plane &plane, const osg::Vec3
         qWarning("invVPW: could not invert VPW matrix");
         return false;
     }
-    std::vector<osg::Vec3f> nearP(4);
-    std::vector<osg::Vec3f> farP(4);
-    std::vector<osg::Vec3f> Intersections(4);
-    std::vector<osg::Vec3f> intersections(4);
-    // find intersections of screen coords with photo plane
-    for (unsigned int i=0; i<4; ++i){
+    unsigned int nInt = screen.size();
+    Q_ASSERT(nInt == 5);
+    std::vector<osg::Vec3f> nearP(nInt);
+    std::vector<osg::Vec3f> farP(nInt);
+    std::vector<osg::Vec3f> Intersections(nInt);
+    std::vector<osg::Vec3f> intersections(nInt);
+    // find intersections of screen coords with photo plane (and camera center)
+    for (unsigned int i=0; i<nInt; ++i){
         Utilities::getFarNear(screen[i].x(), screen[i].y(), invVPW, nearP[i], farP[i]);
         // 3d intersection point
         if (!Utilities::getRayPlaneIntersection(plane, C, nearP[i], farP[i], Intersections[i])){
@@ -278,6 +281,7 @@ bool entity::Photo::scaleWithinViewport(const osg::Plane &plane, const osg::Vec3
     float scale = std::min(scaleX, scaleY);
 
     this->scale(scale, m_center);
+    this->move(intersections[nInt-1].x(), intersections[nInt-1].y());
 
     return false;
 }
