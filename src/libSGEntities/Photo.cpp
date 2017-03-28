@@ -22,6 +22,7 @@ entity::Photo::Photo()
     , m_width(0)
     , m_height(0)
     , m_angle(0)
+    , m_color(cher::PHOTO_CLR_REST)
 {
     qDebug("New Photo ctor complete");
     this->setName("Photo");
@@ -129,7 +130,7 @@ void entity::Photo::loadImage(const std::string& fname)
     (*texcoords)[3] = osg::Vec2(0, x);
 
     osg::Vec4Array* colors = new osg::Vec4Array;
-    colors->push_back(cher::PHOTO_CLR_REST);
+    colors->push_back(m_color);
     this->setColorArray(colors, osg::Array::BIND_OVERALL);
 }
 
@@ -351,14 +352,25 @@ void entity::Photo::scaleAndPositionWith(const SVMData *svm, const osg::Vec3d &e
 void entity::Photo::setColor(const osg::Vec4f &color)
 {
     qDebug("photo color resetting");
+    float alpha = color.a();
+    osg::Vec4f stripped = osg::Vec4f(color.r(), color.g(), color.b(), 1.f);
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
-    if (color != cher::STROKE_CLR_NORMAL)
+    if (stripped != cher::STROKE_CLR_NORMAL){
+        m_color = color;
         (*colors)[0] = color;
-    else
-        (*colors)[0] = cher::PHOTO_CLR_REST;
+    }
+    else{
+        m_color = osg::Vec4f(cher::PHOTO_CLR_REST.r(), cher::PHOTO_CLR_REST.g(), cher::PHOTO_CLR_REST.b(), alpha);
+        (*colors)[0] = m_color;
+    }
     colors->dirty();
     this->dirtyDisplayList();
     this->dirtyBound();
+}
+
+const osg::Vec4f &entity::Photo::getColor() const
+{
+    return m_color;
 }
 
 void entity::Photo::setTransparency(float alpha)
@@ -371,7 +383,9 @@ void entity::Photo::setTransparency(float alpha)
 
     osg::Vec4f color = (*colors)[0];
     if (color.isNaN()) return;
-    (*colors)[0] = osg::Vec4f(color.x(), color.y(), color.z(), alpha);
+    m_color = osg::Vec4f(color.x(), color.y(), color.z(), alpha);
+    (*colors)[0] = m_color;
+
     colors->dirty();
     this->dirtyDisplayList();
     this->dirtyBound();

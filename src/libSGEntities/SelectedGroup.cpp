@@ -248,6 +248,10 @@ int entity::SelectedGroup::isEntitySelected(entity::Entity2D *entity) const
 void entity::SelectedGroup::setEntitySelectedColor(entity::Entity2D *entity, bool selected)
 {
     if (!entity) return;
-    if (selected) entity->setColor(cher::STROKE_CLR_SELECTED);
-    else entity->setColor(cher::STROKE_CLR_NORMAL);
+    osg::Vec4f color = entity->getColor();
+    float alpha = color.a();
+    if (selected) entity->setColor(osg::Vec4f(cher::STROKE_CLR_SELECTED.r(), cher::STROKE_CLR_SELECTED.g(),
+                                              cher::STROKE_CLR_SELECTED.b(), alpha));
+    else entity->setColor(osg::Vec4f (cher::STROKE_CLR_NORMAL.r(), cher::STROKE_CLR_NORMAL.g(),
+                                      cher::STROKE_CLR_NORMAL.b(), alpha));
 }

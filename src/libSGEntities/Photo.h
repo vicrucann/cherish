@@ -90,6 +90,9 @@ public:
     /*! A method to set up quad color, e.g., when performing selection. */
     void setColor(const osg::Vec4f& color);
 
+    /*! \return geometry color. Assumed it is binded per geometry. */
+    const osg::Vec4f& getColor() const;
+
     /*! A method to set up quad transparency. */
     void setTransparency(float alpha);
 
@@ -107,6 +110,7 @@ private:
     osg::Vec3f m_center; /*!< local center. */
     float m_width, m_height; /*!< half-width and half-height of the photo quad. */
     float m_angle;
+    osg::Vec4f m_color;
 };
 }
 
