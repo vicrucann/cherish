@@ -226,7 +226,7 @@ const float POLYGON_LINE_WIDTH = 4.f;
 const osg::Vec4f POLYGON_CLR_PHANTOM = solarized::base1;
 const osg::Vec4f POLYGON_CLR_NORMALFILL = solarized::base2;
 const osg::Vec4f POLYGON_CLR_SELECTEDFILL = solarized::green;
-const float POLYGON_PROXIMITY_THRESHOLD = 0.1f;
+const float POLYGON_PROXIMITY_THRESHOLD = 0.01f;
 
 // photo selected colors
 const osg::Vec4 PHOTO_CLR_SELECTED = solarized::red; // texture frame colors

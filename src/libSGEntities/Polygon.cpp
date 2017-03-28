@@ -33,6 +33,7 @@ bool entity::Polygon::copyFrom(const ShaderedEntity2D *copy)
 
     if (!entity::ShaderedEntity2D::copyFrom(copy))
         qCritical("Polygon copy has failed");
+//    this->setColor(copy->getColor());
 
     return true;
 }
