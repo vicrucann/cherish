@@ -352,6 +352,11 @@ bool entity::UserScene::setCanvasCurrent(entity::Canvas* cnv)
     // if current and previous are equal, search for the nearest
     // valiable candidate to assign the previous to;
     // if no canvases available at all, the observer ptrs are set to NULL
+
+    // make sure current canvas is not in editable mode
+    if (m_canvasCurrent.get())
+        m_canvasCurrent->setFrameEditable(false);
+
     if (cnv == m_canvasCurrent.get()){
         m_canvasCurrent->setColor(cher::CANVAS_CLR_CURRENT);
         emit this->canvasSelectedColor(this->getCanvasIndex(m_canvasCurrent.get()), 1);
