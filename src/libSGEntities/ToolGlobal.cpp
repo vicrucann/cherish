@@ -477,12 +477,18 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
             m_AT_center->setPosition(centerCustom);
             this->setQuadGeometry(m_AT_center->geometry, cher::CENTER/*Pc*/, szCr*scaleAT, szCr*scaleAT);
 
-            osg::Vec3f Pau = Pc + osg::Vec3f(szAx + 0.5, 0, 0);
+
+            // rotation geometry stick to canvas frame
+            float offsetU = szX*0.5f;
+            float offsetV = szY*0.5f;
+
+            // location and size of rotation tools
+            osg::Vec3f Pau = Pc + osg::Vec3f(szAx + offsetU, 0, 0);
             osg::Vec3f pointU = Pau - osg::Vec3f(0.5*szAx, 0.5*szCr, 0);
             m_AT_axisU->setPosition(Utilities::rotate2DPointAround(centerCustom, theta, pointU));
             this->setQuadGeometry(m_AT_axisU->geometry, cher::CENTER/*Pau*/, szAx*scaleAT, szCr*scaleAT, theta, centerCustom);
 
-            osg::Vec3f Pav = Pc + osg::Vec3f(0, szAx + 0.5, 0);
+            osg::Vec3f Pav = Pc + osg::Vec3f(0, szAx + offsetV, 0);
             osg::Vec3f pointV = Pav - osg::Vec3f(0.5*szCr, 0.5*szAx, 0);
             m_AT_axisV->setPosition(Utilities::rotate2DPointAround(centerCustom, theta, pointV));
             this->setQuadGeometry(m_AT_axisV->geometry, cher::CENTER/*Pav*/, szCr*scaleAT, szAx*scaleAT, theta, centerCustom);
