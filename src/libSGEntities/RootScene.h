@@ -45,37 +45,86 @@ class Bookmarks;
 */
 class RootScene : public osg::ProtectedGroup {
 public:
+    /*! Constructor: initializes structure of entity::UserScene, initializes global tools. */
     RootScene(QUndoStack* undoStack);
 
+    /*! \return pointer on user scene. */
     entity::UserScene* getUserScene() const;
+
+    /*! A method to attach current scene graph to a specified file name where the scene will be kept on disk. */
     void setFilePath(const std::string& name);
+
+    /*! \return true if the scene is already attached to a file name. */
     bool isSetFilePath() const;
+
+    /*! \return true if there is no difference between what was saved on disk and current scene graph. */
     bool isSavedToFile() const;
+
+    /*! Method is only used by testers. Not to be used otherwise. */
     void setSavedToFile(bool saved);
+
+    /*! \return true if there are no elements introduced by used on the scene. \sa clearUserData(). */
     bool isEmptyScene() const;
+
+    /*! A method to make the scene empty. \sa isEmptyScene(). */
     void clearUserData();
 
+    /*! A method to make all the tools hide or appear. */
     void setToolsVisibility(bool vis);
+
+    /*! \return true if the tools are visible. */
     bool getToolsVisibility() const;
+
+    /*! A method to make the global axis tool to hide or appear. */
     void setAxesVisibility(bool vis);
+
+    /*! \return true if the global axis are visible. */
     bool getAxesVisibility() const;
+
+    /*! A method to set up canvas visibility for both scene graph and GUI. */
     void setCanvasVisibilityAll(entity::Canvas* canvas, bool vis);
+
+    /*! \return true if canvas visible. */
     bool getCanvasVisibilityAll(entity::Canvas* canvas) const;
 
+    /*! A method to write the user scene to file. */
     bool writeScenetoFile();
+
+    /*! A method to export the user scene to OBJ or 3DS format. It uses Parallel Transport Frame algorithm
+     * in order to convert shadered strokes into triangular meshes. */
     bool exportSceneToFile(const std::string& name);
+
+    /*! \return true if scene was loaded successfully from file. */
     bool loadSceneFromFile();
 
+    /*! \return the depth of where entity::Stroke geometries are located. */
     int getStrokeLevel() const;
+
+    /*! \return the depth of where entity::Canvas geomtries are located. */
     int getCanvasLevel() const;
+
+    /*! \return the depth of where entity::Photo geometries are located. */
     int getPhotoLevel() const;
 
+    /*! A method to add new canvas to scene with provided rotation and translation matrices. */
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T);
+
+    /*! A method to add new canvas to scene with provided normal and center point. */
     void addCanvas(const osg::Vec3f& normal, const osg::Vec3f& center);
+
+    /*! A method to add canvas to scene with provided rotation and translation matrices, as well as a name. */
     void addCanvas(const osg::Matrix& R, const osg::Matrix& T, const std::string& name);
+
+    /*! A method to add/contribute to a stroke given local coordinates. */
     void addStroke(float u, float v, cher::EVENT event);
+
+    /*! A method to add/contribute to a polygon given local coordinates. */
     void addPolygon(float u, float v, cher::EVENT event);
+
+    /*! A method to select all strokes of the current canvas. */
     void selectAllEntities();
+
+    /*! A method to add specified photo to the current canvas. */
     void addPhoto(const std::string& fname);
 
     /*! A method to add a new camera position as a bookmark to the BookmarkWidget, and also to the scene graph as entity::SceneState. */
