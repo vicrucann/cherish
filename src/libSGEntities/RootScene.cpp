@@ -12,6 +12,7 @@
 #include <osgDB/WriteFile>
 #include <osgDB/ReaderWriter>
 #include <osgDB/Registry>
+#include <osgDB/Options>
 
 #include "Settings.h"
 #include "Utilities.h"
@@ -134,7 +135,8 @@ bool RootScene::writeScenetoFile()
         canvas->detachFrame();
     }
 
-    if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) result = false;
+    if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath(), new osgDB::Options("WriteImageHint=IncludeData")))
+        result = false;
 
     /* for each canvas, attach its tools back */
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
