@@ -30,6 +30,7 @@
 #include "PolyLineIntersector.h"
 #include "PointIntersector.h"
 #include "VirtualPlaneIntersector.h"
+#include "BookmarkToolIntersector.h"
 #include "CanvasNormalProjector.h"
 
 class GLWidget;
@@ -128,8 +129,11 @@ protected:
     /*! A method for setting up camera focal size when editing entity::CamPoseData */
     void doCameraFocal(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
 
-    /*! A method for editing entity::CamPoseData parameters. */
-    void doCameraIdle(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
+    /*! A method that suggests a user to select a plane where model is located. (Photo re-scale procedure). */
+    void doPhotoScaleModelPlane(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
+
+    /*! A method to chose a bookmark tool from 3D scene or bookmark widget. */
+    void doPhotoScaleBookmark(const osgGA::GUIEventAdapter & ea, osgGA::GUIActionAdapter & aa);
 
 protected:
     /*! A method to obtain entity::Stroke type from intersection result. */
@@ -146,6 +150,9 @@ protected:
 
     /*! A method to obtain entity::DraggableWire type from intersection result. */
     entity::DraggableWire* getDraggableWire(const PolyLineIntersector::Intersection& result);
+
+    /*! A method to obtain bookmark tool from intersection result. */
+    entity::BookmarkTool* getBookmarkTool(const PolyLineIntersector::Intersection& result);
 
     /*! A method to obtain a selected point index of an entity::DraggableWire type from intersection result. */
     int getSelectedPoint(const PointIntersector::Intersection& result);
@@ -233,6 +240,7 @@ protected:
 
     osg::observer_ptr<entity::DraggableWire> m_selection;
     osg::observer_ptr<entity::EditableWire> m_selection2;
+    osg::observer_ptr<entity::BookmarkTool> m_tool;
 };
 
 #endif // EVENTHANDLER

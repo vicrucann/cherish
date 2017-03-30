@@ -17,9 +17,9 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: blue;
-text-color: white;
-border: 1px solid white;
+   <string notr="true">background-color: rgb(38, 139, 210);
+text-color: rgb(161, 161, 180);
+border: 1px solid blue;
 border-radius: 10px;
 </string>
   </property>

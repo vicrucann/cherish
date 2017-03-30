@@ -1,5 +1,8 @@
 #include "Photo.h"
 #include "Settings.h"
+#include "Utilities.h"
+#include "DraggableWire.h"
+#include "MainWindow.h"
 
 #include <QDebug>
 #include <QtGlobal>
@@ -19,6 +22,7 @@ entity::Photo::Photo()
     , m_width(0)
     , m_height(0)
     , m_angle(0)
+    , m_color(cher::PHOTO_CLR_REST)
 {
     qDebug("New Photo ctor complete");
     this->setName("Photo");
@@ -126,7 +130,7 @@ void entity::Photo::loadImage(const std::string& fname)
     (*texcoords)[3] = osg::Vec2(0, x);
 
     osg::Vec4Array* colors = new osg::Vec4Array;
-    colors->push_back(cher::PHOTO_CLR_REST);
+    colors->push_back(m_color);
     this->setColorArray(colors, osg::Array::BIND_OVERALL);
 }
 
@@ -218,17 +222,155 @@ void entity::Photo::scale(double scaleX, double scaleY, osg::Vec3f center)
     this->updateVertices();
 }
 
+bool entity::Photo::scaleWithinViewport(const osg::Plane &plane, const osg::Vec3f &C, const osg::Matrix &invM)
+{
+    // obtain camera position
+    osg::Vec3f eye, center, up;
+    osg::Camera* camera = MainWindow::instance().getCamera();
+    if (!camera) {
+        qWarning("Could not extract camera for Photo re-scale.");
+        return false;
+    }
+    camera->getViewMatrixAsLookAt(eye, center, up);
+
+    int W = MainWindow::instance().getViewportWidth();
+    int H = MainWindow::instance().getViewportHeight();
+    qDebug() << "GLw=" << W << "GLh=" << H;
+    std::vector<osg::Vec2f> screen;
+    screen.push_back(osg::Vec2f(W, H));
+    screen.push_back(osg::Vec2f(0, H));
+    screen.push_back(osg::Vec2f(0, 0));
+    screen.push_back(osg::Vec2f(W, 0));
+    screen.push_back(osg::Vec2f(W/2, H/2)); // photo center
+
+    if (!camera->getViewport()) return false;
+    osg::Matrix VPW = camera->getViewMatrix() * camera->getProjectionMatrix() *
+            camera->getViewport()->computeWindowMatrix();
+    osg::Matrix invVPW;
+    if (!invVPW.invert(VPW)){
+        qWarning("invVPW: could not invert VPW matrix");
+        return false;
+    }
+    unsigned int nInt = screen.size();
+    Q_ASSERT(nInt == 5);
+    std::vector<osg::Vec3f> nearP(nInt);
+    std::vector<osg::Vec3f> farP(nInt);
+    std::vector<osg::Vec3f> Intersections(nInt);
+    std::vector<osg::Vec3f> intersections(nInt);
+    // find intersections of screen coords with photo plane (and camera center)
+    for (unsigned int i=0; i<nInt; ++i){
+        Utilities::getFarNear(screen[i].x(), screen[i].y(), invVPW, nearP[i], farP[i]);
+        // 3d intersection point
+        if (!Utilities::getRayPlaneIntersection(plane, C, nearP[i], farP[i], Intersections[i])){
+            qDebug("No intersection, the view is close to being parallel to photo plane");
+            return false;
+        }
+        // local intersection point
+        if (!Utilities::getLocalFromGlobal(Intersections[i], invM, intersections[i])){
+            qDebug("Could not obtain correct local intersection point for auto photo re-scale");
+            return false;
+        }
+    }
+
+    // calculate the photo new size
+    float w = std::fabs(intersections[0].x() - intersections[1].x());
+    float h = std::fabs(intersections[0].y() - intersections[3].y());
+
+    // calcualte scaling for photo
+    float scaleX = w/this->getWidth();
+    float scaleY = h/this->getHeight();
+    float scale = std::min(scaleX, scaleY);
+
+    this->scale(scale, m_center);
+    this->move(intersections[nInt-1].x(), intersections[nInt-1].y());
+
+    return false;
+}
+
+void entity::Photo::scaleAndPositionWith(const SVMData *svm, const osg::Vec3d &eye, const osg::Vec3d &center, const osg::Vec3d &up)
+{
+    if (!svm) {
+        qWarning("Cannot complete the re-scaling. SVM is null");
+        return;
+    }
+
+    entity::DraggableWire* image = svm->getWallWire();
+    entity::DraggableWire* model = svm->getFlootWire();
+    if (!image || !model) {
+        qWarning("Cannot complete the re-scaling, wire is null");
+        return;
+    }
+
+    // get global intersection point between the camera ray and image plane
+    osg::Vec3f S0, S1, S2, S3;
+    osg::Vec3f C = this->getCenter();
+    osg::Vec3f Delta = C - image->getPoint2D(0); // delta with 0th corner point
+    bool intersected0 = Utilities::getRayPlaneIntersection(image->getPlane(), image->getCenter3D(), eye, model->getPoint3D(0), S0, true);
+    bool intersected1 = Utilities::getRayPlaneIntersection(image->getPlane(), image->getCenter3D(), eye, model->getPoint3D(1), S1, true);
+    bool intersected2 = Utilities::getRayPlaneIntersection(image->getPlane(), image->getCenter3D(), eye, model->getPoint3D(2), S2, true);
+    bool intersected3 = Utilities::getRayPlaneIntersection(image->getPlane(), image->getCenter3D(), eye, model->getPoint3D(3), S3, true);
+//    bool intersected = Utilities::getRayPlaneIntersection(image->getPlane(), image->getCenter3D(), eye, center, C, true);
+    if (/*!intersected || */!intersected0 || !intersected1 || !intersected2 || !intersected3) {
+        qWarning("Cannot complete the re-scaling. No intersection found.");
+        return;
+    }
+
+    // transform global intersection point into local coordinates
+    osg::Vec3f s0, s1, s2, s3; // projected local wire coords
+    osg::Vec3f c;
+    osg::Matrix M = image->getMatrix();
+    osg::Matrix invM;
+    if (!invM.invert(M)) {
+        qWarning("Cannot complete re-scaling. Could not invert transform matrix.");
+        return;
+    }
+    // get local coords where the wire should be placed
+    bool transformed0 = Utilities::getLocalFromGlobal(S0, invM, s0);
+    bool transformed1 = Utilities::getLocalFromGlobal(S1, invM, s1);
+    bool transformed2 = Utilities::getLocalFromGlobal(S2, invM, s2);
+    bool transformed3 = Utilities::getLocalFromGlobal(S3, invM, s3);
+//    bool transformed = Utilities::getLocalFromGlobal(C, invM, c);
+    if (/*!transformed || */!transformed0 || !transformed1 || !transformed2 || !transformed3) {
+        qWarning("Cannot complete re-scaling. Failed to transform global to local coordinates.");
+        return;
+    }
+    qInfo("About to perform photo move and re-scaling based on provided structures.");
+
+    // calculate scale
+    osg::Vec3f p0 = image->getPoint2D(0);
+    osg::Vec3f p1 = image->getPoint2D(1);
+    osg::Vec3f p2 = image->getPoint2D(2);
+    osg::Vec3f p3 = image->getPoint2D(3);
+    float scaleX = ((p0-p1).length() / (s0-s1).length() + (p3-p2).length() / (s3-s2).length()) * 0.5f;
+    float scaleY = ((p2-p1).length() / (s2-s1).length() + (p3-p0).length() / (s3-s0).length()) * 0.5f;
+    float scale_inv = 1.f/(0.5f*(scaleX+scaleY));
+
+    osg::Vec3f delta = osg::Vec3f(Delta.x()*scale_inv, Delta.y()*scale_inv, 0); // scaled delta from 0th point
+    this->scale(scale_inv, scale_inv, s0+delta);
+}
+
 void entity::Photo::setColor(const osg::Vec4f &color)
 {
     qDebug("photo color resetting");
+    float alpha = color.a();
+    osg::Vec4f stripped = osg::Vec4f(color.r(), color.g(), color.b(), 1.f);
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
-    if (color != cher::STROKE_CLR_NORMAL)
+    if (stripped != cher::STROKE_CLR_NORMAL){
+        m_color = color;
         (*colors)[0] = color;
-    else
-        (*colors)[0] = cher::PHOTO_CLR_REST;
+    }
+    else{
+        m_color = osg::Vec4f(cher::PHOTO_CLR_REST.r(), cher::PHOTO_CLR_REST.g(), cher::PHOTO_CLR_REST.b(), alpha);
+        (*colors)[0] = m_color;
+    }
     colors->dirty();
     this->dirtyDisplayList();
     this->dirtyBound();
+}
+
+const osg::Vec4f &entity::Photo::getColor() const
+{
+    return m_color;
 }
 
 void entity::Photo::setTransparency(float alpha)
@@ -241,7 +383,9 @@ void entity::Photo::setTransparency(float alpha)
 
     osg::Vec4f color = (*colors)[0];
     if (color.isNaN()) return;
-    (*colors)[0] = osg::Vec4f(color.x(), color.y(), color.z(), alpha);
+    m_color = osg::Vec4f(color.x(), color.y(), color.z(), alpha);
+    (*colors)[0] = m_color;
+
     colors->dirty();
     this->dirtyDisplayList();
     this->dirtyBound();

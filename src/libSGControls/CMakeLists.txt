@@ -32,6 +32,8 @@ set (libSGControls_SRCS
     PolyLineIntersector.cpp
     PointIntersector.h
     PointIntersector.cpp
+    BookmarkToolIntersector.h
+    BookmarkToolIntersector.cpp
     ViewerCommand.h
     ViewerCommand.cpp
     LogFileHandler.h

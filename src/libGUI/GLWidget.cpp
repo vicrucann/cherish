@@ -167,6 +167,11 @@ void GLWidget::setMouseMode(const cher::MOUSE_MODE &mode)
     emit this->mouseModeSet(m_mouseMode);
 }
 
+const cher::MOUSE_MODE GLWidget::getMouseMode() const
+{
+    return m_mouseMode;
+}
+
 cher::MOUSE_MODE GLWidget::getMousePrevious() const
 {
     return m_mousePrevious;

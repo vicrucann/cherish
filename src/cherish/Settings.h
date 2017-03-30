@@ -141,6 +141,12 @@ enum MOUSE_MODE
     CAMPOSE_CENTER = 0x630,
     CAMPOSE_FOCAL = 0x640,
 
+    MOUSE_PHOTOSCALE = 0x700,
+    PHOTOSCALE_MODELPLANE = 0x710,
+    PHOTOSCALE_PHOTOPLANE = 0x720,
+    PHOTOSCALE_BOOKAMRK = 0x730,
+    PHOTOSCALE_IDLE = 0x740,
+
     maskMouse = 0xff00,
     maskEntity = 0xff0,
     maskAction = 0xf,
@@ -159,12 +165,12 @@ enum EVENT {
 /*! Enum class for canvas traversal masks. */
 enum TraversalMask
 {
-    MASK_CANVAS_IN = 0x110, /* sees all canvas data */
-    MASK_CANVAS_OUT = 0x001, /* does not see any of canvas data */
-    MASK_CANVASDATA_IN = 0x010, /* sees only geodeData geometries */
-    MASK_CANVASFRAME_IN = 0x100, /* sees only canvas frame drawables */
-    MASK_SVMDATA_IN = 0x1000, /* sees only entity::SVMData */
-    MASK_CAMPOSEDATA_IN = 0x1000,
+    MASK_CANVAS_IN = 0x110, /*!< sees all canvas data */
+    MASK_CANVAS_OUT = 0x001, /*!< does not see any of canvas data */
+    MASK_CANVASDATA_IN = 0x010, /*!< sees only geodeData geometries */
+    MASK_CANVASFRAME_IN = 0x100, /*!< sees only canvas frame drawables */
+    MASK_SVMDATA_IN = 0x1000, /*!< sees only entity::SVMData */
+    MASK_BOOKMARK_IN = 0x1100, /*!< sees only bookmark tools */
     MASK_ALL_IN = ~0x0
 };
 
@@ -186,6 +192,7 @@ const osg::Vec4 CANVAS_CLR_ROTAXIS = solarized::orange;
 
 // bookmark tool settings
 const osg::Vec4 BOOKMARK_CLR = solarized::green;
+const osg::Vec4 BOOKMARK_CLR_SELECT = solarized::red;
 const float BOOKMARK_X = 10;
 const float BOOKMARK_Y = BOOKMARK_X;
 const float BOOKMARK_Z = BOOKMARK_X;
@@ -219,7 +226,7 @@ const float POLYGON_LINE_WIDTH = 4.f;
 const osg::Vec4f POLYGON_CLR_PHANTOM = solarized::base1;
 const osg::Vec4f POLYGON_CLR_NORMALFILL = solarized::base2;
 const osg::Vec4f POLYGON_CLR_SELECTEDFILL = solarized::green;
-const float POLYGON_PROXIMITY_THRESHOLD = 0.1f;
+const float POLYGON_PROXIMITY_THRESHOLD = 0.01f;
 
 // photo selected colors
 const osg::Vec4 PHOTO_CLR_SELECTED = solarized::red; // texture frame colors

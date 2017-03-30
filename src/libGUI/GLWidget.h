@@ -72,6 +72,9 @@ public:
     /*! \param mode is the mouse mode to set up for the GLWidget and whole application. */
     void setMouseMode(const cher::MOUSE_MODE& mode);
 
+    /*! \return current mouse mode. */
+    const cher::MOUSE_MODE getMouseMode() const;
+
     /*! \return a mouse mode which was before the current one. */
     cher::MOUSE_MODE getMousePrevious() const;
 

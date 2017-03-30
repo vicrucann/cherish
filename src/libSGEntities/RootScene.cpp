@@ -12,6 +12,7 @@
 #include <osgDB/WriteFile>
 #include <osgDB/ReaderWriter>
 #include <osgDB/Registry>
+#include <osgDB/Options>
 
 #include "Settings.h"
 #include "Utilities.h"
@@ -134,7 +135,8 @@ bool RootScene::writeScenetoFile()
         canvas->detachFrame();
     }
 
-    if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath())) result = false;
+    if (!osgDB::writeNodeFile(*(m_userScene.get()), m_userScene->getFilePath(), new osgDB::Options("WriteImageHint=IncludeData")))
+        result = false;
 
     /* for each canvas, attach its tools back */
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
@@ -342,6 +344,54 @@ bool RootScene::addSVMData()
     return added;
 }
 
+bool RootScene::addPhotoScaleData()
+{
+    entity::Canvas* model = m_userScene->getCanvasCurrent();
+    entity::Canvas* image = m_userScene->getCanvasPrevious();
+    if (!model || !image) return false;
+
+    osg::ref_ptr<entity::SVMData> svm = new entity::SVMData;
+    Q_CHECK_PTR(svm.get());
+    svm->setNodeMask(cher::MASK_SVMDATA_IN);
+    svm->setTransformWall(image->getMatrix());
+    svm->setTransformFloor(model->getMatrix());
+    return this->addChild(svm.get());
+}
+
+bool RootScene::hidePhotoScaleData()
+{
+    bool hidden = false;
+    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+        entity::SVMData* svm = dynamic_cast<entity::SVMData*>( this->getChild(i));
+        if (!svm) continue;
+        svm->setVisibility(false);
+        hidden = true;
+    }
+    return hidden;
+}
+
+bool RootScene::removePhotoScaleData()
+{
+    bool removed = false;
+    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+        entity::SVMData* svm = dynamic_cast<entity::SVMData*>( this->getChild(i));
+        if (!svm) continue;
+        removed = this->removeChild(svm);
+        break;
+    }
+    return removed;
+}
+
+const entity::SVMData *RootScene::getPhotoScaleData() const
+{
+    for (unsigned int i=0; i<this->getNumChildren(); ++i){
+        const entity::SVMData* svm = dynamic_cast<const entity::SVMData*>( this->getChild(i));
+        if (!svm) continue;
+        return svm;
+    }
+    return nullptr;
+}
+
 bool RootScene::addCamPoseData()
 {
     Q_CHECK_PTR(m_userScene->getBookmarks());
@@ -454,13 +504,13 @@ void RootScene::hideAndUpdateCamPoseData()
         /* hide the wires */
         cam->setVisibility(false);
 
-        // suggest to insert new canvas in the FOV of the new camera pose.
-        // In this canvas an image will be placed.
-        emit m_userScene->requestCanvasCreate(eye, center, up);
-
         // request screenshot update
         BookmarkWidget* widget = MainWindow::instance().getBookmarkWidget();
         this->updateBookmark(widget, i);
+
+        // suggest to insert new canvas in the FOV of the new camera pose.
+        // In this canvas an image will be placed.
+        emit m_userScene->requestCanvasCreate(eye, center, up);
         break;
     }
 }

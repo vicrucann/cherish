@@ -109,6 +109,23 @@ protected:
 
     osg::Vec3Array* getCurvePoints(const osg::Vec3Array* bezierPts) const;
 
+    /*! A method to make sure the curve is not too small, neither too large for a fitter tolerance level.
+     * Nomalization should be applied before the fitting algorithm, and then the result coordinates must get
+     * denrmalized back to their true size.
+     * The nornalization algorithm is as follows:
+     * 1. Find center of the points.
+     * 2. For each curve coordinate, substract a center coordinate from it.
+     * 3. The scale factor equals to all the squared point deviations devided by total number of the points.
+     * 4. Scale each coordinate by scale factor.
+     * \param path is the point array to normalize,
+     * \param center is local 2d center (e.g., bounding box center).
+     * \return scaling factor. */
+    double normalize(osg::Vec3Array* path, const osg::Vec3f& center);
+
+    /*! A method to denormalize the curve coordinates. Should be used after the curve fitting algorithm.
+     * \sa normalize(). */
+    void denormalize(osg::Vec3Array* path, const osg::Vec3f& center, double scale);
+
 private:
     bool                                m_isCurved; // saved to file
 };

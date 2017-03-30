@@ -112,11 +112,12 @@ entity::BookmarkTool::BookmarkTool(const osg::Vec3d &eye, const osg::Vec3d &cent
     , m_center(center)
     , m_up(up)
 {
-    this->setColor(cher::BOOKMARK_CLR);
+    this->setColorDefault();
     this->updatePosition();
 
     this->initializeSG();
     this->setVisibility(true);
+    this->setNodeMask(cher::MASK_BOOKMARK_IN);
 }
 
 void entity::BookmarkTool::initializeSG()
@@ -133,11 +134,29 @@ void entity::BookmarkTool::setPose(const osg::Vec3d &eye, const osg::Vec3d &cent
     this->updatePosition();
 }
 
+void entity::BookmarkTool::getPose(osg::Vec3d &eye, osg::Vec3d &center, osg::Vec3d &up)
+{
+    eye = m_eye;
+    center = m_center;
+    up = m_up;
+}
+
+void entity::BookmarkTool::setColorDefault()
+{
+    this->setColor(cher::BOOKMARK_CLR);
+}
+
+void entity::BookmarkTool::setColorSelected()
+{
+    this->setColor(cher::BOOKMARK_CLR_SELECT);
+}
+
 void entity::BookmarkTool::updatePosition()
 {
     std::vector<osg::Vec3f> verts;
     osg::Vec3d dir = m_center - m_eye;
     dir.normalize();
+    float at_scale = 2.f;
 
     /* since auto transform is activated, we have to move the geometry
      * so that it is located in front on the camera
@@ -145,11 +164,11 @@ void entity::BookmarkTool::updatePosition()
     osg::Vec3f eye_mod = m_eye + dir*0.02;
     osg::Vec3d side = dir^m_up;
     side.normalize();
-    osg::Vec3d C = eye_mod + dir * cher::BOOKMARK_Z;
-    osg::Vec3d v1 = C + side * cher::BOOKMARK_X + m_up * cher::BOOKMARK_Y;
-    osg::Vec3d v2 = C - side * cher::BOOKMARK_X + m_up * cher::BOOKMARK_Y;
-    osg::Vec3d v3 = C - side * cher::BOOKMARK_X - m_up * cher::BOOKMARK_Y;
-    osg::Vec3d v4 = C + side * cher::BOOKMARK_X - m_up * cher::BOOKMARK_Y;
+    osg::Vec3d C = eye_mod + dir * cher::BOOKMARK_Z * at_scale;
+    osg::Vec3d v1 = C + side * cher::BOOKMARK_X * at_scale + m_up * cher::BOOKMARK_Y * at_scale;
+    osg::Vec3d v2 = C - side * cher::BOOKMARK_X * at_scale + m_up * cher::BOOKMARK_Y * at_scale;
+    osg::Vec3d v3 = C - side * cher::BOOKMARK_X * at_scale - m_up * cher::BOOKMARK_Y * at_scale;
+    osg::Vec3d v4 = C + side * cher::BOOKMARK_X * at_scale - m_up * cher::BOOKMARK_Y * at_scale;
 
     verts.push_back(eye_mod);
     verts.push_back(v1);
@@ -407,7 +426,8 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
         if (selectionIsEmpty){
             /* pickable is drawn on the right top corner */
             m_AT_pick->setPosition(p0);
-            this->setQuadGeometry(m_AT_pick->geometry, p0, szCr*scaleAT, szCr*scaleAT); // when using auto scale, the sizing must be provided larger, do not know why?
+            // when using auto scale, the sizing must be provided in pixel size, this is why we multiply it with scaleAT.
+            this->setQuadGeometry(m_AT_pick->geometry, cher::CENTER, szCr*scaleAT, szCr*scaleAT);
             m_switch->setChildValue(m_AT_pick, true);
 
             m_switch->setChildValue(m_AT_center, false);
@@ -455,17 +475,23 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
 
             osg::Vec3f Pc = centerCustom + osg::Vec3f(szCr*0.5, szCr*0.5, 0);
             m_AT_center->setPosition(centerCustom);
-            this->setQuadGeometry(m_AT_center->geometry, Pc, szCr*scaleAT, szCr*scaleAT);
+            this->setQuadGeometry(m_AT_center->geometry, cher::CENTER/*Pc*/, szCr*scaleAT, szCr*scaleAT);
 
-            osg::Vec3f Pau = Pc + osg::Vec3f(szAx + 0.1, 0, 0);
+
+            // rotation geometry stick to canvas frame
+            float offsetU = szX*0.5f;
+            float offsetV = szY*0.5f;
+
+            // location and size of rotation tools
+            osg::Vec3f Pau = Pc + osg::Vec3f(szAx + offsetU, 0, 0);
             osg::Vec3f pointU = Pau - osg::Vec3f(0.5*szAx, 0.5*szCr, 0);
             m_AT_axisU->setPosition(Utilities::rotate2DPointAround(centerCustom, theta, pointU));
-            this->setQuadGeometry(m_AT_axisU->geometry, Pau, szAx*scaleAT, szCr*scaleAT, theta, centerCustom);
+            this->setQuadGeometry(m_AT_axisU->geometry, cher::CENTER/*Pau*/, szAx*scaleAT, szCr*scaleAT, theta, centerCustom);
 
-            osg::Vec3f Pav = Pc + osg::Vec3f(0, szAx + 0.1, 0);
+            osg::Vec3f Pav = Pc + osg::Vec3f(0, szAx + offsetV, 0);
             osg::Vec3f pointV = Pav - osg::Vec3f(0.5*szCr, 0.5*szAx, 0);
             m_AT_axisV->setPosition(Utilities::rotate2DPointAround(centerCustom, theta, pointV));
-            this->setQuadGeometry(m_AT_axisV->geometry, Pav, szCr*scaleAT, szAx*scaleAT, theta, centerCustom);
+            this->setQuadGeometry(m_AT_axisV->geometry, cher::CENTER/*Pav*/, szCr*scaleAT, szAx*scaleAT, theta, centerCustom);
 
             osg::Vec3f p1 = verts.at(1);
             osg::Vec3f p2 = verts.at(2);
@@ -475,28 +501,28 @@ void entity::FrameTool::setVertices(const osg::Vec3f &center, float szX, float s
             m_AT_scaleUV3->setPosition(p2);
             m_AT_scaleUV4->setPosition(p3);
             this->setScaleGeometry(m_AT_scaleUV1->geometry,
-                                   p0,
-                                   p0 - osg::Vec3f(szCr, 0, 0)*scaleAT,
-                                   p0 - osg::Vec3f(szCr, szCr, 0)*scaleAT,
-                                   p0 - osg::Vec3f(0, szCr, 0)*scaleAT);
+                                   /*p0*/cher::CENTER,
+                                   /*p0*/ - osg::Vec3f(szCr, 0, 0)*scaleAT,
+                                   /*p0*/ - osg::Vec3f(szCr, szCr, 0)*scaleAT,
+                                   /*p0*/ - osg::Vec3f(0, szCr, 0)*scaleAT);
             this->setScaleGeometry(m_AT_scaleUV2->geometry,
-                                   p1,
-                                   p1 - osg::Vec3f(0, szCr, 0)*scaleAT,
-                                   p1 + osg::Vec3f(szCr, -szCr, 0)*scaleAT,
-                                   p1 + osg::Vec3f(szCr, 0, 0)*scaleAT);
+                                   /*p1*/cher::CENTER,
+                                   /*p1*/ - osg::Vec3f(0, szCr, 0)*scaleAT,
+                                   /*p1 +*/ osg::Vec3f(szCr, -szCr, 0)*scaleAT,
+                                   /*p1 +*/ osg::Vec3f(szCr, 0, 0)*scaleAT);
 //            this->setQuadGeometry(m_AT_scaleUV1->geometry, p0, szCr*scaleAT, szCr*scaleAT);
 //            this->setQuadGeometry(m_AT_scaleUV2->geometry, p1, szCr*scaleAT, szCr*scaleAT);
             this->setScaleGeometry(m_AT_scaleUV3->geometry,
-                                   p2,
-                                   p2 + osg::Vec3f(szCr, 0, 0)*scaleAT,
-                                   p2 + osg::Vec3f(szCr, szCr, 0)*scaleAT,
-                                   p2 + osg::Vec3f(0, szCr, 0)*scaleAT);
+                                   /*p2*/cher::CENTER,
+                                   /*p2 +*/ osg::Vec3f(szCr, 0, 0)*scaleAT,
+                                   /*p2 +*/ osg::Vec3f(szCr, szCr, 0)*scaleAT,
+                                   /*p2 +*/ osg::Vec3f(0, szCr, 0)*scaleAT);
 //            this->setQuadGeometry(m_AT_scaleUV3->geometry, p2, szCr*scaleAT, szCr*scaleAT);
             this->setScaleGeometry(m_AT_scaleUV4->geometry,
-                                   p3,
-                                   p3 + osg::Vec3f(0, szCr, 0)*scaleAT,
-                                   p3 + osg::Vec3f(-szCr, szCr, 0)*scaleAT,
-                                   p3 - osg::Vec3f(szCr, 0, 0)*scaleAT);
+                                   /*p3*/cher::CENTER,
+                                   /*p3 +*/ osg::Vec3f(0, szCr, 0)*scaleAT,
+                                   /*p3 +*/ osg::Vec3f(-szCr, szCr, 0)*scaleAT,
+                                   /*p3*/ - osg::Vec3f(szCr, 0, 0)*scaleAT);
 //            this->setQuadGeometry(m_AT_scaleUV4->geometry, p3, szCr*scaleAT, szCr*scaleAT);
         }
     }

@@ -64,6 +64,12 @@ public:
     /*! A method to obtain a scene screenshot with the given camera position. */
     QPixmap getScreenshot(const osg::Vec3d& eye, const osg::Vec3d& center, const osg::Vec3d& up);
 
+    /*! \return width of GLWidget. */
+    int getViewportWidth() const;
+
+    /*! \return height of GLWidget. */
+    int getViewportHeight() const;
+
     /*! A method to obtain current color of the color dialog (for polygon drawing). */
     osg::Vec4f getCurrentColor() const;
 
@@ -138,6 +144,10 @@ public slots:
      * \param center is the center position of camera,
      * \param up is up vector of camera position.  */
     void onRequestCanvasCreate(const osg::Vec3f& eye, const osg::Vec3f& center, const osg::Vec3f& up);
+
+    /*! Slot is called whenever user right clicks on Canvas within canvas widget. Called after similar slot
+     * of user scene. This slot is only for photo re-scaling mouse mode. */
+    void onCanvasClicked(const QModelIndex& index);
 
 protected slots:
     /* NOTE: there should be no private slots, since all are used for unit tests */
@@ -267,6 +277,7 @@ protected:
     QAction* m_actionStrokeFogFactor;
 
     CameraProperties*   m_cameraProperties;
+
     QColorDialog*       m_colorDialog;
 
     static MainWindow* m_instance;

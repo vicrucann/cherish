@@ -132,19 +132,21 @@ void Utilities::getFarNear(double x, double y, const osg::Matrix &invVPW, osg::V
     far = osg::Vec3f(x, y, 1.f) * invVPW;
 }
 
-bool Utilities::getRayPlaneIntersection(const osg::Plane &plane, const osg::Vec3f &center, const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, osg::Vec3f &P)
+bool Utilities::getRayPlaneIntersection(const osg::Plane &plane, const osg::Vec3f &center, const osg::Vec3f &nearPoint, const osg::Vec3f &farPoint, osg::Vec3f &P, bool isLine)
 {
     if (!plane.valid()){
         qWarning("rayPlaneIntersection: plane is not valid");
         return false;
     }
 
-    std::vector<osg::Vec3f> ray(2);
-    ray[0] = nearPoint;
-    ray[1] = farPoint;
-    if (plane.intersect(ray)) { // 1 or -1 means no intersection
-        qWarning("rayPlaneIntersection: not intersection with ray");
-        return false;
+    if (!isLine) {
+        std::vector<osg::Vec3f> ray(2);
+        ray[0] = nearPoint;
+        ray[1] = farPoint;
+        if (plane.intersect(ray)) { // 1 or -1 means no intersection
+            qWarning("rayPlaneIntersection: no intersection with ray");
+            return false;
+        }
     }
 
     osg::Vec3f dir = farPoint-nearPoint;
@@ -271,10 +273,10 @@ double Utilities::getSkewLinesDistance(const osg::Vec3d &r1, const osg::Vec3d &r
     osg::Vec3d u1 = r2-r1;
     osg::Vec3d u2 = v2-v1;
     osg::Vec3d u3 = u1^u2;
-    osg::Vec3d dir = r1 - v2;
-    if (u3.length() == 0)
-        return 1;
-    return std::fabs((dir*u3)/u3.length());
+    if (u3.length() == 0) return 1;
+    u3.normalize();
+    osg::Vec3d dir = v1 - r1;
+    return std::fabs((dir*u3));
 }
 
 bool Utilities::getLinesIntersection(const osg::Vec3f &La1, const osg::Vec3f &La2, const osg::Vec3f &Lb1, const osg::Vec3f &Lb2, osg::Vec3f &intersection)
@@ -551,6 +553,11 @@ QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
         break;
     case cher::CAMPOSE_FOCAL:
         cur = QCursor(Data::sceneImageFlipVPixmap(), -1, -1);
+        break;
+    case cher::PHOTOSCALE_MODELPLANE:
+    case cher::PHOTOSCALE_PHOTOPLANE:
+    case cher::PHOTOSCALE_BOOKAMRK:
+        cur = QCursor(Data::sceneSelect3DPixmap(), 0, 0);
         break;
     default:
         break;

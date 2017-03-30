@@ -9,6 +9,7 @@
 #include <osg/Viewport>
 
 #include <QDebug>
+#include <QMessageBox>
 
 #include "Utilities.h"
 
@@ -19,6 +20,7 @@ EventHandler::EventHandler(GLWidget *widget, RootScene* scene, cher::MOUSE_MODE 
     , m_scene(scene)
     , m_selection(0)
     , m_selection2(0)
+    , m_tool(0)
 {
 }
 
@@ -139,7 +141,18 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
             this->doCameraFocal(ea, aa);
             break;
         default:
-            this->doCameraIdle(ea, aa);
+            break;
+        }
+        break;
+    case cher::MOUSE_PHOTOSCALE:
+        switch (m_mode){
+        case cher::PHOTOSCALE_MODELPLANE:
+            this->doPhotoScaleModelPlane(ea, aa);
+            break;
+        case cher::PHOTOSCALE_BOOKAMRK:
+            this->doPhotoScaleBookmark(ea, aa);
+            break;
+        default:
             break;
         }
         break;
@@ -178,8 +191,9 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     case cher::SELECT_ENTITY:
         /* if mode is only for current canvas, disable all other canvases from usage */
         m_scene->setCanvasesButCurrent(false);
-        m_scene->hideAndUpdateSVMData(); // TODO same to campose data
+//        m_scene->hideAndUpdateSVMData(); // TODO same to campose data
         m_scene->hideAndUpdateCamPoseData();
+        m_scene->removePhotoScaleData();
         break;
     case cher::SVM_DRAG_POINT:
     case cher::SVM_DRAG_WIRE:
@@ -190,14 +204,16 @@ void EventHandler::setMode(cher::MOUSE_MODE mode)
     case cher::CAMPOSE_CENTER:
     case cher::CAMPOSE_FOCAL:
     case cher::CAMPOSE_IDLE:
+    case cher::PHOTOSCALE_BOOKAMRK:
         /* if it is SVM mode, no canvases can be available for selection at all */
-        m_scene->setAllCanvases(false);
+        m_scene->setCanvasesButCurrent(false);
         break;
     default:
         /* if selection within 3D, enable all the canvases for selection */
         m_scene->setCanvasesButCurrent(true);
-        m_scene->hideAndUpdateSVMData();
+//        m_scene->hideAndUpdateSVMData();
         m_scene->hideAndUpdateCamPoseData();
+        m_scene->removePhotoScaleData();
         break;
     }
 
@@ -676,10 +692,23 @@ void EventHandler::doIdleMouse(const osgGA::GUIEventAdapter &ea, osgGA::GUIActio
 {
     /* if click was performed outside of the SVMData, then
      * change the mouse mode and stop editing the SVMData. Also, obtain camera position. */
-    if (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
-        // reset the mouse mode to previous. It will also update the camera position, see setMode().
-        m_glWidget->setMouseMode(m_glWidget->getMousePrevious());
-        return;
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON){
+        /*QMessageBox::StandardButton reply = QMessageBox::question(m_glWidget,
+                                                                  QString("Photo re-scaling and re-positioning"),
+                                                                  QString("Did you finish editing the wire for both planes?"),
+                                                                  QMessageBox::Yes|QMessageBox::No );
+        if (reply == QMessageBox::Yes)*/{
+        // if yes, remove the svm frame and set the next mode
+            bool hidden = m_scene->hidePhotoScaleData();
+//            bool removed = m_scene->removePhotoScaleData();
+            if (!hidden){
+                qCritical("Could not hide SVMData properly. The scene graph might be corrupted.");
+                m_glWidget->setMouseMode(cher::PEN_SKETCH);
+                return;
+            }
+            m_glWidget->setMouseMode(cher::PHOTOSCALE_BOOKAMRK);
+            return;
+        }
     }
 
     if (ea.getEventType() != osgGA::GUIEventAdapter::MOVE)
@@ -824,9 +853,110 @@ void EventHandler::doCameraFocal(const osgGA::GUIEventAdapter &ea, osgGA::GUIAct
     m_selection2->editFocal(distance2);
 }
 
-void EventHandler::doCameraIdle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+void EventHandler::doPhotoScaleModelPlane(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    if (ea.getEventType()!=osgGA::GUIEventAdapter::RELEASE || ea.getButton()!=osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+        return;
 
+    osgUtil::LineSegmentIntersector::Intersection resultIntersection;
+    bool intersected = this->getIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>(ea, aa, cher::MASK_CANVAS_IN, resultIntersection);
+    if (intersected){
+        entity::Canvas* cnv = this->getCanvas(resultIntersection);
+        if (cnv){
+            m_scene->setCanvasCurrent(cnv);
+            // add SVM structure and set the next mouse mode
+            bool added = m_scene->addPhotoScaleData();
+            if (!added){
+                qCritical("Could not add Photo scale data");
+            }
+            // set up proper traversal masks
+            m_glWidget->setMouseMode(cher::SVM_IDLE);
+        }
+        else
+            qWarning( "doPickCanvas(): could not dynamic_cast<Canvas*>");
+    }
+}
+
+void EventHandler::doPhotoScaleBookmark(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if ( !(ea.getEventType() == osgGA::GUIEventAdapter::MOVE ||
+           (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton() == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)) )
+        return;
+
+    // if mouse release, set the re-scaling for the selected bookmark tool
+    if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && m_tool.get() != 0) {
+        /*QMessageBox::StandardButton reply = QMessageBox::question(m_glWidget,
+                                                                  QString("Photo re-scaling and re-positioning"),
+                                                                  QString("Select this bookmark?"),
+                                                                  QMessageBox::Yes|QMessageBox::No );
+        if (reply == QMessageBox::Yes)*/{
+            //
+
+            // obtain svm coords
+            const entity::SVMData* svm = m_scene->getPhotoScaleData();
+            if (!svm){
+                qCritical("Could not obtain SVMData of RootScene. Scene graph might be corrupted.");
+                m_glWidget->setMouseMode(cher::PEN_SKETCH);
+                return;
+            }
+            // obtain bookmar's position
+            osg::Vec3d eye, center, up;
+            m_tool->getPose(eye, center, up);
+
+            // obtain photo to re-scale
+            entity::Canvas* canvas = m_scene->getCanvasPrevious();
+            if (!canvas){
+                qCritical("Could not obtain canvas with photo");
+                m_glWidget->setMouseMode(cher::PEN_SKETCH);
+                return;
+            }
+            entity::Photo* photo = canvas->getPhoto(0);
+            if (!photo){
+                qCritical("Could not obtain photo pointer");
+                m_glWidget->setMouseMode(cher::PEN_SKETCH);
+                return;
+            }
+
+            // do a photo re-scaling using SVM and camera pose
+            photo->scaleAndPositionWith(svm, eye, center, up);
+
+            // remove SVMData from scene, it will not be used again
+            bool removed = m_scene->removePhotoScaleData();
+            if (!removed){
+                qCritical("Could not remove SVMData as a child of RootScene. Scene graph may be corrupted.");
+                m_glWidget->setMouseMode(cher::PEN_SKETCH);
+                return;
+            }
+
+            // unselect the bookmark tool
+            m_tool->setColorDefault();
+            m_tool = 0;
+
+            // set up the next mouse mode
+            m_glWidget->setMouseMode(cher::PEN_SKETCH);
+            return;
+        }
+    }
+
+    BookmarkToolIntersector::Intersection intersection;
+    bool intersected = this->getIntersection<BookmarkToolIntersector::Intersection, BookmarkToolIntersector>(ea, aa, cher::MASK_BOOKMARK_IN, intersection);
+    if (!intersected) return;
+
+    entity::BookmarkTool* tool = this->getBookmarkTool(intersection);
+    if (!tool) {
+        qWarning("Could not extract bookmark tool from scene graph.");
+        return;
+    }
+    // de-select if it's not the same tool
+    if (m_tool.get() != 0 && tool != m_tool.get()){
+        m_tool->setColorDefault();
+        m_tool = 0;
+    }
+    // if no tool was selected previously, select it and keep a pointer to it.
+    if (m_tool.get() == 0){
+        m_tool = tool;
+        m_tool->setColorSelected();
+    }
 }
 
 entity::Stroke *EventHandler::getStroke(const StrokeIntersector::Intersection &result)
@@ -862,6 +992,27 @@ entity::DraggableWire *EventHandler::getDraggableWire(const PolyLineIntersector:
     if (!group) return NULL;
     osg::Group* parent = group->getParent(0);
     return parent? dynamic_cast<entity::DraggableWire*>(parent) : NULL;
+}
+
+entity::BookmarkTool *EventHandler::getBookmarkTool(const osgUtil::LineSegmentIntersector::Intersection &result)
+{
+    if (!result.drawable.get()) return nullptr;
+    // get geode
+    osg::Group* geode = result.drawable->getParent(0);
+    if (!geode) return nullptr;
+
+    // get auto-transform
+    osg::Group* at = geode->getParent(0);
+    if (!at) return nullptr;
+
+    // get switch
+    osg::Group* sw = at->getParent(0);
+    if (!sw) return nullptr;
+
+    osg::Group* parent = sw->getParent(0);
+
+    // get the bookmark tool
+    return parent? dynamic_cast<entity::BookmarkTool*>(parent) : nullptr;
 }
 
 int EventHandler::getSelectedPoint(const PointIntersector::Intersection &result)

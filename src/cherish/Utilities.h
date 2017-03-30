@@ -65,14 +65,16 @@ public:
 
     /*! A method to obtain intersection point between a given plane and a line (ray).
      * \param plane is the given plane
-     * \param center is an arbitrary point on the plane that represents the plane's center.
+     * \param center is an arbitrary point on the plane that represents the plane's center (global coordinates).
      * \param nearPoint is the 3D near point of the ray that was cast from a screen point
      * \param farPoint is the 3D far point of the ray that was cast from a screen point
      * \param P is the result point that represents intersection of the plane and a ray that is given by far and near points
+     * \param isLine is boolean indicating whether we deal with ray (false) or line (true). Ray may not intersect the plane if both points lie
+     * above or below the plane.
      * \return true if the point was obtained without any errors
      * \sa getFarNear() */
     static bool getRayPlaneIntersection(const osg::Plane& plane, const osg::Vec3f& center,
-                                        const osg::Vec3f& nearPoint, const osg::Vec3f& farPoint, osg::Vec3f& P);
+                                        const osg::Vec3f& nearPoint, const osg::Vec3f& farPoint, osg::Vec3f& P, bool isLine = false);
 
     /*! A method to obtain model matrix (global to local conversion matrix) from a given canvas.
      * \param canvas is the 2D plane canvas from which to derive the model matrix
@@ -130,7 +132,7 @@ public:
                                        const osg::Vec3f& normal, osg::Vec3f& X1);
 
 
-    /*! A method to obtain a distance between skew lines.
+    /*! A method to obtain a distance between skew rays. For more info, see: https://en.wikipedia.org/wiki/Skew_lines
      * \sa getSkewLinesProjection() */
     static double getSkewLinesDistance(const osg::Vec3d &r1, const osg::Vec3d &r2,
                                        const osg::Vec3d &v1, const osg::Vec3d &v2);

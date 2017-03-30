@@ -203,15 +203,16 @@ void main(void)
     vec2 points[4]; // interpolated 2D points of Bezier
     vec4 colors[4]; // interpolated colors
     float zValues[4]; // stroke z-values
-     int j = 0; // bezier segment index for color interpolation
+    int j = 0; // bezier segment index for color interpolation
+    const float ext = 0.00001;
     for (int i=0; i<=nSegments; ++i){
         /* first point */
         if (i==0){
             P[1] = toBezier3D(delta, i, B[0], B[1], B[2], B[3]);
             P[2] = toBezier3D(delta, i+1, B[0], B[1], B[2], B[3]);
             P[3] = toBezier3D(delta, i+2, B[0], B[1], B[2], B[3]);
-            vec4 D = normalize(P[2] - P[1]);
-            P[0] = P[1] + D * 0.01;
+            vec4 D = normalize(P[1] - P[2]);
+            P[0] = P[1] + D * ext;
         }
         else if (i < nSegments-1){
             P[0] = P[1];
@@ -225,9 +226,10 @@ void main(void)
             P[1] = P[2];
             P[2] = P[3];
             vec4 D = normalize(P[2] - P[1]);
-            P[3] = P[2] + D * 0.01;
+            P[3] = P[2] + D * ext;
         }
 
+        // color interpolation
         {
             if (i==0) colors[1] = C[0];
             else colors[1] = colors[2];
