@@ -170,6 +170,8 @@ bool RootScene::exportSceneToFile(const std::string &name)
         entity::Canvas* canvas = m_userScene->getCanvas(i);
         if (!canvas) continue;
         canvas->detachFrame();
+        // for all the strokes within canvas, replace them with mesh representation
+
     }
 
     Q_CHECK_PTR(m_userScene->getGroupCanvases());
