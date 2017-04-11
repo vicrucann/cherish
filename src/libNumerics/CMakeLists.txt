@@ -12,8 +12,10 @@ include_directories(
 )
 
 add_subdirectory(CurveFitting/libPathFitter)
+add_subdirectory(ParallelTransportFrame/libPTFTube)
 
 link_directories(${CMAKE_BINARY_DIR}/src/libNumerics/CurveFitting/libPathFitter)
+link_directories(${CMAKE_BINARY_DIR}/src/libNumerics/ParallelTransportFrame/libPTFTube)
 
 set (libNumerics_SRCS
     HomographyMatrix.h
@@ -34,6 +36,7 @@ add_library(libNumerics STATIC
 
 target_link_libraries( libNumerics
     libPathFitter
+    libPTFTube
     ${QT_LIBRARIES}
     ${OPENSCENEGRAPH_LIBRARIES}
     #${OpenCV_LIBS}
