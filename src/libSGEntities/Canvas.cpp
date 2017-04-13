@@ -721,6 +721,31 @@ bool entity::Canvas::attachFrame()
     return m_switch->addChild(m_toolFrame.get());
 }
 
+osg::Group *entity::Canvas::attachMeshGroup()
+{
+    osg::ref_ptr<osg::Group> group = new osg::Group;
+    if (!m_groupData->addChild(group.get())){
+        qWarning("Could not add mesh group to the group data. No export will be perfomed.");
+        return nullptr;
+    }
+    return group.release();
+}
+
+bool entity::Canvas::disattachMeshGroup(osg::Group *group)
+{
+    return m_groupData->removeChild(group);
+}
+
+bool entity::Canvas::addToMeshGroup(osg::Group *group, osg::Node *mesh)
+{
+    if (!m_groupData->containsNode(group)){
+        qWarning("The mesh group is not part of the group data, cannot proceed.");
+        return false;
+    }
+    bool added = group->addChild(mesh);
+    return added;
+}
+
 void entity::Canvas::setModeEdit(bool on)
 {
     m_edit = on;

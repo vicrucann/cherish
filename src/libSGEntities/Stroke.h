@@ -83,6 +83,10 @@ public:
      * \return true upon success. */
     virtual bool redefineToShape(osg::MatrixTransform* t = 0);
 
+    /*! A method that generates mesh representation of the stroke using Parallel Transport Algorithm.
+     * \return pointer on the cretated mesh structure. The structure is not attached to the scene graph. */
+    osg::Node* getMeshRepresentation() const;
+
 protected:
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
@@ -107,6 +111,7 @@ public:
 
 protected:
 
+    /*! \return Sampled points from provided set of bezier control points. */
     osg::Vec3Array* getCurvePoints(const osg::Vec3Array* bezierPts) const;
 
     /*! A method to make sure the curve is not too small, neither too large for a fitter tolerance level.

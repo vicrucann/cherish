@@ -165,12 +165,31 @@ bool RootScene::exportSceneToFile(const std::string &name)
     state->stripDataFrom(this);
     Q_ASSERT(!state->isEmpty());
 
+    std::vector< osg::ref_ptr<osg::Group> > meshes;
     /* for each canvas, detach its tools */
     for (int i=0; i<m_userScene->getNumCanvases(); ++i){
         entity::Canvas* canvas = m_userScene->getCanvas(i);
         if (!canvas) continue;
         canvas->detachFrame();
-        // for all the strokes within canvas, replace them with mesh representation
+
+        /* attach mesh group */
+        meshes.push_back(canvas->attachMeshGroup());
+
+        // for all the strokes within canvas, add the correspondig mesh to the mesh group
+        for (unsigned int j=0; j<canvas->getNumStrokes(); ++j){
+            entity::Stroke* stroke = canvas->getStroke(j);
+            if (!stroke) continue;
+            osg::ref_ptr<osg::Node> mesh = stroke->getMeshRepresentation();
+            if (!mesh.get()){
+                qWarning("Could not obtain mesh represenation from the stroke.");
+                continue;
+            }
+            bool added = meshes.back()->addChild(mesh.get());
+            if (!added){
+                qWarning("Could not attach mesh to the mesh group.");
+                continue;
+            }
+        }
 
     }
 
@@ -185,6 +204,12 @@ bool RootScene::exportSceneToFile(const std::string &name)
             qCritical("RootScene::writeSceneToFile: could not attach the tools back");
             result = false;
         }
+        /* delete the mesh group */
+        if ( !canvas->disattachMeshGroup(meshes.at(i).get()) ){
+            qCritical("Failed to remove helper meshes. The scene graph is messed up.");
+            return false;
+        }
+
     }
 
     bool stateset = this->setSceneState(state);

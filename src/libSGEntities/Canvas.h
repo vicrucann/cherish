@@ -263,6 +263,23 @@ public:
      * \sa detachFrame */
     bool attachFrame();
 
+    /*! A method to be used only before calling on scene export function. It adds to the group data a new child -
+     * mesh group where all the stroke's meshes will be kept for export purposes.
+     * \return pointer on the added mesh group. */
+    osg::Group* attachMeshGroup();
+
+    /*! A methog to be used only after calling on scene export function. It removed the mesh group as a child of
+     * group data, thus deleting the whole structure.
+     * \return true if deletion was successfull. */
+    bool disattachMeshGroup(osg::Group* group);
+
+    /*! A method to add a stroke mesh to the selected mesh group as a child.  Only to be used to prepare the
+     * user scene for exporting.
+     * \param group is the mesh group which is already a child of a group data,
+     * \param mesh is the stroke mesh which will be added as a child to the group.
+     * \return true if mesh was added sucessfully. */
+    bool addToMeshGroup(osg::Group* group, osg::Node* mesh);
+
     /*! Method to switch the normal canvas mode to edit mode, used for editing canvas position and rotation.
      * \param on is true when the canvas is in the process of editing, and false otherwise.
      * \sa setFrameEditable(). */
