@@ -10,6 +10,7 @@
 
 #include "CameraCallbacks.h"
 #include "CurveFitting/libPathFitter/OsgPathFitter.h"
+#include "ParallelTransportFrame/libPTFTube/PTFTube.h"
 
 const GLenum STROKE_PHANTOM_TYPE = GL_LINE_STRIP;
 
@@ -133,6 +134,32 @@ bool entity::Stroke::redefineToShape(osg::MatrixTransform *t)
     return true;
 }
 
+osg::Node *entity::Stroke::getMeshRepresentation() const
+{
+    if (!m_isCurved){
+        qCritical("The stroke was never sampled and cannot be converted to the mesh.");
+        return nullptr;
+    }
+    const osg::Vec3Array* vertices = static_cast<const osg::Vec3Array*>(this->getVertexArray());
+    if (!vertices){
+        qWarning("Could not extract the vertices.");
+        return nullptr;
+    }
+    std::vector<osg::Vec3f> path;
+    for (unsigned int i=0; i<vertices->size(); ++i){
+        if (i>0){
+            if (path.back() == vertices->at(i))
+                continue;
+        }
+        path.push_back(vertices->at(i));
+    }
+
+    PTFTube extrusion(path, cher::STROKE_MESH_RADIUS, 8);
+    extrusion.build();
+
+    return extrusion.generateTriMesh();
+}
+
 // read more on why: http://stackoverflow.com/questions/36655888/opengl-thick-and-smooth-non-broken-lines-in-3d
 bool entity::Stroke::redefineToShader(osg::MatrixTransform *t)
 {
@@ -202,7 +229,7 @@ osg::Vec3Array *entity::Stroke::getCurvePoints(const osg::Vec3Array *bezierPts) 
     osg::ref_ptr<osg::Vec3Array> points = new osg::Vec3Array;
 
     float delta = 1.f / cher::STROKE_SEGMENTS_NUMBER;
-    for (unsigned int j=0; j<bezierPts->size(); j=j+4){
+    for (unsigned int j=0; j<bezierPts->size(); j=j+4) {
         auto b0 = bezierPts->at(j)
                 , b1 = bezierPts->at(j+1)
                 , b2 = bezierPts->at(j+2)

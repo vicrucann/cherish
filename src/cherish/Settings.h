@@ -220,6 +220,7 @@ const float STROKE_LINE_WIDTH = 4.f;
 const int STROKE_SEGMENTS_NUMBER = 11;
 const float STROKE_FOG_MIN = 4.f;
 const float STROKE_FOG_MAX = 30.f;
+const float STROKE_MESH_RADIUS = 0.03f;
 
 // polygon settings
 const float POLYGON_LINE_WIDTH = 4.f;

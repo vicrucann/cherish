@@ -10,3 +10,6 @@
 [submodule "src/third_party/eigen"]
 	path = src/third_party/eigen
 	url = https://github.com/vicrucann/eigen.git
+[submodule "src/libNumerics/ParallelTransportFrame"]
+	path = src/libNumerics/ParallelTransportFrame
+	url = https://github.com/vicrucann/ParallelTransportFrame.git
