@@ -675,7 +675,9 @@ void entity::Canvas::updateFrame(entity::Canvas* against)
                 float szX = bb.xMax() - bb.xMin();
                 float szY = bb.yMax() - bb.yMin();
                 this->setVertices(m_selectedGroup.getCenter2DCustom(),
-                                  szX*0.5+cher::CANVAS_EDITSLACK, szY*0.5+cher::CANVAS_EDITSLACK,
+                                  std::fabs(bb.xMax()-bb.xMin())*0.5f,
+                                  std::fabs(bb.yMax()-bb.yMin())*0.5f,
+//                                  szX*0.5+cher::CANVAS_EDITSLACK, szY*0.5+cher::CANVAS_EDITSLACK,
                                   cher::CANVAS_EDITQUAD, cher::CANVAS_EDITAXIS);
             }
         }
