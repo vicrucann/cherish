@@ -13,14 +13,13 @@ timezone: null
 lsi: false
 
 ### content configuration ###
-title:       "cherISh: Cultural Heritage data representations by Image manipulation and 3D sketching "
-keywords:    "archaeology, cultural heritage, 3D reconstruction, virtual tour, 3D sketching"
-description: "Software package for cultural heritage sparse data gather-together and building a 3D representation of the historical site"
-source_link: "https://github.com/vicrucann/dura-europos-insitu"
-favicon:     "assets/images/favicon.ico"
-touch_icon:  "assets/images/apple-touch-icon.png"
+title:       "Cheris: cultural heritage 3D representation by using image manipulation and sketching"
+keywords:    "archaeology, cultural heritage, 3D reconstruction, virtual tour, 3D sketching, Yale"
+description: "Sketch- and image-based system for 3D representation and documentation of cultural heritage sites"
+source_link: "https://github.com/vicrucann/cherish"
+favicon:     "assets/images/logo.ico"
+touch_icon:  "assets/images/logo.png"
 google_analytics_key: ## put YOUR key here to enable tracking! (blank to disable)
-
 
 ### template colors, used site-wide via css ###
 colors:
