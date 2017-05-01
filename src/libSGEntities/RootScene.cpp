@@ -50,6 +50,11 @@ entity::UserScene*RootScene::getUserScene() const
     return m_userScene.get();
 }
 
+QUndoStack *RootScene::getUndoStack() const
+{
+    return m_undoStack;
+}
+
 void RootScene::setFilePath(const std::string& name)
 {
     m_userScene->setFilePath(name);

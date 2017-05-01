@@ -51,6 +51,9 @@ public:
     /*! \return pointer on user scene. */
     entity::UserScene* getUserScene() const;
 
+    /*! \return pointer on undo/redo stack. */
+    QUndoStack* getUndoStack() const;
+
     /*! A method to attach current scene graph to a specified file name where the scene will be kept on disk. */
     void setFilePath(const std::string& name);
 

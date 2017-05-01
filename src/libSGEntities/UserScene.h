@@ -44,6 +44,7 @@ class EditStrokeDeleteCommand;
 class EditPasteCommand;
 class EditCutCommand;
 class EditPhotoPushCommand;
+class EditSelectedEntitiesDeleteCommand;
 }
 
 /*! \namespace entity
@@ -479,6 +480,9 @@ public:
      * \param stroke is a stroke to delete from scene */
     void editStrokeDelete(QUndoStack* stack, entity::Stroke* stroke);
 
+    /*! A method to delete all the entities of the current canvas that are being selected. */
+    void editSelectedEntitiesDelete(QUndoStack* stack);
+
     /*! \return whether there are any observer pointers that are not NULL */
     bool isEntityCurrent() const;
 
@@ -615,6 +619,7 @@ protected:
     friend class ::fur::EditPasteCommand;
     friend class ::fur::EditCutCommand;
     friend class ::fur::EditPhotoPushCommand;
+    friend class ::fur::EditSelectedEntitiesDeleteCommand;
 
     bool addCanvas(entity::Canvas* canvas);
     bool removeCanvas(entity::Canvas* canvas);

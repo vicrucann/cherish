@@ -132,6 +132,20 @@ private:
     osg::ref_ptr<entity::Entity2D> m_entity;
 };
 
+class EditSelectedEntitiesDeleteCommand : public UndoCommand
+{
+public:
+    EditSelectedEntitiesDeleteCommand(entity::UserScene* scene,
+                                      entity::Canvas* canvas,
+                                      const std::vector<osg::ref_ptr<entity::Entity2D>>& entities);
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+protected:
+    const std::vector<osg::ref_ptr<entity::Entity2D>> m_entities;
+};
+
 /*! \class EditStrokesPushCommand
  * \brief QUndoCommand that performs push operation of a set of strokes.
 */

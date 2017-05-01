@@ -909,6 +909,30 @@ void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stro
     stack->push(cmd);
 }
 
+void entity::UserScene::editSelectedEntitiesDelete(QUndoStack *stack)
+{
+    entity::Canvas* canvas = this->getCanvasCurrent();
+    if (!canvas) return;
+
+    if (!stack) qFatal("editSelectedEntities(): undo stack is null.");
+
+    std::vector<osg::ref_ptr<entity::Entity2D>> entities;
+    const std::vector<entity::Entity2D*>& selected = canvas->getEntitiesSelected();
+    for (auto* entity : selected)
+        entities.push_back(entity);
+    if (entities.size() == 0) return;
+    canvas->unselectAll();
+    fur::EditSelectedEntitiesDeleteCommand* cmd = new fur::EditSelectedEntitiesDeleteCommand(this,
+                                                                                             m_canvasCurrent.get(),
+                                                                                             entities);
+    if (!cmd){
+        qCritical("editSelectedEntitiesDelete(): undo/redo command is null");
+        return;
+    }
+    stack->push(cmd);
+
+}
+
 bool entity::UserScene::isEntityCurrent() const
 {
     return this->strokeValid() || this->polygonValid() || this->canvasEditValid() || canvasCloneValid();

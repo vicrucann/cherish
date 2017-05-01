@@ -405,6 +405,7 @@ fur::EditEntityDeleteCommand::EditEntityDeleteCommand(entity::UserScene *scene, 
 
 void fur::EditEntityDeleteCommand::undo()
 {
+    m_canvas->selectEntities();
     if (!m_scene->addEntity(m_canvas.get(), m_entity.get()))
         qFatal("EditEntityDeleteCommand::undo() failed");
 }
@@ -413,4 +414,30 @@ void fur::EditEntityDeleteCommand::redo()
 {
     if (!m_scene->removeEntity(m_canvas.get(), m_entity.get()))
         qFatal("EditEntityDeleteCommand: redo() failed");
+}
+
+fur::EditSelectedEntitiesDeleteCommand::EditSelectedEntitiesDeleteCommand(entity::UserScene *scene, entity::Canvas *canvas, const std::vector<osg::ref_ptr<entity::Entity2D> > &entities)
+    : UndoCommand(scene, canvas)
+    , m_entities(entities)
+{
+    this->setText(QObject::tr("Delete selected group of entities from %1")
+                  .arg(QString(canvas->getName().c_str()))
+                  );
+}
+
+void fur::EditSelectedEntitiesDeleteCommand::undo()
+{
+    for (unsigned int i=0; i<m_entities.size(); ++i){
+        if (!m_scene->addEntity(m_canvas.get(), m_entities.at(i).get()))
+            qFatal("EditSelectedEntitiesDeleteCommand(): undo failed");
+    }
+}
+
+void fur::EditSelectedEntitiesDeleteCommand::redo()
+{
+    qDebug() << "size_redo=" << m_entities.size();
+    for (unsigned int i=0; i<m_entities.size(); ++i){
+        if (!m_scene->removeEntity(m_canvas.get(), m_entities.at(i).get()))
+            qFatal("EditSelectedEntitiesDeleteCommand(): redo failed");
+    }
 }

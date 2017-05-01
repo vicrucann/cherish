@@ -278,6 +278,13 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         if ((event->modifiers() & Qt::ControlModifier))
             m_RootScene->selectAllEntities();
         return;
+    case Qt::Key_Backspace:
+    {
+        QUndoStack* stack = m_RootScene->getUndoStack();
+        if (!stack) return;
+        m_RootScene->getUserScene()->editSelectedEntitiesDelete(stack);
+        return;
+    }
     default:
         break;
     }
