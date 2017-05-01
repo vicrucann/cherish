@@ -405,7 +405,6 @@ fur::EditEntityDeleteCommand::EditEntityDeleteCommand(entity::UserScene *scene, 
 
 void fur::EditEntityDeleteCommand::undo()
 {
-    m_canvas->selectEntities();
     if (!m_scene->addEntity(m_canvas.get(), m_entity.get()))
         qFatal("EditEntityDeleteCommand::undo() failed");
 }
