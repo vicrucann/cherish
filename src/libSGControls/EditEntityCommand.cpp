@@ -434,7 +434,6 @@ void fur::EditSelectedEntitiesDeleteCommand::undo()
 
 void fur::EditSelectedEntitiesDeleteCommand::redo()
 {
-    qDebug() << "size_redo=" << m_entities.size();
     for (unsigned int i=0; i<m_entities.size(); ++i){
         if (!m_scene->removeEntity(m_canvas.get(), m_entities.at(i).get()))
             qFatal("EditSelectedEntitiesDeleteCommand(): redo failed");
