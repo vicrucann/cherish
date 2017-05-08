@@ -90,7 +90,7 @@ public:
 protected:
     /*! A method to tune the look of the stroke with smoother connections and thicker linewidth.
      * So that to avoid broken and thin look of the default OpenGL functionality when using GL_LINE_STRIP_ADJACENCY and such. */
-    bool redefineToShader(osg::MatrixTransform* t);
+    virtual bool redefineToShader(osg::MatrixTransform* t);
 
 public:
     /*! \return length of the stroke, which is measured as a largest dimention of the bounding box around the stroke. */

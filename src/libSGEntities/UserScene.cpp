@@ -243,6 +243,36 @@ void entity::UserScene::addPolygon(QUndoStack *stack, float u, float v, cher::EV
     }
 }
 
+void entity::UserScene::addLineSegment(QUndoStack *stack, float u, float v, cher::EVENT event)
+{
+    if (!stack){
+        qWarning("addPolygon(): undo stack is NULL, it is not initialized. "
+                 "Sketching is not possible. "
+                 "Restart the program to ensure undo stack initialization.");
+        return;
+    }
+
+    switch (event) {
+    case cher::EVENT_OFF:
+        qDebug("linesegment OFF");
+        this->linesegmentFinish(stack);
+        break;
+    case cher::EVENT_PRESSED:
+        qDebug("linesegment PRESSED");
+        if (!this->linesegmentValid())
+            this->linesegmentStart();
+        this->linesegmentAppend(u, v, stack);
+        break;
+    case cher::EVENT_DRAGGED:
+        if (!this->linesegmentValid()) break;
+        this->linesegmentEdit(u, v);
+        break;
+    case cher::EVENT_RELEASED:
+    default:
+        break;
+    }
+}
+
 void entity::UserScene::addPhoto(QUndoStack* stack, const std::string& fname)
 {
     qDebug("loadPhotoFromFile()");
@@ -1213,7 +1243,7 @@ void entity::UserScene::polygonEdit(float u, float v)
         this->updateWidgets();
     }
     else
-        qWarning("polygonEdit: pointer is nULUL");
+        qWarning("polygonEdit: pointer is NULL");
 }
 
 void entity::UserScene::polygonFinish(QUndoStack *stack)
@@ -1247,6 +1277,88 @@ bool entity::UserScene::polygonValid() const
         return false;
     }
     return m_canvasCurrent->getPolygonCurrent();
+}
+
+void entity::UserScene::linesegmentStart()
+{
+    m_canvasCurrent->unselectEntities();
+    /* if the canvas is hidden, show it all so that user could see where they sketch */
+    if (!m_canvasCurrent->getVisibilityAll())
+        m_canvasCurrent->setVisibilityAll(true);
+    if (this->linesegmentValid()){
+        qWarning("linesegmentStart(): Cannot start new linesegment since the pointer is not NULL.");
+        return;
+    }
+    entity::LineSegment* ls = new entity::LineSegment;
+    ls->initializeProgram(m_canvasCurrent->getProgramLineSegment());
+    m_canvasCurrent->setEntityCurrent(ls);
+    m_canvasCurrent->addEntity(ls);
+
+    this->updateWidgets();
+}
+
+void entity::UserScene::linesegmentAppend(float u, float v, QUndoStack *stack)
+{
+    if (this->linesegmentValid()){
+        entity::LineSegment* segment = m_canvasCurrent->getEntityCurrent<entity::LineSegment>();
+        // do not add any points, if there is already at least 2 points
+        if (segment->getNumPoints() >= 2){
+            this->linesegmentFinish(stack);
+            return;
+        }
+        Q_CHECK_PTR(segment);
+        segment->appendPoint(u,v);
+        segment->appendPoint(u,v);
+        this->updateWidgets();
+    }
+}
+
+void entity::UserScene::linesegmentEdit(float u, float v)
+{
+    if (this->linesegmentValid()){
+        entity::LineSegment* segment = m_canvasCurrent->getEntityCurrent<entity::LineSegment>();
+        Q_CHECK_PTR(segment);
+        segment->editLastPoint(u, v);
+        this->updateWidgets();
+    }
+    else
+        qWarning("segmentEdit(): pointer is NULL");
+}
+
+void entity::UserScene::linesegmentFinish(QUndoStack *stack)
+{
+    if (!m_canvasCurrent.get()) return;
+    entity::LineSegment* segment = m_canvasCurrent->getEntityCurrent<entity::LineSegment>();
+    if (this->linesegmentValid()){
+        m_canvasCurrent->removeEntity(segment);
+        m_canvasCurrent->setEntityCurrent(false);
+        fur::AddEntityCommand* cmd = new fur::AddEntityCommand(this, segment);
+        Q_CHECK_PTR(cmd);
+        stack->push(cmd);
+//        osg::ref_ptr<entity::LineSegment> segment_clone = new entity::LineSegment;
+//        Q_CHECK_PTR(segment_clone.get());
+//        if (segment_clone->copyFrom(segment)){
+//            segment_clone->redefineToShape();
+//            fur::AddEntityCommand* cmd = new fur::AddEntityCommand(this, segment_clone);
+//            Q_CHECK_PTR(cmd);
+//            stack->push(cmd);
+//        }
+    }
+    else{
+        qInfo("linesegment finish(): pointer is NULL, impossible to finish the segment");
+        return;
+    }
+//    m_canvasCurrent->removeEntity(segment);
+//    m_canvasCurrent->setEntityCurrent(false);
+    qDebug("line segement finished OK.");
+}
+
+bool entity::UserScene::linesegmentValid() const
+{
+    if (!m_canvasCurrent){
+        return false;
+    }
+    return m_canvasCurrent->getEntityCurrent<entity::LineSegment>();
 }
 
 void entity::UserScene::entitiesMoveStart(double u, double v)

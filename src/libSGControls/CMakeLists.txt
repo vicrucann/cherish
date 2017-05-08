@@ -47,6 +47,8 @@ set (libSGControls_SRCS
     ProgramStroke.cpp
     ProgramPolygon.h
     ProgramPolygon.cpp
+    ProgramLineSegment.h
+    ProgramLineSegment.cpp
 )
 
 add_library(libSGControls

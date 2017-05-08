@@ -197,3 +197,28 @@ void fur::AddPolygonCommand::redo()
         qCritical("redo(): problem while adding stroke to a canvas");
 }
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+fur::AddEntityCommand::AddEntityCommand(entity::UserScene *scene, entity::Entity2D *entity, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_canvas(scene->getCanvasCurrent())
+    , m_entity(entity)
+{
+    this->setText(QObject::tr("Add new %1 to %2")
+                  .arg(QString(entity->getName().c_str()))
+                  .arg(QString(m_canvas->getName().c_str()))
+                  );
+
+}
+
+void fur::AddEntityCommand::undo()
+{
+    if (!m_scene->removeEntity(m_canvas.get(), m_entity.get()))
+        qCritical("undo(): problem while removing entity from a canvas");
+}
+
+void fur::AddEntityCommand::redo()
+{
+    if (!m_scene->addEntity(m_canvas.get(), m_entity.get()))
+            qCritical("redo(): problem while adding entity to canvas");
+}

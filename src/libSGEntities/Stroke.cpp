@@ -15,7 +15,10 @@
 const GLenum STROKE_PHANTOM_TYPE = GL_LINE_STRIP;
 
 entity::Stroke::Stroke()
-    : entity::ShaderedEntity2D(STROKE_PHANTOM_TYPE, osg::Geometry::BIND_PER_VERTEX, "Stroke", cher::STROKE_CLR_NORMAL)
+    : entity::ShaderedEntity2D(STROKE_PHANTOM_TYPE,
+                               osg::Geometry::BIND_PER_VERTEX,
+                               "Stroke",
+                               cher::STROKE_CLR_NORMAL)
     , m_isCurved(false)
 {
 }

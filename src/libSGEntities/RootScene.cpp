@@ -264,6 +264,7 @@ bool RootScene::loadSceneFromFile()
         cnv->initializeMasks();
         cnv->initializeProgramStroke();
         cnv->initializeProgramPolygon();
+        cnv->initializeProgramLineSegment();
 
         /* photo textures */
         for (size_t j=0; j<cnv->getNumPhotos(); ++j){
@@ -339,6 +340,12 @@ void RootScene::addStroke(float u, float v, cher::EVENT event)
 void RootScene::addPolygon(float u, float v, cher::EVENT event)
 {
     m_userScene->addPolygon(m_undoStack, u, v, event);
+    m_saved = false;
+}
+
+void RootScene::addLineSegment(float u, float v, cher::EVENT event)
+{
+    m_userScene->addLineSegment(m_undoStack, u, v, event);
     m_saved = false;
 }
 

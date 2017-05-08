@@ -124,6 +124,9 @@ public:
     /*! A method to add/contribute to a polygon given local coordinates. */
     void addPolygon(float u, float v, cher::EVENT event);
 
+    /*! Add line segment point given local coordinates. */
+    void addLineSegment(float u, float v, cher::EVENT event);
+
     /*! A method to select all strokes of the current canvas. */
     void selectAllEntities();
 

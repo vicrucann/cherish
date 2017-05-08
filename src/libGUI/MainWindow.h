@@ -179,6 +179,7 @@ protected slots:
     void onDelete();
     void onSketch();
     void onPolygon();
+    void onLineSegment();
 
     void onNewCanvasClone();
     void onNewCanvasXY();
@@ -261,6 +262,7 @@ protected:
 
     // SCENE actions
     QAction * m_actionSketch, * m_actionEraser, * m_actionSelect, * m_actionSelect3d, * m_actionPolygon
+            , * m_actionLinesegment
             // New Canvas sub-menu
             , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasXZ
             , * m_actionCanvasOrtho, * m_actionCanvasSeparate

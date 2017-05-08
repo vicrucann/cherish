@@ -72,6 +72,9 @@ protected:
      * or double click indicates polygon completion. */
     void doSketchPolygon(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
+    /*! Method to process events for line segment drawing. */
+    void doSketchLineSegment(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
     /*! A method to delete an entity from a current canvas by performing a drag within the entity's proximity. */
     void doDeleteEntity(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 

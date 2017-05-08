@@ -515,6 +515,9 @@ QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
     case cher::PEN_ERASE:
         cur = QCursor(Data::sceneEraserPixmap(), -1, -1);
         break;
+    case cher::PEN_LINESEGMENT:
+        cur = QCursor(Data::sceneLinesegmentPixmap(), 0, Data::sceneLinesegmentPixmap().height());
+        break;
 
     case cher::CAMERA_ORBIT:
         cur = QCursor(Data::sceneOrbitPixmap(), 0, 0);

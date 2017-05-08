@@ -90,6 +90,7 @@ enum ENTITY_TYPE
     ENTITY_STROKE
     , ENTITY_PHOTO
     , ENTITY_POLYGON
+    , ENTITY_LINESEGMENT
 };
 
 /*! Enum class for mouse modes */
@@ -100,6 +101,7 @@ enum MOUSE_MODE
     PEN_ERASE,
     PEN_DELETE,
     PEN_POLYGON,
+    PEN_LINESEGMENT,
 
     MOUSE_SELECT = 0x100,
     SELECT_ENTITY = 0x110,
