@@ -994,6 +994,17 @@ void MainWindow::onStrokeFogFactor()
             if (p->getProgram())
                 p->getProgram()->updateIsFogged(factor);
         }
+
+        // TODO: do it for shadered entities, and do not specify each entity in separate loop
+        for (unsigned int j=0; j<cnv->getNumPolygons(); ++j){
+            entity::LineSegment* segment = cnv->getLineSegment(j);
+            if (!segment){
+                qWarning("Segement is NULL");
+                continue;
+            }
+            if (segment->getProgram())
+                segment->getProgram()->updateIsFogged(factor);
+        }
     }
 }
 

@@ -58,8 +58,11 @@ void entity::LineSegment::editLastPoint(float u, float v)
 
 bool entity::LineSegment::redefineToShader(osg::MatrixTransform *t)
 {
+    if (!m_program) return false;
+
     m_program->updateTransform(t);
     this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
+
     return true;
 }
 
