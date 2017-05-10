@@ -8,7 +8,7 @@
 
 #include "MainWindow.h"
 
-const GLenum LINESEMENT_PHANTOM_TYPE = GL_LINE;
+const GLenum LINESEMENT_PHANTOM_TYPE = GL_LINES;
 
 entity::LineSegment::LineSegment()
     : entity::ShaderedEntity2D(LINESEMENT_PHANTOM_TYPE,
@@ -59,10 +59,25 @@ void entity::LineSegment::editLastPoint(float u, float v)
 bool entity::LineSegment::redefineToShader(osg::MatrixTransform *t)
 {
     if (!m_program) return false;
-
     m_program->updateTransform(t);
-    this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
 
+    // make sure the primitive type is line segment
+    m_lines->set(GL_LINES, 0, this->getNumPoints());
+
+    // set shader attributes
+    osg::ref_ptr<osg::Vec3Array> points = static_cast<osg::Vec3Array*>(this->getVertexArray());
+    if (!points) return false;
+    this->setVertexAttribArray(0, points, osg::Array::BIND_PER_VERTEX);
+    osg::Vec4Array* colors = dynamic_cast<osg::Vec4Array*>(this->getColorArray());
+    Q_CHECK_PTR(colors);
+    this->setVertexAttribArray(1, colors, osg::Array::BIND_PER_VERTEX);
+
+    /* apply shader to the state set */
+    Q_ASSERT(this->getOrCreateStateSet());
+    this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(),
+                                                      osg::StateAttribute::ON);
+
+    m_isShadered = true;
     return true;
 }
 

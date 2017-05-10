@@ -996,7 +996,7 @@ void MainWindow::onStrokeFogFactor()
         }
 
         // TODO: do it for shadered entities, and do not specify each entity in separate loop
-        for (unsigned int j=0; j<cnv->getNumPolygons(); ++j){
+        for (unsigned int j=0; j<cnv->getNumLineSegments(); ++j){
             entity::LineSegment* segment = cnv->getLineSegment(j);
             if (!segment){
                 qWarning("Segement is NULL");

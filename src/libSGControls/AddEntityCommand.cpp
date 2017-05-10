@@ -222,3 +222,24 @@ void fur::AddEntityCommand::redo()
     if (!m_scene->addEntity(m_canvas.get(), m_entity.get()))
             qCritical("redo(): problem while adding entity to canvas");
 }
+
+fur::AddLineSegmentCommand::AddLineSegmentCommand(entity::UserScene *scene, entity::LineSegment *segment, QUndoCommand *parent)
+    : QUndoCommand(parent)
+    , m_scene(scene)
+    , m_canvas(scene->getCanvasCurrent())
+    , m_segment(segment)
+{
+
+}
+
+void fur::AddLineSegmentCommand::undo()
+{
+    if (!m_scene->removeEntity(m_canvas.get(), m_segment.get()))
+        qCritical("undo(): problem while removing stroke from a canvas");
+}
+
+void fur::AddLineSegmentCommand::redo()
+{
+    if (!m_scene->addEntity(m_canvas.get(), m_segment.get()))
+        qCritical("redo(): problem while adding stroke to a canvas");
+}

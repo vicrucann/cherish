@@ -1001,7 +1001,8 @@ void entity::Canvas::initializeProgramPolygon()
     /* set up program as state set attribute for stroke geode
      * This allows us to turn on or off the shader if neeeded, and it also requries only 1 shader per canvas vs. 1 shader per stroke. */
     m_geodePolygons->getOrCreateStateSet()->setAttributeAndModes(m_programPolygon.get(),
-                                                                 osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+                                                                 osg::StateAttribute::ON |
+                                                                 osg::StateAttribute::OVERRIDE);
 }
 
 void entity::Canvas::initializeProgramLineSegment()

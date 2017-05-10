@@ -264,10 +264,10 @@ void entity::UserScene::addLineSegment(QUndoStack *stack, float u, float v, cher
         this->linesegmentAppend(u, v, stack);
         break;
     case cher::EVENT_DRAGGED:
+    case cher::EVENT_RELEASED:
         if (!this->linesegmentValid()) break;
         this->linesegmentEdit(u, v);
         break;
-    case cher::EVENT_RELEASED:
     default:
         break;
     }
@@ -1201,6 +1201,7 @@ void entity::UserScene::polygonStart()
     poly->initializeProgram(m_canvasCurrent->getProgramPolygon());
     m_canvasCurrent->setPolygonCurrent(poly);
     m_canvasCurrent->addEntity(poly);
+    poly->redefineToShape();
 
     this->updateWidgets();
 }
@@ -1285,14 +1286,15 @@ void entity::UserScene::linesegmentStart()
     /* if the canvas is hidden, show it all so that user could see where they sketch */
     if (!m_canvasCurrent->getVisibilityAll())
         m_canvasCurrent->setVisibilityAll(true);
+    qDebug("Linesegment start");
     if (this->linesegmentValid()){
         qWarning("linesegmentStart(): Cannot start new linesegment since the pointer is not NULL.");
         return;
     }
-    entity::LineSegment* ls = new entity::LineSegment;
-    ls->initializeProgram(m_canvasCurrent->getProgramLineSegment());
-    m_canvasCurrent->setEntityCurrent(ls);
-    m_canvasCurrent->addEntity(ls);
+    entity::LineSegment* segment = new entity::LineSegment;
+    segment->initializeProgram(m_canvasCurrent->getProgramLineSegment(), GL_LINES);
+    m_canvasCurrent->setEntityCurrent(segment);
+    m_canvasCurrent->addEntity(segment);
 
     this->updateWidgets();
 }
@@ -1330,26 +1332,21 @@ void entity::UserScene::linesegmentFinish(QUndoStack *stack)
     if (!m_canvasCurrent.get()) return;
     entity::LineSegment* segment = m_canvasCurrent->getEntityCurrent<entity::LineSegment>();
     if (this->linesegmentValid()){
-        m_canvasCurrent->removeEntity(segment);
-        m_canvasCurrent->setEntityCurrent(false);
-        fur::AddEntityCommand* cmd = new fur::AddEntityCommand(this, segment);
-        Q_CHECK_PTR(cmd);
-        stack->push(cmd);
-//        osg::ref_ptr<entity::LineSegment> segment_clone = new entity::LineSegment;
-//        Q_CHECK_PTR(segment_clone.get());
-//        if (segment_clone->copyFrom(segment)){
-//            segment_clone->redefineToShape();
-//            fur::AddEntityCommand* cmd = new fur::AddEntityCommand(this, segment_clone);
-//            Q_CHECK_PTR(cmd);
-//            stack->push(cmd);
-//        }
+        osg::ref_ptr<entity::LineSegment> segment_clone = new entity::LineSegment;
+        Q_CHECK_PTR(segment_clone.get());
+        if (segment_clone->copyFrom(segment)){
+            segment_clone->redefineToShape();
+            fur::AddLineSegmentCommand* cmd = new fur::AddLineSegmentCommand(this, segment_clone);
+            Q_CHECK_PTR(cmd);
+            stack->push(cmd);
+        }
     }
     else{
         qInfo("linesegment finish(): pointer is NULL, impossible to finish the segment");
         return;
     }
-//    m_canvasCurrent->removeEntity(segment);
-//    m_canvasCurrent->setEntityCurrent(false);
+    m_canvasCurrent->removeEntity(segment);
+    m_canvasCurrent->setEntityCurrent(false);
     qDebug("line segement finished OK.");
 }
 

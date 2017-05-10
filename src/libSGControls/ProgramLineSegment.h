@@ -13,6 +13,11 @@ class ProgramLineSegment : public ProgramPolygon
 {
 public:
     ProgramLineSegment();
+
+    virtual void updateIsFogged(bool f);
+
+protected:
+    virtual bool addPresetShaders();
 };
 
 #endif // PROGRAMLINESEGMENT_H

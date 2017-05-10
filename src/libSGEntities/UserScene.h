@@ -41,6 +41,7 @@ class EditEntityDeleteCommand;
 class AddStrokeCommand;
 class AddPolygonCommand;
 class AddEntityCommand;
+class AddLineSegmentCommand;
 class EditStrokesPushCommand;
 class EditStrokeDeleteCommand;
 class EditPasteCommand;
@@ -631,6 +632,7 @@ protected:
     friend class ::fur::AddStrokeCommand;
     friend class ::fur::AddPolygonCommand;
     friend class ::fur::AddEntityCommand;
+    friend class ::fur::AddLineSegmentCommand;
     friend class ::fur::EditStrokesPushCommand;
     friend class ::fur::EditStrokeDeleteCommand;
     friend class ::fur::EditPasteCommand;

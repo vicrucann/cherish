@@ -125,7 +125,8 @@ bool entity::Polygon::redefineToShader(osg::MatrixTransform *t)
 
     /* apply shader to the state set */
     Q_ASSERT(this->getOrCreateStateSet());
-    this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(), osg::StateAttribute::ON);
+    this->getOrCreateStateSet()->setAttributeAndModes(m_program.get(),
+                                                      osg::StateAttribute::ON);
 
     m_isShadered = true;
     return true;

@@ -28,7 +28,7 @@ namespace entity {
  * phantom->addPoint(u,v);
  *
  * // after user is finished, re-define the outer path to the opaque polygon type:
- * phantom->redefineToPolygon();
+ * phantom->redefineToShape();
  * \endcode
  *
  * The below example provides details on how to copy/clone a polygon that is already present on the scene graph:
@@ -40,7 +40,7 @@ namespace entity {
  * copy->copyFrom(phantom);
  *
  * // re-define to the polygon type
- * copy->redefineToPolygon();
+ * copy->redefineToShape();
  * \endcode
 */
 
