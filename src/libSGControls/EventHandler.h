@@ -26,6 +26,7 @@
 #include "UserScene.h"
 #include "RootScene.h"
 #include "StrokeIntersector.h"
+#include "Entity2DIntersector.h"
 #include "LineIntersector.h"
 #include "PolyLineIntersector.h"
 #include "PointIntersector.h"
@@ -141,6 +142,12 @@ protected:
 protected:
     /*! A method to obtain entity::Stroke type from intersection result. */
     entity::Stroke*     getStroke(const StrokeIntersector::Intersection& result);
+
+    template <typename EntityType>
+    EntityType*         getEntity2D(const Entity2DIntersector<entity::Entity2D>::Intersection& result)
+    {
+        return dynamic_cast<EntityType*>(result.drawable.get());
+    }
 
     /*! A method to obtain entity::Canvas type from intersection result. */
     entity::Canvas*     getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);

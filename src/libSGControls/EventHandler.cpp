@@ -1337,6 +1337,15 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
             if (stroke) canvas->addEntitySelected(stroke);
         }
 
+        Entity2DIntersector<entity::LineSegment>::Intersection result_segment;
+        bool inter_segment = this->getIntersection< Entity2DIntersector<entity::LineSegment>::Intersection,
+                Entity2DIntersector<entity::LineSegment> >(ea, aa, cher::MASK_CANVAS_IN, result_segment);
+        if (inter_segment){
+            entity::LineSegment* segment = this->getEntity2D<entity::LineSegment>(result_segment);
+            if (segment)
+                canvas->addEntitySelected(segment);
+        }
+
         /* if some entities were selected, go into edit-frame mode for canvas frame */
         if (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE){
             canvas->updateFrame(m_scene->getCanvasPrevious());

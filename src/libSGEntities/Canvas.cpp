@@ -575,6 +575,9 @@ void entity::Canvas::addEntitySelected(Entity2D *entity)
     case cher::ENTITY_PHOTO:
         m_selectedGroup.addEntity(entity, m_geodePhotos.get());
         break;
+    case cher::ENTITY_LINESEGMENT:
+        m_selectedGroup.addEntity(entity, m_geodeLineSegments.get());
+        break;
     default:
         break;
     }

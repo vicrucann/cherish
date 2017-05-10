@@ -26,6 +26,7 @@ set (libSGControls_SRCS
     EditEntityCommand.cpp
     StrokeIntersector.h
     StrokeIntersector.cpp
+    Entity2DIntersector.h
     LineIntersector.h
     LineIntersector.cpp
     PolyLineIntersector.h

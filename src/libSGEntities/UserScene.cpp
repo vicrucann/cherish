@@ -1336,7 +1336,8 @@ void entity::UserScene::linesegmentFinish(QUndoStack *stack)
         Q_CHECK_PTR(segment_clone.get());
         if (segment_clone->copyFrom(segment)){
             segment_clone->redefineToShape();
-            fur::AddLineSegmentCommand* cmd = new fur::AddLineSegmentCommand(this, segment_clone);
+            // TODO: replace add stroke, photo and polygon with add entity command
+            fur::AddEntityCommand* cmd = new fur::AddEntityCommand(this, segment_clone);
             Q_CHECK_PTR(cmd);
             stack->push(cmd);
         }
