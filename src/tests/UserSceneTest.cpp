@@ -62,7 +62,7 @@ void UserSceneTest::testWriteReadCanvases()
     QCOMPARE(m_canvas0->getSwitch()->getChild(0), m_canvas0->getGroupData());
     QVERIFY(m_canvas0->getSwitch()->getChild(1));
     QCOMPARE(m_canvas0->getSwitch()->getChild(1), m_canvas0->getToolFrame());
-    QCOMPARE(static_cast<int>(m_canvas0->getGroupData()->getNumChildren()), 3);
+    QCOMPARE(static_cast<int>(m_canvas0->getGroupData()->getNumChildren()), 4);
     QVERIFY(m_canvas0->getGroupData());
     QVERIFY(m_canvas0->getGroupData()->getChild(0));
     QCOMPARE(m_canvas0->getGroupData()->getChild(0), m_canvas0->getGeodeStrokes());

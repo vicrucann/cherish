@@ -51,6 +51,9 @@ public:
     /*! \return pointer on user scene. */
     entity::UserScene* getUserScene() const;
 
+    /*! \return pointer on undo/redo stack. */
+    QUndoStack* getUndoStack() const;
+
     /*! A method to attach current scene graph to a specified file name where the scene will be kept on disk. */
     void setFilePath(const std::string& name);
 
@@ -120,6 +123,9 @@ public:
 
     /*! A method to add/contribute to a polygon given local coordinates. */
     void addPolygon(float u, float v, cher::EVENT event);
+
+    /*! Add line segment point given local coordinates. */
+    void addLineSegment(float u, float v, cher::EVENT event);
 
     /*! A method to select all strokes of the current canvas. */
     void selectAllEntities();

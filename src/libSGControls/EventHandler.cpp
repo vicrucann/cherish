@@ -52,6 +52,9 @@ bool EventHandler::handle(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdap
         case cher::PEN_POLYGON:
             this->doSketchPolygon(ea, aa);
             break;
+        case cher::PEN_LINESEGMENT:
+            this->doSketchLineSegment(ea, aa);
+            break;
         default:
             break;
         }
@@ -317,6 +320,38 @@ void EventHandler::doSketchPolygon(const osgGA::GUIEventAdapter &ea, osgGA::GUIA
     default:
         break;
     }
+}
+
+void EventHandler::doSketchLineSegment(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
+{
+    if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
+           || (ea.getEventType() == osgGA::GUIEventAdapter::MOVE)
+           ))
+        return;
+
+    double u=0, v=0;
+    switch (ea.getEventType()){
+    case osgGA::GUIEventAdapter::PUSH:
+        /* first or last point for a line segment */
+        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+            return;
+        m_scene->addLineSegment(u,v, cher::EVENT_PRESSED);
+        break;
+    case osgGA::GUIEventAdapter::RELEASE:
+        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+            return;
+        m_scene->addLineSegment(u,v, cher::EVENT_RELEASED);
+        break;
+    case osgGA::GUIEventAdapter::MOVE:
+        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+            return;
+        m_scene->addLineSegment(u,v, cher::EVENT_DRAGGED);
+        break;
+    default:
+        break;
+    }
+
 }
 
 /* Deletes an entity within a current canvas - stroke or image.
@@ -1300,6 +1335,15 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         if (inter_stroke) {
             entity::Stroke* stroke = this->getStroke(result_stroke);
             if (stroke) canvas->addEntitySelected(stroke);
+        }
+
+        Entity2DIntersector<entity::LineSegment>::Intersection result_segment;
+        bool inter_segment = this->getIntersection< Entity2DIntersector<entity::LineSegment>::Intersection,
+                Entity2DIntersector<entity::LineSegment> >(ea, aa, cher::MASK_CANVAS_IN, result_segment);
+        if (inter_segment){
+            entity::LineSegment* segment = this->getEntity2D<entity::LineSegment>(result_segment);
+            if (segment)
+                canvas->addEntitySelected(segment);
         }
 
         /* if some entities were selected, go into edit-frame mode for canvas frame */

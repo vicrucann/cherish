@@ -265,7 +265,7 @@ void CanvasTest::testStructure(entity::Canvas *canvas)
     QVERIFY(groupData);
     QCOMPARE(int(groupData->getNodeMask()), int(cher::MASK_CANVASDATA_IN));
     QCOMPARE(switchC->getChild(0), groupData);
-    QCOMPARE(static_cast<int>(groupData->getNumChildren()), 3);
+    QCOMPARE(static_cast<int>(groupData->getNumChildren()), 4);
     QVERIFY(switchC->getChildValue(groupData));
 
     qInfo("Test frame tools");

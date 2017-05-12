@@ -90,6 +90,7 @@ enum ENTITY_TYPE
     ENTITY_STROKE
     , ENTITY_PHOTO
     , ENTITY_POLYGON
+    , ENTITY_LINESEGMENT
 };
 
 /*! Enum class for mouse modes */
@@ -100,6 +101,7 @@ enum MOUSE_MODE
     PEN_ERASE,
     PEN_DELETE,
     PEN_POLYGON,
+    PEN_LINESEGMENT,
 
     MOUSE_SELECT = 0x100,
     SELECT_ENTITY = 0x110,
@@ -220,7 +222,9 @@ const float STROKE_LINE_WIDTH = 4.f;
 const int STROKE_SEGMENTS_NUMBER = 11;
 const float STROKE_FOG_MIN = 4.f;
 const float STROKE_FOG_MAX = 30.f;
-const float STROKE_MESH_RADIUS = 0.03f;
+const float STROKE_MESH_RADIUS = 0.1f;
+const float SEGMENT_MESH_RADIUS = 0.2f;
+const unsigned int EXTRUSION_MESH_SHAPE = 8;
 
 // polygon settings
 const float POLYGON_LINE_WIDTH = 4.f;

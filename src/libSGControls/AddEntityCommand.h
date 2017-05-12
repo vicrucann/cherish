@@ -125,6 +125,20 @@ private:
     osg::ref_ptr<entity::Stroke> m_stroke;
 };
 
+class AddEntityCommand : public QUndoCommand
+{
+public:
+    AddEntityCommand(entity::UserScene* scene, entity::Entity2D* entity, QUndoCommand* parent = 0);
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+private:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    osg::ref_ptr<entity::Entity2D> m_entity;
+};
+
 /*! \class AddPolygonCommand
  * \brief QUndoCommand that perform addition of a entity::Polygon to entity::UserScene
 */
@@ -143,6 +157,20 @@ private:
     osg::observer_ptr<entity::UserScene> m_scene;
     osg::observer_ptr<entity::Canvas> m_canvas;
     osg::ref_ptr<entity::Polygon> m_polygon;
+};
+
+class AddLineSegmentCommand : public QUndoCommand
+{
+public:
+    AddLineSegmentCommand(entity::UserScene* scene, entity::LineSegment* segment, QUndoCommand* parent = 0);
+
+    void undo() Q_DECL_OVERRIDE;
+    void redo() Q_DECL_OVERRIDE;
+
+private:
+    osg::observer_ptr<entity::UserScene> m_scene;
+    osg::observer_ptr<entity::Canvas> m_canvas;
+    osg::ref_ptr<entity::LineSegment> m_segment;
 };
 
 } // namespace fur

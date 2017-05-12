@@ -50,6 +50,11 @@ entity::UserScene*RootScene::getUserScene() const
     return m_userScene.get();
 }
 
+QUndoStack *RootScene::getUndoStack() const
+{
+    return m_undoStack;
+}
+
 void RootScene::setFilePath(const std::string& name)
 {
     m_userScene->setFilePath(name);
@@ -190,6 +195,20 @@ bool RootScene::exportSceneToFile(const std::string &name)
                 continue;
             }
         }
+        for (unsigned int j=0; j<canvas->getNumLineSegments(); ++j){
+            entity::LineSegment* segment = canvas->getLineSegment(j);
+            if (!segment) continue;
+            osg::ref_ptr<osg::Node> mesh = segment->getMeshRepresentation();
+            if (!mesh.get()){
+                qWarning("Could not obtain mesh represenation from the line segment.");
+                continue;
+            }
+            bool added = meshes.back()->addChild(mesh.get());
+            if (!added){
+                qWarning("Could not attach mesh to the mesh group.");
+                continue;
+            }
+        }
 
     }
 
@@ -259,6 +278,7 @@ bool RootScene::loadSceneFromFile()
         cnv->initializeMasks();
         cnv->initializeProgramStroke();
         cnv->initializeProgramPolygon();
+        cnv->initializeProgramLineSegment();
 
         /* photo textures */
         for (size_t j=0; j<cnv->getNumPhotos(); ++j){
@@ -334,6 +354,12 @@ void RootScene::addStroke(float u, float v, cher::EVENT event)
 void RootScene::addPolygon(float u, float v, cher::EVENT event)
 {
     m_userScene->addPolygon(m_undoStack, u, v, event);
+    m_saved = false;
+}
+
+void RootScene::addLineSegment(float u, float v, cher::EVENT event)
+{
+    m_userScene->addLineSegment(m_undoStack, u, v, event);
     m_saved = false;
 }
 

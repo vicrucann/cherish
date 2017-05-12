@@ -17,7 +17,7 @@ public:
     virtual void initialize(osg::StateSet* state, osg::Camera* camera, osg::MatrixTransform* t, bool isFogged);
 
     /*! A method to update one of the uniforms of the state set - fog factor. */
-    void updateIsFogged(bool f);
+    virtual void updateIsFogged(bool f);
 
     bool getIsFogged() const;
 
@@ -25,7 +25,7 @@ protected:
     virtual bool addPresetShaders();
     virtual bool addPresetUniforms();
 
-private:
+protected:
     bool    m_isFogged;
 
 };

@@ -26,6 +26,7 @@ set (libSGControls_SRCS
     EditEntityCommand.cpp
     StrokeIntersector.h
     StrokeIntersector.cpp
+    Entity2DIntersector.h
     LineIntersector.h
     LineIntersector.cpp
     PolyLineIntersector.h
@@ -47,6 +48,8 @@ set (libSGControls_SRCS
     ProgramStroke.cpp
     ProgramPolygon.h
     ProgramPolygon.cpp
+    ProgramLineSegment.h
+    ProgramLineSegment.cpp
 )
 
 add_library(libSGControls

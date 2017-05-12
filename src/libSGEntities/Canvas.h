@@ -2,14 +2,17 @@
 #define CANVAS
 
 #include "Settings.h"
+#include "ShaderedEntity2D.h"
 #include "Stroke.h"
 #include "Polygon.h"
+#include "LineSegment.h"
 #include "Photo.h"
 #include "ToolGlobal.h"
 #include "SelectedGroup.h"
 #include "ProtectedGroup.h"
 #include "libSGControls/ProgramStroke.h"
 #include "libSGControls/ProgramPolygon.h"
+#include "libSGControls/ProgramLineSegment.h"
 
 #include <osg/ref_ptr>
 #include <osg/Geode>
@@ -57,6 +60,7 @@ public:
 
     ProgramStroke* getProgramStroke() const;
     ProgramPolygon* getProgramPolygon() const;
+    ProgramLineSegment* getProgramLineSegment() const;
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 public:
@@ -87,6 +91,9 @@ public:
 
     void setGeodePolygons(osg::Geode* geode);
     const osg::Geode* getGeodePolygons() const;
+
+    void setGeodeLineSegments(osg::Geode* geode);
+    const osg::Geode* getGeodeLineSegments() const;
 
     void setCenter(const osg::Vec3f& center);
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
@@ -186,6 +193,15 @@ public:
 
     /*! \return a pointer on current polygon, editable, for example, to append a point to the polygon. */
     entity::Polygon* getPolygonCurrent() const;
+
+    void setEntityCurrent(entity::ShaderedEntity2D* entity);
+    void setEntityCurrent(bool current);
+
+    template <typename EntityType>
+    // imlementation is in header so that to avoid template definition
+    EntityType* getEntityCurrent() const{
+        return dynamic_cast<EntityType*>(m_entityCurrent.get());
+    }
 
     /*! \param entity is entity to add to entity::SelectedGroup. */
     void addEntitySelected(entity::Entity2D* entity);
@@ -317,6 +333,8 @@ public:
     /*! \return total number of polygons that canvas contains */
     unsigned int getNumPolygons() const;
 
+    unsigned int getNumLineSegments() const;
+
     /*! \return pointer on a photo with the given index. */
     entity::Photo* getPhoto(int row) const;
 
@@ -325,6 +343,8 @@ public:
 
     /*! \return non-const pointer on a polygon with the given index */
     entity::Polygon* getPolygon(int i) const;
+
+    entity::LineSegment* getLineSegment(int i) const;
 
     /*! Method to iterate throught all the entities: both strokes and photos
      * \param i is the index of desired entity
@@ -350,6 +370,7 @@ protected:
 public:
     void initializeProgramStroke();
     void initializeProgramPolygon();
+    void initializeProgramLineSegment();
 
 private:
     osg::Matrix                 m_mR; /* part of m_transform */
@@ -360,14 +381,17 @@ private:
     osg::ref_ptr<osg::Geode>    m_geodeStrokes; // contains all the strokes as children
     osg::ref_ptr<osg::Geode>    m_geodePhotos; // contains all the photos as children
     osg::ref_ptr<osg::Geode>    m_geodePolygons; // contains all the polygons as children
+    osg::ref_ptr<osg::Geode>    m_geodeLineSegments; /*!< all the line segments as children */
     osg::ref_ptr<ProgramStroke> m_programStroke; /*!< Shader program for all the strokes of the canvas, is applied to m_geodeStrokes */
     osg::ref_ptr<ProgramPolygon> m_programPolygon; /*!< Shader program for all the polygons of the canvas, is applied to m_geodePolygons */
+    osg::ref_ptr<ProgramLineSegment> m_programLineSegment;/*!< Shader program for all the line segments of the canvas, is applied to m_geodeLineSegments. */
 
     /* construction geodes */
     osg::ref_ptr<entity::FrameTool> m_toolFrame;
 
     osg::observer_ptr<entity::Stroke> m_strokeCurrent; /* for stroke drawing */
     osg::observer_ptr<entity::Polygon> m_polygonCurrent; /* for polygon drawing, see UserScene::addPolygon */
+    osg::observer_ptr<entity::ShaderedEntity2D> m_entityCurrent; /*!< for line segment drawing. */
     entity::SelectedGroup m_selectedGroup;
     osg::Vec3f m_center; /* 3D global - virtual plane parameter */
     osg::Vec3f m_normal; /* 3D global - virtual plane parameter*/

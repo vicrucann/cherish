@@ -81,5 +81,6 @@
         <file>viewer-bookmarkedit-24px.svg</file>
         <file>viewer-bookmarknew-24px.svg</file>
         <file>viewer-bookmarksketch-24px.svg</file>
+        <file>scene-line-24px.svg</file>
     </qresource>
 </RCC>

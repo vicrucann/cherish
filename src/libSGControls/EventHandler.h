@@ -26,6 +26,7 @@
 #include "UserScene.h"
 #include "RootScene.h"
 #include "StrokeIntersector.h"
+#include "Entity2DIntersector.h"
 #include "LineIntersector.h"
 #include "PolyLineIntersector.h"
 #include "PointIntersector.h"
@@ -71,6 +72,9 @@ protected:
     /*! Method to process events for polygon drawing: left mouse click indicates a new point, right mouse click
      * or double click indicates polygon completion. */
     void doSketchPolygon(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+
+    /*! Method to process events for line segment drawing. */
+    void doSketchLineSegment(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
 
     /*! A method to delete an entity from a current canvas by performing a drag within the entity's proximity. */
     void doDeleteEntity(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
@@ -138,6 +142,12 @@ protected:
 protected:
     /*! A method to obtain entity::Stroke type from intersection result. */
     entity::Stroke*     getStroke(const StrokeIntersector::Intersection& result);
+
+    template <typename EntityType>
+    EntityType*         getEntity2D(const Entity2DIntersector<entity::Entity2D>::Intersection& result)
+    {
+        return dynamic_cast<EntityType*>(result.drawable.get());
+    }
 
     /*! A method to obtain entity::Canvas type from intersection result. */
     entity::Canvas*     getCanvas(const osgUtil::LineSegmentIntersector::Intersection& result);

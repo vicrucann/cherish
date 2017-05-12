@@ -31,6 +31,8 @@ set (libSGEntities_SRCS
     ShaderedEntity2D.cpp
     Polygon.h
     Polygon.cpp
+    LineSegment.h
+    LineSegment.cpp
     ToolGlobal.h
     ToolGlobal.cpp
     Bookmarks.h

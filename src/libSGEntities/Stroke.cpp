@@ -15,7 +15,10 @@
 const GLenum STROKE_PHANTOM_TYPE = GL_LINE_STRIP;
 
 entity::Stroke::Stroke()
-    : entity::ShaderedEntity2D(STROKE_PHANTOM_TYPE, osg::Geometry::BIND_PER_VERTEX, "Stroke", cher::STROKE_CLR_NORMAL)
+    : entity::ShaderedEntity2D(STROKE_PHANTOM_TYPE,
+                               osg::Geometry::BIND_PER_VERTEX,
+                               "Stroke",
+                               cher::STROKE_CLR_NORMAL)
     , m_isCurved(false)
 {
 }
@@ -154,7 +157,7 @@ osg::Node *entity::Stroke::getMeshRepresentation() const
         path.push_back(vertices->at(i));
     }
 
-    PTFTube extrusion(path, cher::STROKE_MESH_RADIUS, 8);
+    PTFTube extrusion(path, cher::STROKE_MESH_RADIUS, cher::EXTRUSION_MESH_SHAPE);
     extrusion.build();
 
     return extrusion.generateTriMesh();
