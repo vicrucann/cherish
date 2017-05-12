@@ -223,6 +223,8 @@ const int STROKE_SEGMENTS_NUMBER = 11;
 const float STROKE_FOG_MIN = 4.f;
 const float STROKE_FOG_MAX = 30.f;
 const float STROKE_MESH_RADIUS = 0.1f;
+const float SEGMENT_MESH_RADIUS = 0.2f;
+const unsigned int EXTRUSION_MESH_SHAPE = 8;
 
 // polygon settings
 const float POLYGON_LINE_WIDTH = 4.f;

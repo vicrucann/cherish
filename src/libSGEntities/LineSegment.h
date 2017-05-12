@@ -31,6 +31,8 @@ public:
 
     void editLastPoint(float u, float v);
 
+    osg::Node* getMeshRepresentation() const;
+
 protected:
     virtual bool redefineToShader(osg::MatrixTransform *t);
 

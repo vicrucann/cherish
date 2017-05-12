@@ -157,7 +157,7 @@ osg::Node *entity::Stroke::getMeshRepresentation() const
         path.push_back(vertices->at(i));
     }
 
-    PTFTube extrusion(path, cher::STROKE_MESH_RADIUS, 8);
+    PTFTube extrusion(path, cher::STROKE_MESH_RADIUS, cher::EXTRUSION_MESH_SHAPE);
     extrusion.build();
 
     return extrusion.generateTriMesh();

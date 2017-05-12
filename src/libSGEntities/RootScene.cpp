@@ -195,6 +195,20 @@ bool RootScene::exportSceneToFile(const std::string &name)
                 continue;
             }
         }
+        for (unsigned int j=0; j<canvas->getNumLineSegments(); ++j){
+            entity::LineSegment* segment = canvas->getLineSegment(j);
+            if (!segment) continue;
+            osg::ref_ptr<osg::Node> mesh = segment->getMeshRepresentation();
+            if (!mesh.get()){
+                qWarning("Could not obtain mesh represenation from the line segment.");
+                continue;
+            }
+            bool added = meshes.back()->addChild(mesh.get());
+            if (!added){
+                qWarning("Could not attach mesh to the mesh group.");
+                continue;
+            }
+        }
 
     }
 

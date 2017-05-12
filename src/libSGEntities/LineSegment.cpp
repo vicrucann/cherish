@@ -7,6 +7,7 @@
 #include <osg/StateSet>
 
 #include "MainWindow.h"
+#include "ParallelTransportFrame/libPTFTube/PTFTube.h"
 
 const GLenum LINESEMENT_PHANTOM_TYPE = GL_LINES;
 
@@ -54,6 +55,28 @@ void entity::LineSegment::editLastPoint(float u, float v)
 
     verts->dirty();
     this->dirtyBound();
+}
+
+osg::Node *entity::LineSegment::getMeshRepresentation() const
+{
+    const osg::Vec3Array* vertices = static_cast<const osg::Vec3Array*>(this->getVertexArray());
+    if (!vertices){
+        qWarning("Could not extract the vertices.");
+        return nullptr;
+    }
+    std::vector<osg::Vec3f> path;
+    Q_ASSERT(vertices->size() >= 2);
+    float delta = 0.01;
+    osg::Vec3f dir = vertices->at(0)-vertices->at(1);
+    path.push_back(vertices->at(0) + dir * delta);
+    path.push_back(vertices->at(0));
+    path.push_back(vertices->at(1));
+    path.push_back(vertices->at(1) - dir * delta);
+
+    PTFTube extrusion(path, cher::SEGMENT_MESH_RADIUS, cher::EXTRUSION_MESH_SHAPE);
+    extrusion.build();
+
+    return extrusion.generateTriMesh();
 }
 
 bool entity::LineSegment::redefineToShader(osg::MatrixTransform *t)
