@@ -939,6 +939,26 @@ void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stro
     stack->push(cmd);
 }
 
+void entity::UserScene::editEntity2DDelete(QUndoStack *stack, entity::Entity2D *entity)
+{
+    if (!stack) qFatal("editStrokeDelete(): undo stack is NULL, it is not initialized. Editing is not possible.");
+    if (!entity){
+        qCritical("editStrokeDelete: stroke is NULL");
+        return;
+    }
+    if (!m_canvasCurrent->containsEntity(entity)){
+        qWarning("editStrokeDelete: current canvas does not contain that stroke."
+                  "Deletion is not possible.");
+        return;
+    }
+    fur::EditEntityDeleteCommand* cmd = new fur::EditEntityDeleteCommand(this, m_canvasCurrent.get(), entity);
+    if (!cmd){
+        qCritical("editStrokeDelete: undo/redo command is NULL");
+        return;
+    }
+    stack->push(cmd);
+}
+
 void entity::UserScene::editSelectedEntitiesDelete(QUndoStack *stack)
 {
     entity::Canvas* canvas = this->getCanvasCurrent();
@@ -1641,6 +1661,7 @@ void entity::UserScene::canvasCloneStart()
         m_canvasCurrent->setVisibilityAll(true);
 
     m_canvasCurrent->unselectAll();
+    entity::Canvas* remain_prev = m_canvasPrevious.get();
 
     entity::Canvas* cnv = m_canvasCurrent->clone();
     if (!cnv){
@@ -1662,6 +1683,7 @@ void entity::UserScene::canvasCloneStart()
         m_canvasClone = 0;
         return;
     }
+    this->setCanvasPrevious(remain_prev);
 }
 
 void entity::UserScene::canvasCloneAppend(const osg::Vec3f &t)

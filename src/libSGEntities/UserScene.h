@@ -491,6 +491,8 @@ public:
      * \param stroke is a stroke to delete from scene */
     void editStrokeDelete(QUndoStack* stack, entity::Stroke* stroke);
 
+    void editEntity2DDelete(QUndoStack* stack, entity::Entity2D* entity);
+
     /*! A method to delete all the entities of the current canvas that are being selected. */
     void editSelectedEntitiesDelete(QUndoStack* stack);
 

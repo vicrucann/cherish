@@ -866,6 +866,19 @@ entity::Canvas *entity::Canvas::clone() const
             }
             break;
         }
+        case cher::ENTITY_LINESEGMENT:
+        {
+            entity::LineSegment* segment = dynamic_cast<entity::LineSegment*>(entcopy);
+            if (segment){
+                entity::LineSegment* ls = new entity::LineSegment;
+                if (ls){
+                    ls->copyFrom(segment);
+                    ls->redefineToShape();
+                    clone->addEntity(ls);
+                }
+            }
+            break;
+        }
         default:
             break;
         }

@@ -379,14 +379,25 @@ void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         if (polygon) m_scene->editPolygonDelete(polygon, m_scene->getCanvasCurrent());
     }
     else{
-        /* see if there is a stroke */
-        StrokeIntersector::Intersection result_stroke;
-        bool inter_stroke = this->getIntersection<StrokeIntersector::Intersection, StrokeIntersector>
+        /* see if there is a stroke or line segment */
+        Entity2DIntersector<entity::Stroke>::Intersection result_stroke;
+        bool inter_stroke = this->getIntersection<Entity2DIntersector<entity::Stroke>::Intersection,
+                Entity2DIntersector<entity::Stroke>>
                 (ea,aa,cher::MASK_CANVAS_IN, result_stroke);
-        if (!inter_stroke) return;
-        entity::Stroke* stroke = this->getStroke(result_stroke);
-        if (!stroke) return;
-        m_scene->editStrokeDelete(stroke);
+        if (inter_stroke){
+            entity::Stroke* stroke = this->getEntity2D<entity::Stroke>(result_stroke);
+            if (stroke) m_scene->editStrokeDelete(stroke);
+        }
+
+        Entity2DIntersector<entity::LineSegment>::Intersection result_segment;
+        bool inter_segment = this->getIntersection<Entity2DIntersector<entity::LineSegment>::Intersection,
+                Entity2DIntersector<entity::LineSegment>>
+                (ea, aa, cher::MASK_CANVAS_IN, result_segment);
+        if (inter_segment){
+            entity::LineSegment* segment = this->getEntity2D<entity::LineSegment>(result_segment);
+            if (segment) m_scene->editEntity2DDelete(segment);
+        }
+
     }
 }
 

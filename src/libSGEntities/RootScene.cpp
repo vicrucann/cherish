@@ -786,6 +786,12 @@ void RootScene::editStrokeDelete(entity::Stroke *stroke)
     m_saved = false;
 }
 
+void RootScene::editEntity2DDelete(entity::Entity2D *entity)
+{
+    m_userScene->editEntity2DDelete(m_undoStack, entity);
+    m_saved = false;
+}
+
 /* copies the selected strokes into buffer, makes a deep copy */
 void RootScene::copyToBuffer()
 {

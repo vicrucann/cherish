@@ -225,6 +225,8 @@ public:
     void editStrokesRotate(double u, double v, cher::EVENT event);
     void editStrokeDelete(entity::Stroke* stroke);
 
+    void editEntity2DDelete(entity::Entity2D* entity);
+
     void copyToBuffer();
     void cutToBuffer();
     void pasteFromBuffer();
