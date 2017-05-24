@@ -184,6 +184,7 @@ protected slots:
     void onNewCanvasClone();
     void onNewCanvasXY();
     void onNewCanvasYZ();
+    void onNewCanvasZY();
     void onNewCanvasXZ();
     void onNewCanvasOrtho();
     void onNewCanvasSeparate();
@@ -264,7 +265,7 @@ protected:
     QAction * m_actionSketch, * m_actionEraser, * m_actionSelect, * m_actionSelect3d, * m_actionPolygon
             , * m_actionLinesegment
             // New Canvas sub-menu
-            , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasXZ
+            , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasZY, * m_actionCanvasXZ
             , * m_actionCanvasOrtho, * m_actionCanvasSeparate
             // New Canvas Set sub-menu
             , * m_actionSetStandard

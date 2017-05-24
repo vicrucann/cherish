@@ -746,9 +746,19 @@ void MainWindow::onNewCanvasYZ()
     this->onRequestUpdate();
 }
 
+void MainWindow::onNewCanvasZY()
+{
+    m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 0, 1, 0)*osg::Matrix::rotate(cher::PI*0.5, 1,0,0),
+                           osg::Matrix::translate(0,0,0));
+    this->onSketch();
+    this->statusBar()->showMessage(tr("New canvas was created."));
+    this->onRequestUpdate();
+}
+
 void MainWindow::onNewCanvasXZ()
 {
-    m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 1, 0, 0), osg::Matrix::translate(0,0,0));
+    m_rootScene->addCanvas(osg::Matrix::rotate(cher::PI*0.5, 1, 0, 0)*osg::Matrix::rotate(cher::PI, 0,0,1),
+                           osg::Matrix::translate(0,0,0));
     this->onSketch();
     this->statusBar()->showMessage(tr("New canvas was created."));
     this->onRequestUpdate();
@@ -1140,13 +1150,16 @@ void MainWindow::initializeActions()
     m_actionCanvasSeparate = new QAction(Data::sceneNewCanvasSeparateIcon(), tr("Separate selected strokes"), this);
     this->connect(m_actionCanvasSeparate, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasSeparate()));
 
-    m_actionCanvasXY = new QAction(Data::sceneNewCanvasXYIcon(), tr("Plane XY"), this);
+    m_actionCanvasXY = new QAction(Data::sceneNewCanvasXYIcon(), tr("Ground plane"), this);
     this->connect(m_actionCanvasXY, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasXY()));
 
-    m_actionCanvasYZ = new QAction(Data::sceneNewCanvasYZIcon(), tr("Plane YZ"), this);
+    m_actionCanvasYZ = new QAction(Data::sceneNewCanvasYZIcon(), tr("Left plane"), this);
     this->connect(m_actionCanvasYZ, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasYZ()));
 
-    m_actionCanvasXZ = new QAction(Data::sceneNewCanvasXZIcon(), tr("Plane XZ"), this);
+    m_actionCanvasZY = new QAction(Data::sceneNewCanvasYZIcon(), tr("Right plane"), this);
+    this->connect(m_actionCanvasZY, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasZY()));
+
+    m_actionCanvasXZ = new QAction(Data::sceneNewCanvasXZIcon(), tr("Front plane"), this);
     this->connect(m_actionCanvasXZ, SIGNAL(triggered(bool)), this, SLOT(onNewCanvasXZ()));
 
     m_actionSetStandard = new QAction(Data::sceneNewCanvasSetStandardIcon(), tr("Standard"), this);
@@ -1231,6 +1244,7 @@ void MainWindow::initializeMenus()
     submenuCanvas->addAction(m_actionCanvasClone);
     submenuCanvas->addAction(m_actionCanvasXY);
     submenuCanvas->addAction(m_actionCanvasYZ);
+    submenuCanvas->addAction(m_actionCanvasZY);
     submenuCanvas->addAction(m_actionCanvasXZ);
     submenuCanvas->addAction(m_actionCanvasOrtho);
     submenuCanvas->addAction(m_actionCanvasSeparate);
@@ -1302,6 +1316,7 @@ void MainWindow::initializeToolbars()
     QMenu* menuNewCanvas = new QMenu(this);
     menuNewCanvas->addAction(m_actionCanvasXY);
     menuNewCanvas->addAction(m_actionCanvasYZ);
+    menuNewCanvas->addAction(m_actionCanvasZY);
     menuNewCanvas->addAction(m_actionCanvasXZ);
     menuNewCanvas->addAction(m_actionCanvasClone);
     menuNewCanvas->addAction(m_actionCanvasOrtho);
