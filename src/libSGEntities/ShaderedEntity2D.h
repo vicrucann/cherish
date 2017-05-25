@@ -76,6 +76,12 @@ public:
     void setColor(const osg::Vec4f& color);
     const osg::Vec4f& getColor() const;
 
+    /*! \param alpha is transparency channel. */
+    void setSelected(float alpha);
+
+    /*! \param alpha is transparency channel. */
+    void setUnselected(float alpha);
+
     void setIsShadered(bool shadered);
     bool getIsShadered() const;
 
@@ -88,7 +94,7 @@ protected:
     osg::ref_ptr<osg::DrawArrays>       m_lines;
     osg::observer_ptr<ProgramEntity2D>  m_program;
     bool                                m_isShadered;
-    osg::Vec4f                          m_color;
+    osg::Vec4f                          m_colorNormal, m_colorSelected;
 };
 
 } // namespace entity

@@ -12,7 +12,8 @@ entity::ShaderedEntity2D::ShaderedEntity2D(unsigned int drawing, AttributeBindin
     , m_lines(new osg::DrawArrays(drawing))
     , m_program(0)
     , m_isShadered(false)
-    , m_color(color)
+    , m_colorNormal(color)
+    , m_colorSelected(cher::STROKE_CLR_SELECTED)
 {
     osg::Vec4Array* colors = new osg::Vec4Array;
     osg::Vec3Array* verts = new osg::Vec3Array;
@@ -35,7 +36,7 @@ entity::ShaderedEntity2D::ShaderedEntity2D(const entity::ShaderedEntity2D &copy,
     , m_lines(copy.m_lines)
     , m_program(copy.m_program)
     , m_isShadered(copy.m_isShadered)
-    , m_color(copy.m_color)
+    , m_colorNormal(copy.m_colorNormal)
 {
 }
 
@@ -213,12 +214,12 @@ const osg::DrawArrays *entity::ShaderedEntity2D::getLines() const
 
 void entity::ShaderedEntity2D::setColor(const osg::Vec4f &color)
 {
-    m_color = color;
+    m_colorNormal = color;
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
     if (!colors) throw std::runtime_error("setColors: colors is NULL");
 
     for (unsigned int i=0; i<colors->size(); ++i){
-        (*colors)[i] = m_color;
+        (*colors)[i] = m_colorNormal;
     }
     colors->dirty();
     this->dirtyDisplayList();
@@ -227,7 +228,29 @@ void entity::ShaderedEntity2D::setColor(const osg::Vec4f &color)
 
 const osg::Vec4f &entity::ShaderedEntity2D::getColor() const
 {
-    return m_color;
+    return m_colorNormal;
+}
+
+void entity::ShaderedEntity2D::setSelected(float alpha)
+{
+    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+    if (!colors) throw std::runtime_error("setColors: colors is NULL");
+    osg::Vec4f clr = osg::Vec4f(m_colorSelected.r(), m_colorSelected.g(), m_colorSelected.b(),
+                                alpha);
+
+    for (unsigned int i=0; i<colors->size(); ++i){
+        (*colors)[i] = clr;
+    }
+    colors->dirty();
+    this->dirtyDisplayList();
+    this->dirtyBound();
+}
+
+void entity::ShaderedEntity2D::setUnselected(float alpha)
+{
+    osg::Vec4f clr = osg::Vec4f(m_colorNormal.r(), m_colorNormal.g(), m_colorNormal.b(),
+                                alpha);
+    this->setColor(clr);
 }
 
 void entity::ShaderedEntity2D::setIsShadered(bool shadered)

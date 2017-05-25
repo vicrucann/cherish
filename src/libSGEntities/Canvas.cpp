@@ -578,6 +578,9 @@ void entity::Canvas::addEntitySelected(Entity2D *entity)
     case cher::ENTITY_LINESEGMENT:
         m_selectedGroup.addEntity(entity, m_geodeLineSegments.get());
         break;
+    case cher::ENTITY_POLYGON:
+        m_selectedGroup.addEntity(entity, m_geodePolygons.get());
+        break;
     default:
         break;
     }

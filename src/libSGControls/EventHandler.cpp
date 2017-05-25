@@ -1335,7 +1335,8 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
             canvas->unselectEntities();
 
         osgUtil::LineSegmentIntersector::Intersection result_photo;
-        bool inter_photo = this->getIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
+        bool inter_photo = this->getIntersection<osgUtil::LineSegmentIntersector::Intersection,
+                osgUtil::LineSegmentIntersector>
                 (ea,aa, cher::MASK_CANVAS_IN, result_photo);
         if (inter_photo){
             entity::Photo* photo = this->getPhoto(result_photo);
@@ -1359,9 +1360,9 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
                 canvas->addEntitySelected(segment);
         }
 
-        Entity2DIntersector<entity::Polygon>::Intersection result_polygon;
-        bool inter_polygon = this->getIntersection< Entity2DIntersector<entity::Polygon>::Intersection,
-                Entity2DIntersector<entity::Polygon> >(ea, aa, cher::MASK_CANVAS_IN, result_polygon);
+        osgUtil::LineSegmentIntersector::Intersection result_polygon;
+        bool inter_polygon = this->getIntersection< osgUtil::LineSegmentIntersector::Intersection,
+                osgUtil::LineSegmentIntersector >(ea, aa, cher::MASK_CANVAS_IN, result_polygon);
         if (inter_polygon){
             entity::Polygon* polygon = this->getEntity2D<entity::Polygon>(result_polygon);
             if (polygon)
