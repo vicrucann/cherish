@@ -11,6 +11,7 @@
 #include "Canvas.h"
 #include "Photo.h"
 #include "Stroke.h"
+#include "ShaderedEntity2D.h"
 #include "Bookmarks.h"
 #include "SceneState.h"
 
