@@ -28,8 +28,9 @@ colors:
   blue:      '#49a7e9'
   green:     '#9bcf2f'
   purple:    '#c869bf'
-  orange:    '#fab125'
+  orange:    '#EFC090'
   turquoise: '#0fbfcf'
+  yellow:    '#FFE792'
 
 
 ### file locations
