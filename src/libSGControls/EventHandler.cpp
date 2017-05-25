@@ -288,10 +288,12 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
 
 void EventHandler::doSketchPolygon(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    if ((ea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK))
+            this->finishAll();
+
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::MOVE)
-           || (ea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK)
            ))
         return;
 
@@ -1355,6 +1357,15 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
             entity::LineSegment* segment = this->getEntity2D<entity::LineSegment>(result_segment);
             if (segment)
                 canvas->addEntitySelected(segment);
+        }
+
+        Entity2DIntersector<entity::Polygon>::Intersection result_polygon;
+        bool inter_polygon = this->getIntersection< Entity2DIntersector<entity::Polygon>::Intersection,
+                Entity2DIntersector<entity::Polygon> >(ea, aa, cher::MASK_CANVAS_IN, result_polygon);
+        if (inter_polygon){
+            entity::Polygon* polygon = this->getEntity2D<entity::Polygon>(result_polygon);
+            if (polygon)
+                canvas->addEntitySelected(polygon);
         }
 
         /* if some entities were selected, go into edit-frame mode for canvas frame */

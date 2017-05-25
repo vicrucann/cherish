@@ -345,6 +345,7 @@ void GLWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
 //    qDebug("double click detected");
 //    emit this->autoSwitchMode(m_mouseMode);
+    this->getEventQueue()->mouseDoubleButtonPress(static_cast<float>(event->x()), static_cast<float>(event->y()), event->button());
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)
