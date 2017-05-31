@@ -55,8 +55,8 @@ vec4 toBezier3D(float delta, int i, vec4 B0, vec4 B1, vec4 B2, vec4 B3)
 
 float getFogFactor(float d)
 {
-    if (d>=FogMax) return 0;
-    if (d<=FogMin) return 1;
+    if (d>=FogMax) return 0.f;
+    if (d<=FogMin) return 1.f;
 
     return (FogMax - d) / (FogMax - FogMin);
 }
