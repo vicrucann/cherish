@@ -298,6 +298,30 @@ bool RootScene::loadSceneFromFile()
             if (!stroke->redefineToShape(cnv->getTransform()))
                 qWarning("Could not redefine stroke as curve");
         }
+
+        /* polygons */
+        for (size_t k=0; k<cnv->getNumPolygons(); ++k){
+            entity::Polygon* polygon = cnv->getPolygon(k);
+            if (!polygon) {
+                qWarning("Could not read polygon");
+                continue;
+            }
+            polygon->initializeProgram(cnv->getProgramPolygon());
+            if (!polygon->redefineToShape(cnv->getTransform()))
+                qWarning("Could not redefine stroke as curve");
+        }
+
+        /* line segments */
+        for (size_t k=0; k<cnv->getNumLineSegments(); ++k){
+            entity::LineSegment* segment = cnv->getLineSegment(k);
+            if (!segment) {
+                qWarning("Could not read polygon");
+                continue;
+            }
+            segment->initializeProgram(cnv->getProgramLineSegment());
+            if (!segment->redefineToShape(cnv->getTransform()))
+                qWarning("Could not redefine stroke as curve");
+        }
     }
 
     /* update current/previous canvases */
