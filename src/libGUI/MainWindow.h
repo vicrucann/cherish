@@ -14,6 +14,9 @@
 #include <QWidgetAction>
 #include <QFileSystemModel>
 #include <QColorDialog>
+#include <QAction>
+#include <QObject>
+#include <QString>
 
 #include <osg/ref_ptr>
 #include <osg/Camera>
@@ -27,7 +30,27 @@
 #include "ListView.h"
 #include "PhotoModel.h"
 #include "Data.h"
-#include "Actions.h"
+
+class BookmarkAction : public QAction
+{
+    Q_OBJECT
+public:
+    BookmarkAction(const QString& name, QObject* parent)
+        : QAction(name, parent)
+    {
+        this->connect(this, SIGNAL(triggered(bool)), this, SLOT(onTriggered()));
+    }
+
+public slots:
+    void onTriggered()
+    {
+        emit triggeredName(this->text());
+    }
+
+signals:
+    void triggeredName(const QString& name);
+};
+
 
 /*! \class MainWindow
  * \brief Re-defined QMainWindow that contains all the GUI elements such as GLWidget, menu bars, tool bars and other widgets.
