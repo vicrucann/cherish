@@ -31,6 +31,9 @@
 #include "PhotoModel.h"
 #include "Data.h"
 
+/*! \class BookmarkAction
+ * \brief Action to edit bookmark data which was created by means of SVMData.
+*/
 class BookmarkAction : public QAction
 {
     Q_OBJECT

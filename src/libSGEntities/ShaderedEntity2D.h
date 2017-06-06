@@ -8,9 +8,13 @@
 
 #include "Entity2D.h"
 #include "libSGControls/ProgramEntity2D.h"
+#include "Settings.h"
 
 namespace entity{
 
+/*! \class ShaderedEntity2D
+ * \brief Abstract class for all the shaderized entities, i.e., strokes, polygons and line segments.
+*/
 class ShaderedEntity2D : public entity::Entity2D
 {
 public:
@@ -95,7 +99,8 @@ protected:
     osg::observer_ptr<ProgramEntity2D>  m_program;
     bool                                m_isShadered;
     osg::Vec4f                          m_colorNormal, m_colorSelected;
-};
+
+}; // class ShaderedEntity2D
 
 } // namespace entity
 
