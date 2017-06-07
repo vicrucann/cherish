@@ -177,6 +177,14 @@ public:
      * \return Euclidean distance according to https://en.wikipedia.org/wiki/Euclidean_distance */
     static double distanceTwoPoints(const osg::Vec3f& P1, const osg::Vec3f& P2);
 
+    /*! A method to obtain coordinate of the second point of entity::LineSegment which is anchored to
+     * canvas' local u and v coordinates.
+     * \param canvas is the canvas within which the segment is drawn.
+     * \param P0 is the first point of segment,
+     * \param P1 is the second point on segment, which is a subject to change to the result point.
+     * \return local anchored point. */
+    static osg::Vec3f getAnchorLineSegment(const osg::Vec3f& P0, const osg::Vec3f& P1);
+
     /*! UI method to obtain cursor data based on the given mouse mode. */
     static QCursor getCursorFromMode(cher::MOUSE_MODE mode);
 

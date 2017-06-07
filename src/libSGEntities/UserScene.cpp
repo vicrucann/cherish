@@ -8,6 +8,7 @@
 #include "AddEntityCommand.h"
 #include "EditEntityCommand.h"
 #include "FindNodeVisitor.h"
+#include "MainWindow.h"
 
 #include <osgDB/WriteFile>
 #include <osgDB/ReadFile>
@@ -1223,6 +1224,9 @@ void entity::UserScene::polygonStart()
     m_canvasCurrent->addEntity(poly);
     poly->redefineToShape();
 
+    osg::Vec4f color = MainWindow::instance().getCurrentColor();
+    poly->setColor(color);
+
     this->updateWidgets();
 }
 
@@ -1253,7 +1257,7 @@ void entity::UserScene::polygonAppend(float u, float v, QUndoStack *stack)
         this->updateWidgets();
     }
     else
-        qWarning("polygonAppend: pointer is nULUL");
+        qWarning("polygonAppend: pointer is NUL");
 }
 
 void entity::UserScene::polygonEdit(float u, float v)

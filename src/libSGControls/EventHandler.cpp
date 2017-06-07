@@ -332,6 +332,7 @@ void EventHandler::doSketchLineSegment(const osgGA::GUIEventAdapter &ea, osgGA::
            ))
         return;
 
+    bool isAnchored = (ea.getKey() == osgGA::GUIEventAdapter::KEY_Shift_L || ea.getKey() == osgGA::GUIEventAdapter::KEY_Shift_R);
     double u=0, v=0;
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
