@@ -1222,7 +1222,7 @@ void entity::UserScene::polygonStart()
     poly->initializeProgram(m_canvasCurrent->getProgramPolygon());
     m_canvasCurrent->setPolygonCurrent(poly);
     m_canvasCurrent->addEntity(poly);
-    poly->redefineToShape();
+//    poly->redefineToShape();
 
     osg::Vec4f color = MainWindow::instance().getCurrentColor();
     poly->setColor(color);
@@ -1251,6 +1251,9 @@ void entity::UserScene::polygonAppend(float u, float v, QUndoStack *stack)
 
         /* otherwise, append it */
         qDebug("Appending point to a polygon");
+        /* if more than 2 points, redefine to shape */
+        if (poly->getNumPoints() >= 2)
+            poly->redefineToShape();
         if (poly->getNumPoints() == 0)
             poly->appendPoint(u, v);
         poly->appendPoint(u, v); // so that we see the continuation of the polygon in edit mode
