@@ -289,7 +289,11 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         break;
     }
     if (event->modifiers() & Qt::ShiftModifier){
+        unsigned int modkeyosg = 0;
+        modkeyosg |= osgGA::GUIEventAdapter::MODKEY_SHIFT;
+
         this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KEY_Shift_L);
+        this->getEventQueue()->getCurrentEventState()->setModKeyMask(modkeyosg);
     }
 
     this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KeySymbol (*keydat));
@@ -300,6 +304,7 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
     /* http://stackoverflow.com/questions/20746488/how-to-catch-ctrl-key-release */
     if (event->key() == Qt::Key_Shift){
         this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KEY_Shift_L);
+        this->getEventQueue()->getCurrentEventState()->setModKeyMask(0);
     }
 
     QString keystr = event->text();

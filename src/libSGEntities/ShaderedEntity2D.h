@@ -40,6 +40,9 @@ public:
     /*! \param i is the point index. \return point coordinates at the specified index. */
     virtual osg::Vec2f getPoint(unsigned int i) const;
 
+    /*! \sa getPoint() but it returns 3d format, e.g. {u,v,0}. */
+    virtual osg::Vec3f getPoint3(unsigned int i) const;
+
     /*! A method that changed geometry type, e.g. from polyline to polygon. Is used after the user is
      * finished with sketching and now the entity's look can be re-defined as it will appear on the scene permanately.
      * \param t is the Canvas matrix transform. If none is provided, the transform of the current canvas is taken.

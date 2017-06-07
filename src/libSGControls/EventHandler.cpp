@@ -12,6 +12,7 @@
 #include <QMessageBox>
 
 #include "Utilities.h"
+#include "libGUI/CherishApplication.h"
 
 EventHandler::EventHandler(GLWidget *widget, RootScene* scene, cher::MOUSE_MODE mode)
     : osgGA::GUIEventHandler()
@@ -329,32 +330,53 @@ void EventHandler::doSketchLineSegment(const osgGA::GUIEventAdapter &ea, osgGA::
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::MOVE)
+           || (ea.getModKeyMask() == osgGA::GUIEventAdapter::MODKEY_SHIFT)
            ))
         return;
 
-    bool isAnchored = (ea.getKey() == osgGA::GUIEventAdapter::KEY_Shift_L || ea.getKey() == osgGA::GUIEventAdapter::KEY_Shift_R);
-    double u=0, v=0;
+    /* do we want to anchor the next line? */
+    bool isAnchored = ( CherishApplication::keyboardModifiers().testFlag(Qt::ShiftModifier) == true );
+    /* chech there is enough points to do anchoring */
+    bool isEnabled = false;
+    osg::Vec3f previous{0,0,0};
+    if (isAnchored){
+        entity::LineSegment* segment = m_scene->getUserScene()->getCanvasCurrent()->getEntityCurrent<entity::LineSegment>();
+        if (segment)
+            isEnabled = (segment->getNumPoints() >= 1);
+        if (isEnabled)
+            previous = segment->getPoint3(segment->getNumPoints()-2);
+    }
+
+    auto getNextPoint = [&](osg::Vec3d& nxt) -> bool
+    {
+        if (!this->getRaytraceCanvasIntersection(ea, aa, nxt.x(), nxt.y()))
+            return false;
+        if (isAnchored && isEnabled)
+            nxt = Utilities::getAnchorLineSegment(previous, nxt);
+        return true;
+    };
+
+    osg::Vec3d next{0,0,0};
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         /* first or last point for a line segment */
-        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        if (!getNextPoint(next))
             return;
-        m_scene->addLineSegment(u,v, cher::EVENT_PRESSED);
+        m_scene->addLineSegment(next.x(), next.y(), cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
-        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        if (!getNextPoint(next))
             return;
-        m_scene->addLineSegment(u,v, cher::EVENT_RELEASED);
+        m_scene->addLineSegment(next.x(),next.y(), cher::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::MOVE:
-        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        if (!getNextPoint(next))
             return;
-        m_scene->addLineSegment(u,v, cher::EVENT_DRAGGED);
+        m_scene->addLineSegment(next.x(), next.y(), cher::EVENT_DRAGGED);
         break;
     default:
         break;
     }
-
 }
 
 /* Deletes an entity within a current canvas - stroke or image.

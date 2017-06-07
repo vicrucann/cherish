@@ -273,3 +273,9 @@ ProgramEntity2D *entity::ShaderedEntity2D::getProgram() const
     return m_program.get();
 }
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
+
+osg::Vec3f entity::ShaderedEntity2D::getPoint3(unsigned int i) const
+{
+    osg::Vec2f p2 = this->getPoint(i);
+    return osg::Vec3f(p2.x(), p2.y(), 0.f);
+}
