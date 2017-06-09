@@ -63,11 +63,23 @@ void UserSceneTest::testWriteReadCanvases()
     QVERIFY(m_canvas0->getSwitch()->getChild(1));
     QCOMPARE(m_canvas0->getSwitch()->getChild(1), m_canvas0->getToolFrame());
     QCOMPARE(static_cast<int>(m_canvas0->getGroupData()->getNumChildren()), 4);
+
+    qInfo("Group data elements");
     QVERIFY(m_canvas0->getGroupData());
+    QVERIFY(m_canvas0->getGroupData()->getNumChildren() == 4);
+
     QVERIFY(m_canvas0->getGroupData()->getChild(0));
     QCOMPARE(m_canvas0->getGroupData()->getChild(0), m_canvas0->getGeodeStrokes());
+
     QVERIFY(m_canvas0->getGroupData()->getChild(1));
     QCOMPARE(m_canvas0->getGroupData()->getChild(1), m_canvas0->getGeodePhotos());
+
+    QVERIFY(m_canvas0->getGroupData()->getChild(2));
+    QCOMPARE(m_canvas0->getGroupData()->getChild(2), m_canvas0->getGeodePolygons());
+
+    QVERIFY(m_canvas0->getGroupData()->getChild(3));
+    QCOMPARE(m_canvas0->getGroupData()->getChild(3), m_canvas0->getGeodeLineSegments());
+
 }
 
 void UserSceneTest::testWriteReadBookmarks()
