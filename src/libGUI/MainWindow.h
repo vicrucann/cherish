@@ -134,6 +134,9 @@ public slots:
     /*! Slot called when user changed order of bookmarks within BookmarkWidget. */
     void onMoveBookmark(const QModelIndex &index);
 
+    /*! Slot called when user presses on cog icon to change the state set of the bookmark. */
+    void onApplyStateBookmark(const QModelIndex& index);
+
     /*! Slot called when BookmarkWidget content had changed, i.e., new row was inserted. */
     void onBookmarkAddedToWidget(const QModelIndex &, int first, int last);
 

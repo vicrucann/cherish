@@ -289,6 +289,26 @@ void MainWindow::onMoveBookmark(const QModelIndex &index)
     m_bookmarkWidget->setCurrentIndex(index);
 }
 
+void MainWindow::onApplyStateBookmark(const QModelIndex &index)
+{
+    /* get current state set */
+    osg::ref_ptr<entity::SceneState> state = m_rootScene->createSceneState();
+    if (!state.get()){
+        qWarning("Could not create scene state from root scene data");
+        return;
+    }
+    if (state->isEmpty()){
+        qWarning("Scene state is empty");
+        return;
+    }
+
+    /* replace the bookmark's state set on the obtained one */
+    if (m_rootScene->getUserScene()->getBookmarksModel()->replaceSceneState(index.row(), state.get()))
+        this->statusBar()->showMessage(tr("Bookmark stateset has changed successfully."));
+    else
+        this->statusBar()->showMessage(tr("Bookmark stateset has changed successfully."));
+}
+
 void MainWindow::onBookmarkAddedToWidget(const QModelIndex &, int first, int last)
 {
     qDebug("onBookmarkAddedToWidget");
@@ -1432,6 +1452,10 @@ void MainWindow::initializeCallbacks()
 
     QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedDelete(QModelIndex)),
                      this, SLOT(onDeleteBookmark(QModelIndex)),
+                     Qt::UniqueConnection);
+
+    QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedApplyState(QModelIndex)),
+                     this, SLOT(onApplyStateBookmark(QModelIndex)),
                      Qt::UniqueConnection);
 
     QObject::connect(m_bookmarkWidget->getBookmarkDelegate(), SIGNAL(clickedMove(QModelIndex)),
