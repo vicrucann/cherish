@@ -8,9 +8,13 @@
 
 #include "Entity2D.h"
 #include "libSGControls/ProgramEntity2D.h"
+#include "Settings.h"
 
 namespace entity{
 
+/*! \class ShaderedEntity2D
+ * \brief Abstract class for all the shaderized entities, i.e., strokes, polygons and line segments.
+*/
 class ShaderedEntity2D : public entity::Entity2D
 {
 public:
@@ -35,6 +39,9 @@ public:
 
     /*! \param i is the point index. \return point coordinates at the specified index. */
     virtual osg::Vec2f getPoint(unsigned int i) const;
+
+    /*! \sa getPoint() but it returns 3d format, e.g. {u,v,0}. */
+    virtual osg::Vec3f getPoint3(unsigned int i) const;
 
     /*! A method that changed geometry type, e.g. from polyline to polygon. Is used after the user is
      * finished with sketching and now the entity's look can be re-defined as it will appear on the scene permanately.
@@ -76,6 +83,12 @@ public:
     void setColor(const osg::Vec4f& color);
     const osg::Vec4f& getColor() const;
 
+    /*! \param alpha is transparency channel. */
+    void setSelected(float alpha);
+
+    /*! \param alpha is transparency channel. */
+    void setUnselected(float alpha);
+
     void setIsShadered(bool shadered);
     bool getIsShadered() const;
 
@@ -88,8 +101,9 @@ protected:
     osg::ref_ptr<osg::DrawArrays>       m_lines;
     osg::observer_ptr<ProgramEntity2D>  m_program;
     bool                                m_isShadered;
-    osg::Vec4f                          m_color;
-};
+    osg::Vec4f                          m_colorNormal, m_colorSelected;
+
+}; // class ShaderedEntity2D
 
 } // namespace entity
 

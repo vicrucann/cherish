@@ -289,9 +289,11 @@ void GLWidget::keyPressEvent(QKeyEvent *event)
         break;
     }
     if (event->modifiers() & Qt::ShiftModifier){
-        if (cher::maskMouse & cher::MOUSE_SELECT)
-            this->setMouseMode(cher::SELECT_CANVAS);
-        this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KEY_Control_L);
+        unsigned int modkeyosg = 0;
+        modkeyosg |= osgGA::GUIEventAdapter::MODKEY_SHIFT;
+
+        this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KEY_Shift_L);
+        this->getEventQueue()->getCurrentEventState()->setModKeyMask(modkeyosg);
     }
 
     this->getEventQueue()->keyPress(osgGA::GUIEventAdapter::KeySymbol (*keydat));
@@ -301,9 +303,8 @@ void GLWidget::keyReleaseEvent(QKeyEvent *event)
 {
     /* http://stackoverflow.com/questions/20746488/how-to-catch-ctrl-key-release */
     if (event->key() == Qt::Key_Shift){
-        if (cher::maskMouse & cher::MOUSE_SELECT)
-            this->setMouseMode(cher::SELECT_ENTITY);
-        this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KEY_Control_L);
+        this->getEventQueue()->keyRelease(osgGA::GUIEventAdapter::KEY_Shift_L);
+        this->getEventQueue()->getCurrentEventState()->setModKeyMask(0);
     }
 
     QString keystr = event->text();
@@ -343,8 +344,9 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
 
 void GLWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    qDebug("double click detected");
-    emit this->autoSwitchMode(m_mouseMode);
+//    qDebug("double click detected");
+//    emit this->autoSwitchMode(m_mouseMode);
+    this->getEventQueue()->mouseDoubleButtonPress(static_cast<float>(event->x()), static_cast<float>(event->y()), event->button());
 }
 
 void GLWidget::mouseReleaseEvent(QMouseEvent *event)

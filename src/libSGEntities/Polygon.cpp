@@ -33,7 +33,8 @@ bool entity::Polygon::copyFrom(const ShaderedEntity2D *copy)
 
     if (!entity::ShaderedEntity2D::copyFrom(copy))
         qCritical("Polygon copy has failed");
-//    this->setColor(copy->getColor());
+
+    this->setColor(copy->getColor());
 
     return true;
 }
@@ -78,8 +79,8 @@ bool entity::Polygon::redefineToShape(osg::MatrixTransform *t)
     osg::ref_ptr<osg::Vec3Array> points = static_cast<osg::Vec3Array*>(this->getVertexArray());
     Q_CHECK_PTR(points);
     points->dirty();
-    osg::Vec4f color = MainWindow::instance().getCurrentColor();
-    this->setColor(color);
+//    osg::Vec4f color = MainWindow::instance().getCurrentColor();
+//    this->setColor(color);
 
     return true;
 }
@@ -91,7 +92,7 @@ bool entity::Polygon::isPolygon() const
 
 void entity::Polygon::appendPoint(const float u, const float v)
 {
-    entity::ShaderedEntity2D::appendPoint(u,v, cher::POLYGON_CLR_PHANTOM);
+    entity::ShaderedEntity2D::appendPoint(u,v, m_colorNormal);
 }
 
 cher::ENTITY_TYPE entity::Polygon::getEntityType() const

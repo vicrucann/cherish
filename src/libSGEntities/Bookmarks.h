@@ -93,6 +93,9 @@ public:
     /*! A method to extract scene state given a row index of the BookmarkWidget. */
     entity::SceneState* getSceneState(int row);
 
+    /*! A method to replace the scene state with a given row onto a new one. */
+    bool replaceSceneState(int row, entity::SceneState* state);
+
     /*! A method to obtain lastly added child of a scene state. */
     entity::SceneState* getLastSceneState();
 

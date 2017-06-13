@@ -125,7 +125,7 @@ bool entity::Stroke::redefineToShape(osg::MatrixTransform *t)
         finalPts->dirty();
         osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
         if (colors){
-            colors->resize(finalPts->size(), m_color);
+            colors->resize(finalPts->size(), m_colorNormal);
             colors->dirty();
         }
     }

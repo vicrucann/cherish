@@ -93,6 +93,10 @@ public:
     /*! \return geometry color. Assumed it is binded per geometry. */
     const osg::Vec4f& getColor() const;
 
+    virtual void setSelected(float alpha);
+
+    virtual void setUnselected(float alpha);
+
     /*! A method to set up quad transparency. */
     void setTransparency(float alpha);
 

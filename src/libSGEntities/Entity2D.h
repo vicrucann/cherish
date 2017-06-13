@@ -22,6 +22,8 @@ public:
     virtual void rotate(double theta, osg::Vec3f center) = 0;
     virtual void setColor(const osg::Vec4f& color) = 0;
     virtual const osg::Vec4f& getColor() const = 0;
+    virtual void setSelected(float alpha) = 0;
+    virtual void setUnselected(float alpha) = 0;
 
     virtual cher::ENTITY_TYPE getEntityType() const = 0;
 

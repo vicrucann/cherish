@@ -464,6 +464,23 @@ double Utilities::distanceTwoPoints(const osg::Vec3f &P1, const osg::Vec3f &P2)
     return std::sqrt(dx*dx + dy*dy + dz*dz);
 }
 
+osg::Vec3f Utilities::getAnchorLineSegment(const osg::Vec3f &P0, const osg::Vec3f &P1)
+{
+    // local coordinates of anchor axis
+    osg::Vec3f u = osg::Vec3f(1,0,0);
+    osg::Vec3f v = osg::Vec3f(0,1,0);
+
+    // projection of P1 onto local axis
+    osg::Vec3f uP1 = projectPointOnLine(P0, u, P1);
+    osg::Vec3f vP1 = projectPointOnLine(P0, v, P1);
+
+    // compare distances
+    double du = distanceTwoPoints(P1, uP1);
+    double dv = distanceTwoPoints(P1, vP1);
+
+    return (du <= dv)? uP1 : vP1;
+}
+
 QCursor Utilities::getCursorFromMode(cher::MOUSE_MODE mode)
 {
     QCursor cur = Qt::ArrowCursor;

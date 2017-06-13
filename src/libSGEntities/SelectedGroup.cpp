@@ -249,9 +249,12 @@ void entity::SelectedGroup::setEntitySelectedColor(entity::Entity2D *entity, boo
 {
     if (!entity) return;
     osg::Vec4f color = entity->getColor();
-    float alpha = color.a();
-    if (selected) entity->setColor(osg::Vec4f(cher::STROKE_CLR_SELECTED.r(), cher::STROKE_CLR_SELECTED.g(),
-                                              cher::STROKE_CLR_SELECTED.b(), alpha));
-    else entity->setColor(osg::Vec4f (cher::STROKE_CLR_NORMAL.r(), cher::STROKE_CLR_NORMAL.g(),
-                                      cher::STROKE_CLR_NORMAL.b(), alpha));
+    if (selected)
+        entity->setSelected(color.a());
+    else
+        entity->setUnselected(color.a());
+//    if (selected) entity->setColor(osg::Vec4f(cher::STROKE_CLR_SELECTED.r(), cher::STROKE_CLR_SELECTED.g(),
+//                                              cher::STROKE_CLR_SELECTED.b(), alpha));
+//    else entity->setColor(osg::Vec4f (cher::STROKE_CLR_NORMAL.r(), cher::STROKE_CLR_NORMAL.g(),
+//                                      cher::STROKE_CLR_NORMAL.b(), alpha));
 }

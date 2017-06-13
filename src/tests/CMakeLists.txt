@@ -72,6 +72,13 @@ add_executable(${STROKE_NAME} ${STROKE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGU
 target_link_libraries(${STROKE_NAME} ${TEST_LIBRARIES})
 add_test(${STROKE_NAME} ${STROKE_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
 
+# Polygon test
+set(POLYGON_SRC PolygonTest.h PolygonTest.cpp ${BASEGUITEST_SRC})
+set(POLYGON_NAME test_Polygon)
+add_executable(${POLYGON_NAME} ${POLYGON_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
+target_link_libraries(${POLYGON_NAME} ${TEST_LIBRARIES})
+add_test(${POLYGON_NAME} ${POLYGON_SRC} ${CHERISH_SRC} ${IMAGE_RSC} ${BASEGUITEST_SRC})
+
 # UserScene tests
 set(USERSCENE_SRC UserSceneTest.h UserSceneTest.cpp ${BASEGUITEST_SRC})
 set(USERSCENE_NAME test_UserScene)

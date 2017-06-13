@@ -276,13 +276,43 @@ fur::EditPasteCommand::EditPasteCommand(entity::UserScene *scene, entity::Canvas
     , m_scene(scene)
     , m_canvas(target)
 {
+    // TODO: use templates
     for (size_t i=0; i<buffer.size(); ++i){
-        const entity::Stroke& copy = dynamic_cast<const entity::Stroke&> (*buffer.at(i));
-        entity::Stroke* stroke = new entity::Stroke;
-        if (!stroke) continue;
-        stroke->copyFrom(&copy);
-        Q_ASSERT(stroke->getIsShadered());
-        m_entities.push_back(stroke);
+        cher::ENTITY_TYPE etype = (*buffer.at(i)).getEntityType();
+        switch(etype){
+        case cher::ENTITY_STROKE:
+        {
+            const entity::Stroke& copy = dynamic_cast<const entity::Stroke&> (*buffer.at(i));
+            entity::Stroke* stroke = new entity::Stroke;
+            if (!stroke) continue;
+            stroke->copyFrom(&copy);
+            Q_ASSERT(stroke->getIsShadered());
+            m_entities.push_back(stroke);
+        }
+            break;
+        case cher::ENTITY_LINESEGMENT:
+        {
+            const entity::LineSegment& copy = dynamic_cast<const entity::LineSegment&> (*buffer.at(i));
+            entity::LineSegment* segment = new entity::LineSegment;
+            if (!segment) continue;
+            segment->copyFrom(&copy);
+            Q_ASSERT(segment->getIsShadered());
+            m_entities.push_back(segment);
+        }
+            break;
+        case cher::ENTITY_POLYGON:
+        {
+            const entity::Polygon& copy = dynamic_cast<const entity::Polygon&> (*buffer.at(i));
+            entity::Polygon* polygon = new entity::Polygon;
+            if (!polygon) continue;
+            polygon->copyFrom(&copy);
+            Q_ASSERT(polygon->getIsShadered());
+            m_entities.push_back(polygon);
+        }
+            break;
+        default:
+            break;
+        }
     }
 
     this->setText(QObject::tr("Paste strokes to canvas %1")
@@ -309,11 +339,15 @@ void fur::EditPasteCommand::redo()
         entity->moveDelta(0.2, 0.2);
         m_scene->addEntity(m_canvas.get(), entity);
         m_canvas->addEntitySelected(entity);
-        if (entity->getEntityType() == cher::ENTITY_STROKE){
-            entity::Stroke* s = dynamic_cast<entity::Stroke*>(entity);
-            if (!s) continue;
-            s->getProgram()->updateTransform(m_canvas->getTransform());
+        entity::ShaderedEntity2D* shent = dynamic_cast<entity::ShaderedEntity2D*>(entity);
+        if (shent){
+            shent->getProgram()->updateTransform(m_canvas->getTransform());
         }
+//        if (entity->getEntityType() == cher::ENTITY_STROKE){
+//            entity::Stroke* s = dynamic_cast<entity::Stroke*>(entity);
+//            if (!s) continue;
+//            s->getProgram()->updateTransform(m_canvas->getTransform());
+//        }
     }
 }
 #endif /* DOXYGEN_SHOULD_SKIP_THIS */
@@ -348,9 +382,12 @@ void fur::EditCutCommand::undo()
 void fur::EditCutCommand::redo()
 {
     for (size_t i=0; i<m_selected.size(); ++i){
-        entity::Stroke* stroke = dynamic_cast<entity::Stroke*> ( m_selected.at(i));
-        if (!stroke) continue;
-        m_buffer.push_back(stroke);
+        entity::ShaderedEntity2D* entity = dynamic_cast<entity::ShaderedEntity2D*>(m_selected.at(i));
+        if (!entity) continue;
+        m_buffer.push_back(entity);
+//        entity::Stroke* stroke = dynamic_cast<entity::Stroke*> ( m_selected.at(i));
+//        if (!stroke) continue;
+//        m_buffer.push_back(stroke);
     }
     m_scene->setCanvasCurrent(m_canvas.get());
     for (size_t i=0; i<m_buffer.size(); ++i){

@@ -14,6 +14,9 @@
 #include <QWidgetAction>
 #include <QFileSystemModel>
 #include <QColorDialog>
+#include <QAction>
+#include <QObject>
+#include <QString>
 
 #include <osg/ref_ptr>
 #include <osg/Camera>
@@ -27,7 +30,30 @@
 #include "ListView.h"
 #include "PhotoModel.h"
 #include "Data.h"
-#include "Actions.h"
+
+/*! \class BookmarkAction
+ * \brief Action to edit bookmark data which was created by means of SVMData.
+*/
+class BookmarkAction : public QAction
+{
+    Q_OBJECT
+public:
+    BookmarkAction(const QString& name, QObject* parent)
+        : QAction(name, parent)
+    {
+        this->connect(this, SIGNAL(triggered(bool)), this, SLOT(onTriggered()));
+    }
+
+public slots:
+    void onTriggered()
+    {
+        emit triggeredName(this->text());
+    }
+
+signals:
+    void triggeredName(const QString& name);
+};
+
 
 /*! \class MainWindow
  * \brief Re-defined QMainWindow that contains all the GUI elements such as GLWidget, menu bars, tool bars and other widgets.
@@ -108,6 +134,9 @@ public slots:
     /*! Slot called when user changed order of bookmarks within BookmarkWidget. */
     void onMoveBookmark(const QModelIndex &index);
 
+    /*! Slot called when user presses on cog icon to change the state set of the bookmark. */
+    void onApplyStateBookmark(const QModelIndex& index);
+
     /*! Slot called when BookmarkWidget content had changed, i.e., new row was inserted. */
     void onBookmarkAddedToWidget(const QModelIndex &, int first, int last);
 
@@ -184,6 +213,7 @@ protected slots:
     void onNewCanvasClone();
     void onNewCanvasXY();
     void onNewCanvasYZ();
+    void onNewCanvasZY();
     void onNewCanvasXZ();
     void onNewCanvasOrtho();
     void onNewCanvasSeparate();
@@ -264,7 +294,7 @@ protected:
     QAction * m_actionSketch, * m_actionEraser, * m_actionSelect, * m_actionSelect3d, * m_actionPolygon
             , * m_actionLinesegment
             // New Canvas sub-menu
-            , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasXZ
+            , * m_actionCanvasClone, * m_actionCanvasXY, * m_actionCanvasYZ, * m_actionCanvasZY, * m_actionCanvasXZ
             , * m_actionCanvasOrtho, * m_actionCanvasSeparate
             // New Canvas Set sub-menu
             , * m_actionSetStandard

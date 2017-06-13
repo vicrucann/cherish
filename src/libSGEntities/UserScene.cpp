@@ -8,6 +8,7 @@
 #include "AddEntityCommand.h"
 #include "EditEntityCommand.h"
 #include "FindNodeVisitor.h"
+#include "MainWindow.h"
 
 #include <osgDB/WriteFile>
 #include <osgDB/ReadFile>
@@ -939,6 +940,26 @@ void entity::UserScene::editStrokeDelete(QUndoStack *stack, entity::Stroke *stro
     stack->push(cmd);
 }
 
+void entity::UserScene::editEntity2DDelete(QUndoStack *stack, entity::Entity2D *entity)
+{
+    if (!stack) qFatal("editStrokeDelete(): undo stack is NULL, it is not initialized. Editing is not possible.");
+    if (!entity){
+        qCritical("editStrokeDelete: stroke is NULL");
+        return;
+    }
+    if (!m_canvasCurrent->containsEntity(entity)){
+        qWarning("editStrokeDelete: current canvas does not contain that stroke."
+                  "Deletion is not possible.");
+        return;
+    }
+    fur::EditEntityDeleteCommand* cmd = new fur::EditEntityDeleteCommand(this, m_canvasCurrent.get(), entity);
+    if (!cmd){
+        qCritical("editStrokeDelete: undo/redo command is NULL");
+        return;
+    }
+    stack->push(cmd);
+}
+
 void entity::UserScene::editSelectedEntitiesDelete(QUndoStack *stack)
 {
     entity::Canvas* canvas = this->getCanvasCurrent();
@@ -1201,7 +1222,10 @@ void entity::UserScene::polygonStart()
     poly->initializeProgram(m_canvasCurrent->getProgramPolygon());
     m_canvasCurrent->setPolygonCurrent(poly);
     m_canvasCurrent->addEntity(poly);
-    poly->redefineToShape();
+//    poly->redefineToShape();
+
+    osg::Vec4f color = MainWindow::instance().getCurrentColor();
+    poly->setColor(color);
 
     this->updateWidgets();
 }
@@ -1227,13 +1251,16 @@ void entity::UserScene::polygonAppend(float u, float v, QUndoStack *stack)
 
         /* otherwise, append it */
         qDebug("Appending point to a polygon");
+        /* if more than 2 points, redefine to shape */
+        if (poly->getNumPoints() >= 2)
+            poly->redefineToShape();
         if (poly->getNumPoints() == 0)
             poly->appendPoint(u, v);
         poly->appendPoint(u, v); // so that we see the continuation of the polygon in edit mode
         this->updateWidgets();
     }
     else
-        qWarning("polygonAppend: pointer is nULUL");
+        qWarning("polygonAppend: pointer is NUL");
 }
 
 void entity::UserScene::polygonEdit(float u, float v)
@@ -1641,6 +1668,7 @@ void entity::UserScene::canvasCloneStart()
         m_canvasCurrent->setVisibilityAll(true);
 
     m_canvasCurrent->unselectAll();
+    entity::Canvas* remain_prev = m_canvasPrevious.get();
 
     entity::Canvas* cnv = m_canvasCurrent->clone();
     if (!cnv){
@@ -1662,6 +1690,7 @@ void entity::UserScene::canvasCloneStart()
         m_canvasClone = 0;
         return;
     }
+    this->setCanvasPrevious(remain_prev);
 }
 
 void entity::UserScene::canvasCloneAppend(const osg::Vec3f &t)

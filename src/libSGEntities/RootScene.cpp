@@ -298,6 +298,30 @@ bool RootScene::loadSceneFromFile()
             if (!stroke->redefineToShape(cnv->getTransform()))
                 qWarning("Could not redefine stroke as curve");
         }
+
+        /* polygons */
+        for (size_t k=0; k<cnv->getNumPolygons(); ++k){
+            entity::Polygon* polygon = cnv->getPolygon(k);
+            if (!polygon) {
+                qWarning("Could not read polygon");
+                continue;
+            }
+            polygon->initializeProgram(cnv->getProgramPolygon());
+            if (!polygon->redefineToShape(cnv->getTransform()))
+                qWarning("Could not redefine stroke as curve");
+        }
+
+        /* line segments */
+        for (size_t k=0; k<cnv->getNumLineSegments(); ++k){
+            entity::LineSegment* segment = cnv->getLineSegment(k);
+            if (!segment) {
+                qWarning("Could not read polygon");
+                continue;
+            }
+            segment->initializeProgram(cnv->getProgramLineSegment());
+            if (!segment->redefineToShape(cnv->getTransform()))
+                qWarning("Could not redefine stroke as curve");
+        }
     }
 
     /* update current/previous canvases */
@@ -786,6 +810,12 @@ void RootScene::editStrokeDelete(entity::Stroke *stroke)
     m_saved = false;
 }
 
+void RootScene::editEntity2DDelete(entity::Entity2D *entity)
+{
+    m_userScene->editEntity2DDelete(m_undoStack, entity);
+    m_saved = false;
+}
+
 /* copies the selected strokes into buffer, makes a deep copy */
 void RootScene::copyToBuffer()
 {
@@ -796,17 +826,53 @@ void RootScene::copyToBuffer()
     const std::vector<entity::Entity2D*>& selected = canvas->getEntitiesSelected();
     if (selected.size()==0) return;
 
-    for (size_t i=0; i<selected.size(); ++i){
-        const entity::Stroke& copy = dynamic_cast<const entity::Stroke&>( *selected.at(i));
-
-        entity::Stroke* stroke = new entity::Stroke;
-        if (!stroke) {
-            qWarning("Could not allocated stroke");
-            continue;
+    // TODO: use templates
+    for (size_t i=0; i<selected.size(); ++i)
+    {
+        cher::ENTITY_TYPE etype = (*selected.at(i)).getEntityType();
+        switch(etype){
+        case cher::ENTITY_STROKE:
+        {
+            const entity::Stroke& copy = dynamic_cast<const entity::Stroke&>( *selected.at(i));
+            entity::Stroke* stroke = new entity::Stroke;
+            if (!stroke) {
+                qWarning("Could not allocated stroke");
+                continue;
+            }
+            stroke->copyFrom(&copy);
+            stroke->redefineToShape(copy.getProgram()->getTransform());
+            m_buffer.push_back(stroke);
         }
-        stroke->copyFrom(&copy);
-        stroke->redefineToShape(copy.getProgram()->getTransform());
-        m_buffer.push_back(stroke);
+            break;
+        case cher::ENTITY_LINESEGMENT:
+        {
+            const entity::LineSegment& copy = dynamic_cast<const entity::LineSegment&>( *selected.at(i));
+            entity::LineSegment* segment = new entity::LineSegment;
+            if (!segment){
+                qWarning("Could not allocated segment");
+                continue;
+            }
+            segment->copyFrom(&copy);
+            segment->redefineToShape(copy.getProgram()->getTransform());
+            m_buffer.push_back(segment);
+        }
+            break;
+        case cher::ENTITY_POLYGON:
+        {
+            const entity::Polygon& copy = dynamic_cast<const entity::Polygon&>( *selected.at(i));
+            entity::Polygon* polygon = new entity::Polygon;
+            if (!polygon){
+                qWarning("Could not allocated polygon");
+                continue;
+            }
+            polygon->copyFrom(&copy);
+            polygon->redefineToShape(copy.getProgram()->getTransform());
+            m_buffer.push_back(polygon);
+        }
+            break;
+        default:
+            break;
+        }
     }
 }
 

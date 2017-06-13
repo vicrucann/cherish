@@ -351,7 +351,6 @@ void entity::Photo::scaleAndPositionWith(const SVMData *svm, const osg::Vec3d &e
 
 void entity::Photo::setColor(const osg::Vec4f &color)
 {
-    qDebug("photo color resetting");
     float alpha = color.a();
     osg::Vec4f stripped = osg::Vec4f(color.r(), color.g(), color.b(), 1.f);
     osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
@@ -371,6 +370,29 @@ void entity::Photo::setColor(const osg::Vec4f &color)
 const osg::Vec4f &entity::Photo::getColor() const
 {
     return m_color;
+}
+
+void entity::Photo::setSelected(float alpha)
+{
+    osg::Vec4Array* colors = static_cast<osg::Vec4Array*>(this->getColorArray());
+    if (!colors) throw std::runtime_error("setColors: colors is NULL");
+    osg::Vec4f clr = osg::Vec4f(m_color.r(), m_color.g(), m_color.b(),
+                                alpha);
+
+    for (unsigned int i=0; i<colors->size(); ++i){
+        (*colors)[i] = clr;
+    }
+
+    colors->dirty();
+    this->dirtyDisplayList();
+    this->dirtyBound();
+}
+
+void entity::Photo::setUnselected(float alpha)
+{
+    osg::Vec4f clr = osg::Vec4f(m_color.r(), m_color.g(), m_color.b(),
+                                alpha);
+    this->setColor(clr);
 }
 
 void entity::Photo::setTransparency(float alpha)

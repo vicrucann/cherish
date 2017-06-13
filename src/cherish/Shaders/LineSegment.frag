@@ -13,10 +13,10 @@ in VertexData{
 
 float getFogFactor(float d)
 {
-    if (d>=FogMax) return 1;
-    if (d<=FogMin) return 0;
+    if (d>=FogMax) return 1.f;
+    if (d<=FogMin) return 0.f;
 
-    return 1 - (FogMax - d) / (FogMax - FogMin);
+    return 1.f - (FogMax - d) / (FogMax - FogMin);
 }
 
 void main(void)

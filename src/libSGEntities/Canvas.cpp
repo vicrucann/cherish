@@ -578,6 +578,9 @@ void entity::Canvas::addEntitySelected(Entity2D *entity)
     case cher::ENTITY_LINESEGMENT:
         m_selectedGroup.addEntity(entity, m_geodeLineSegments.get());
         break;
+    case cher::ENTITY_POLYGON:
+        m_selectedGroup.addEntity(entity, m_geodePolygons.get());
+        break;
     default:
         break;
     }
@@ -862,6 +865,19 @@ entity::Canvas *entity::Canvas::clone() const
                     po->redefineToShape();
                     Q_ASSERT(po->isPolygon());
                     if (!clone->addEntity(po)) qWarning("canvas clone: could not add polygon as drawable");
+                }
+            }
+            break;
+        }
+        case cher::ENTITY_LINESEGMENT:
+        {
+            entity::LineSegment* segment = dynamic_cast<entity::LineSegment*>(entcopy);
+            if (segment){
+                entity::LineSegment* ls = new entity::LineSegment;
+                if (ls){
+                    ls->copyFrom(segment);
+                    ls->redefineToShape();
+                    clone->addEntity(ls);
                 }
             }
             break;

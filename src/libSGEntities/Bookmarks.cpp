@@ -98,6 +98,16 @@ entity::SceneState *entity::Bookmarks::getSceneState(int row)
     return dynamic_cast<entity::SceneState*>(this->getChild(row));
 }
 
+bool entity::Bookmarks::replaceSceneState(int row, entity::SceneState *state)
+{
+    if (!state) return false;
+
+    entity::SceneState* old = this->getSceneState(row);
+    if (!old) return false;
+
+    return this->replaceChild(old, state);
+}
+
 entity::SceneState *entity::Bookmarks::getLastSceneState()
 {
     int num = this->getNumBookmarks();

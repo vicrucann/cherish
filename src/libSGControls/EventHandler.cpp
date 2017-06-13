@@ -12,6 +12,7 @@
 #include <QMessageBox>
 
 #include "Utilities.h"
+#include "libGUI/CherishApplication.h"
 
 EventHandler::EventHandler(GLWidget *widget, RootScene* scene, cher::MOUSE_MODE mode)
     : osgGA::GUIEventHandler()
@@ -288,10 +289,12 @@ void EventHandler::doSketch(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAd
 
 void EventHandler::doSketchPolygon(const osgGA::GUIEventAdapter &ea, osgGA::GUIActionAdapter &aa)
 {
+    if ((ea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK))
+            this->finishAll();
+
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::MOVE)
-           || (ea.getEventType() == osgGA::GUIEventAdapter::DOUBLECLICK)
            ))
         return;
 
@@ -327,31 +330,53 @@ void EventHandler::doSketchLineSegment(const osgGA::GUIEventAdapter &ea, osgGA::
     if (!( (ea.getEventType() == osgGA::GUIEventAdapter::PUSH && ea.getButtonMask()== osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::RELEASE && ea.getButton()==osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON)
            || (ea.getEventType() == osgGA::GUIEventAdapter::MOVE)
+           || (ea.getModKeyMask() == osgGA::GUIEventAdapter::MODKEY_SHIFT)
            ))
         return;
 
-    double u=0, v=0;
+    /* do we want to anchor the next line? */
+    bool isAnchored = ( CherishApplication::keyboardModifiers().testFlag(Qt::ShiftModifier) == true );
+    /* chech there is enough points to do anchoring */
+    bool isEnabled = false;
+    osg::Vec3f previous{0,0,0};
+    if (isAnchored){
+        entity::LineSegment* segment = m_scene->getUserScene()->getCanvasCurrent()->getEntityCurrent<entity::LineSegment>();
+        if (segment)
+            isEnabled = (segment->getNumPoints() >= 1);
+        if (isEnabled)
+            previous = segment->getPoint3(segment->getNumPoints()-2);
+    }
+
+    auto getNextPoint = [&](osg::Vec3d& nxt) -> bool
+    {
+        if (!this->getRaytraceCanvasIntersection(ea, aa, nxt.x(), nxt.y()))
+            return false;
+        if (isAnchored && isEnabled)
+            nxt = Utilities::getAnchorLineSegment(previous, nxt);
+        return true;
+    };
+
+    osg::Vec3d next{0,0,0};
     switch (ea.getEventType()){
     case osgGA::GUIEventAdapter::PUSH:
         /* first or last point for a line segment */
-        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        if (!getNextPoint(next))
             return;
-        m_scene->addLineSegment(u,v, cher::EVENT_PRESSED);
+        m_scene->addLineSegment(next.x(), next.y(), cher::EVENT_PRESSED);
         break;
     case osgGA::GUIEventAdapter::RELEASE:
-        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        if (!getNextPoint(next))
             return;
-        m_scene->addLineSegment(u,v, cher::EVENT_RELEASED);
+        m_scene->addLineSegment(next.x(),next.y(), cher::EVENT_RELEASED);
         break;
     case osgGA::GUIEventAdapter::MOVE:
-        if (!this->getRaytraceCanvasIntersection(ea,aa,u,v))
+        if (!getNextPoint(next))
             return;
-        m_scene->addLineSegment(u,v, cher::EVENT_DRAGGED);
+        m_scene->addLineSegment(next.x(), next.y(), cher::EVENT_DRAGGED);
         break;
     default:
         break;
     }
-
 }
 
 /* Deletes an entity within a current canvas - stroke or image.
@@ -379,14 +404,25 @@ void EventHandler::doDeleteEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
         if (polygon) m_scene->editPolygonDelete(polygon, m_scene->getCanvasCurrent());
     }
     else{
-        /* see if there is a stroke */
-        StrokeIntersector::Intersection result_stroke;
-        bool inter_stroke = this->getIntersection<StrokeIntersector::Intersection, StrokeIntersector>
+        /* see if there is a stroke or line segment */
+        Entity2DIntersector<entity::Stroke>::Intersection result_stroke;
+        bool inter_stroke = this->getIntersection<Entity2DIntersector<entity::Stroke>::Intersection,
+                Entity2DIntersector<entity::Stroke>>
                 (ea,aa,cher::MASK_CANVAS_IN, result_stroke);
-        if (!inter_stroke) return;
-        entity::Stroke* stroke = this->getStroke(result_stroke);
-        if (!stroke) return;
-        m_scene->editStrokeDelete(stroke);
+        if (inter_stroke){
+            entity::Stroke* stroke = this->getEntity2D<entity::Stroke>(result_stroke);
+            if (stroke) m_scene->editStrokeDelete(stroke);
+        }
+
+        Entity2DIntersector<entity::LineSegment>::Intersection result_segment;
+        bool inter_segment = this->getIntersection<Entity2DIntersector<entity::LineSegment>::Intersection,
+                Entity2DIntersector<entity::LineSegment>>
+                (ea, aa, cher::MASK_CANVAS_IN, result_segment);
+        if (inter_segment){
+            entity::LineSegment* segment = this->getEntity2D<entity::LineSegment>(result_segment);
+            if (segment) m_scene->editEntity2DDelete(segment);
+        }
+
     }
 }
 
@@ -1322,7 +1358,8 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
             canvas->unselectEntities();
 
         osgUtil::LineSegmentIntersector::Intersection result_photo;
-        bool inter_photo = this->getIntersection<osgUtil::LineSegmentIntersector::Intersection, osgUtil::LineSegmentIntersector>
+        bool inter_photo = this->getIntersection<osgUtil::LineSegmentIntersector::Intersection,
+                osgUtil::LineSegmentIntersector>
                 (ea,aa, cher::MASK_CANVAS_IN, result_photo);
         if (inter_photo){
             entity::Photo* photo = this->getPhoto(result_photo);
@@ -1344,6 +1381,15 @@ void EventHandler::doSelectEntity(const osgGA::GUIEventAdapter &ea, osgGA::GUIAc
             entity::LineSegment* segment = this->getEntity2D<entity::LineSegment>(result_segment);
             if (segment)
                 canvas->addEntitySelected(segment);
+        }
+
+        osgUtil::LineSegmentIntersector::Intersection result_polygon;
+        bool inter_polygon = this->getIntersection< osgUtil::LineSegmentIntersector::Intersection,
+                osgUtil::LineSegmentIntersector >(ea, aa, cher::MASK_CANVAS_IN, result_polygon);
+        if (inter_polygon){
+            entity::Polygon* polygon = this->getEntity2D<entity::Polygon>(result_polygon);
+            if (polygon)
+                canvas->addEntitySelected(polygon);
         }
 
         /* if some entities were selected, go into edit-frame mode for canvas frame */

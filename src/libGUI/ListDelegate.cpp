@@ -144,7 +144,7 @@ void CanvasDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 
         QVariant var = index.model()->data(index, cher::DelegateBGColor);
         QColor color = var.value<QColor>();
-        if (color != Qt::white){
+        if (color != Qt::white && painter != nullptr){
             QString text = index.model()->data(index, Qt::DisplayRole).toString();
             QFontMetrics fm = painter->fontMetrics();
             int width = fm.width(text);
