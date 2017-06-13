@@ -578,7 +578,9 @@ void MainWindow::onFileImage()
         return;
     }
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load an Image File"), QString(),
-            tr("Image Files (*.bmp)"));
+            tr("Image Files (*.bmp "
+               //"*.jpg *.JPEG *.tiff *.png */"
+               ")"));
 
     this->importPhoto(fileName);
 }
@@ -592,6 +594,7 @@ void MainWindow::onFilePhotoBase()
         return;
     }
 
+    // for file formats, check PhotoModel::setRootPath()
     m_photoModel->setRootPath(directory);
     m_photoWidget->setModel(m_photoModel);
 //    m_photoWidget->setRootIndex(m_photoModel->index(directory));
