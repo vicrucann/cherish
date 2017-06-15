@@ -69,6 +69,15 @@ int main(int argc, char** argv)
     QObject::connect(&cherish_app, SIGNAL(setTabletActivity(bool)), &mwin, SLOT(onSetTabletActivity(bool)));
     mwin.show();
 
+    /* if file is being opened by providing it as an argument */
+    if (argc == 2){
+        qInfo("Trying to open the passed file...");
+        std::string s(argv[1]);
+        QString fname(s.c_str());
+        qDebug() << "File=" << fname;
+        mwin.openFile(fname);
+    }
+
     return cherish_app.exec();
 }
 
