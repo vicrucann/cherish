@@ -3,6 +3,8 @@
 #include <QIcon>
 #include <QPixmap>
 #include <QString>
+#include <QFile>
+#include <QTextStream>
 
 #include "Settings.h"
 
@@ -732,4 +734,110 @@ const QPixmap &Data::sceneImageRotatePixmap()
     static QPixmap pmap = icon.pixmap(cher::CURSOR_SIZE*cher::DPI_SCALING, cher::CURSOR_SIZE*cher::DPI_SCALING);
 
     return pmap;
+}
+
+const std::string &Data::strokeFragmentShader()
+{
+    QString fname(":/Stroke.frag");
+    QFile f(fname);
+    QString qs;
+    if (f.open(QFile::ReadOnly | QFile::Text)){
+        QTextStream in(&f);
+        qs = in.readAll();
+    }
+    else
+        qWarning("Could not open file Stroke.frag");
+    static std::string result = qs.toStdString();
+    return result;
+}
+
+const std::string &Data::strokeGeometryShader()
+{
+    QString fname(":/Stroke.geom");
+    QFile f(fname);
+    QString qs;
+    if (f.open(QFile::ReadOnly | QFile::Text)){
+        QTextStream in(&f);
+        qs = in.readAll();
+    }
+    else
+        qWarning("Could not open file Stroke.geom");
+    static std::string result = qs.toStdString();
+    return result;
+}
+
+const std::string &Data::strokeVertexShader()
+{
+
+    QString fname(":/Stroke.vert");
+    QFile f(fname);
+    QString qs;
+    if (f.open(QFile::ReadOnly | QFile::Text)){
+        QTextStream in(&f);
+        qs = in.readAll();
+    }
+    else
+        qWarning("Could not open file Stroke.vert");
+    static std::string result = qs.toStdString();
+    return result;
+}
+
+const std::string &Data::linesegementFragmentShader()
+{
+    QString fname(":/LineSegment.frag");
+    QFile f(fname);
+    QString qs;
+    if (f.open(QFile::ReadOnly | QFile::Text)){
+        QTextStream in(&f);
+        qs = in.readAll();
+    }
+    else
+        qWarning("Could not open file LineSegment.frag");
+    static std::string result = qs.toStdString();
+    return result;
+}
+
+const std::string &Data::linesegmentVertexShader()
+{
+    QString fname(":/LineSegment.vert");
+    QFile f(fname);
+    QString qs;
+    if (f.open(QFile::ReadOnly | QFile::Text)){
+        QTextStream in(&f);
+        qs = in.readAll();
+    }
+    else
+        qWarning("Could not open file LineSegment.vert");
+    static std::string result = qs.toStdString();
+    return result;
+}
+
+const std::string &Data::polygonFragmentShader()
+{
+    QString fname(":/Polygon.frag");
+    QFile f(fname);
+    QString qs;
+    if (f.open(QFile::ReadOnly | QFile::Text)){
+        QTextStream in(&f);
+        qs = in.readAll();
+    }
+    else
+        qWarning("Could not open file Polygon.frag");
+    static std::string result = qs.toStdString();
+    return result;
+}
+
+const std::string &Data::polygonVertexShader()
+{
+    QString fname(":/Polygon.vert");
+    QFile f(fname);
+    QString qs;
+    if (f.open(QFile::ReadOnly | QFile::Text)){
+        QTextStream in(&f);
+        qs = in.readAll();
+    }
+    else
+        qWarning("Could not open file Polygon.vert");
+    static std::string result = qs.toStdString();
+    return result;
 }

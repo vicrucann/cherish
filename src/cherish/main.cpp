@@ -74,7 +74,7 @@ int main(int argc, char** argv)
         qInfo("Trying to open the passed file...");
         std::string s(argv[1]);
         QString fname(s.c_str());
-        qDebug() << "File=" << fname;
+        qInfo() << "File=" << fname;
         mwin.openFile(fname);
     }
 

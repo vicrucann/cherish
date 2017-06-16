@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Stroke.vert</file>
+        <file>LineSegment.frag</file>
+        <file>LineSegment.vert</file>
+        <file>Polygon.frag</file>
+        <file>Polygon.vert</file>
+        <file>Stroke.frag</file>
+        <file>Stroke.geom</file>
+    </qresource>
+</RCC>
