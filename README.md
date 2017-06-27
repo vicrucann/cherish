@@ -27,3 +27,9 @@ In case if running on a cloud service the latter command might look like:
 ```
 bundle exec jekyll serve --host $IP --port $PORT --baseurl ''
 ```
+
+Or locally on your machine:
+
+```
+bundle exec jekyll serve --baseurl ''
+```
