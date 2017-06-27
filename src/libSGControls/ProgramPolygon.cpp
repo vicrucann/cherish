@@ -7,6 +7,7 @@
 
 #include "Settings.h"
 #include "CameraCallbacks.h"
+#include "Data.h"
 
 ProgramPolygon::ProgramPolygon()
     : ProgramEntity2D()
@@ -41,20 +42,14 @@ bool ProgramPolygon::addPresetShaders()
 
     /* load and add shaders to the program */
     osg::ref_ptr<osg::Shader> vertShader = new osg::Shader(osg::Shader::VERTEX);
-    if (!vertShader->loadShaderSourceFromFile("Shaders/Polygon.vert")){
-        qWarning("Could not load vertex shader from file");
-        return false;
-    }
+    vertShader->setShaderSource(Data::polygonVertexShader());
     if (!this->addShader(vertShader.get())){
         qWarning("Could not add vertext shader");
         return false;
     }
 
     osg::ref_ptr<osg::Shader> fragShader = new osg::Shader(osg::Shader::FRAGMENT);
-    if (!fragShader->loadShaderSourceFromFile("Shaders/Polygon.frag")){
-        qWarning("Could not load fragment shader from file");
-        return false;
-    }
+    fragShader->setShaderSource(Data::polygonFragmentShader());
     if (!this->addShader(fragShader.get())){
         qWarning("Could not add fragment shader");
         return false;

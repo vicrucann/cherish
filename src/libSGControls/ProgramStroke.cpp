@@ -7,6 +7,7 @@
 
 #include "Settings.h"
 #include "CameraCallbacks.h"
+#include "Data.h"
 
 ProgramStroke::ProgramStroke()
     : ProgramEntity2D()
@@ -42,30 +43,21 @@ bool ProgramStroke::addPresetShaders()
 
     /* load and add shaders to the program */
     osg::ref_ptr<osg::Shader> vertShader = new osg::Shader(osg::Shader::VERTEX);
-    if (!vertShader->loadShaderSourceFromFile("Shaders/Stroke.vert")){
-        qWarning("Could not load vertex shader from file");
-        return false;
-    }
+    vertShader->setShaderSource(Data::strokeVertexShader());
     if (!this->addShader(vertShader.get())){
         qWarning("Could not add vertext shader");
         return false;
     }
 
     osg::ref_ptr<osg::Shader> geomShader = new osg::Shader(osg::Shader::GEOMETRY);
-    if (!geomShader->loadShaderSourceFromFile("Shaders/Stroke.geom")){
-        qWarning("Could not load geometry shader from file");
-        return false;
-    }
+    geomShader->setShaderSource(Data::strokeGeometryShader());
     if (!this->addShader(geomShader.get())){
         qWarning("Could not add geometry shader");
         return false;
     }
 
     osg::ref_ptr<osg::Shader> fragShader = new osg::Shader(osg::Shader::FRAGMENT);
-    if (!fragShader->loadShaderSourceFromFile("Shaders/Stroke.frag")){
-        qWarning("Could not load fragment shader from file");
-        return false;
-    }
+    fragShader->setShaderSource(Data::strokeFragmentShader());
     if (!this->addShader(fragShader.get())){
            qWarning("Could not add fragment shader");
            return false;

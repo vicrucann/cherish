@@ -9,11 +9,11 @@ uniform float FogMin;
 uniform float FogMax;
 uniform vec4 CameraEye;
 
-const int SegmentsMax = 30; // max_vertices = (SegmentsMax+1)*4;
+const int SegmentsMax = 24; // max_vertices = (SegmentsMax+1)*4;
 const int SegmentsMin = 3; // min number of segments per curve
 
 layout(lines_adjacency) in;
-layout(triangle_strip, max_vertices = 124) out;
+layout(triangle_strip, max_vertices = 100) out;
 
 in VertexData{
     vec4 mColor;

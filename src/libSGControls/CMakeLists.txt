@@ -50,6 +50,8 @@ set (libSGControls_SRCS
     ProgramPolygon.cpp
     ProgramLineSegment.h
     ProgramLineSegment.cpp
+    MouseMode.h
+    MouseMode.cpp
 )
 
 add_library(libSGControls

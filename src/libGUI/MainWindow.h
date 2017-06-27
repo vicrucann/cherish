@@ -106,6 +106,9 @@ public:
     /*! A method to obtain a pointer on bookmark widget. */
     BookmarkWidget* getBookmarkWidget();
 
+    /*! A method would normally be called when file name is provided as command line argument. */
+    void openFile(const QString& fname);
+
 public slots:
     /*! Slot called whenver CherishApplication catches change of tablet proximity. */
     void onSetTabletActivity(bool active);

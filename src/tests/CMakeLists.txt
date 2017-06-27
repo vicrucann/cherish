@@ -27,6 +27,7 @@ SET( TEST_LIBRARIES
 qt5_add_resources(IMAGE_RSC
     ${CMAKE_SOURCE_DIR}/cherish/Images/Actions.qrc
     ${CMAKE_SOURCE_DIR}/cherish/Images/Icons.qrc
+    ${CMAKE_SOURCE_DIR}/cherish/Shaders/shaderfiles.qrc
 )
 
 ## set of base files that every test will, probably, need

@@ -4,6 +4,8 @@
 #include <QIcon>
 #include <QPixmap>
 
+#include <string>
+
 class QIcon;
 class QPixmap;
 
@@ -132,6 +134,17 @@ public:
     static const QPixmap& sceneImageMovePixmap();
     static const QPixmap& sceneImageScalePixmap();
     static const QPixmap& sceneImageRotatePixmap();
+
+    /* Shaders */
+    static const std::string& strokeFragmentShader();
+    static const std::string& strokeGeometryShader();
+    static const std::string& strokeVertexShader();
+
+    static const std::string& linesegementFragmentShader();
+    static const std::string& linesegmentVertexShader();
+
+    static const std::string& polygonFragmentShader();
+    static const std::string& polygonVertexShader();
 
 private:
 

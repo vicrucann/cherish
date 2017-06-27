@@ -20,6 +20,9 @@ set(CherishApplication_SRCS
     Data.cpp
     Utilities.h
     Utilities.cpp
+
+    # application logo for Windows
+    Images/cherish.rc
 )
 
 qt5_add_resources(IMG_RSC_ADDED
@@ -29,11 +32,15 @@ qt5_add_resources(IMG_RSC_ADDED
     Styles/Stylesheets.qrc
 )
 
-file(GLOB_RECURSE SHADER_RSC_ADDED
-    Shaders/*.frag
-    Shaders/*.vert
-    Shaders/*.geom
-)
+qt5_add_resources(SHADER_RSC_ADDED
+    Shaders/shaderfiles.qrc
+    )
+
+#file(GLOB_RECURSE SHADER_RSC_ADDED
+#    Shaders/*.frag
+#    Shaders/*.vert
+#    Shaders/*.geom
+#)
 
 add_executable(${PROJECT_NAME}
     ${CherishApplication_SRCS}
@@ -55,11 +62,11 @@ target_link_libraries( ${PROJECT_NAME}
 )
 
 ## copy shader files to binary and test folders
-foreach(shaderpath ${SHADER_RSC_ADDED})
-    get_filename_component(shader ${shaderpath} NAME)
-    configure_file("${CMAKE_SOURCE_DIR}/cherish/Shaders/${shader}" "${CMAKE_BINARY_DIR}/cherish/Shaders/${shader}" COPYONLY)
-    configure_file("${CMAKE_SOURCE_DIR}/cherish/Shaders/${shader}" "${CMAKE_BINARY_DIR}/tests/Shaders/${shader}" COPYONLY)
-endforeach()
+#foreach(shaderpath ${SHADER_RSC_ADDED})
+#    get_filename_component(shader ${shaderpath} NAME)
+#    configure_file("${CMAKE_SOURCE_DIR}/cherish/Shaders/${shader}" "${CMAKE_BINARY_DIR}/cherish/Shaders/${shader}" COPYONLY)
+#    configure_file("${CMAKE_SOURCE_DIR}/cherish/Shaders/${shader}" "${CMAKE_BINARY_DIR}/tests/Shaders/${shader}" COPYONLY)
+#endforeach()
 
 if( CMAKE_BUILD_TYPE MATCHES "^([Dd][Ee][Bb][Uu][Gg])" )
         set( CMAKE_INSTALL_DEBUG_LIBRARIES_ONLY TRUE )

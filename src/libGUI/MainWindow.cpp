@@ -176,6 +176,17 @@ BookmarkWidget *MainWindow::getBookmarkWidget()
     return m_bookmarkWidget;
 }
 
+void MainWindow::openFile(const QString &fname)
+{
+    m_rootScene->setFilePath(fname.toStdString());
+    if (!this->loadSceneFromFile()){
+        QMessageBox::critical(this, tr("Error"), tr("Could not read from file. See the log for more details."));
+        m_rootScene->setFilePath("");
+    }
+    else
+        this->statusBar()->setStatusTip(tr("Scene was successfully read from file"));
+}
+
 void MainWindow::onSetTabletActivity(bool active){
     m_glWidget->setTabletActivity(active);
 }
