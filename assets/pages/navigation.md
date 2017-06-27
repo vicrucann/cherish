@@ -1,3 +1,12 @@
+---
+layout: page
+title: "User manual"
+description: Camera navigation description.
+bg: orange  #defined in _config.yml, can use html color like '#0fbfcf'
+color: black   #text color
+fa-icon: user
+---
+
 # Camera navigation
 
 The current camera view affects what the user sees. To orbit, hold down the middle mouse button and move your mouse:

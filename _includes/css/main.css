@@ -179,6 +179,20 @@ nav ul li:hover, nav ul li.active {
     padding-top: 140px;
 }
 
+.page {
+  position:relative;
+  display:block;
+  width:100%;
+  min-height:300px;
+  padding:210px 0;
+  background:url(assets/images/bgnoise.png);
+  /* generated noise from noisetexturegenerator.com */
+}
+
+.page:first-of-type {
+    padding-top: 320px;
+}
+
 
 #footer {
   padding: 8px 0;
@@ -209,7 +223,24 @@ nav ul li:hover, nav ul li.active {
   margin-left:-135px;
 }
 
+.pagedivider {
+  width:270px;
+  height:270px;
+  padding:15px;
+  position:absolute;
+  top:10px;
+  left:50%;
+  margin-left:-135px;
+}
+
 .sectiondivider img {
+  width:200px;
+  height:240px;
+  position: static;
+  margin-top: -20px;
+}
+
+.pagedivider img {
   width:200px;
   height:240px;
   position: static;
@@ -222,6 +253,13 @@ nav ul li:hover, nav ul li.active {
   margin-top: -8px;
 }
 .sectiondivider .fa-circle { color: #fff; }
+
+.pagedivider .fa-stack {
+  font-size: 130px;
+  position: static;
+  margin-top: -8px;
+}
+.pagedivider .fa-circle { color: #fff; }
 
 .sectiondivider h5 {
   font-size:15px;
@@ -236,7 +274,24 @@ nav ul li:hover, nav ul li.active {
   width:240px;
 }
 
+.pagedivider h5 {
+  font-size:15px;
+  font-weight:700;
+  text-transform:uppercase;
+  position:absolute;
+  bottom:50px;
+  left:auto;
+  text-align:center;
+  display:block;
+  z-index:6;
+  width:240px;
+}
+
 .sectiondivider.imaged {
+  text-shadow: 1px 1px 3px #333;
+}
+
+.pagedivider.imaged {
   text-shadow: 1px 1px 3px #333;
 }
 
@@ -344,6 +399,28 @@ nav ul li:hover, nav ul li.active {
     margin-top: -14px;
   }
   .sectiondivider h5 {
+    font-size:15px;
+    bottom:30px;
+    width:170px
+  }
+  
+  .page { padding:130px 0; }
+  .pagedivider {
+    width:200px;
+    height:200px;
+    padding:15px;
+    top:-100px;
+    margin-left:-100px;
+  }
+  .pagedivider img {
+    width:150px;
+    height:180px;
+  }
+  .pagedivider .fa-stack {
+    font-size: 100px;
+    margin-top: -14px;
+  }
+  .pagedivider h5 {
     font-size:15px;
     bottom:30px;
     width:170px
