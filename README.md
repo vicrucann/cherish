@@ -6,11 +6,9 @@
 
 The main idea behind **Cherish** is to use the knowledge and expertise of a specialist in order to perform semi-manual data organization. Therefore, given a problem of disparate data types such as photographs, illustrations, diagrams, text annotations, point cloud representation, etc., **Cherish** aims to provide a tool to combine all the above data into a comprehensive 3D space, to make 3D sense of the data. 
 
-Note: **Cherish** is currently under development and does not have a comprehensive manual and user guide.
-
 ## Binary download
 
-If you are using Windows machine (version>=7), the fastest way to start is to download the pre-compiled binary and start testing the software right away. For that, go to the [release section](https://github.com/vicrucann/cherish/releases) and download the latest compiled version. The download link will have the form of `cherish-Version-qtX.YmsvcYEAR.zip`.
+If you are using Windows machine (version>=7), the fastest way to start is to download the pre-compiled binary and start testing the software right away. For that, go to the [release section](https://github.com/vicrucann/cherish/releases) and download the latest version. Each release tag should containt an installer for Windows 10.
 
 ## Building from source
 
@@ -40,6 +38,8 @@ All tools, but OpenSceneGraph (OSG), have binaries and are easy to install. Ther
 * [OpenSceneGraph installation on Linux](https://vicrucann.github.io/tutorials/osg-linux-quick-install/).
 
 **Note:** the used version of OSG only requires OpenGL and CMake; there is no need to install additional plugins; the minimal install is enough.
+
+**Note:** before doing installation of OpenSceneGraph on Windows, it is strongly recommended to turn off your anti-virus. The same can apply before installation of Qt library, e.g., [Avast is known to block certain files within Qt library](https://forum.qt.io/topic/68712/installer-error).
 
 **Note:** on completion of OSG compilation, do not forget to set up the environmental variables correctly to avoid problems with cmake finding the OSG directory libraries.
 
@@ -100,16 +100,17 @@ See the corresponding [LICENSE](https://github.com/vicrucann/cherish/blob/master
 
 The software is being developed at [Yale Graphics Lab](http://graphics.cs.yale.edu/site/). The main development is performed by [Victoria Rudakova](https://github.com/vicrucann) under the guidance of [prof. Holly Rushmeier](http://graphics.cs.yale.edu/site/people/holly-rushmeier) and [prof. Julie Dorsey](http://graphics.cs.yale.edu/site/people/julie-dorsey).  
 
-For any questions and requests, feel free to contact Victoria Rudakova - victoria.rudakova(at)yale.edu. Or use [Issues](https://github.com/vicrucann/cherish/issues) for feature requests and bug submission.
+For any questions and requests, feel free to contact Victoria Rudakova - victoria.rudakova(at)protonmail.com. Or use [Issues](https://github.com/vicrucann/cherish/issues) for feature requests and bug submission.
 
 Other contributors:
 
+* [Natallia Trayan](https://www.behance.net/trayan): icon design, demo scenes and user feedback.
+* Nathan Lin: user testing and feedback, demo scenes, user manual and website content.
 * Bhavani Ananthabhotla: user feedback and research.
 * [Ying Yang](http://graphics.cs.yale.edu/site/people/ying-yang): sub-parts functionality and research.
 * [Goze Akoglu](http://ipch.yale.edu/people/kiraz-goze-akogluhttp://ipch.yale.edu/people/kiraz-goze-akoglu): user testing and feedback.
 * [Eleni Kotoula](http://ipch.yale.edu/people/eleni-kotoula): user testing and feedback.
 * [Wendy Chen](http://www.wendywchen.com/): user testing and feedback.
-* [Natallia Trayan](https://www.behance.net/trayan): icon design.
 * Yumo Rong: user interface functionality.
 
 ## Acknowledgements
